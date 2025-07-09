@@ -53,9 +53,6 @@ export default function Home() {
             alt="Oráculo Jurídico" 
             className="w-48 h-48 mx-auto mb-4"
           />
-          <p className="text-muted-foreground">
-            Sua assistência jurídica inteligente
-          </p>
         </div>
 
         {/* Form Card */}
