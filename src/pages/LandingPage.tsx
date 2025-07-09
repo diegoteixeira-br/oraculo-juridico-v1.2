@@ -295,15 +295,6 @@ const LandingPage = () => {
                 <Lock className="w-4 h-4" />
                 <span>Pagamento seguro e automatizado. Você pode cancelar quando quiser.</span>
               </div>
-              
-              <div className="flex items-center justify-center space-x-2">
-                <span className="text-sm text-muted-foreground">Powered by</span>
-                <img 
-                  src={caktoLogo} 
-                  alt="Cakto"
-                  className="h-5 w-auto opacity-80"
-                />
-              </div>
             </div>
           </div>
         </div>
