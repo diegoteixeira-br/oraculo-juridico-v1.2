@@ -71,11 +71,7 @@ export default function Dashboard() {
   const AppSidebar = () => (
     <Sidebar className="w-64 bg-slate-800 border-slate-700">
       <SidebarHeader className="p-6">
-        <img 
-          src="/lovable-uploads/f33ec954-c80f-4d08-a332-f090fc819d27.png" 
-          alt="Oráculo Jurídico" 
-          className="w-16 h-16 mx-auto"
-        />
+        <h1 className="text-xl font-bold text-primary text-center">Oráculo Jurídico</h1>
       </SidebarHeader>
       
       <SidebarContent>
@@ -122,9 +118,9 @@ export default function Dashboard() {
             <div className="flex items-center gap-4">
               <SidebarTrigger className="md:hidden" />
               <img 
-                src="/lovable-uploads/f33ec954-c80f-4d08-a332-f090fc819d27.png" 
+                src="/lovable-uploads/baf2f459-dae5-46d0-8e62-9d9247ec0b40.png" 
                 alt="Oráculo Jurídico" 
-                className="w-8 h-8"
+                className="w-10 h-10"
               />
             </div>
             <div className="flex items-center gap-2">
