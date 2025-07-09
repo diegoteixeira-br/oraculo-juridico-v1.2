@@ -279,25 +279,29 @@ const LandingPage = () => {
               </div>
             </div>
             
-            <Link
-              to="/cadastro"
-              className="btn-primary w-full text-lg py-4 mb-6"
-            >
-              Iniciar Meu Teste Gratuito Agora
-            </Link>
-            
-            <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
-              <Lock className="w-4 h-4" />
-              <span>Pagamento seguro e automatizado. Você pode cancelar quando quiser.</span>
+            <div className="mb-8">
+              <Link
+                to="/cadastro"
+                className="inline-block btn-primary w-full text-lg py-4"
+              >
+                Iniciar Meu Teste Gratuito Agora
+              </Link>
             </div>
             
-            <div className="flex items-center justify-center space-x-2 mt-4">
-              <span className="text-sm text-muted-foreground">Powered by</span>
-              <img 
-                src={caktoLogo} 
-                alt="Cakto"
-                className="h-5 w-auto opacity-80"
-              />
+            <div className="space-y-3">
+              <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
+                <Lock className="w-4 h-4" />
+                <span>Pagamento seguro e automatizado. Você pode cancelar quando quiser.</span>
+              </div>
+              
+              <div className="flex items-center justify-center space-x-2">
+                <span className="text-sm text-muted-foreground">Powered by</span>
+                <img 
+                  src={caktoLogo} 
+                  alt="Cakto"
+                  className="h-5 w-auto opacity-80"
+                />
+              </div>
             </div>
           </div>
         </div>
