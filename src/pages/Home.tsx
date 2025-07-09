@@ -167,7 +167,7 @@ export default function Home() {
           <p>
             Não tem uma conta?{" "}
             <Link to="/cadastro" className="text-primary hover:text-primary/80">
-              Conheça o Oráculo Jurídico
+              Criar conta agora clique aqui
             </Link>
           </p>
         </div>
