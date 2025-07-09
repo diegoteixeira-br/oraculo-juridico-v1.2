@@ -48,7 +48,7 @@ export default function Home() {
       <div className="w-full max-w-md space-y-8">
         {/* Back to Home Button */}
         <div className="text-center">
-          <Link to="/home">
+          <Link to="/">
             <Button 
               variant="ghost" 
               className="text-muted-foreground hover:text-foreground"
@@ -166,7 +166,7 @@ export default function Home() {
         <div className="text-center text-sm text-muted-foreground">
           <p>
             Não tem uma conta?{" "}
-            <Link to="/home" className="text-primary hover:text-primary/80">
+            <Link to="/" className="text-primary hover:text-primary/80">
               Conheça o Oráculo Jurídico
             </Link>
           </p>
