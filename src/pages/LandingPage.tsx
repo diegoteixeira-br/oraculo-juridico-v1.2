@@ -52,7 +52,7 @@ const LandingPage = () => {
             Oráculo Jurídico
           </h1>
           <nav className="hidden md:flex space-x-8">
-            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/entrar" className="text-muted-foreground hover:text-foreground transition-colors">
               Início
             </Link>
             <Link to="/termos" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -357,7 +357,7 @@ const LandingPage = () => {
             </div>
             
             <div className="flex space-x-8">
-              <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link to="/entrar" className="text-muted-foreground hover:text-foreground transition-colors">
                 Início
               </Link>
               <Link to="/termos" className="text-muted-foreground hover:text-foreground transition-colors">
