@@ -91,7 +91,7 @@ const Cadastro = () => {
       {/* Header */}
       <header className="py-6 px-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <Link to="/home">
+          <Link to="/">
             <button className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors">
               <ArrowLeft size={20} />
               <span>Voltar para Home</span>
