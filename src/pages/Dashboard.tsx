@@ -65,8 +65,7 @@ export default function Dashboard() {
   };
 
   const handleMyAccount = () => {
-    // Will be replaced with Cakto portal link
-    window.open('https://cakto.com.br/portal', '_blank');
+    navigate('/minha-conta');
   };
 
   const AppSidebar = () => (
