@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Eye, EyeOff, Save, Trash2, ArrowLeft, User, Lock, AlertTriangle } from "lucide-react";
+import { Eye, EyeOff, Save, Trash2, ArrowLeft, User, Lock, AlertTriangle, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,6 +21,7 @@ export default function MinhaContaPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [userName, setUserName] = useState("João Silva");
   const [userEmail, setUserEmail] = useState("joao.silva@email.com");
+  const [userWhatsapp, setUserWhatsapp] = useState("(11) 99999-9999");
   
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -130,6 +131,21 @@ export default function MinhaContaPage() {
                   value={userEmail}
                   onChange={(e) => setUserEmail(e.target.value)}
                   className="bg-slate-700 border-slate-600 focus:border-primary"
+                  disabled
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="whatsapp" className="flex items-center gap-2">
+                  <Phone className="w-4 h-4" />
+                  WhatsApp
+                </Label>
+                <Input
+                  id="whatsapp"
+                  type="tel"
+                  value={userWhatsapp}
+                  onChange={(e) => setUserWhatsapp(e.target.value)}
+                  className="bg-slate-700 border-slate-600 focus:border-primary"
+                  placeholder="(11) 99999-9999"
                   disabled
                 />
               </div>
@@ -258,58 +274,58 @@ export default function MinhaContaPage() {
           </CardContent>
         </Card>
 
-        {/* Danger Zone Card */}
-        <Card className="bg-slate-800 border-red-500/50">
+        {/* Danger Zone Card - More discrete */}
+        <Card className="bg-slate-800/30 border-slate-600/30">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-red-400">
-              <AlertTriangle className="w-5 h-5" />
-              Zona de Perigo
+            <CardTitle className="flex items-center gap-2 text-slate-400 text-sm">
+              <AlertTriangle className="w-4 h-4" />
+              Cancelar Assinatura
             </CardTitle>
-            <CardDescription>
-              Ações irreversíveis para sua conta
+            <CardDescription className="text-xs text-slate-500">
+              Cancelar pagamentos recorrentes
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
-                <h3 className="font-semibold text-red-400 mb-2">Excluir Conta</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Esta ação é permanente e não pode ser desfeita. Todos os seus dados serão removidos.
+            <div className="space-y-3">
+              <div className="p-3 bg-slate-700/20 border border-slate-600/30 rounded-md">
+                <h3 className="font-medium text-slate-300 mb-1 text-sm">Cancelar Pagamento do Cartão</h3>
+                <p className="text-xs text-slate-500 mb-3">
+                  Cancelar cobranças recorrentes no cartão de crédito.
                 </p>
                 
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="destructive" className="w-full sm:w-auto">
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Excluir Conta
+                    <Button variant="outline" size="sm" className="text-xs bg-slate-700/50 hover:bg-slate-600/50 border-slate-600">
+                      <Trash2 className="w-3 h-3 mr-1" />
+                      Cancelar Assinatura
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent className="bg-slate-800 border-slate-700">
                     <AlertDialogHeader>
-                      <AlertDialogTitle className="text-red-400">
-                        Tem certeza absoluta?
+                      <AlertDialogTitle className="text-slate-300">
+                        Cancelar Assinatura?
                       </AlertDialogTitle>
                       <AlertDialogDescription>
-                        Esta ação não pode ser desfeita. Isso excluirá permanentemente sua conta
-                        e removerá todos os seus dados dos nossos servidores.
+                        Isso cancelará sua assinatura e interromperá os pagamentos recorrentes.
+                        Você manterá acesso até o final do período já pago.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel className="bg-slate-700 hover:bg-slate-600">
-                        Cancelar
+                        Manter Assinatura
                       </AlertDialogCancel>
                       <AlertDialogAction
                         onClick={handleDeleteAccount}
-                        className="bg-red-600 hover:bg-red-700"
+                        className="bg-slate-600 hover:bg-slate-500"
                         disabled={isDeletingAccount}
                       >
                         {isDeletingAccount ? (
                           <div className="flex items-center gap-2">
                             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            Excluindo...
+                            Cancelando...
                           </div>
                         ) : (
-                          "Sim, excluir conta"
+                          "Confirmar Cancelamento"
                         )}
                       </AlertDialogAction>
                     </AlertDialogFooter>

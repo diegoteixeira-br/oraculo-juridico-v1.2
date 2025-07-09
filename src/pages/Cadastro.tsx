@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Eye, EyeOff, Lock, Shield, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, Lock, Shield, ArrowLeft, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 import caktoLogo from "../assets/cakto-logo.png";
 
@@ -7,6 +7,7 @@ const Cadastro = () => {
   const [formData, setFormData] = useState({
     nomeCompleto: "",
     email: "",
+    whatsapp: "",
     senha: "",
     confirmarSenha: "",
     aceitarTermos: false
@@ -28,6 +29,12 @@ const Cadastro = () => {
       newErrors.email = "E-mail é obrigatório";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "E-mail inválido";
+    }
+
+    if (!formData.whatsapp.trim()) {
+      newErrors.whatsapp = "WhatsApp é obrigatório";
+    } else if (!/^\(\d{2}\)\s\d{4,5}-\d{4}$/.test(formData.whatsapp)) {
+      newErrors.whatsapp = "WhatsApp deve estar no formato (11) 99999-9999";
     }
 
     if (!formData.senha) {
@@ -146,6 +153,25 @@ const Cadastro = () => {
                 />
                 {errors.email && (
                   <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                )}
+              </div>
+
+              {/* WhatsApp */}
+              <div>
+                <label htmlFor="whatsapp" className="block text-sm font-medium text-foreground mb-2">
+                  <Phone className="inline w-4 h-4 mr-1" />
+                  WhatsApp
+                </label>
+                <input
+                  type="tel"
+                  id="whatsapp"
+                  value={formData.whatsapp}
+                  onChange={(e) => handleInputChange("whatsapp", e.target.value)}
+                  className={`w-full input-field ${errors.whatsapp ? "border-red-500" : ""}`}
+                  placeholder="(11) 99999-9999"
+                />
+                {errors.whatsapp && (
+                  <p className="text-red-500 text-sm mt-1">{errors.whatsapp}</p>
                 )}
               </div>
 
