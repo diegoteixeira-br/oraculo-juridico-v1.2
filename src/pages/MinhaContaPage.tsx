@@ -94,6 +94,11 @@ export default function MinhaContaPage() {
         </div>
 
         <div className="text-center">
+          <img 
+            src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
+            alt="Oráculo Jurídico" 
+            className="h-20 w-auto mx-auto mb-4"
+          />
           <h1 className="text-3xl font-bold text-primary mb-2">Minha Conta</h1>
           <p className="text-muted-foreground">
             Gerencie suas configurações e dados da conta
