@@ -13,9 +13,9 @@ const Privacidade = () => {
             </button>
           </Link>
           <img 
-            src="/lovable-uploads/3f5dd265-f1d6-4f36-a02e-44a1c4d5b2a5.png" 
+            src="/lovable-uploads/6786daa5-082e-4c35-9084-6349d088fed4.png" 
             alt="Oráculo Jurídico" 
-            className="h-12 w-auto"
+            className="h-16 w-auto"
           />
         </div>
       </header>
