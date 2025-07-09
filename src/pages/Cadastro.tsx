@@ -90,9 +90,11 @@ const Cadastro = () => {
               <span>Voltar para Home</span>
             </button>
           </Link>
-          <h1 className="text-2xl font-bold text-foreground">
-            Oráculo Jurídico
-          </h1>
+          <img 
+            src="/lovable-uploads/3f5dd265-f1d6-4f36-a02e-44a1c4d5b2a5.png" 
+            alt="Oráculo Jurídico" 
+            className="h-12 w-auto"
+          />
         </div>
       </header>
 
