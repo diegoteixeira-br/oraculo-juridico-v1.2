@@ -61,9 +61,9 @@ export default function Home() {
         {/* Logo */}
         <div className="text-center">
           <img 
-            src="/lovable-uploads/b02b19a1-02c8-487d-9d6a-7ae0ee4435f9.png" 
+            src="/lovable-uploads/79b7d6e1-9f85-4237-b876-a70dd8d06e28.png" 
             alt="Oráculo Jurídico" 
-            className="w-48 h-48 mx-auto mb-4"
+            className="w-full max-w-md mx-auto mb-4"
           />
         </div>
 
