@@ -54,8 +54,9 @@ const LandingPage = () => {
             className="h-16 w-auto"
           />
           <nav className="hidden md:flex space-x-8">
-            <Link to="/entrar" className="text-muted-foreground hover:text-foreground transition-colors">
-              Início
+            <Link to="/entrar" className="text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-2">
+              <Smartphone className="w-4 h-4" />
+              <span>Login</span>
             </Link>
             <Link to="/termos" className="text-muted-foreground hover:text-foreground transition-colors">
               Termos de Uso
@@ -350,9 +351,6 @@ const LandingPage = () => {
             </div>
             
             <div className="flex space-x-8">
-              <Link to="/entrar" className="text-muted-foreground hover:text-foreground transition-colors">
-                Início
-              </Link>
               <Link to="/termos" className="text-muted-foreground hover:text-foreground transition-colors">
                 Termos de Uso
               </Link>
