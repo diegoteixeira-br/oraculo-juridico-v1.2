@@ -49,7 +49,7 @@ export default function Home() {
         {/* Logo */}
         <div className="text-center">
           <img 
-            src="/lovable-uploads/f33ec954-c80f-4d08-a332-f090fc819d27.png" 
+            src="/lovable-uploads/b02b19a1-02c8-487d-9d6a-7ae0ee4435f9.png" 
             alt="Oráculo Jurídico" 
             className="w-48 h-48 mx-auto mb-4"
           />
