@@ -48,9 +48,11 @@ const LandingPage = () => {
       {/* Header */}
       <header className="py-6 px-4 border-b border-border">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-foreground">
-            Oráculo Jurídico
-          </h1>
+          <img 
+            src="/lovable-uploads/3f5dd265-f1d6-4f36-a02e-44a1c4d5b2a5.png" 
+            alt="Oráculo Jurídico" 
+            className="h-12 w-auto"
+          />
           <nav className="hidden md:flex space-x-8">
             <Link to="/entrar" className="text-muted-foreground hover:text-foreground transition-colors">
               Início
