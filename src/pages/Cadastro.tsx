@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Eye, EyeOff, Lock, Shield } from "lucide-react";
+import { Eye, EyeOff, Lock, Shield, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 import caktoLogo from "../assets/cakto-logo.png";
 
 const Cadastro = () => {
@@ -82,7 +83,13 @@ const Cadastro = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="py-6 px-4">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <Link to="/home">
+            <button className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors">
+              <ArrowLeft size={20} />
+              <span>Voltar para Home</span>
+            </button>
+          </Link>
           <h1 className="text-2xl font-bold text-foreground">
             Oráculo Jurídico
           </h1>
