@@ -48,11 +48,9 @@ const LandingPage = () => {
       {/* Header */}
       <header className="py-6 px-4 border-b border-border">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <img 
-            src="/lovable-uploads/c69e5a84-404e-4cbe-9d84-d19d95158721.png" 
-            alt="Oráculo Jurídico" 
-            className="h-16 w-auto"
-          />
+          <h1 className="text-2xl font-bold text-foreground">
+            ORÁCULO JURÍDICO
+          </h1>
           
           <div className="flex items-center space-x-8">
             {/* Navigation - only visible on desktop */}
