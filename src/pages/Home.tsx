@@ -48,7 +48,11 @@ export default function Home() {
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-primary mb-2">Oráculo Jurídico</h1>
+          <img 
+            src="/lovable-uploads/f33ec954-c80f-4d08-a332-f090fc819d27.png" 
+            alt="Oráculo Jurídico" 
+            className="w-48 h-48 mx-auto mb-4"
+          />
           <p className="text-muted-foreground">
             Sua assistência jurídica inteligente
           </p>
