@@ -166,7 +166,7 @@ export default function Home() {
         <div className="text-center text-sm text-muted-foreground">
           <p>
             Não tem uma conta?{" "}
-            <Link to="/" className="text-primary hover:text-primary/80">
+            <Link to="/cadastro" className="text-primary hover:text-primary/80">
               Conheça o Oráculo Jurídico
             </Link>
           </p>
