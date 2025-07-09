@@ -1,7 +1,7 @@
-import Cadastro from "./Cadastro";
+import LandingPage from "./LandingPage";
 
 const Index = () => {
-  return <Cadastro />;
+  return <LandingPage />;
 };
 
 export default Index;
