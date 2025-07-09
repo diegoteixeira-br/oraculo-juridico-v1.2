@@ -49,7 +49,7 @@ const LandingPage = () => {
       <header className="py-6 px-4 border-b border-border">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <h1 className="text-2xl font-bold text-foreground">
-            ORÁCULO JURÍDICO
+            Oráculo Jurídico
           </h1>
           
           <div className="flex items-center space-x-8">
