@@ -49,7 +49,7 @@ const LandingPage = () => {
       <header className="py-6 px-4 border-b border-border">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <img 
-            src="/lovable-uploads/6786daa5-082e-4c35-9084-6349d088fed4.png" 
+            src="/lovable-uploads/c69e5a84-404e-4cbe-9d84-d19d95158721.png" 
             alt="Oráculo Jurídico" 
             className="h-16 w-auto"
           />
