@@ -53,16 +53,6 @@ const LandingPage = () => {
           </h1>
           
           <div className="flex items-center space-x-8">
-            {/* Navigation - only visible on desktop */}
-            <nav className="hidden md:flex space-x-8">
-              <Link to="/termos" className="text-muted-foreground hover:text-foreground transition-colors">
-                Termos de Uso
-              </Link>
-              <Link to="/privacidade" className="text-muted-foreground hover:text-foreground transition-colors">
-                Política de Privacidade
-              </Link>
-            </nav>
-            
             {/* Login button - visible on both mobile and desktop */}
             <Link to="/entrar" className="text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-2 border border-border rounded-lg px-4 py-2 hover:bg-muted/10">
               <Smartphone className="w-4 h-4" />
