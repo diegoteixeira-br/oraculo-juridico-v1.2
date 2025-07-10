@@ -60,9 +60,9 @@ const LandingPage = () => {
             </Link>
             
             {/* Criar Conta button */}
-            <Link to="/cadastro" className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center space-x-2 rounded-lg px-4 py-2">
-              <Users className="w-4 h-4" />
-              <span>Criar Conta</span>
+            <Link to="/cadastro" className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center space-x-2 rounded-lg px-3 py-2 md:px-4">
+              <Users className="w-3 h-3 md:w-4 md:h-4" />
+              <span className="text-xs md:text-sm">Criar Conta</span>
             </Link>
           </div>
         </div>
