@@ -57,6 +57,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return new Date() < trialEnd;
     }
     
+    // pending_activation tem acesso limitado durante o período de teste
+    if (profile.subscription_status === 'pending_activation') {
+      const trialEnd = new Date(profile.trial_end_date);
+      return new Date() < trialEnd;
+    }
+    
     return false;
   };
 

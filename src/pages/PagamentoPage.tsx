@@ -16,8 +16,8 @@ export default function PagamentoPage() {
   }, [user, navigate]);
 
   const handleCaktoPayment = () => {
-    // Link da Cakto - você deve substituir pela URL real
-    const caktoUrl = "https://cakto.com.br/pagamento"; // Substitua pela URL real da Cakto
+    // SUBSTITUA PELA URL REAL DA CAKTO
+    const caktoUrl = "COLOCAR_AQUI_O_LINK_DA_CAKTO_PARA_PAGAMENTO"; 
     window.open(caktoUrl, '_blank');
   };
 

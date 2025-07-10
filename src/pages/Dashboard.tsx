@@ -152,6 +152,14 @@ export default function Dashboard() {
               <h1 className="text-xl font-semibold">Oráculo Jurídico</h1>
             </div>
             <div className="flex items-center gap-4">
+              {profile?.subscription_status === 'pending_activation' && (
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-yellow-500" />
+                  <Badge variant="outline" className="border-yellow-500 text-yellow-600">
+                    Pagamento em análise
+                  </Badge>
+                </div>
+              )}
               {profile?.subscription_status === 'trial' && (
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-amber-500" />
