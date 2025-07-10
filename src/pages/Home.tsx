@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Eye, EyeOff, ArrowRight, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, ArrowRight, ArrowLeft, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -163,13 +163,55 @@ export default function Home() {
         </Card>
 
         {/* Footer */}
-        <div className="text-center text-sm text-muted-foreground">
-          <p>
-            Não tem uma conta?{" "}
-            <Link to="/cadastro" className="text-primary hover:text-primary/80">
-              Criar conta agora clique aqui
-            </Link>
-          </p>
+        <div className="text-center space-y-4">
+          <div className="text-sm text-muted-foreground">
+            <p>
+              Não tem uma conta?{" "}
+              <Link to="/cadastro" className="text-primary hover:text-primary/80">
+                Criar conta agora clique aqui
+              </Link>
+            </p>
+          </div>
+          
+          {/* Social Login Buttons */}
+          <div className="space-y-3">
+            <Separator className="my-4" />
+            <p className="text-sm text-muted-foreground">Ou crie sua conta com:</p>
+            
+            <div className="flex flex-col gap-3">
+              <Button
+                variant="outline"
+                className="w-full bg-slate-800 border-slate-600 hover:bg-slate-700 text-white"
+                onClick={() => {
+                  // Implementar autenticação com Gmail
+                  toast({
+                    title: "Em breve!",
+                    description: "Login com Gmail será implementado em breve.",
+                  });
+                }}
+              >
+                <Mail className="w-4 h-4 mr-2" />
+                Continuar com Gmail
+              </Button>
+              
+              <Button
+                variant="outline"
+                className="w-full bg-blue-600 border-blue-500 hover:bg-blue-700 text-white"
+                onClick={() => {
+                  // Implementar autenticação com Facebook
+                  toast({
+                    title: "Em breve!",
+                    description: "Login com Facebook será implementado em breve.",
+                  });
+                }}
+              >
+                <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+                Continuar com Facebook
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
