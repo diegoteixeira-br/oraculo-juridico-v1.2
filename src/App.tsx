@@ -9,7 +9,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
 import PagamentoPage from "./pages/PagamentoPage";
-import ConfirmarPagamentoPage from "./pages/ConfirmarPagamentoPage";
+
 import NotFound from "./pages/NotFound";
 import Termos from "./pages/Termos";
 import Privacidade from "./pages/Privacidade";
@@ -30,7 +30,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/cadastro" element={<Cadastro />} />
             <Route path="/pagamento" element={<PagamentoPage />} />
-            <Route path="/confirmar-pagamento" element={<ConfirmarPagamentoPage />} />
+            
             <Route path="/termos" element={<Termos />} />
             <Route path="/privacidade" element={<Privacidade />} />
             <Route 

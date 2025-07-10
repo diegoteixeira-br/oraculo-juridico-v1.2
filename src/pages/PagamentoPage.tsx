@@ -21,9 +21,6 @@ export default function PagamentoPage() {
     window.open(caktoUrl, '_blank');
   };
 
-  const handleConfirmPayment = () => {
-    navigate('/confirmar-pagamento');
-  };
 
   if (!user || !profile) {
     return null;
@@ -84,17 +81,13 @@ export default function PagamentoPage() {
                 Finalizar Pagamento na Cakto
               </Button>
               
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground mb-3">
-                  Após completar o pagamento, clique no botão abaixo:
+              <div className="bg-green-50 dark:bg-green-950 p-4 rounded-lg text-center">
+                <p className="text-sm font-medium text-green-800 dark:text-green-200 mb-1">
+                  ✨ Ativação Automática
                 </p>
-                <Button 
-                  onClick={handleConfirmPayment}
-                  variant="outline"
-                  size="lg"
-                >
-                  Já Paguei - Ativar Minha Conta
-                </Button>
+                <p className="text-sm text-green-700 dark:text-green-300">
+                  Sua conta será ativada automaticamente assim que o pagamento for confirmado na Cakto!
+                </p>
               </div>
             </div>
 
@@ -103,8 +96,8 @@ export default function PagamentoPage() {
               <ol className="text-sm space-y-1 text-muted-foreground">
                 <li>1. Clique em "Finalizar Pagamento na Cakto"</li>
                 <li>2. Complete o pagamento na plataforma da Cakto</li>
-                <li>3. Retorne aqui e clique em "Já Paguei"</li>
-                <li>4. Sua conta será ativada para acesso completo</li>
+                <li>3. Aguarde alguns instantes - a ativação é automática!</li>
+                <li>4. Acesse o dashboard para usar todas as funcionalidades</li>
               </ol>
             </div>
           </CardContent>
