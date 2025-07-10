@@ -11,7 +11,7 @@ export default function PagamentoPage() {
 
   useEffect(() => {
     if (!user) {
-      navigate('/auth');
+      navigate('/login');
     }
   }, [user, navigate]);
 

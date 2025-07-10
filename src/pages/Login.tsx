@@ -7,17 +7,15 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
-import { ArrowLeft, Eye, EyeOff, LogIn, UserPlus } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, LogIn } from 'lucide-react';
 
-export default function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true);
+export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   
-  const { signIn, signUp } = useAuth();
+  const { signIn } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -26,46 +24,23 @@ export default function AuthPage() {
     setLoading(true);
 
     try {
-      let result;
-      
-      if (isLogin) {
-        result = await signIn(email, password);
-        if (result.error) {
-          if (result.error.message.includes('Invalid login credentials')) {
-            toast({
-              title: "Erro no login",
-              description: "Email ou senha incorretos. Verifique suas credenciais.",
-              variant: "destructive",
-            });
-          } else {
-            throw result.error;
-          }
-        } else {
+      const result = await signIn(email, password);
+      if (result.error) {
+        if (result.error.message.includes('Invalid login credentials')) {
           toast({
-            title: "Login realizado!",
-            description: "Bem-vindo de volta ao Oráculo Jurídico.",
+            title: "Erro no login",
+            description: "Email ou senha incorretos. Verifique suas credenciais.",
+            variant: "destructive",
           });
-          navigate('/dashboard');
+        } else {
+          throw result.error;
         }
       } else {
-        result = await signUp(email, password, fullName);
-        if (result.error) {
-          if (result.error.message.includes('already registered')) {
-            toast({
-              title: "Email já cadastrado",
-              description: "Este email já possui uma conta. Faça login ou use outro email.",
-              variant: "destructive",
-            });
-          } else {
-            throw result.error;
-          }
-        } else {
-          toast({
-            title: "Conta criada!",
-            description: "Sua conta foi criada com sucesso. Agora finalize o pagamento para ter acesso completo!",
-          });
-          navigate('/pagamento');
-        }
+        toast({
+          title: "Login realizado!",
+          description: "Bem-vindo de volta ao Oráculo Jurídico.",
+        });
+        navigate('/dashboard');
       }
     } catch (error: any) {
       toast({
@@ -99,36 +74,19 @@ export default function AuthPage() {
           />
           <h1 className="text-2xl font-bold">Oráculo Jurídico</h1>
           <p className="text-muted-foreground">
-            {isLogin ? 'Entre na sua conta' : 'Crie sua conta gratuita'}
+            Entre na sua conta
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>{isLogin ? 'Login' : 'Criar Conta'}</CardTitle>
+            <CardTitle>Login</CardTitle>
             <CardDescription>
-              {isLogin 
-                ? 'Entre com suas credenciais para acessar a plataforma'
-                : 'Comece seu período gratuito de 7 dias'
-              }
+              Entre com suas credenciais para acessar a plataforma
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {!isLogin && (
-                <div className="space-y-2">
-                  <Label htmlFor="fullName">Nome Completo</Label>
-                  <Input
-                    id="fullName"
-                    type="text"
-                    placeholder="Seu nome completo"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    required={!isLogin}
-                  />
-                </div>
-              )}
-              
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -174,20 +132,11 @@ export default function AuthPage() {
                 disabled={loading}
               >
                 {loading ? (
-                  "Processando..."
+                  "Entrando..."
                 ) : (
                   <>
-                    {isLogin ? (
-                      <>
-                        <LogIn className="w-4 h-4 mr-2" />
-                        Entrar
-                      </>
-                    ) : (
-                      <>
-                        <UserPlus className="w-4 h-4 mr-2" />
-                        Criar Conta
-                      </>
-                    )}
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Entrar
                   </>
                 )}
               </Button>
@@ -197,33 +146,21 @@ export default function AuthPage() {
               <Separator />
               <div className="mt-4 text-center">
                 <p className="text-sm text-muted-foreground">
-                  {isLogin ? 'Não tem uma conta?' : 'Já tem uma conta?'}
+                  Não tem uma conta?
                 </p>
                 <Button
-                  type="button"
+                  asChild
                   variant="link"
-                  onClick={() => {
-                    setIsLogin(!isLogin);
-                    setEmail('');
-                    setPassword('');
-                    setFullName('');
-                  }}
                   className="mt-1"
                 >
-                  {isLogin ? 'Criar conta gratuita' : 'Fazer login'}
+                  <Link to="/cadastro">
+                    Criar conta gratuita
+                  </Link>
                 </Button>
               </div>
             </div>
           </CardContent>
         </Card>
-
-        {!isLogin && (
-          <div className="text-center text-sm text-muted-foreground">
-            <p>✨ Período gratuito de 7 dias</p>
-            <p>🔒 Sem cobrança no cartão</p>
-            <p>📞 Suporte completo incluído</p>
-          </div>
-        )}
       </div>
     </div>
   );

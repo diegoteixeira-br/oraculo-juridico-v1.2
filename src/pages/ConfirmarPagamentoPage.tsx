@@ -22,7 +22,7 @@ export default function ConfirmarPagamentoPage() {
 
   useEffect(() => {
     if (!user) {
-      navigate('/auth');
+      navigate('/login');
     }
   }, [user, navigate]);
 

@@ -6,7 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
-import AuthPage from "./pages/AuthPage";
+import Login from "./pages/Login";
+import Cadastro from "./pages/Cadastro";
 import PagamentoPage from "./pages/PagamentoPage";
 import ConfirmarPagamentoPage from "./pages/ConfirmarPagamentoPage";
 import NotFound from "./pages/NotFound";
@@ -26,7 +27,8 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/cadastro" element={<Cadastro />} />
             <Route path="/pagamento" element={<PagamentoPage />} />
             <Route path="/confirmar-pagamento" element={<ConfirmarPagamentoPage />} />
             <Route path="/termos" element={<Termos />} />
