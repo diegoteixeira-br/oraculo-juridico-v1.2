@@ -19,7 +19,7 @@ import {
 import { useState } from "react";
 import heroBrain from "../assets/hero-brain.jpg";
 import legalOffice from "../assets/legal-office.jpg";
-import caktoLogo from "../assets/cakto-logo.png";
+
 
 const LandingPage = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);

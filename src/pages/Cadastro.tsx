@@ -69,8 +69,8 @@ export default function Cadastro() {
 
         <div className="text-center space-y-2">
           <img 
-            src="/src/assets/cakto-logo.png" 
-            alt="Cakto" 
+            src="/lovable-uploads/8fc8748b-d056-4136-b669-07bbd1bc2327.png" 
+            alt="Oráculo Jurídico" 
             className="w-16 h-16 mx-auto mb-4 rounded-lg"
           />
           <h1 className="text-2xl font-bold">Oráculo Jurídico</h1>
