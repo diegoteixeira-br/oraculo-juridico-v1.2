@@ -62,9 +62,9 @@ export default function AuthPage() {
         } else {
           toast({
             title: "Conta criada!",
-            description: "Sua conta foi criada com sucesso. Você já pode começar a usar a plataforma!",
+            description: "Sua conta foi criada com sucesso. Agora finalize o pagamento para ter acesso completo!",
           });
-          navigate('/dashboard');
+          navigate('/pagamento');
         }
       }
     } catch (error: any) {
