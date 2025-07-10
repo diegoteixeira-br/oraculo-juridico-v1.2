@@ -54,13 +54,13 @@ const LandingPage = () => {
           
           <div className="flex items-center space-x-4">
             {/* Login button */}
-            <Link to="/entrar" className="text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-2 border border-border rounded-lg px-4 py-2 hover:bg-muted/10">
+            <Link to="/auth" className="text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-2 border border-border rounded-lg px-4 py-2 hover:bg-muted/10">
               <Smartphone className="w-4 h-4" />
               <span>Login</span>
             </Link>
             
             {/* Criar Conta button */}
-            <Link to="/cadastro" className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center space-x-2 rounded-lg px-3 py-2 md:px-4">
+            <Link to="/auth" className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center space-x-2 rounded-lg px-3 py-2 md:px-4">
               <Users className="w-3 h-3 md:w-4 md:h-4" />
               <span className="text-xs md:text-sm">Criar Conta</span>
             </Link>
@@ -86,7 +86,7 @@ const LandingPage = () => {
             Chega de perder horas em pesquisa. Com o Oráculo Jurídico, você acessa uma IA treinada para o Direito brasileiro e obtém respostas fundamentadas em segundos.
           </p>
           <Link
-            to="/cadastro"
+            to="/auth"
             className="inline-block btn-primary text-lg px-8 py-4 animate-fade-in"
           >
             Experimente 7 Dias Grátis
@@ -284,7 +284,7 @@ const LandingPage = () => {
             
             <div className="mb-8">
               <Link
-                to="/cadastro"
+                to="/auth"
                 className="inline-block btn-primary w-full text-lg py-4"
               >
                 Iniciar Meu Teste Gratuito Agora

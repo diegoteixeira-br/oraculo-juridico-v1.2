@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { Eye, EyeOff, Save, Trash2, ArrowLeft, User, Lock, AlertTriangle, Phone } from "lucide-react";
+import { Eye, EyeOff, Save, Trash2, ArrowLeft, User, Lock, AlertTriangle, Phone, Clock, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 export default function MinhaContaPage() {
@@ -19,12 +21,22 @@ export default function MinhaContaPage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [userName, setUserName] = useState("João Silva");
-  const [userEmail, setUserEmail] = useState("joao.silva@email.com");
-  const [userWhatsapp, setUserWhatsapp] = useState("(11) 99999-9999");
   
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, profile, signOut } = useAuth();
+
+  const getTrialDaysRemaining = () => {
+    if (!profile?.trial_end_date) return 0;
+    const trialEnd = new Date(profile.trial_end_date);
+    const now = new Date();
+    const diffTime = trialEnd.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return Math.max(0, diffDays);
+  };
+
+  const trialDaysRemaining = getTrialDaysRemaining();
+  const isTrialActive = profile?.subscription_status === 'trial' && trialDaysRemaining > 0;
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,16 +78,22 @@ export default function MinhaContaPage() {
   const handleDeleteAccount = async () => {
     setIsDeletingAccount(true);
 
-    // Simular exclusão de conta
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    toast({
-      title: "Conta excluída",
-      description: "Sua conta foi excluída permanentemente.",
-    });
-
-    // Redirecionar para home
-    setTimeout(() => navigate("/"), 1000);
+    try {
+      await signOut();
+      toast({
+        title: "Assinatura cancelada",
+        description: "Sua assinatura foi cancelada com sucesso.",
+      });
+      navigate("/");
+    } catch (error) {
+      toast({
+        title: "Erro ao cancelar",
+        description: "Ocorreu um erro ao cancelar a assinatura. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeletingAccount(false);
+    }
   };
 
   return (
@@ -103,7 +121,72 @@ export default function MinhaContaPage() {
           <p className="text-muted-foreground">
             Gerencie suas configurações e dados da conta
           </p>
+          {isTrialActive && (
+            <div className="mt-4 p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+              <div className="flex items-center gap-2 justify-center">
+                <Clock className="w-5 h-5 text-amber-500" />
+                <span className="font-medium text-amber-500">
+                  Período Gratuito: {trialDaysRemaining} dias restantes
+                </span>
+              </div>
+              <p className="text-sm text-amber-600 mt-2 text-center">
+                Aproveite todos os recursos sem custo até {new Date(profile!.trial_end_date).toLocaleDateString('pt-BR')}
+              </p>
+            </div>
+          )}
         </div>
+
+        {/* Subscription Status Card */}
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CreditCard className="w-5 h-5" />
+              Status da Assinatura
+            </CardTitle>
+            <CardDescription>
+              Informações sobre seu plano atual
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Status:</span>
+              <Badge variant={profile?.subscription_status === 'active' ? 'default' : 'secondary'}>
+                {profile?.subscription_status === 'active' ? 'Ativo' : 
+                 profile?.subscription_status === 'trial' ? 'Período Gratuito' : 'Inativo'}
+              </Badge>
+            </div>
+            
+            {profile?.subscription_status === 'trial' && (
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Teste gratuito termina em:</span>
+                <span className="text-sm text-muted-foreground">
+                  {new Date(profile.trial_end_date).toLocaleDateString('pt-BR')}
+                </span>
+              </div>
+            )}
+            
+            {profile?.subscription_status === 'active' && profile.subscription_end_date && (
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Próxima cobrança:</span>
+                <span className="text-sm text-muted-foreground">
+                  {new Date(profile.subscription_end_date).toLocaleDateString('pt-BR')}
+                </span>
+              </div>
+            )}
+            
+            <div className="pt-4 border-t border-slate-600">
+              {isTrialActive ? (
+                <Button className="w-full bg-primary hover:bg-primary/90">
+                  Assinar Agora - R$ 97,00/mês
+                </Button>
+              ) : (
+                <Button variant="outline" className="w-full">
+                  Gerenciar Assinatura
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Account Info Card */}
         <Card className="bg-slate-800 border-slate-700">
@@ -122,8 +205,7 @@ export default function MinhaContaPage() {
                 <Label htmlFor="name">Nome</Label>
                 <Input
                   id="name"
-                  value={userName}
-                  onChange={(e) => setUserName(e.target.value)}
+                  value={profile?.full_name || user?.email || ""}
                   className="bg-slate-700 border-slate-600 focus:border-primary"
                   disabled
                 />
@@ -133,24 +215,8 @@ export default function MinhaContaPage() {
                 <Input
                   id="email"
                   type="email"
-                  value={userEmail}
-                  onChange={(e) => setUserEmail(e.target.value)}
+                  value={user?.email || ""}
                   className="bg-slate-700 border-slate-600 focus:border-primary"
-                  disabled
-                />
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="whatsapp" className="flex items-center gap-2">
-                  <Phone className="w-4 h-4" />
-                  WhatsApp
-                </Label>
-                <Input
-                  id="whatsapp"
-                  type="tel"
-                  value={userWhatsapp}
-                  onChange={(e) => setUserWhatsapp(e.target.value)}
-                  className="bg-slate-700 border-slate-600 focus:border-primary"
-                  placeholder="(11) 99999-9999"
                   disabled
                 />
               </div>

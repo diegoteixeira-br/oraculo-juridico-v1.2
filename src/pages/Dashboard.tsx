@@ -1,12 +1,16 @@
 import { useState } from "react";
-import { MessageCircle, Settings, LogOut, Send, Bot, User } from "lucide-react";
+import { MessageCircle, Settings, LogOut, Send, Bot, User, Clock, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Sidebar, SidebarProvider, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarTrigger } from "@/components/ui/sidebar";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   id: string;
@@ -20,10 +24,22 @@ export default function Dashboard() {
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const navigate = useNavigate();
+  const { user, profile, signOut } = useAuth();
+  const { toast } = useToast();
 
-  // Mock user data - will be replaced with real authentication
-  const userName = "João Silva";
-  const userInitials = "JS";
+  const userName = profile?.full_name || user?.email || "Usuário";
+  const userInitials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+  const getTrialDaysRemaining = () => {
+    if (!profile?.trial_end_date) return 0;
+    const trialEnd = new Date(profile.trial_end_date);
+    const now = new Date();
+    const diffTime = trialEnd.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return Math.max(0, diffDays);
+  };
+
+  const trialDaysRemaining = getTrialDaysRemaining();
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
@@ -59,9 +75,21 @@ export default function Dashboard() {
     }
   };
 
-  const handleLogout = () => {
-    // Will be replaced with real logout logic
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Logout realizado",
+        description: "Você foi desconectado com sucesso.",
+      });
+      navigate('/');
+    } catch (error) {
+      toast({
+        title: "Erro ao sair",
+        description: "Ocorreu um erro ao fazer logout. Tente novamente.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleMyAccount = () => {
@@ -123,14 +151,27 @@ export default function Dashboard() {
               <SidebarTrigger className="md:hidden" />
               <h1 className="text-xl font-semibold">Oráculo Jurídico</h1>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Olá, {userName}!</span>
-              <Avatar className="w-8 h-8">
-                <AvatarImage src="" />
-                <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                  {userInitials}
-                </AvatarFallback>
-              </Avatar>
+            <div className="flex items-center gap-4">
+              {profile?.subscription_status === 'trial' && (
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-amber-500" />
+                  <Badge variant={trialDaysRemaining > 3 ? "default" : "destructive"}>
+                    {trialDaysRemaining > 0 
+                      ? `${trialDaysRemaining} dias restantes` 
+                      : 'Período gratuito expirado'
+                    }
+                  </Badge>
+                </div>
+              )}
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Olá, {userName}!</span>
+                <Avatar className="w-8 h-8">
+                  <AvatarImage src={profile?.avatar_url || ""} />
+                  <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                    {userInitials}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
             </div>
           </header>
 
