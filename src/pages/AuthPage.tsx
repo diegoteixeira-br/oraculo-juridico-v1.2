@@ -202,7 +202,12 @@ export default function AuthPage() {
                 <Button
                   type="button"
                   variant="link"
-                  onClick={() => setIsLogin(!isLogin)}
+                  onClick={() => {
+                    setIsLogin(!isLogin);
+                    setEmail('');
+                    setPassword('');
+                    setFullName('');
+                  }}
                   className="mt-1"
                 >
                   {isLogin ? 'Criar conta gratuita' : 'Fazer login'}
