@@ -52,11 +52,17 @@ const LandingPage = () => {
             Oráculo Jurídico
           </h1>
           
-          <div className="flex items-center space-x-8">
-            {/* Login button - visible on both mobile and desktop */}
+          <div className="flex items-center space-x-4">
+            {/* Login button */}
             <Link to="/entrar" className="text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-2 border border-border rounded-lg px-4 py-2 hover:bg-muted/10">
               <Smartphone className="w-4 h-4" />
               <span>Login</span>
+            </Link>
+            
+            {/* Criar Conta button */}
+            <Link to="/cadastro" className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center space-x-2 rounded-lg px-4 py-2">
+              <Users className="w-4 h-4" />
+              <span>Criar Conta</span>
             </Link>
           </div>
         </div>
