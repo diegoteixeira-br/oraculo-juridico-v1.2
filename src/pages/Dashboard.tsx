@@ -30,16 +30,9 @@ export default function Dashboard() {
   const userName = profile?.full_name || user?.email || "Usuário";
   const userInitials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
-  const getTrialDaysRemaining = () => {
-    if (!profile?.trial_end_date) return 0;
-    const trialEnd = new Date(profile.trial_end_date);
-    const now = new Date();
-    const diffTime = trialEnd.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return Math.max(0, diffDays);
-  };
-
-  const trialDaysRemaining = getTrialDaysRemaining();
+  // Sistema de créditos
+  const userCredits = 150; // Créditos disponíveis
+  const costPerSearch = 1; // Custo por pesquisa
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
@@ -152,25 +145,17 @@ export default function Dashboard() {
               <h1 className="text-xl font-semibold">Oráculo Jurídico</h1>
             </div>
             <div className="flex items-center gap-4">
-              {profile?.subscription_status === 'pending_activation' && (
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-yellow-500" />
-                  <Badge variant="outline" className="border-yellow-500 text-yellow-600">
-                    Pagamento em análise
-                  </Badge>
-                </div>
-              )}
-              {profile?.subscription_status === 'trial' && (
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-amber-500" />
-                  <Badge variant={trialDaysRemaining > 3 ? "default" : "destructive"}>
-                    {trialDaysRemaining > 0 
-                      ? `${trialDaysRemaining} dias restantes` 
-                      : 'Período gratuito expirado'
-                    }
-                  </Badge>
-                </div>
-              )}
+              {/* Credits Display */}
+              <div className="flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-primary" />
+                <Badge variant="default" className="bg-primary">
+                  {userCredits} créditos
+                </Badge>
+                <span className="text-xs text-muted-foreground">
+                  ({costPerSearch} crédito/pesquisa)
+                </span>
+              </div>
+              
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground">Olá, {userName}!</span>
                 <Avatar className="w-8 h-8">
@@ -198,6 +183,11 @@ export default function Dashboard() {
                       Sou sua IA de assistência jurídica. Faça uma pergunta sobre legislação, jurisprudência ou doutrina. 
                       Por exemplo: "Quais os requisitos da usucapião extraordinária segundo o Código Civil?"
                     </p>
+                    <div className="mt-4 p-3 bg-primary/10 border border-primary/20 rounded-lg">
+                      <p className="text-sm text-primary">
+                        💡 Você tem {userCredits} créditos disponíveis. Cada pesquisa custa {costPerSearch} crédito.
+                      </p>
+                    </div>
                   </div>
                 </div>
               ) : (
