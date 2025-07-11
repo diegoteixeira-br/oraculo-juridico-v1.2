@@ -89,7 +89,7 @@ const LandingPage = () => {
             to="/cadastro"
             className="inline-block btn-primary text-lg px-8 py-4 animate-fade-in"
           >
-            Experimente 7 Dias Grátis
+            Crie sua Conta Gratuita
           </Link>
         </div>
       </section>
