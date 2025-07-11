@@ -42,14 +42,16 @@ export default function Dashboard() {
   const userInitials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
   // Sistema de créditos
-  const userCredits = profile?.credits || 0; // Créditos disponíveis do banco de dados
+  const userCredits = profile?.credits || 0; // Créditos comprados
+  const dailyCredits = profile?.daily_credits || 0; // Créditos diários
+  const totalCredits = userCredits + dailyCredits; // Total disponível
   const costPerSearch = 1; // Custo por pesquisa
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim() && attachedFiles.length === 0) return;
 
     // Verificar se o usuário tem créditos suficientes
-    if (userCredits < costPerSearch) {
+    if (totalCredits < costPerSearch) {
       toast({
         title: "Créditos insuficientes",
         description: "Você não tem créditos suficientes para realizar esta consulta. Compre mais créditos para continuar.",
@@ -247,29 +249,6 @@ export default function Dashboard() {
               <h1 className="text-xl font-semibold">Oráculo Jurídico</h1>
             </div>
             <div className="flex items-center gap-4">
-              {/* Credits Display */}
-              <div className="flex items-center gap-2">
-                <CreditCard className="w-4 h-4 text-primary" />
-                <Badge 
-                  variant="default" 
-                  className={`${userCredits > 10 ? 'bg-primary' : userCredits > 0 ? 'bg-yellow-600' : 'bg-red-600'}`}
-                >
-                  {userCredits} créditos
-                </Badge>
-                <span className="text-xs text-muted-foreground">
-                  ({costPerSearch} crédito/pesquisa)
-                </span>
-                {userCredits < 10 && (
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    onClick={() => navigate('/comprar-creditos')}
-                    className="text-xs"
-                  >
-                    Comprar mais
-                  </Button>
-                )}
-              </div>
               
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground">Olá, {userName}!</span>
@@ -300,7 +279,9 @@ export default function Dashboard() {
                     </p>
                     <div className="mt-4 p-3 bg-primary/10 border border-primary/20 rounded-lg">
                       <p className="text-sm text-primary">
-                        💡 Você tem {userCredits} créditos disponíveis. Cada pesquisa custa {costPerSearch} crédito.
+                        💡 Você tem {totalCredits} créditos disponíveis 
+                        {dailyCredits > 0 && `(${dailyCredits} diários + ${userCredits} comprados)`}. 
+                        Cada pesquisa custa {costPerSearch} crédito.
                       </p>
                     </div>
                   </div>
@@ -440,6 +421,37 @@ export default function Dashboard() {
                 >
                   <Send className="w-5 h-5" />
                 </Button>
+              </div>
+
+              {/* Credits Display - moved below text area */}
+              <div className="flex items-center justify-between mt-4 p-3 bg-slate-700 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-primary" />
+                  <Badge 
+                    variant="default" 
+                    className={`${totalCredits > 10 ? 'bg-primary' : totalCredits > 0 ? 'bg-yellow-600' : 'bg-red-600'}`}
+                  >
+                    {totalCredits} créditos
+                  </Badge>
+                  <span className="text-xs text-muted-foreground">
+                    ({costPerSearch} crédito/pesquisa)
+                  </span>
+                  {dailyCredits > 0 && (
+                    <span className="text-xs text-green-400">
+                      | {dailyCredits} diários
+                    </span>
+                  )}
+                </div>
+                {totalCredits < 10 && (
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={() => navigate('/comprar-creditos')}
+                    className="text-xs"
+                  >
+                    Comprar mais
+                  </Button>
+                )}
               </div>
               
               {/* Hidden File Input */}

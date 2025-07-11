@@ -13,6 +13,8 @@ interface Profile {
   subscription_end_date?: string;
   credits: number;
   total_credits_purchased: number;
+  daily_credits: number;
+  last_daily_reset: string;
 }
 
 interface AuthContextType {
@@ -38,6 +40,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchProfile = async (userId: string) => {
     try {
+      // Primeiro, resetar créditos diários se necessário
+      await supabase.rpc('reset_daily_credits_if_needed', { p_user_id: userId });
+      
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -52,8 +57,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const refreshProfile = async () => {
-    if (user?.id) {
-      await fetchProfile(user.id);
+    if (!user?.id) return;
+    
+    try {
+      // Primeiro, resetar créditos diários se necessário
+      await supabase.rpc('reset_daily_credits_if_needed', { p_user_id: user.id });
+      
+      // Buscar perfil atualizado
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (profile) {
+        setProfile(profile);
+      }
+    } catch (error) {
+      console.error('Error refreshing profile:', error);
     }
   };
 
@@ -85,8 +106,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const hasActiveAccess = () => {
     if (!profile) return false;
     
-    // Com sistema de créditos, verifica se tem créditos disponíveis
-    return profile.credits > 0;
+    // Com sistema de créditos, verifica se tem créditos disponíveis (diários + comprados)
+    const totalCredits = (profile.daily_credits || 0) + (profile.credits || 0);
+    return totalCredits > 0;
   };
 
   const signUp = async (email: string, password: string, fullName?: string) => {
