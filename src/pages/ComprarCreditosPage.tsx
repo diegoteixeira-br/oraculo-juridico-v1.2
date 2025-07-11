@@ -17,7 +17,7 @@ const creditPackages = [
     popular: false,
     features: [
       "50 créditos",
-      "Válido por 6 meses",
+      "Sem data de expiração",
       "Pesquisas ilimitadas",
       "Suporte por email"
     ]
@@ -32,7 +32,7 @@ const creditPackages = [
     popular: true,
     features: [
       "100 créditos",
-      "Válido por 12 meses",
+      "Sem data de expiração",
       "Pesquisas ilimitadas",
       "Suporte prioritário",
       "Relatórios avançados"
