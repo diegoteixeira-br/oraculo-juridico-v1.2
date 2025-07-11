@@ -24,7 +24,7 @@ const creditPackages = [
   },
   {
     id: "premium",
-    name: "Pacote 100",
+    name: "Pacote Premium",
     credits: 100,
     price: 97.00,
     originalPrice: null,
