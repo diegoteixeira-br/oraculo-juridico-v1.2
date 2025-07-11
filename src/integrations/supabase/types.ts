@@ -115,6 +115,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      reset_daily_credits_if_needed: {
+        Args: { p_user_id: string }
+        Returns: boolean
+      }
       use_credits: {
         Args: { p_user_id: string; p_credits: number; p_description?: string }
         Returns: boolean
