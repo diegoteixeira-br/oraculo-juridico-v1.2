@@ -76,17 +76,17 @@ const LandingPage = () => {
             Oráculo Jurídico
           </h1>
           
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Login button */}
-            <Link to="/login" className="text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-2 border border-border rounded-lg px-4 py-2 hover:bg-muted/10">
-              <Smartphone className="w-4 h-4" />
-              <span>Login</span>
+            <Link to="/login" className="text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-1 sm:space-x-2 border border-border rounded-lg px-2 py-1.5 sm:px-4 sm:py-2 hover:bg-muted/10">
+              <Smartphone className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="text-xs sm:text-sm">Login</span>
             </Link>
             
             {/* Criar Conta button */}
-            <Link to="/cadastro" className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center space-x-2 rounded-lg px-3 py-2 md:px-4">
-              <Users className="w-3 h-3 md:w-4 md:h-4" />
-              <span className="text-xs md:text-sm">Criar Conta</span>
+            <Link to="/cadastro" className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center space-x-1 sm:space-x-2 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 md:px-4">
+              <Users className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="text-xs sm:text-sm">Criar Conta</span>
             </Link>
           </div>
         </div>
