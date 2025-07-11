@@ -257,7 +257,7 @@ const LandingPage = () => {
               <Award className="w-12 h-12 text-primary mb-4" />
               <h3 className="text-xl font-semibold mb-4 text-foreground">Custo-Benefício Imbatível</h3>
               <p className="text-muted-foreground">
-                Acesso ilimitado por um preço que cabe no seu bolso.
+                Comece grátis e compre créditos apenas quando precisar, sem mensalidades.
               </p>
             </div>
           </div>
