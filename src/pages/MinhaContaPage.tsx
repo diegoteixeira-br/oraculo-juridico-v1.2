@@ -139,7 +139,10 @@ export default function MinhaContaPage() {
             </div>
             
             <div className="pt-4 border-t border-slate-600">
-              <Button className="w-full bg-primary hover:bg-primary/90">
+              <Button 
+                onClick={() => navigate("/comprar-creditos")}
+                className="w-full bg-primary hover:bg-primary/90"
+              >
                 Comprar Mais Créditos
               </Button>
             </div>
