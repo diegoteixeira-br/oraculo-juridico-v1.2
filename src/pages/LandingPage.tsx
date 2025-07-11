@@ -367,26 +367,26 @@ const LandingPage = () => {
             </div>
 
             {/* Card 3: Pacote Básico */}
-            <div className="card-signup p-8 text-center relative">
-              <h3 className="text-2xl font-bold mb-4 text-foreground">Pacote Básico</h3>
-              <div className="mb-6">
-                <span className="text-5xl font-bold text-foreground">R$ 59,90</span>
+            <div className="card-signup p-6 text-center relative">
+              <h3 className="text-2xl font-bold mb-3 text-foreground">Pacote Básico</h3>
+              <div className="mb-4">
+                <span className="text-4xl font-bold text-foreground">R$ 59,90</span>
               </div>
-              <p className="text-muted-foreground mb-6">
+              <p className="text-muted-foreground mb-4 text-sm">
                 Ideal para estudantes e profissionais com demanda moderada.
               </p>
               
-              <div className="space-y-4 mb-8">
-                <div className="flex items-center space-x-3">
-                  <Check className="w-5 h-5 text-secondary" />
+              <div className="space-y-2 mb-6">
+                <div className="flex items-center space-x-2 text-sm">
+                  <Check className="w-4 h-4 text-secondary flex-shrink-0" />
                   <span className="text-muted-foreground">50 créditos para usar quando quiser</span>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <Check className="w-5 h-5 text-secondary" />
+                <div className="flex items-center space-x-2 text-sm">
+                  <Check className="w-4 h-4 text-secondary flex-shrink-0" />
                   <span className="text-muted-foreground">Sem data de expiração</span>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <Check className="w-5 h-5 text-secondary" />
+                <div className="flex items-center space-x-2 text-sm">
+                  <Check className="w-4 h-4 text-secondary flex-shrink-0" />
                   <span className="text-muted-foreground">Acesso à IA Jurídica</span>
                 </div>
               </div>
