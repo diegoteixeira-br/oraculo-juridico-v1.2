@@ -357,9 +357,9 @@ const LandingPage = () => {
               <Link to="/privacidade" className="text-muted-foreground hover:text-foreground transition-colors">
                 Política de Privacidade
               </Link>
-              <a href="mailto:contato@oraculojuridico.com.br" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link to="/contato" className="text-muted-foreground hover:text-foreground transition-colors">
                 Contato
-              </a>
+              </Link>
             </div>
           </div>
           

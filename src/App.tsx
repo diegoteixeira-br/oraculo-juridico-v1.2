@@ -15,6 +15,7 @@ import Termos from "./pages/Termos";
 import Privacidade from "./pages/Privacidade";
 import Dashboard from "./pages/Dashboard";
 import MinhaContaPage from "./pages/MinhaContaPage";
+import ContatoPage from "./pages/ContatoPage";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
             
             <Route path="/termos" element={<Termos />} />
             <Route path="/privacidade" element={<Privacidade />} />
+            <Route path="/contato" element={<ContatoPage />} />
             <Route 
               path="/dashboard" 
               element={
