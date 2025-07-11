@@ -27,14 +27,15 @@ const creditPackages = [
     name: "Pacote Premium",
     credits: 100,
     price: 97.00,
-    originalPrice: null,
-    discount: null,
+    originalPrice: 120.00,
+    discount: "ECONOMIZE 20%",
     popular: true,
     features: [
       "100 créditos",
       "Sem data de expiração",
       "Pesquisas ilimitadas",
       "Suporte prioritário",
+      "Acesso prioritário à IA",
       "Relatórios avançados"
     ]
   }
