@@ -55,8 +55,10 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           credits: number | null
+          daily_credits: number | null
           full_name: string | null
           id: string
+          last_daily_reset: string | null
           subscription_end_date: string | null
           subscription_status: string | null
           total_credits_purchased: number | null
@@ -69,8 +71,10 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           credits?: number | null
+          daily_credits?: number | null
           full_name?: string | null
           id?: string
+          last_daily_reset?: string | null
           subscription_end_date?: string | null
           subscription_status?: string | null
           total_credits_purchased?: number | null
@@ -83,8 +87,10 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           credits?: number | null
+          daily_credits?: number | null
           full_name?: string | null
           id?: string
+          last_daily_reset?: string | null
           subscription_end_date?: string | null
           subscription_status?: string | null
           total_credits_purchased?: number | null
