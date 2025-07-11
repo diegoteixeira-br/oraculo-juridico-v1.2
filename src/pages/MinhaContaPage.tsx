@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function MinhaContaPage() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -75,17 +76,24 @@ export default function MinhaContaPage() {
     setIsLoading(false);
   };
 
-  const handleDeleteAccount = async () => {
+  const handleCancelSubscription = async () => {
     setIsDeletingAccount(true);
 
     try {
-      await signOut();
-      toast({
-        title: "Assinatura cancelada",
-        description: "Sua assinatura foi cancelada com sucesso.",
-      });
-      navigate("/");
+      const { data } = await supabase.functions.invoke('cancel-subscription');
+      
+      if (data?.success) {
+        toast({
+          title: "Assinatura cancelada",
+          description: "Sua assinatura foi cancelada. Você pode continuar usando durante o período gratuito.",
+        });
+        // Recarregar a página para atualizar o status
+        window.location.reload();
+      } else {
+        throw new Error(data?.error || "Erro ao cancelar assinatura");
+      }
     } catch (error) {
+      console.error("Erro ao cancelar assinatura:", error);
       toast({
         title: "Erro ao cancelar",
         description: "Ocorreu um erro ao cancelar a assinatura. Tente novamente.",
@@ -379,6 +387,8 @@ export default function MinhaContaPage() {
                       <AlertDialogDescription>
                         Isso cancelará sua assinatura e interromperá os pagamentos recorrentes.
                         Você manterá acesso até o final do período já pago.
+                        <br /><br />
+                        <strong>Importante:</strong> Sua conta permanecerá ativa e você poderá usar os 7 dias gratuitos caso ainda não tenha utilizado.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -386,7 +396,7 @@ export default function MinhaContaPage() {
                         Manter Assinatura
                       </AlertDialogCancel>
                       <AlertDialogAction
-                        onClick={handleDeleteAccount}
+                        onClick={handleCancelSubscription}
                         className="bg-slate-600 hover:bg-slate-500"
                         disabled={isDeletingAccount}
                       >
