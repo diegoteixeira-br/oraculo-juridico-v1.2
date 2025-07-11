@@ -13,7 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface CreditTransaction {
   id: string;
-  transaction_type: 'purchase' | 'usage' | 'bonus';
+  transaction_type: 'purchase' | 'usage' | 'bonus' | 'daily_usage';
   amount: number;
   description: string;
   created_at: string;
@@ -40,7 +40,9 @@ export default function MinhaContaPage() {
 
   // Sistema de créditos - valores reais do banco
   const userCredits = profile?.credits || 0;
+  const dailyCredits = profile?.daily_credits || 0;
   const totalCreditsPurchased = profile?.total_credits_purchased || 0;
+  const totalAvailableCredits = dailyCredits + userCredits;
 
   // Carregar transações do usuário
   useEffect(() => {
@@ -131,15 +133,18 @@ export default function MinhaContaPage() {
           <p className="text-muted-foreground">
             Gerencie suas configurações e dados da conta
           </p>
-          <div className="mt-4 p-4 bg-primary/10 border border-primary/20 rounded-lg">
+            <div className="mt-4 p-4 bg-primary/10 border border-primary/20 rounded-lg">
             <div className="flex items-center gap-2 justify-center">
               <CreditCard className="w-5 h-5 text-primary" />
               <span className="font-medium text-primary">
-                {userCredits} créditos disponíveis
+                {totalAvailableCredits} créditos disponíveis
               </span>
             </div>
             <p className="text-sm text-primary/80 mt-2 text-center">
-              Total comprado: {totalCreditsPurchased} créditos
+              {dailyCredits > 0 && (
+                <span>{dailyCredits} créditos diários + </span>
+              )}
+              {userCredits} créditos comprados
             </p>
           </div>
         </div>
@@ -156,14 +161,18 @@ export default function MinhaContaPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div className="text-center p-4 bg-primary/10 rounded-lg border border-primary/20">
-                <div className="text-2xl font-bold text-primary">{userCredits}</div>
-                <div className="text-sm text-muted-foreground">Créditos Disponíveis</div>
+                <div className="text-2xl font-bold text-primary">{totalAvailableCredits}</div>
+                <div className="text-sm text-muted-foreground">Total Disponíveis</div>
+              </div>
+              <div className="text-center p-4 bg-green-600/10 rounded-lg border border-green-600/20">
+                <div className="text-2xl font-bold text-green-400">{dailyCredits}</div>
+                <div className="text-sm text-muted-foreground">Créditos Diários</div>
               </div>
               <div className="text-center p-4 bg-secondary/10 rounded-lg border border-secondary/20">
-                <div className="text-2xl font-bold text-secondary-foreground">{totalCreditsPurchased}</div>
-                <div className="text-sm text-muted-foreground">Total Comprado</div>
+                <div className="text-2xl font-bold text-secondary-foreground">{userCredits}</div>
+                <div className="text-sm text-muted-foreground">Créditos Comprados</div>
               </div>
             </div>
             
@@ -216,11 +225,21 @@ export default function MinhaContaPage() {
                   <div key={transaction.id} className="flex items-center justify-between p-3 bg-secondary/10 rounded-lg">
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <Badge 
+                         <Badge 
                           variant={transaction.transaction_type === 'purchase' ? 'default' : 'secondary'}
-                          className={transaction.transaction_type === 'purchase' ? 'bg-green-600' : 'bg-orange-600'}
+                          className={
+                            transaction.transaction_type === 'purchase' 
+                              ? 'bg-green-600' 
+                              : transaction.transaction_type === 'daily_usage'
+                              ? 'bg-blue-600'
+                              : 'bg-orange-600'
+                          }
                         >
-                          {transaction.transaction_type === 'purchase' ? 'Compra' : 'Uso'}
+                          {transaction.transaction_type === 'purchase' 
+                            ? 'Compra' 
+                            : transaction.transaction_type === 'daily_usage'
+                            ? 'Uso Diário'
+                            : 'Uso'}
                         </Badge>
                         <span className="text-sm font-medium">
                           {transaction.amount > 0 ? '+' : ''}{transaction.amount} créditos
