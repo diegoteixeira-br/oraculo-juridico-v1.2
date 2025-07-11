@@ -14,14 +14,52 @@ export type Database = {
   }
   public: {
     Tables: {
+      credit_transactions: {
+        Row: {
+          amount: number
+          cakto_transaction_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          status: string | null
+          transaction_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          cakto_transaction_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          status?: string | null
+          transaction_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          cakto_transaction_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          status?: string | null
+          transaction_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
           created_at: string
+          credits: number | null
           full_name: string | null
           id: string
           subscription_end_date: string | null
           subscription_status: string | null
+          total_credits_purchased: number | null
           trial_end_date: string | null
           trial_start_date: string | null
           updated_at: string
@@ -30,10 +68,12 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          credits?: number | null
           full_name?: string | null
           id?: string
           subscription_end_date?: string | null
           subscription_status?: string | null
+          total_credits_purchased?: number | null
           trial_end_date?: string | null
           trial_start_date?: string | null
           updated_at?: string
@@ -42,10 +82,12 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
+          credits?: number | null
           full_name?: string | null
           id?: string
           subscription_end_date?: string | null
           subscription_status?: string | null
+          total_credits_purchased?: number | null
           trial_end_date?: string | null
           trial_start_date?: string | null
           updated_at?: string
@@ -58,7 +100,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      add_credits_to_user: {
+        Args: {
+          p_user_id: string
+          p_credits: number
+          p_transaction_id?: string
+          p_description?: string
+        }
+        Returns: boolean
+      }
+      use_credits: {
+        Args: { p_user_id: string; p_credits: number; p_description?: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

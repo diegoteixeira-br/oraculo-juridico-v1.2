@@ -11,6 +11,8 @@ interface Profile {
   trial_start_date: string;
   trial_end_date: string;
   subscription_end_date?: string;
+  credits: number;
+  total_credits_purchased: number;
 }
 
 interface AuthContextType {
@@ -22,6 +24,8 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<any>;
   signOut: () => Promise<void>;
   hasActiveAccess: () => boolean;
+  useCredits: (amount: number, description?: string) => Promise<boolean>;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -47,23 +51,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const refreshProfile = async () => {
+    if (user?.id) {
+      await fetchProfile(user.id);
+    }
+  };
+
+  const useCredits = async (amount: number, description: string = 'Uso de créditos') => {
+    if (!user?.id) return false;
+
+    try {
+      const { data: result, error } = await supabase
+        .rpc('use_credits', {
+          p_user_id: user.id,
+          p_credits: amount,
+          p_description: description
+        });
+
+      if (error || !result) {
+        console.error('Error using credits:', error);
+        return false;
+      }
+
+      // Atualizar o perfil após usar créditos
+      await refreshProfile();
+      return true;
+    } catch (error) {
+      console.error('Error using credits:', error);
+      return false;
+    }
+  };
+
   const hasActiveAccess = () => {
     if (!profile) return false;
     
-    if (profile.subscription_status === 'active') return true;
-    
-    if (profile.subscription_status === 'trial') {
-      const trialEnd = new Date(profile.trial_end_date);
-      return new Date() < trialEnd;
-    }
-    
-    // pending_activation tem acesso limitado durante o período de teste
-    if (profile.subscription_status === 'pending_activation') {
-      const trialEnd = new Date(profile.trial_end_date);
-      return new Date() < trialEnd;
-    }
-    
-    return false;
+    // Com sistema de créditos, verifica se tem créditos disponíveis
+    return profile.credits > 0;
   };
 
   const signUp = async (email: string, password: string, fullName?: string) => {
@@ -140,7 +163,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signUp,
     signIn,
     signOut,
-    hasActiveAccess
+    hasActiveAccess,
+    useCredits,
+    refreshProfile
   };
 
   return (

@@ -35,18 +35,40 @@ export default function Dashboard() {
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, signOut, useCredits, refreshProfile } = useAuth();
   const { toast } = useToast();
 
   const userName = profile?.full_name || user?.email || "Usuário";
   const userInitials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
   // Sistema de créditos
-  const userCredits = 150; // Créditos disponíveis
+  const userCredits = profile?.credits || 0; // Créditos disponíveis do banco de dados
   const costPerSearch = 1; // Custo por pesquisa
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim() && attachedFiles.length === 0) return;
+
+    // Verificar se o usuário tem créditos suficientes
+    if (userCredits < costPerSearch) {
+      toast({
+        title: "Créditos insuficientes",
+        description: "Você não tem créditos suficientes para realizar esta consulta. Compre mais créditos para continuar.",
+        variant: "destructive",
+      });
+      navigate('/comprar-creditos');
+      return;
+    }
+
+    // Usar os créditos antes de enviar a mensagem
+    const creditsUsed = await useCredits(costPerSearch, 'Consulta jurídica via chat');
+    if (!creditsUsed) {
+      toast({
+        title: "Erro ao processar créditos",
+        description: "Não foi possível processar o uso de créditos. Tente novamente.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -228,12 +250,25 @@ export default function Dashboard() {
               {/* Credits Display */}
               <div className="flex items-center gap-2">
                 <CreditCard className="w-4 h-4 text-primary" />
-                <Badge variant="default" className="bg-primary">
+                <Badge 
+                  variant="default" 
+                  className={`${userCredits > 10 ? 'bg-primary' : userCredits > 0 ? 'bg-yellow-600' : 'bg-red-600'}`}
+                >
                   {userCredits} créditos
                 </Badge>
                 <span className="text-xs text-muted-foreground">
                   ({costPerSearch} crédito/pesquisa)
                 </span>
+                {userCredits < 10 && (
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={() => navigate('/comprar-creditos')}
+                    className="text-xs"
+                  >
+                    Comprar mais
+                  </Button>
+                )}
               </div>
               
               <div className="flex items-center gap-2">

@@ -62,26 +62,37 @@ serve(async (req) => {
       return new Response('User not found', { status: 404, headers: corsHeaders });
     }
 
-    // Atualizar o perfil do usuário para ativo
-    const subscriptionEndDate = new Date();
-    subscriptionEndDate.setMonth(subscriptionEndDate.getMonth() + 1); // 1 mês de acesso
+    // Mapear produtos Cakto para créditos
+    const productCreditsMap: { [key: string]: number } = {
+      'qx2hqko_472740': 50,  // Pacote Básico
+      'qnjypg7_472753': 100, // Pacote Premium
+    };
 
-    const { error: updateError } = await supabase
-      .from('profiles')
-      .update({
-        subscription_status: 'active',
-        subscription_end_date: subscriptionEndDate.toISOString(),
-        updated_at: new Date().toISOString()
-      })
-      .eq('user_id', user.id);
+    // Extrair ID do produto da URL ou do corpo
+    const productId = body.product_id || body.checkout_url?.split('/')?.pop()?.split('_')[0];
+    const credits = productCreditsMap[productId] || 0;
 
-    if (updateError) {
-      console.error('Error updating profile:', updateError);
-      return new Response('Error updating profile', { status: 500, headers: corsHeaders });
+    if (credits === 0) {
+      console.log('Produto não encontrado ou sem créditos definidos:', productId);
+      return new Response('Product not found', { status: 400, headers: corsHeaders });
     }
 
-    console.log('Successfully activated user:', userEmail);
-    return new Response('User activated successfully', { 
+    // Adicionar créditos ao usuário usando a função do banco
+    const { data: result, error: creditError } = await supabase
+      .rpc('add_credits_to_user', {
+        p_user_id: user.id,
+        p_credits: credits,
+        p_transaction_id: body.transaction_id || body.id,
+        p_description: `Compra de ${credits} créditos via Cakto`
+      });
+
+    if (creditError || !result) {
+      console.error('Error adding credits:', creditError);
+      return new Response('Error adding credits', { status: 500, headers: corsHeaders });
+    }
+
+    console.log('Successfully added credits to user:', userEmail, 'Credits:', credits);
+    return new Response('Credits added successfully', { 
       status: 200, 
       headers: corsHeaders 
     });

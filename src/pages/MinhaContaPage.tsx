@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Eye, EyeOff, Save, ArrowLeft, User, Lock, CreditCard } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Eye, EyeOff, Save, ArrowLeft, User, Lock, CreditCard, History, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,16 @@ import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+
+interface CreditTransaction {
+  id: string;
+  transaction_type: 'purchase' | 'usage' | 'bonus';
+  amount: number;
+  description: string;
+  created_at: string;
+  status: string;
+}
 
 export default function MinhaContaPage() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -23,11 +33,40 @@ export default function MinhaContaPage() {
   
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, signOut, refreshProfile } = useAuth();
+  
+  const [transactions, setTransactions] = useState<CreditTransaction[]>([]);
+  const [loadingTransactions, setLoadingTransactions] = useState(false);
 
-  // Sistema de créditos - valores simulados
-  const userCredits = 150; // Créditos disponíveis
-  const currentPlan = "Plano Básico"; // Modalidade atual
+  // Sistema de créditos - valores reais do banco
+  const userCredits = profile?.credits || 0;
+  const totalCreditsPurchased = profile?.total_credits_purchased || 0;
+
+  // Carregar transações do usuário
+  useEffect(() => {
+    const loadTransactions = async () => {
+      if (!user?.id) return;
+      
+      setLoadingTransactions(true);
+      try {
+        const { data, error } = await supabase
+          .from('credit_transactions')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(10);
+        
+        if (error) throw error;
+        setTransactions((data || []) as CreditTransaction[]);
+      } catch (error) {
+        console.error('Error loading transactions:', error);
+      } finally {
+        setLoadingTransactions(false);
+      }
+    };
+
+    loadTransactions();
+  }, [user?.id]);
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,7 +139,7 @@ export default function MinhaContaPage() {
               </span>
             </div>
             <p className="text-sm text-primary/80 mt-2 text-center">
-              Modalidade: {currentPlan}
+              Total comprado: {totalCreditsPurchased} créditos
             </p>
           </div>
         </div>
@@ -113,22 +152,19 @@ export default function MinhaContaPage() {
               Seus Créditos
             </CardTitle>
             <CardDescription>
-              Informações sobre seus créditos e modalidade
+              Informações sobre seus créditos
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Créditos disponíveis:</span>
-              <Badge variant="default" className="bg-primary">
-                {userCredits} créditos
-              </Badge>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Modalidade atual:</span>
-              <span className="text-sm text-muted-foreground">
-                {currentPlan}
-              </span>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center p-4 bg-primary/10 rounded-lg border border-primary/20">
+                <div className="text-2xl font-bold text-primary">{userCredits}</div>
+                <div className="text-sm text-muted-foreground">Créditos Disponíveis</div>
+              </div>
+              <div className="text-center p-4 bg-secondary/10 rounded-lg border border-secondary/20">
+                <div className="text-2xl font-bold text-secondary-foreground">{totalCreditsPurchased}</div>
+                <div className="text-sm text-muted-foreground">Total Comprado</div>
+              </div>
             </div>
             
             <div className="flex items-center justify-between">
@@ -138,14 +174,80 @@ export default function MinhaContaPage() {
               </span>
             </div>
             
-            <div className="pt-4 border-t border-slate-600">
+            <div className="pt-4 border-t border-slate-600 flex gap-2">
               <Button 
                 onClick={() => navigate("/comprar-creditos")}
-                className="w-full bg-primary hover:bg-primary/90"
+                className="flex-1 bg-primary hover:bg-primary/90"
               >
+                <Plus className="w-4 h-4 mr-2" />
                 Comprar Mais Créditos
               </Button>
+              <Button 
+                onClick={() => refreshProfile()}
+                variant="outline"
+                size="sm"
+              >
+                Atualizar
+              </Button>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Histórico de Transações */}
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <History className="w-5 h-5" />
+              Histórico de Transações
+            </CardTitle>
+            <CardDescription>
+              Últimas 10 transações de créditos
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {loadingTransactions ? (
+              <div className="text-center py-4">
+                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+                <p className="text-sm text-muted-foreground mt-2">Carregando...</p>
+              </div>
+            ) : transactions.length > 0 ? (
+              <div className="space-y-3">
+                {transactions.map((transaction) => (
+                  <div key={transaction.id} className="flex items-center justify-between p-3 bg-secondary/10 rounded-lg">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <Badge 
+                          variant={transaction.transaction_type === 'purchase' ? 'default' : 'secondary'}
+                          className={transaction.transaction_type === 'purchase' ? 'bg-green-600' : 'bg-orange-600'}
+                        >
+                          {transaction.transaction_type === 'purchase' ? 'Compra' : 'Uso'}
+                        </Badge>
+                        <span className="text-sm font-medium">
+                          {transaction.amount > 0 ? '+' : ''}{transaction.amount} créditos
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {transaction.description}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(transaction.created_at).toLocaleDateString('pt-BR', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <CreditCard className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
+                <p className="text-muted-foreground">Nenhuma transação encontrada</p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
