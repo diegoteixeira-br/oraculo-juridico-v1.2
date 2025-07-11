@@ -30,8 +30,28 @@ const LandingPage = () => {
 
   const faqData = [
     {
-      question: "A cobrança é automática após os 7 dias?",
-      answer: "Sim, ao se cadastrar você insere seus dados de pagamento e a cobrança de R$97,00 ocorrerá automaticamente no 8º dia, a menos que cancele antes."
+      question: "Como funcionam os créditos?",
+      answer: "É muito simples. Cada pergunta completa que você faz à nossa Inteligência Artificial consome 1 crédito. Ao se cadastrar, você entra no nosso plano gratuito e ganha 1 crédito que se renova a cada 24 horas."
+    },
+    {
+      question: "Meus créditos gratuitos se acumulam se eu não usar?",
+      answer: "Não. O crédito gratuito é renovado diariamente, ou seja, você tem direito a uma nova consulta grátis a cada dia. Ele não é cumulativo. Para ter um saldo de créditos para usar quando quiser, você pode adquirir um de nossos pacotes."
+    },
+    {
+      question: "Os créditos que eu compro têm data de validade?",
+      answer: "Não! Uma das grandes vantagens dos nossos pacotes é que os créditos não expiram. Você pode comprá-los hoje e usá-los ao longo de semanas ou meses, conforme a sua necessidade."
+    },
+    {
+      question: "O que acontece quando meus créditos acabam?",
+      answer: "Se você estiver em um pacote pago e seus créditos acabarem, você pode simplesmente comprar um novo pacote a qualquer momento para continuar usando a ferramenta sem interrupções. Se você estiver no plano gratuito, basta aguardar a renovação do seu crédito diário no dia seguinte."
+    },
+    {
+      question: "Quais formas de pagamento vocês aceitam para os pacotes?",
+      answer: "Aceitamos as principais formas de pagamento, incluindo Cartão de Crédito e Pix, através da nossa plataforma de pagamento segura, a Cakto."
+    },
+    {
+      question: "Preciso cadastrar um cartão de crédito para usar o plano gratuito?",
+      answer: "Não. Para criar sua conta no plano gratuito e usar seu crédito diário, você não precisa fornecer nenhuma informação de pagamento. Você só precisará inserir seus dados de pagamento quando decidir comprar um pacote de créditos."
     },
     {
       question: "As informações da IA são confiáveis?",
