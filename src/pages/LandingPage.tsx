@@ -176,7 +176,7 @@ const LandingPage = () => {
               </div>
               <h3 className="text-xl font-semibold mb-4 text-foreground">Cadastre-se</h3>
               <p className="text-muted-foreground">
-                Crie sua conta e inicie seu teste gratuito de 7 dias. Sem compromisso.
+                Crie sua conta gratuita e comece a usar com 1 crédito renovado diariamente. Sem compromisso.
               </p>
             </div>
             
