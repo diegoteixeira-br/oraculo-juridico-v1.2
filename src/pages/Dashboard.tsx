@@ -267,17 +267,17 @@ export default function Dashboard() {
             {/* Messages Area */}
             <ScrollArea className="flex-1 p-6">
               {messages.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
+                <div className="flex flex-col items-center justify-center h-full text-center space-y-4 max-w-2xl mx-auto">
                   <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
                     <Bot className="w-8 h-8 text-primary" />
                   </div>
                   <div className="space-y-2">
                     <h2 className="text-2xl font-semibold">Como posso te ajudar hoje?</h2>
-                    <p className="text-muted-foreground max-w-md">
+                    <p className="text-muted-foreground max-w-md mx-auto">
                       Sou sua IA de assistência jurídica. Faça uma pergunta sobre legislação, jurisprudência ou doutrina. 
                       Por exemplo: "Quais os requisitos da usucapião extraordinária segundo o Código Civil?"
                     </p>
-                    <div className="mt-4 p-3 bg-primary/10 border border-primary/20 rounded-lg">
+                    <div className="mt-4 p-3 bg-primary/10 border border-primary/20 rounded-lg max-w-md mx-auto">
                       <p className="text-sm text-primary">
                         💡 Você tem {totalCredits} créditos disponíveis 
                         {dailyCredits > 0 && `(${dailyCredits} diários + ${userCredits} comprados)`}. 
