@@ -92,7 +92,7 @@ export default function Cadastro() {
           <CardHeader>
             <CardTitle>Criar Conta</CardTitle>
             <CardDescription>
-              Comece seu período gratuito de 7 dias
+              Comece agora e ganhe créditos para usar
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -185,8 +185,8 @@ export default function Cadastro() {
         </Card>
 
         <div className="text-center text-sm text-muted-foreground">
-          <p>✨ Período gratuito de 7 dias</p>
-          <p>🔒 Sem cobrança no cartão</p>
+          <p>✨ Sistema de créditos flexível</p>
+          <p>🔒 Sem compromisso mensal</p>
           <p>📞 Suporte completo incluído</p>
         </div>
       </div>
