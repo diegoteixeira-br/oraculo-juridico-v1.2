@@ -315,45 +315,45 @@ const LandingPage = () => {
             </div>
 
             {/* Card 2: Pacote Premium (Destaque) */}
-            <div className="card-signup p-8 text-center relative transform scale-105 border-2 border-primary">
+            <div className="card-signup p-6 text-center relative transform scale-105 border-2 border-primary">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-bold">
                 MAIS POPULAR
               </div>
-              <div className="absolute top-4 right-4">
+              <div className="absolute top-2 right-2">
                 <span className="bg-green-600 text-white px-2 py-1 rounded text-xs font-bold">
                   ECONOMIZE 20%
                 </span>
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-foreground">Pacote Premium</h3>
-              <div className="mb-6">
+              <h3 className="text-2xl font-bold mb-3 text-foreground mt-2">Pacote Premium</h3>
+              <div className="mb-4">
                 <div className="flex items-center justify-center gap-2">
-                  <span className="text-5xl font-bold text-primary">R$ 97,00</span>
-                  <span className="text-lg text-muted-foreground line-through">R$ 120,00</span>
+                  <span className="text-4xl font-bold text-primary">R$ 97,00</span>
+                  <span className="text-sm text-muted-foreground line-through">R$ 120,00</span>
                 </div>
               </div>
-              <p className="text-muted-foreground mb-6">
+              <p className="text-muted-foreground mb-4 text-sm">
                 O melhor custo-benefício para advogados e escritórios.
               </p>
               
-              <div className="space-y-4 mb-8">
-                <div className="flex items-center space-x-3">
-                  <Check className="w-5 h-5 text-primary" />
+              <div className="space-y-2 mb-6">
+                <div className="flex items-center space-x-2 text-sm">
+                  <Check className="w-4 h-4 text-primary flex-shrink-0" />
                   <span className="text-muted-foreground">100 créditos para usar quando quiser</span>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <Check className="w-5 h-5 text-primary" />
+                <div className="flex items-center space-x-2 text-sm">
+                  <Check className="w-4 h-4 text-primary flex-shrink-0" />
                   <span className="text-muted-foreground">Sem data de expiração</span>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <Check className="w-5 h-5 text-primary" />
+                <div className="flex items-center space-x-2 text-sm">
+                  <Check className="w-4 h-4 text-primary flex-shrink-0" />
                   <span className="text-muted-foreground">Acesso prioritário à IA</span>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <Check className="w-5 h-5 text-primary" />
+                <div className="flex items-center space-x-2 text-sm">
+                  <Check className="w-4 h-4 text-primary flex-shrink-0" />
                   <span className="text-muted-foreground">Suporte prioritário</span>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <Check className="w-5 h-5 text-primary" />
+                <div className="flex items-center space-x-2 text-sm">
+                  <Check className="w-4 h-4 text-primary flex-shrink-0" />
                   <span className="text-muted-foreground">Relatórios avançados</span>
                 </div>
               </div>
