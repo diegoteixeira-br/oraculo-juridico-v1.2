@@ -46,27 +46,16 @@ export default function ComprarCreditosPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handlePurchase = async (packageId: string) => {
-    setIsLoading(true);
-    setSelectedPackage(packageId);
+  const handlePurchase = (packageId: string) => {
+    const checkoutUrls = {
+      basic: "https://pay.cakto.com.br/qx2hqko_472740",
+      premium: "https://pay.cakto.com.br/qnjypg7_472753"
+    };
 
-    // Simular processo de compra
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    const selectedPkg = creditPackages.find(pkg => pkg.id === packageId);
-    
-    toast({
-      title: "Compra realizada com sucesso!",
-      description: `${selectedPkg?.credits} créditos foram adicionados à sua conta.`,
-    });
-
-    setIsLoading(false);
-    setSelectedPackage(null);
-    
-    // Redirecionar para minha conta após 1 segundo
-    setTimeout(() => {
-      navigate("/minha-conta");
-    }, 1000);
+    const url = checkoutUrls[packageId as keyof typeof checkoutUrls];
+    if (url) {
+      window.open(url, '_blank');
+    }
   };
 
   return (
