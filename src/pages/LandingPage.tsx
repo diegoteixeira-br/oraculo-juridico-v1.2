@@ -25,7 +25,7 @@ import {
   Network
 } from "lucide-react";
 import { useState } from "react";
-import heroBrain from "../assets/hero-brain.jpg";
+import heroBrain from "../assets/hero-brain-legal.jpg";
 import legalOffice from "../assets/legal-office.jpg";
 
 
