@@ -14,7 +14,15 @@ import {
   Brain,
   Zap,
   Users,
-  Award
+  Award,
+  Scale,
+  Gavel,
+  FileText,
+  BookOpen,
+  Building,
+  Search,
+  Database,
+  Network
 } from "lucide-react";
 import { useState } from "react";
 import heroBrain from "../assets/hero-brain.jpg";
@@ -137,7 +145,10 @@ const LandingPage = () => {
           
           <div className="grid md:grid-cols-3 gap-8 mb-16">
             <div className="text-center p-6 card-signup">
-              <Clock className="w-16 h-16 text-secondary mx-auto mb-4" />
+              <div className="relative">
+                <Clock className="w-16 h-16 text-secondary mx-auto mb-4" />
+                <BookOpen className="w-8 h-8 text-primary absolute -top-2 -right-2 bg-card rounded-full p-1" />
+              </div>
               <h3 className="text-xl font-semibold mb-4 text-foreground">Tempo Perdido</h3>
               <p className="text-muted-foreground">
                 Horas gastas em Vade Mecuns e bases de jurisprudência.
@@ -145,7 +156,10 @@ const LandingPage = () => {
             </div>
             
             <div className="text-center p-6 card-signup">
-              <DollarSign className="w-16 h-16 text-secondary mx-auto mb-4" />
+              <div className="relative">
+                <DollarSign className="w-16 h-16 text-secondary mx-auto mb-4" />
+                <Building className="w-8 h-8 text-primary absolute -top-2 -right-2 bg-card rounded-full p-1" />
+              </div>
               <h3 className="text-xl font-semibold mb-4 text-foreground">Custo Elevado</h3>
               <p className="text-muted-foreground">
                 Altas mensalidades de complexas plataformas de pesquisa.
@@ -153,7 +167,10 @@ const LandingPage = () => {
             </div>
             
             <div className="text-center p-6 card-signup">
-              <AlertTriangle className="w-16 h-16 text-secondary mx-auto mb-4" />
+              <div className="relative">
+                <AlertTriangle className="w-16 h-16 text-secondary mx-auto mb-4" />
+                <Scale className="w-8 h-8 text-primary absolute -top-2 -right-2 bg-card rounded-full p-1" />
+              </div>
               <h3 className="text-xl font-semibold mb-4 text-foreground">Informação Desatualizada</h3>
               <p className="text-muted-foreground">
                 Risco de basear sua estratégia em leis ou decisões revogadas.
@@ -226,23 +243,32 @@ const LandingPage = () => {
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="p-6 card-signup">
-              <Brain className="w-12 h-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-4 text-foreground">IA Especializada</h3>
+              <div className="flex items-center space-x-2 mb-4">
+                <Brain className="w-12 h-12 text-primary" />
+                <Scale className="w-8 h-8 text-secondary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-4 text-foreground">IA Especializada em Direito</h3>
               <p className="text-muted-foreground">
                 Treinada com foco na legislação e jurisprudência brasileira.
               </p>
             </div>
             
             <div className="p-6 card-signup">
-              <Globe className="w-12 h-12 text-primary mb-4" />
+              <div className="flex items-center space-x-2 mb-4">
+                <Globe className="w-12 h-12 text-primary" />
+                <Gavel className="w-8 h-8 text-secondary" />
+              </div>
               <h3 className="text-xl font-semibold mb-4 text-foreground">Acesso 24/7</h3>
               <p className="text-muted-foreground">
-                Sua fonte de consulta sempre disponível.
+                Sua fonte de consulta jurídica sempre disponível.
               </p>
             </div>
             
             <div className="p-6 card-signup">
-              <Smartphone className="w-12 h-12 text-primary mb-4" />
+              <div className="flex items-center space-x-2 mb-4">
+                <Smartphone className="w-12 h-12 text-primary" />
+                <FileText className="w-8 h-8 text-secondary" />
+              </div>
               <h3 className="text-xl font-semibold mb-4 text-foreground">Multiplataforma</h3>
               <p className="text-muted-foreground">
                 Use no desktop do seu escritório ou no celular entre audiências.
@@ -250,26 +276,35 @@ const LandingPage = () => {
             </div>
             
             <div className="p-6 card-signup">
-              <History className="w-12 h-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-4 text-foreground">Histórico de Conversas</h3>
+              <div className="flex items-center space-x-2 mb-4">
+                <Database className="w-12 h-12 text-primary" />
+                <BookOpen className="w-8 h-8 text-secondary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-4 text-foreground">Base Jurídica Completa</h3>
               <p className="text-muted-foreground">
-                Salve e consulte suas pesquisas anteriores a qualquer momento.
+                Acesso a legislação, jurisprudência e doutrina atualizadas.
               </p>
             </div>
             
             <div className="p-6 card-signup">
-              <Lock className="w-12 h-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-4 text-foreground">Segurança de Dados</h3>
+              <div className="flex items-center space-x-2 mb-4">
+                <Search className="w-12 h-12 text-primary" />
+                <Network className="w-8 h-8 text-secondary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-4 text-foreground">Pesquisa Inteligente</h3>
               <p className="text-muted-foreground">
-                Suas informações e pesquisas são confidenciais.
+                Encontre precedentes e fundamentação legal instantaneamente.
               </p>
             </div>
             
             <div className="p-6 card-signup">
-              <Award className="w-12 h-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-4 text-foreground">Custo-Benefício Imbatível</h3>
+              <div className="flex items-center space-x-2 mb-4">
+                <Shield className="w-12 h-12 text-primary" />
+                <Lock className="w-8 h-8 text-secondary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-4 text-foreground">Segurança Total</h3>
               <p className="text-muted-foreground">
-                Comece grátis e compre créditos apenas quando precisar, sem mensalidades.
+                Suas consultas e dados são protegidos com criptografia.
               </p>
             </div>
           </div>
@@ -404,6 +439,78 @@ const LandingPage = () => {
             <p className="text-lg text-muted-foreground max-w-4xl mx-auto">
               É simples. Cada pergunta completa que você faz à nossa Inteligência Artificial consome 1 crédito. No plano gratuito, seu crédito é renovado a cada 24 horas. Nos pacotes pagos, os créditos não expiram e você pode comprar mais sempre que precisar.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Legal Tech Innovation Section */}
+      <section className="py-20 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-6 text-foreground">
+              Tecnologia Jurídica de Última Geração
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+              Combinamos inteligência artificial avançada com conhecimento jurídico especializado
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <div className="flex items-start space-x-4">
+                <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Scale className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2 text-foreground">Jurisprudência Inteligente</h3>
+                  <p className="text-muted-foreground">
+                    Nossa IA analisa milhares de decisões judiciais para encontrar os melhores precedentes para seu caso.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-4">
+                <div className="w-12 h-12 bg-secondary/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Gavel className="w-6 h-6 text-secondary" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2 text-foreground">Análise Processual</h3>
+                  <p className="text-muted-foreground">
+                    Identifica estratégias processuais e fundamentação legal baseada em casos similares.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-4">
+                <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <FileText className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2 text-foreground">Redação Jurídica</h3>
+                  <p className="text-muted-foreground">
+                    Auxilia na elaboração de peças processuais com linguagem técnica precisa e fundamentação sólida.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="relative">
+              <img 
+                src={legalOffice} 
+                alt="Escritório Jurídico Moderno"
+                className="w-full h-96 object-cover rounded-lg"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent rounded-lg"></div>
+              <div className="absolute bottom-6 left-6 right-6">
+                <div className="flex items-center space-x-4 bg-card/90 backdrop-blur-sm rounded-lg p-4">
+                  <Building className="w-8 h-8 text-primary" />
+                  <div>
+                    <h4 className="font-semibold text-foreground">Escritórios Modernos</h4>
+                    <p className="text-sm text-muted-foreground">Tecnologia integrada à advocacia</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
