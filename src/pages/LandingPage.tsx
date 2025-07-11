@@ -59,7 +59,7 @@ const LandingPage = () => {
     },
     {
       question: "Posso cancelar a qualquer momento?",
-      answer: "Sim, você pode cancelar sua assinatura a qualquer momento, sem multas ou burocracia."
+      answer: "Sim, e com nosso novo sistema de créditos, não há nenhuma burocracia! Como não trabalhamos com assinaturas ou cobranças recorrentes, você tem total liberdade e controle.\n\nPara a Conta Gratuita: Você pode simplesmente parar de usar quando quiser, sem nenhum compromisso. Se desejar excluir seus dados, basta solicitar a exclusão da sua conta.\n\nPara os Pacotes Pagos: A compra de créditos é uma transação única, não uma assinatura. Portanto, não existe uma mensalidade para ser cancelada. Você compra seu pacote, usa os créditos no seu ritmo e só compra mais se e quando precisar."
     }
   ];
 
