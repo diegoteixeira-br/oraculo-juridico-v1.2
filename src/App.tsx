@@ -35,22 +35,8 @@ const App = () => (
             <Route path="/termos" element={<Termos />} />
             <Route path="/privacidade" element={<Privacidade />} />
             <Route path="/contato" element={<ContatoPage />} />
-            <Route 
-              path="/dashboard" 
-              element={
-                <ProtectedRoute requiresActiveSubscription>
-                  <Dashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/minha-conta" 
-              element={
-                <ProtectedRoute>
-                  <MinhaContaPage />
-                </ProtectedRoute>
-              } 
-            />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/minha-conta" element={<MinhaContaPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

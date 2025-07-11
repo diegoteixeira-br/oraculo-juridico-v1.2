@@ -73,6 +73,18 @@ const LandingPage = () => {
           </h1>
           
           <div className="flex items-center space-x-4">
+            {/* Dashboard link */}
+            <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-2 border border-border rounded-lg px-4 py-2 hover:bg-muted/10">
+              <Brain className="w-4 h-4" />
+              <span>Dashboard</span>
+            </Link>
+            
+            {/* Minha Conta link */}
+            <Link to="/minha-conta" className="text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-2 border border-border rounded-lg px-4 py-2 hover:bg-muted/10">
+              <Users className="w-4 h-4" />
+              <span>Minha Conta</span>
+            </Link>
+            
             {/* Login button */}
             <Link to="/login" className="text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-2 border border-border rounded-lg px-4 py-2 hover:bg-muted/10">
               <Smartphone className="w-4 h-4" />
