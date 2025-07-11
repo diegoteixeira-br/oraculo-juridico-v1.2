@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowLeft, CreditCard, Check, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
 const creditPackages = [
@@ -45,6 +45,15 @@ export default function ComprarCreditosPage() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const selectedPlan = searchParams.get('plano');
+
+  // Auto-selecionar o pacote se vier da URL
+  useEffect(() => {
+    if (selectedPlan) {
+      setSelectedPackage(selectedPlan);
+    }
+  }, [selectedPlan]);
 
   const handlePurchase = (packageId: string) => {
     const checkoutUrls = {

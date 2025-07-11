@@ -326,14 +326,22 @@ const LandingPage = () => {
               </Link>
             </div>
 
-            {/* Card 2: Pacote 100 (Destaque) */}
+            {/* Card 2: Pacote Premium (Destaque) */}
             <div className="card-signup p-8 text-center relative transform scale-105 border-2 border-primary">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-bold">
                 MAIS POPULAR
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-foreground">Pacote 100</h3>
+              <div className="absolute top-4 right-4">
+                <span className="bg-green-600 text-white px-2 py-1 rounded text-xs font-bold">
+                  ECONOMIZE 20%
+                </span>
+              </div>
+              <h3 className="text-2xl font-bold mb-4 text-foreground">Pacote Premium</h3>
               <div className="mb-6">
-                <span className="text-5xl font-bold text-primary">R$ 97,00</span>
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-5xl font-bold text-primary">R$ 97,00</span>
+                  <span className="text-lg text-muted-foreground line-through">R$ 120,00</span>
+                </div>
               </div>
               <p className="text-muted-foreground mb-6">
                 O melhor custo-benefício para advogados e escritórios.
@@ -354,21 +362,25 @@ const LandingPage = () => {
                 </div>
                 <div className="flex items-center space-x-3">
                   <Check className="w-5 h-5 text-primary" />
-                  <span className="text-muted-foreground">Suporte via e-mail</span>
+                  <span className="text-muted-foreground">Suporte prioritário</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Check className="w-5 h-5 text-primary" />
+                  <span className="text-muted-foreground">Relatórios avançados</span>
                 </div>
               </div>
               
               <Link
-                to="/pagamento"
+                to="/cadastro?plano=premium"
                 className="inline-block w-full py-3 px-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-lg font-semibold"
               >
                 Comprar Créditos
               </Link>
             </div>
 
-            {/* Card 3: Pacote 50 */}
+            {/* Card 3: Pacote Básico */}
             <div className="card-signup p-8 text-center relative">
-              <h3 className="text-2xl font-bold mb-4 text-foreground">Pacote 50</h3>
+              <h3 className="text-2xl font-bold mb-4 text-foreground">Pacote Básico</h3>
               <div className="mb-6">
                 <span className="text-5xl font-bold text-foreground">R$ 59,90</span>
               </div>
@@ -392,7 +404,7 @@ const LandingPage = () => {
               </div>
               
               <Link
-                to="/pagamento"
+                to="/cadastro?plano=basic"
                 className="inline-block w-full py-3 px-6 border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors rounded-lg font-semibold"
               >
                 Comprar Créditos

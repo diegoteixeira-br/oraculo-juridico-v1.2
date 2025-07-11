@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,8 @@ export default function Cadastro() {
   const { signUp } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const selectedPlan = searchParams.get('plano');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,9 +41,16 @@ export default function Cadastro() {
       } else {
         toast({
           title: "Conta criada!",
-          description: "Sua conta foi criada com sucesso. Agora finalize o pagamento para ter acesso completo!",
+          description: selectedPlan 
+            ? "Sua conta foi criada com sucesso. Agora finalize o pagamento para ter acesso completo!" 
+            : "Sua conta foi criada com sucesso!",
         });
-        navigate('/pagamento');
+        
+        if (selectedPlan) {
+          navigate(`/comprar-creditos?plano=${selectedPlan}`);
+        } else {
+          navigate('/dashboard');
+        }
       }
     } catch (error: any) {
       toast({
