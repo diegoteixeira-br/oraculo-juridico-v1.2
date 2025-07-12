@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AttachedFile {
   id: string;
@@ -85,19 +86,47 @@ export default function Dashboard() {
     setAttachedFiles([]);
     setIsTyping(true);
 
-    // Simulate AI response - will be replaced with real n8n webhook
-    setTimeout(() => {
+    try {
+      // Chamar o edge function que se conecta ao seu webhook
+      const { data, error } = await supabase.functions.invoke('legal-ai-chat', {
+        body: {
+          message: userMessage.text,
+          userId: user?.id,
+          attachedFiles: userMessage.attachedFiles
+        }
+      });
+
+      if (error) {
+        console.error('Error calling legal AI:', error);
+        throw new Error(error.message || 'Erro na comunicação com a IA');
+      }
+
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: attachedFiles.length > 0 
-          ? `Analisei os arquivos anexados. Esta é uma resposta simulada da IA que considera os documentos enviados. Em breve, estarei totalmente integrado para analisar PDFs e imagens fornecendo respostas jurídicas precisas baseadas no conteúdo dos seus documentos.`
-          : "Esta é uma resposta simulada da IA. Em breve, estarei conectado ao sistema real para fornecer respostas jurídicas precisas baseadas na legislação brasileira.",
+        text: data.response || 'Resposta recebida da IA',
         sender: 'ai',
         timestamp: new Date()
       };
+
       setMessages(prev => [...prev, aiResponse]);
+
+      // Atualizar os créditos após resposta bem-sucedida
+      await refreshProfile();
+
+    } catch (error) {
+      console.error('Error sending message:', error);
+      
+      // Remover a mensagem do usuário em caso de erro
+      setMessages(prev => prev.filter(msg => msg.id !== userMessage.id));
+      
+      toast({
+        title: "Erro na consulta",
+        description: error instanceof Error ? error.message : "Ocorreu um erro ao processar sua consulta. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
       setIsTyping(false);
-    }, 2000);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

@@ -1,1 +1,25 @@
 project_id = "uujoxoxsbvhcmcgfvpvi"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 5432
+shadow_port = 5433
+major_version = 15
+
+[functions.legal-ai-chat]
+verify_jwt = true
+
+[functions.cakto-webhook]
+verify_jwt = false
+
+[functions.cancel-subscription]
+verify_jwt = true
+
+[functions.send-contact-email]
+verify_jwt = false
