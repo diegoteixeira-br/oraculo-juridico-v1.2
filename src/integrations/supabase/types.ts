@@ -59,6 +59,7 @@ export type Database = {
           full_name: string | null
           id: string
           last_daily_reset: string | null
+          plan_type: string | null
           subscription_end_date: string | null
           subscription_status: string | null
           total_credits_purchased: number | null
@@ -75,6 +76,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           last_daily_reset?: string | null
+          plan_type?: string | null
           subscription_end_date?: string | null
           subscription_status?: string | null
           total_credits_purchased?: number | null
@@ -91,11 +93,42 @@ export type Database = {
           full_name?: string | null
           id?: string
           last_daily_reset?: string | null
+          plan_type?: string | null
           subscription_end_date?: string | null
           subscription_status?: string | null
           total_credits_purchased?: number | null
           trial_end_date?: string | null
           trial_start_date?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      query_history: {
+        Row: {
+          created_at: string
+          credits_consumed: number | null
+          id: string
+          prompt_text: string
+          response_text: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          credits_consumed?: number | null
+          id?: string
+          prompt_text: string
+          response_text?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          credits_consumed?: number | null
+          id?: string
+          prompt_text?: string
+          response_text?: string | null
           updated_at?: string
           user_id?: string
         }
