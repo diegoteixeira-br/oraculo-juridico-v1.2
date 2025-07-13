@@ -93,7 +93,21 @@ export default function Dashboard() {
       // Verificar se há erro retornado pelo webhook
       if (data.error) {
         console.error('Webhook error details:', data);
-        throw new Error(`${data.error}: ${data.webhookError || data.details || 'Verifique a configuração do webhook'}`);
+        
+        // Mensagens de erro mais específicas
+        let errorDescription = data.error;
+        
+        if (data.webhookStatus === 401 || data.webhookStatus === 403) {
+          errorDescription = "Erro de autorização com o servidor de IA. Entre em contato com o suporte.";
+        } else if (data.webhookStatus === 404) {
+          errorDescription = "Serviço de IA temporariamente indisponível. Tente novamente em alguns minutos.";
+        } else if (data.webhookStatus >= 500) {
+          errorDescription = "Erro interno do servidor de IA. Nossa equipe foi notificada.";
+        } else if (data.error.includes('Authorization data is wrong')) {
+          errorDescription = "Problema na configuração de acesso à IA. Entre em contato com o suporte.";
+        }
+
+        throw new Error(errorDescription);
       }
 
       const aiResponse: Message = {

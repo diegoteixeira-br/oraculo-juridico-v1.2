@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 
@@ -53,8 +54,10 @@ serve(async (req) => {
       timestamp: new Date().toISOString()
     };
 
-    // Obter URL do webhook da configuração
+    // Obter URL e token do webhook da configuração
     const webhookUrl = Deno.env.get('LEGAL_AI_WEBHOOK_URL');
+    const webhookToken = Deno.env.get('LEGAL_AI_WEBHOOK_TOKEN');
+    
     if (!webhookUrl) {
       console.error('LEGAL_AI_WEBHOOK_URL not configured');
       return new Response(JSON.stringify({ error: 'Webhook não configurado' }), {
@@ -63,24 +66,54 @@ serve(async (req) => {
       });
     }
 
-    // Enviar para o webhook da ferramenta
     console.log('Sending request to webhook:', webhookUrl);
+    console.log('Using token:', webhookToken ? 'Token configured' : 'No token configured');
     
+    // Preparar headers para o webhook
+    const webhookHeaders: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    // Adicionar token se configurado
+    if (webhookToken) {
+      webhookHeaders['Authorization'] = `Bearer ${webhookToken}`;
+    }
+
+    console.log('Webhook headers:', Object.keys(webhookHeaders));
+
+    // Enviar para o webhook da ferramenta
     const webhookResponse = await fetch(webhookUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${Deno.env.get('LEGAL_AI_WEBHOOK_TOKEN') || ''}`,
-      },
+      headers: webhookHeaders,
       body: JSON.stringify(webhookPayload),
     });
 
+    console.log('Webhook response status:', webhookResponse.status);
+    console.log('Webhook response headers:', Object.fromEntries(webhookResponse.headers.entries()));
+
     if (!webhookResponse.ok) {
       const errorText = await webhookResponse.text();
-      console.error('Webhook error:', webhookResponse.status, errorText);
+      console.error('Webhook error details:', {
+        status: webhookResponse.status,
+        statusText: webhookResponse.statusText,
+        errorText: errorText,
+        url: webhookUrl
+      });
+
+      // Tratar diferentes tipos de erro
+      let errorMessage = 'Erro na comunicação com a IA';
+      
+      if (webhookResponse.status === 401 || webhookResponse.status === 403) {
+        errorMessage = 'Erro de autorização no webhook. Verifique o token de acesso.';
+      } else if (webhookResponse.status === 404) {
+        errorMessage = 'Webhook não encontrado. Verifique a URL configurada.';
+      } else if (webhookResponse.status >= 500) {
+        errorMessage = 'Erro interno do servidor no webhook.';
+      }
+
       return new Response(JSON.stringify({ 
-        error: 'Erro na comunicação com a IA',
-        details: `Status: ${webhookResponse.status}`,
+        error: errorMessage,
+        details: `Status: ${webhookResponse.status} - ${webhookResponse.statusText}`,
         webhookError: errorText,
         webhookStatus: webhookResponse.status
       }), {
@@ -89,8 +122,24 @@ serve(async (req) => {
       });
     }
 
-    const aiResponse = await webhookResponse.json();
-    console.log('AI response received:', aiResponse);
+    let aiResponse;
+    try {
+      aiResponse = await webhookResponse.json();
+      console.log('AI response received:', aiResponse);
+    } catch (jsonError) {
+      console.error('Error parsing webhook response as JSON:', jsonError);
+      const responseText = await webhookResponse.text();
+      console.log('Raw webhook response:', responseText);
+      
+      return new Response(JSON.stringify({ 
+        error: 'Resposta inválida do webhook',
+        details: 'A resposta não está em formato JSON válido',
+        webhookResponse: responseText
+      }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // Usar os créditos após resposta bem-sucedida
     const { error: creditsError } = await supabase.rpc('use_credits', {
