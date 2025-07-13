@@ -528,9 +528,6 @@ const LandingPage = () => {
               <h3 className="text-2xl font-bold text-foreground mb-2">
                 Oráculo Jurídico
               </h3>
-              <p className="text-sm text-muted-foreground">
-                CNPJ: 00.000.000/0001-00
-              </p>
             </div>
             
             <div className="flex space-x-8">
