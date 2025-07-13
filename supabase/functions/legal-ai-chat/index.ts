@@ -65,7 +65,11 @@ serve(async (req) => {
           apikey: "legal_ai_chat",
           instance: "LegalAI",
           server_url: "https://legal-ai.com",
-          url_audio_evolution_api: null
+          url_audio_evolution_api: null,
+          // Campos adicionais para o n8n
+          nome: "Usuário Legal AI", // Campo obrigatório para o Supabase
+          telefone: `user_${userId}`, // Campo telefone baseado no user ID
+          texto: message // Texto da mensagem
         }
       },
       user_id: userId,
