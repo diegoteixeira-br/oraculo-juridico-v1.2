@@ -67,7 +67,7 @@ serve(async (req) => {
     }
 
     console.log('Sending request to webhook:', webhookUrl);
-    console.log('Using token:', webhookToken ? 'Token configured' : 'No token configured');
+    console.log('Using token:', webhookToken ? 'Token configured' : 'No token - webhook will be called without authentication');
     
     // Preparar headers para o webhook
     const webhookHeaders: Record<string, string> = {
