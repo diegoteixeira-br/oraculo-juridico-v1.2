@@ -46,35 +46,31 @@ serve(async (req) => {
       });
     }
 
-    // Preparar dados para enviar ao webhook da ferramenta
+    // Preparar dados para enviar ao webhook do n8n (formato simplificado)
     const webhookPayload = {
-      body: {
-        data: {
-          pushName: "Usuário", // Nome do usuário
-          key: {
-            remoteJid: userId, // ID do usuário
-            id: `msg_${Date.now()}` // ID da mensagem
-          },
-          messageType: "conversation",
-          message: {
-            conversation: message,
-            extendedTextMessage: {
-              text: message
-            }
-          },
-          apikey: "legal_ai_chat",
-          instance: "LegalAI",
-          server_url: "https://legal-ai.com",
-          url_audio_evolution_api: null,
-          // Campos adicionais para o n8n
-          nome: "Usuário Legal AI", // Campo obrigatório para o Supabase
-          telefone: `user_${userId}`, // Campo telefone baseado no user ID
-          texto: message // Texto da mensagem
+      pushName: "Usuário Legal AI",
+      key: {
+        remoteJid: userId,
+        id: `msg_${Date.now()}`
+      },
+      messageType: "conversation",
+      message: {
+        conversation: message,
+        extendedTextMessage: {
+          text: message
         }
       },
+      // Campos diretos para o Switch do n8n
+      nome: "Usuário Legal AI",
+      telefone: `user_${userId}`,
+      texto: message,
       user_id: userId,
       attached_files: attachedFiles || [],
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      // Campos para identificação no n8n
+      apikey: "legal_ai_chat",
+      instance: "LegalAI",
+      server_url: "https://legal-ai.com"
     };
 
     // Obter URL e token do webhook da configuração
