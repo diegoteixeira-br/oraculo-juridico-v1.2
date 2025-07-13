@@ -48,7 +48,26 @@ serve(async (req) => {
 
     // Preparar dados para enviar ao webhook da ferramenta
     const webhookPayload = {
-      message: message,
+      body: {
+        data: {
+          pushName: "Usuário", // Nome do usuário
+          key: {
+            remoteJid: userId, // ID do usuário
+            id: `msg_${Date.now()}` // ID da mensagem
+          },
+          messageType: "conversation",
+          message: {
+            conversation: message,
+            extendedTextMessage: {
+              text: message
+            }
+          },
+          apikey: "legal_ai_chat",
+          instance: "LegalAI",
+          server_url: "https://legal-ai.com",
+          url_audio_evolution_api: null
+        }
+      },
       user_id: userId,
       attached_files: attachedFiles || [],
       timestamp: new Date().toISOString()
