@@ -312,7 +312,7 @@ export default function Dashboard() {
   };
 
   const AppSidebar = () => (
-    <Sidebar className="w-64 bg-slate-800 border-slate-700 flex flex-col">
+    <Sidebar className="w-64 md:w-64 w-full bg-slate-800 border-slate-700 flex flex-col">
       <SidebarHeader className="p-4">
         <img 
           src="/lovable-uploads/baf2f459-dae5-46d0-8e62-9d9247ec0b40.png" 
@@ -323,7 +323,7 @@ export default function Dashboard() {
         {/* Novo Chat Button */}
         <Button
           onClick={createNewChat}
-          className="w-full mt-4 flex items-center gap-2 bg-primary hover:bg-primary/90"
+          className="w-full mt-4 flex items-center gap-2 bg-primary hover:bg-primary/90 text-sm"
         >
           <Plus className="w-4 h-4" />
           Nova Conversa
@@ -374,9 +374,9 @@ export default function Dashboard() {
             <SidebarMenuItem>
               <SidebarMenuButton 
                 onClick={handleMyAccount}
-                className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-primary hover:bg-primary/10 text-sm"
               >
-                <Settings className="w-5 h-5" />
+                <Settings className="w-4 h-4" />
                 <span>Minha Conta</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -384,9 +384,9 @@ export default function Dashboard() {
             <SidebarMenuItem>
               <SidebarMenuButton 
                 onClick={handleLogout}
-                className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-primary hover:bg-primary/10 text-sm"
               >
-                <LogOut className="w-5 h-5" />
+                <LogOut className="w-4 h-4" />
                 <span>Sair</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -403,16 +403,15 @@ export default function Dashboard() {
         
         <main className="flex-1 flex flex-col">
           {/* Header */}
-          <header className="h-16 flex items-center justify-between px-6 border-b border-slate-700 bg-slate-800">
-            <div className="flex items-center gap-4">
-              <SidebarTrigger className="md:hidden" />
-              <h1 className="text-xl font-semibold">Oráculo Jurídico</h1>
+          <header className="h-16 flex items-center justify-between px-4 md:px-6 border-b border-slate-700 bg-slate-800">
+            <div className="flex items-center gap-2 md:gap-4">
+              <SidebarTrigger className="lg:hidden" />
+              <h1 className="text-lg md:text-xl font-semibold truncate">Oráculo Jurídico</h1>
             </div>
-            <div className="flex items-center gap-4">
-              
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Olá, {userName}!</span>
-                <Avatar className="w-8 h-8">
+            <div className="flex items-center gap-2 md:gap-4">
+              <div className="flex items-center gap-1 md:gap-2">
+                <span className="text-xs md:text-sm text-muted-foreground hidden sm:inline">Olá, {userName}!</span>
+                <Avatar className="w-7 h-7 md:w-8 md:h-8">
                   <AvatarImage src={profile?.avatar_url || ""} />
                   <AvatarFallback className="bg-primary text-primary-foreground text-xs">
                     {userInitials}
@@ -425,20 +424,20 @@ export default function Dashboard() {
           {/* Chat Area */}
           <div className="flex-1 flex flex-col">
             {/* Messages Area */}
-            <ScrollArea className="flex-1 p-6">
+            <ScrollArea className="flex-1 p-3 md:p-6">
               {messages.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-center space-y-4 max-w-2xl mx-auto">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Bot className="w-8 h-8 text-primary" />
+                <div className="flex flex-col items-center justify-center h-full text-center space-y-4 max-w-2xl mx-auto px-4">
+                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Bot className="w-6 h-6 md:w-8 md:h-8 text-primary" />
                   </div>
                   <div className="space-y-2">
-                    <h2 className="text-2xl font-semibold">Como posso te ajudar hoje?</h2>
-                    <p className="text-muted-foreground max-w-md mx-auto">
+                    <h2 className="text-xl md:text-2xl font-semibold">Como posso te ajudar hoje?</h2>
+                    <p className="text-sm md:text-base text-muted-foreground max-w-md mx-auto">
                       Sou sua IA de assistência jurídica. Faça uma pergunta sobre legislação, jurisprudência ou doutrina. 
                       Por exemplo: "Quais os requisitos da usucapião extraordinária segundo o Código Civil?"
                     </p>
                     <div className="mt-4 p-3 bg-primary/10 border border-primary/20 rounded-lg max-w-md mx-auto">
-                      <p className="text-sm text-primary">
+                      <p className="text-xs md:text-sm text-primary">
                         💡 Você tem {totalCredits} créditos disponíveis 
                         {dailyCredits > 0 && `(${dailyCredits} diários + ${userCredits} comprados)`}. 
                         Cada pesquisa custa {costPerSearch} crédito.
@@ -454,7 +453,7 @@ export default function Dashboard() {
                       className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
                       <div
-                        className={`max-w-[70%] p-4 rounded-lg ${
+                        className={`max-w-[85%] md:max-w-[70%] p-3 md:p-4 rounded-lg text-sm md:text-base ${
                           message.sender === 'user'
                             ? 'bg-secondary text-secondary-foreground'
                             : 'bg-slate-800 text-foreground'
@@ -520,7 +519,7 @@ export default function Dashboard() {
             </ScrollArea>
 
             {/* Input Area */}
-            <div className="p-6 border-t border-slate-700 bg-slate-800">
+            <div className="p-3 md:p-6 border-t border-slate-700 bg-slate-800">
               {/* Attached Files Preview */}
               {attachedFiles.length > 0 && (
                 <div className="mb-4 space-y-2">
@@ -534,7 +533,7 @@ export default function Dashboard() {
                           <FileText className="w-4 h-4 text-primary flex-shrink-0" />
                         )}
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium truncate max-w-32">{file.name}</p>
+                          <p className="text-xs font-medium truncate max-w-24 md:max-w-32">{file.name}</p>
                           <p className="text-xs text-muted-foreground">{formatFileSize(file.size)}</p>
                         </div>
                         <Button
@@ -559,9 +558,9 @@ export default function Dashboard() {
                     variant="outline"
                     onClick={handleFileAttachment}
                     disabled={isTyping}
-                    className="p-2 h-16 border-slate-600 hover:border-primary"
+                    className="p-2 h-12 md:h-16 border-slate-600 hover:border-primary"
                   >
-                    <Paperclip className="w-5 h-5" />
+                    <Paperclip className="w-4 h-4 md:w-5 md:h-5" />
                   </Button>
                 </div>
                 
@@ -569,31 +568,31 @@ export default function Dashboard() {
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Digite sua pergunta aqui e pressione Enter... (Anexe PDFs ou imagens para análise)"
-                  className="flex-1 min-h-[60px] resize-none bg-background border-slate-600 focus:border-primary"
+                  placeholder="Digite sua pergunta aqui e pressione Enter..."
+                  className="flex-1 min-h-[48px] md:min-h-[60px] text-sm md:text-base resize-none bg-background border-slate-600 focus:border-primary"
                   disabled={isTyping}
                 />
                 
                 <Button
                   onClick={handleSendMessage}
                   disabled={(!inputMessage.trim() && attachedFiles.length === 0) || isTyping}
-                  className="btn-primary p-4 w-16 h-16 rounded-lg"
+                  className="btn-primary p-3 md:p-4 w-12 h-12 md:w-16 md:h-16 rounded-lg"
                 >
-                  <Send className="w-5 h-5" />
+                  <Send className="w-4 h-4 md:w-5 md:h-5" />
                 </Button>
               </div>
 
               {/* Credits Display - moved below text area */}
-              <div className="flex items-center justify-between mt-4 p-3 bg-slate-700 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <CreditCard className="w-4 h-4 text-primary" />
+              <div className="flex items-center justify-between mt-4 p-2 md:p-3 bg-slate-700 rounded-lg">
+                <div className="flex items-center gap-1 md:gap-2">
+                  <CreditCard className="w-3 h-3 md:w-4 md:h-4 text-primary" />
                   <Badge 
                     variant="default" 
-                    className={`${totalCredits > 10 ? 'bg-primary' : totalCredits > 0 ? 'bg-yellow-600' : 'bg-red-600'}`}
+                    className={`text-xs ${totalCredits > 10 ? 'bg-primary' : totalCredits > 0 ? 'bg-yellow-600' : 'bg-red-600'}`}
                   >
                     {totalCredits} créditos
                   </Badge>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-muted-foreground hidden sm:inline">
                     ({costPerSearch} crédito/pesquisa)
                   </span>
                   {dailyCredits > 0 && (
@@ -609,7 +608,7 @@ export default function Dashboard() {
                     onClick={() => navigate('/comprar-creditos')}
                     className="text-xs"
                   >
-                    Comprar mais
+                    Comprar
                   </Button>
                 )}
               </div>
