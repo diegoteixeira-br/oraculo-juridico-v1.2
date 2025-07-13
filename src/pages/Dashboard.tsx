@@ -62,17 +62,6 @@ export default function Dashboard() {
       return;
     }
 
-    // Usar os créditos antes de enviar a mensagem
-    const creditsUsed = await useCredits(costPerSearch, 'Consulta jurídica via chat');
-    if (!creditsUsed) {
-      toast({
-        title: "Erro ao processar créditos",
-        description: "Não foi possível processar o uso de créditos. Tente novamente.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     const userMessage: Message = {
       id: Date.now().toString(),
       text: inputMessage,
