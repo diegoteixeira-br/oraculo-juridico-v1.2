@@ -146,7 +146,7 @@ export type Database = {
         }
         Relationships: []
       }
-      nbn_chat_histories: {
+      n8n_chat_histories: {
         Row: {
           created_at: string
           id: string
