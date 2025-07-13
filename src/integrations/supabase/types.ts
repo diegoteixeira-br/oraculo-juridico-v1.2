@@ -50,6 +50,54 @@ export type Database = {
         }
         Relationships: []
       }
+      documents: {
+        Row: {
+          content: string | null
+          created_at: string
+          id: string
+          metadata: Json | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+        }
+        Relationships: []
+      }
+      imagenes: {
+        Row: {
+          created_at: string
+          descricao: string | null
+          id: string
+          link: string | null
+          tipo_imagem: string | null
+          tipo_video: string | null
+        }
+        Insert: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          link?: string | null
+          tipo_imagem?: string | null
+          tipo_video?: string | null
+        }
+        Update: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          link?: string | null
+          tipo_imagem?: string | null
+          tipo_video?: string | null
+        }
+        Relationships: []
+      }
       "Leads dashboard": {
         Row: {
           atendente_humano: boolean | null
@@ -95,6 +143,27 @@ export type Database = {
           numeros?: string | null
           session_id?: string | null
           status?: string | null
+        }
+        Relationships: []
+      }
+      nbn_chat_histories: {
+        Row: {
+          created_at: string
+          id: string
+          message: Json | null
+          session_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: Json | null
+          session_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: Json | null
+          session_id?: string | null
         }
         Relationships: []
       }
