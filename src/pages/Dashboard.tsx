@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { MessageCircle, Settings, LogOut, Send, Bot, User, Clock, CreditCard, Paperclip, X, FileText, Image } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { MessageCircle, Settings, LogOut, Send, Bot, User, Clock, CreditCard, Paperclip, X, FileText, Image, History, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,11 +29,21 @@ interface Message {
   attachedFiles?: AttachedFile[];
 }
 
+interface ChatSession {
+  id: string;
+  title: string;
+  preview: string;
+  timestamp: Date;
+  messages: Message[];
+}
+
 export default function Dashboard() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
+  const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { user, profile, signOut, useCredits, refreshProfile } = useAuth();
@@ -231,25 +241,135 @@ export default function Dashboard() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
+  // Carregar histórico de conversas
+  useEffect(() => {
+    loadChatHistory();
+  }, [user]);
+
+  const loadChatHistory = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('query_history')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+
+      // Agrupar por sessões (dia + primeira pergunta)
+      const sessionsMap = new Map<string, ChatSession>();
+      
+      data?.forEach((query) => {
+        const date = new Date(query.created_at).toLocaleDateString('pt-BR');
+        const sessionKey = `${date}-${query.prompt_text.substring(0, 20)}`;
+        
+        if (!sessionsMap.has(sessionKey)) {
+          sessionsMap.set(sessionKey, {
+            id: sessionKey,
+            title: query.prompt_text.length > 50 ? 
+              query.prompt_text.substring(0, 50) + '...' : 
+              query.prompt_text,
+            preview: query.response_text?.substring(0, 100) + '...' || 'Sem resposta',
+            timestamp: new Date(query.created_at),
+            messages: []
+          });
+        }
+
+        const session = sessionsMap.get(sessionKey)!;
+        session.messages.push(
+          {
+            id: `user-${query.id}`,
+            text: query.prompt_text,
+            sender: 'user',
+            timestamp: new Date(query.created_at)
+          },
+          {
+            id: `ai-${query.id}`,
+            text: query.response_text || 'Sem resposta',
+            sender: 'ai',
+            timestamp: new Date(query.created_at)
+          }
+        );
+      });
+
+      setChatSessions(Array.from(sessionsMap.values()));
+    } catch (error) {
+      console.error('Erro ao carregar histórico:', error);
+    }
+  };
+
+  const createNewChat = () => {
+    setMessages([]);
+    setCurrentSessionId(null);
+  };
+
+  const loadChatSession = (session: ChatSession) => {
+    setMessages(session.messages);
+    setCurrentSessionId(session.id);
+  };
+
   const AppSidebar = () => (
     <Sidebar className="w-64 bg-slate-800 border-slate-700">
-      <SidebarHeader className="p-6">
+      <SidebarHeader className="p-4">
         <img 
           src="/lovable-uploads/baf2f459-dae5-46d0-8e62-9d9247ec0b40.png" 
           alt="Oráculo Jurídico" 
-          className="w-16 h-16 mx-auto"
+          className="w-12 h-12 mx-auto"
         />
+        
+        {/* Novo Chat Button */}
+        <Button
+          onClick={createNewChat}
+          className="w-full mt-4 flex items-center gap-2 bg-primary hover:bg-primary/90"
+        >
+          <Plus className="w-4 h-4" />
+          Nova Conversa
+        </Button>
       </SidebarHeader>
       
-      <SidebarContent>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton className="flex items-center gap-3 px-4 py-3 text-primary bg-primary/10 border-r-2 border-primary">
-              <MessageCircle className="w-5 h-5" />
-              <span>Chat</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+      <SidebarContent className="px-2">
+        {/* Histórico de Conversas */}
+        <div className="mb-4">
+          <div className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground">
+            <History className="w-4 h-4" />
+            Histórico
+          </div>
           
+          <ScrollArea className="h-64">
+            <div className="space-y-1">
+              {chatSessions.length === 0 ? (
+                <p className="px-3 py-2 text-xs text-muted-foreground">
+                  Nenhuma conversa ainda
+                </p>
+              ) : (
+                chatSessions.map((session) => (
+                  <Button
+                    key={session.id}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => loadChatSession(session)}
+                    className={`w-full p-2 h-auto flex flex-col items-start text-left hover:bg-primary/10 ${
+                      currentSessionId === session.id ? 'bg-primary/10 text-primary' : 'text-muted-foreground'
+                    }`}
+                  >
+                    <div className="text-xs font-medium truncate w-full">
+                      {session.title}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {session.timestamp.toLocaleDateString('pt-BR')}
+                    </div>
+                  </Button>
+                ))
+              )}
+            </div>
+          </ScrollArea>
+        </div>
+        
+        {/* Menu Principal */}
+        <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton 
               onClick={handleMyAccount}
