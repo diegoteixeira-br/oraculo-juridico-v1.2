@@ -76,12 +76,15 @@ serve(async (req) => {
     });
 
     if (!webhookResponse.ok) {
-      console.error('Webhook error:', webhookResponse.status, await webhookResponse.text());
+      const errorText = await webhookResponse.text();
+      console.error('Webhook error:', webhookResponse.status, errorText);
       return new Response(JSON.stringify({ 
         error: 'Erro na comunicação com a IA',
-        details: `Status: ${webhookResponse.status}`
+        details: `Status: ${webhookResponse.status}`,
+        webhookError: errorText,
+        webhookStatus: webhookResponse.status
       }), {
-        status: 500,
+        status: 200, // Retornar 200 para que o frontend receba a resposta
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }

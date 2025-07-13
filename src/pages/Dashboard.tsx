@@ -90,6 +90,12 @@ export default function Dashboard() {
         throw new Error(error.message || 'Erro na comunicação com a IA');
       }
 
+      // Verificar se há erro retornado pelo webhook
+      if (data.error) {
+        console.error('Webhook error details:', data);
+        throw new Error(`${data.error}: ${data.webhookError || data.details || 'Verifique a configuração do webhook'}`);
+      }
+
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
         text: data.response || 'Resposta recebida da IA',
