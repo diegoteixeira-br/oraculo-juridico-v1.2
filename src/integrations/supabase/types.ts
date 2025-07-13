@@ -50,6 +50,54 @@ export type Database = {
         }
         Relationships: []
       }
+      "Leads dashboard": {
+        Row: {
+          atendente_humano: boolean | null
+          created_at: string
+          followup: number | null
+          "followup-qnt": string | null
+          "followup-qnt2": string | null
+          FollowUptxt: string | null
+          Horario: string | null
+          id: string
+          Mensagem: string | null
+          nome: string | null
+          numeros: string | null
+          session_id: string | null
+          status: string | null
+        }
+        Insert: {
+          atendente_humano?: boolean | null
+          created_at?: string
+          followup?: number | null
+          "followup-qnt"?: string | null
+          "followup-qnt2"?: string | null
+          FollowUptxt?: string | null
+          Horario?: string | null
+          id?: string
+          Mensagem?: string | null
+          nome?: string | null
+          numeros?: string | null
+          session_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          atendente_humano?: boolean | null
+          created_at?: string
+          followup?: number | null
+          "followup-qnt"?: string | null
+          "followup-qnt2"?: string | null
+          FollowUptxt?: string | null
+          Horario?: string | null
+          id?: string
+          Mensagem?: string | null
+          nome?: string | null
+          numeros?: string | null
+          session_id?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
