@@ -312,7 +312,7 @@ export default function Dashboard() {
   };
 
   const AppSidebar = () => (
-    <Sidebar className="w-64 bg-slate-800 border-slate-700">
+    <Sidebar className="w-64 bg-slate-800 border-slate-700 flex flex-col">
       <SidebarHeader className="p-4">
         <img 
           src="/lovable-uploads/baf2f459-dae5-46d0-8e62-9d9247ec0b40.png" 
@@ -330,15 +330,15 @@ export default function Dashboard() {
         </Button>
       </SidebarHeader>
       
-      <SidebarContent className="px-2">
+      <SidebarContent className="px-2 flex-1 flex flex-col">
         {/* Histórico de Conversas */}
-        <div className="mb-4">
+        <div className="flex-1">
           <div className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground">
             <History className="w-4 h-4" />
             Histórico
           </div>
           
-          <ScrollArea className="h-64">
+          <ScrollArea className="h-full max-h-[calc(100vh-280px)]">
             <div className="space-y-1">
               {chatSessions.length === 0 ? (
                 <p className="px-3 py-2 text-xs text-muted-foreground">
@@ -368,28 +368,30 @@ export default function Dashboard() {
           </ScrollArea>
         </div>
         
-        {/* Menu Principal */}
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton 
-              onClick={handleMyAccount}
-              className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-primary hover:bg-primary/10"
-            >
-              <Settings className="w-5 h-5" />
-              <span>Minha Conta</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          
-          <SidebarMenuItem>
-            <SidebarMenuButton 
-              onClick={handleLogout}
-              className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-primary hover:bg-primary/10"
-            >
-              <LogOut className="w-5 h-5" />
-              <span>Sair</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        {/* Menu Principal - Fixo na parte inferior */}
+        <div className="border-t border-slate-700 pt-2 mt-2">
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton 
+                onClick={handleMyAccount}
+                className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-primary hover:bg-primary/10"
+              >
+                <Settings className="w-5 h-5" />
+                <span>Minha Conta</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            
+            <SidebarMenuItem>
+              <SidebarMenuButton 
+                onClick={handleLogout}
+                className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-primary hover:bg-primary/10"
+              >
+                <LogOut className="w-5 h-5" />
+                <span>Sair</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </div>
       </SidebarContent>
     </Sidebar>
   );
