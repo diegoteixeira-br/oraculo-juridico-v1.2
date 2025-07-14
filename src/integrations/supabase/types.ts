@@ -226,8 +226,10 @@ export type Database = {
           created_at: string
           credits_consumed: number | null
           id: string
+          message_type: string | null
           prompt_text: string
           response_text: string | null
+          session_id: string | null
           updated_at: string
           user_id: string
         }
@@ -235,8 +237,10 @@ export type Database = {
           created_at?: string
           credits_consumed?: number | null
           id?: string
+          message_type?: string | null
           prompt_text: string
           response_text?: string | null
+          session_id?: string | null
           updated_at?: string
           user_id: string
         }
@@ -244,8 +248,10 @@ export type Database = {
           created_at?: string
           credits_consumed?: number | null
           id?: string
+          message_type?: string | null
           prompt_text?: string
           response_text?: string | null
+          session_id?: string | null
           updated_at?: string
           user_id?: string
         }

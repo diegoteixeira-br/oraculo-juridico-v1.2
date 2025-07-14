@@ -44,6 +44,7 @@ export default function Dashboard() {
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const [hasUnsavedMessages, setHasUnsavedMessages] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { user, profile, signOut, useCredits, refreshProfile } = useAuth();
@@ -73,9 +74,10 @@ export default function Dashboard() {
     }
 
     // Criar nova sessão se não existir
-    if (!currentSessionId) {
-      const newSessionId = `session-${Date.now()}`;
-      setCurrentSessionId(newSessionId);
+    let sessionId = currentSessionId;
+    if (!sessionId) {
+      sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      setCurrentSessionId(sessionId);
     }
 
     const userMessage: Message = {
@@ -90,8 +92,25 @@ export default function Dashboard() {
     setInputMessage("");
     setAttachedFiles([]);
     setIsTyping(true);
+    setHasUnsavedMessages(true);
 
     try {
+      // Salvar a mensagem do usuário primeiro
+      try {
+        await supabase
+          .from('query_history')
+          .insert({
+            user_id: user?.id,
+            session_id: sessionId,
+            prompt_text: userMessage.text,
+            response_text: null,
+            message_type: 'user_query',
+            credits_consumed: 0
+          });
+      } catch (historyError) {
+        console.error('Erro ao salvar mensagem do usuário no histórico:', historyError);
+      }
+
       // Chamar o edge function que se conecta ao seu webhook
       const { data, error } = await supabase.functions.invoke('legal-ai-chat', {
         body: {
@@ -135,18 +154,20 @@ export default function Dashboard() {
 
       setMessages(prev => [...prev, aiResponse]);
 
-      // Salvar a conversa no histórico
+      // Salvar a resposta da IA no histórico
       try {
         await supabase
           .from('query_history')
           .insert({
             user_id: user?.id,
+            session_id: sessionId,
             prompt_text: userMessage.text,
             response_text: aiResponse.text,
+            message_type: 'ai_response',
             credits_consumed: costPerSearch
           });
       } catch (historyError) {
-        console.error('Erro ao salvar no histórico:', historyError);
+        console.error('Erro ao salvar resposta da IA no histórico:', historyError);
       }
 
       // Atualizar o histórico local
@@ -278,48 +299,74 @@ export default function Dashboard() {
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
-        .limit(100);
+        .limit(200);
 
       if (error) throw error;
 
-      // Agrupar conversas por data e sessão
+      // Agrupar mensagens por session_id
       const sessionsMap = new Map<string, ChatSession>();
       
       data?.forEach((query) => {
-        const date = new Date(query.created_at);
-        const dateStr = date.toLocaleDateString('pt-BR');
-        const timeStr = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-        
-        // Criar uma chave única para cada consulta individual
-        const sessionKey = `${query.id}`;
+        const sessionKey = query.session_id;
         
         if (!sessionsMap.has(sessionKey)) {
+          // Pegar o primeiro prompt da sessão como título
+          const firstQuery = data.find(q => 
+            q.session_id === sessionKey && q.message_type === 'user_query'
+          );
+          
           sessionsMap.set(sessionKey, {
             id: sessionKey,
-            title: query.prompt_text.length > 40 ? 
-              query.prompt_text.substring(0, 40) + '...' : 
-              query.prompt_text,
-            preview: query.response_text?.substring(0, 80) + '...' || 'Sem resposta',
-            timestamp: date,
-            messages: [
-              {
-                id: `user-${query.id}`,
-                text: query.prompt_text,
-                sender: 'user',
-                timestamp: date
-              },
-              {
-                id: `ai-${query.id}`,
-                text: query.response_text || 'Sem resposta',
-                sender: 'ai',
-                timestamp: date
-              }
-            ]
+            title: firstQuery ? (
+              firstQuery.prompt_text.length > 50 ? 
+                firstQuery.prompt_text.substring(0, 50) + '...' : 
+                firstQuery.prompt_text
+            ) : 'Conversa sem título',
+            preview: '',
+            timestamp: new Date(query.created_at),
+            messages: []
           });
+        }
+
+        const session = sessionsMap.get(sessionKey)!;
+        
+        // Adicionar mensagem do usuário
+        if (query.message_type === 'user_query') {
+          session.messages.push({
+            id: `user-${query.id}`,
+            text: query.prompt_text,
+            sender: 'user',
+            timestamp: new Date(query.created_at)
+          });
+        }
+        
+        // Adicionar resposta da IA
+        if (query.message_type === 'ai_response' && query.response_text) {
+          session.messages.push({
+            id: `ai-${query.id}`,
+            text: query.response_text,
+            sender: 'ai',
+            timestamp: new Date(query.created_at)
+          });
+          
+          // Usar parte da resposta como preview
+          if (!session.preview) {
+            session.preview = query.response_text.substring(0, 80) + '...';
+          }
         }
       });
 
-      // Ordenar sessões por timestamp (mais recente primeiro)
+      // Ordenar mensagens dentro de cada sessão por timestamp
+      sessionsMap.forEach(session => {
+        session.messages.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+        
+        // Atualizar timestamp da sessão para o último message
+        if (session.messages.length > 0) {
+          session.timestamp = session.messages[session.messages.length - 1].timestamp;
+        }
+      });
+
+      // Converter para array e ordenar por timestamp (mais recente primeiro)
       const sessions = Array.from(sessionsMap.values()).sort((a, b) => 
         b.timestamp.getTime() - a.timestamp.getTime()
       );
@@ -331,8 +378,18 @@ export default function Dashboard() {
   };
 
   const createNewChat = () => {
+    // Salvar conversa atual se existir e tiver mensagens não salvas
+    if (hasUnsavedMessages && messages.length > 0) {
+      // As mensagens já foram salvas individualmente no handleSendMessage
+      // Então só precisamos resetar o estado
+    }
+    
     setMessages([]);
     setCurrentSessionId(null);
+    setHasUnsavedMessages(false);
+    
+    // Recarregar histórico para mostrar a conversa recém-salva
+    loadChatHistory();
   };
 
   const loadChatSession = (session: ChatSession) => {
