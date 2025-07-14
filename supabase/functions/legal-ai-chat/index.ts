@@ -1,4 +1,5 @@
 
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 
@@ -46,119 +47,95 @@ serve(async (req) => {
       });
     }
 
-    // Preparar dados para enviar ao webhook do n8n (formato simplificado)
-    const webhookPayload = {
-      pushName: "Usuário Legal AI",
-      key: {
-        remoteJid: userId,
-        id: `msg_${Date.now()}`
-      },
-      messageType: "conversation",
-      message: {
-        conversation: message,
-        extendedTextMessage: {
-          text: message
-        }
-      },
-      // Campos diretos para o Switch do n8n
-      nome: "Usuário Legal AI",
-      telefone: `user_${userId}`,
-      texto: message,
-      user_id: userId,
-      attached_files: attachedFiles || [],
-      timestamp: new Date().toISOString(),
-      // Campos para identificação no n8n
-      apikey: "legal_ai_chat",
-      instance: "LegalAI",
-      server_url: "https://legal-ai.com"
-    };
-
-    // Obter URL e token do webhook da configuração
-    const webhookUrl = Deno.env.get('LEGAL_AI_WEBHOOK_URL');
-    const webhookToken = Deno.env.get('LEGAL_AI_WEBHOOK_TOKEN');
-    
-    if (!webhookUrl) {
-      console.error('LEGAL_AI_WEBHOOK_URL not configured');
-      return new Response(JSON.stringify({ error: 'Webhook não configurado' }), {
+    // Verificar se a chave da OpenAI está configurada
+    const openAIKey = Deno.env.get('OPENAI_API_KEY');
+    if (!openAIKey) {
+      console.error('OPENAI_API_KEY not configured');
+      return new Response(JSON.stringify({ error: 'OpenAI API key não configurada' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    console.log('Sending request to webhook:', webhookUrl);
-    console.log('Using token:', webhookToken ? 'Token configured' : 'No token - webhook will be called without authentication');
-    
-    // Preparar headers para o webhook
-    const webhookHeaders: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
+    console.log('Making request to OpenAI API...');
 
-    // Adicionar token se configurado
-    if (webhookToken) {
-      webhookHeaders['Authorization'] = `Bearer ${webhookToken}`;
-    }
+    // Preparar prompt para consulta jurídica
+    const systemPrompt = `Você é um assistente jurídico especializado em direito brasileiro. Forneça respostas precisas, baseadas na legislação vigente e jurisprudência consolidada. Suas respostas devem ser:
 
-    console.log('Webhook headers:', Object.keys(webhookHeaders));
+1. Claras e objetivas
+2. Baseadas em fontes confiáveis do direito brasileiro
+3. Incluir referências legais quando aplicável
+4. Apontar quando uma questão requer análise mais aprofundada por um advogado
+5. Usar linguagem acessível, mas tecnicamente correta
 
-    // Enviar para o webhook da ferramenta
-    const webhookResponse = await fetch(webhookUrl, {
+Sempre indique quando uma situação exige consultoria jurídica presencial.`;
+
+    // Chamar a API da OpenAI
+    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
-      headers: webhookHeaders,
-      body: JSON.stringify(webhookPayload),
+      headers: {
+        'Authorization': `Bearer ${openAIKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: message }
+        ],
+        temperature: 0.7,
+        max_tokens: 2000,
+      }),
     });
 
-    console.log('Webhook response status:', webhookResponse.status);
-    console.log('Webhook response headers:', Object.fromEntries(webhookResponse.headers.entries()));
+    console.log('OpenAI response status:', openAIResponse.status);
 
-    if (!webhookResponse.ok) {
-      const errorText = await webhookResponse.text();
-      console.error('Webhook error details:', {
-        status: webhookResponse.status,
-        statusText: webhookResponse.statusText,
-        errorText: errorText,
-        url: webhookUrl
+    if (!openAIResponse.ok) {
+      const errorText = await openAIResponse.text();
+      console.error('OpenAI API error:', {
+        status: openAIResponse.status,
+        statusText: openAIResponse.statusText,
+        errorText: errorText
       });
 
-      // Tratar diferentes tipos de erro
       let errorMessage = 'Erro na comunicação com a IA';
       
-      if (webhookResponse.status === 401 || webhookResponse.status === 403) {
-        errorMessage = 'Erro de autorização no webhook. Verifique o token de acesso.';
-      } else if (webhookResponse.status === 404) {
-        errorMessage = 'Webhook não encontrado. Verifique a URL configurada.';
-      } else if (webhookResponse.status >= 500) {
-        errorMessage = 'Erro interno do servidor no webhook.';
+      if (openAIResponse.status === 401) {
+        errorMessage = 'Erro de autenticação com a OpenAI. Verifique a chave da API.';
+      } else if (openAIResponse.status === 429) {
+        errorMessage = 'Limite de uso da API excedido. Tente novamente em alguns minutos.';
+      } else if (openAIResponse.status >= 500) {
+        errorMessage = 'Erro interno da OpenAI. Tente novamente.';
       }
 
       return new Response(JSON.stringify({ 
         error: errorMessage,
-        details: `Status: ${webhookResponse.status} - ${webhookResponse.statusText}`,
-        webhookError: errorText,
-        webhookStatus: webhookResponse.status
+        details: `Status: ${openAIResponse.status} - ${openAIResponse.statusText}`,
       }), {
-        status: 200, // Retornar 200 para que o frontend receba a resposta
+        status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
     let aiResponse;
     try {
-      aiResponse = await webhookResponse.json();
-      console.log('AI response received:', aiResponse);
+      aiResponse = await openAIResponse.json();
+      console.log('OpenAI response received successfully');
     } catch (jsonError) {
-      console.error('Error parsing webhook response as JSON:', jsonError);
-      const responseText = await webhookResponse.text();
-      console.log('Raw webhook response:', responseText);
+      console.error('Error parsing OpenAI response as JSON:', jsonError);
       
       return new Response(JSON.stringify({ 
-        error: 'Resposta inválida do webhook',
-        details: 'A resposta não está em formato JSON válido',
-        webhookResponse: responseText
+        error: 'Resposta inválida da OpenAI',
+        details: 'A resposta não está em formato JSON válido'
       }), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    // Extrair a resposta da IA
+    const aiMessage = aiResponse.choices?.[0]?.message?.content || 'Desculpe, não foi possível gerar uma resposta.';
+    console.log('AI message extracted:', aiMessage.substring(0, 100) + '...');
 
     // Usar os créditos após resposta bem-sucedida
     const { error: creditsError } = await supabase.rpc('use_credits', {
@@ -174,7 +151,7 @@ serve(async (req) => {
 
     // Retornar resposta da IA
     return new Response(JSON.stringify({ 
-      response: aiResponse.message || aiResponse.response || aiResponse.text || 'Resposta recebida da IA',
+      response: aiMessage,
       success: true
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
