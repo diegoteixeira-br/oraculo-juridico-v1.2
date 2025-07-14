@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { usePageTitle } from "./hooks/usePageTitle";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
@@ -20,6 +21,28 @@ import ComprarCreditosPage from "./pages/ComprarCreditosPage";
 
 const queryClient = new QueryClient();
 
+function AppContent() {
+  usePageTitle();
+  
+  return (
+    <Routes>
+      <Route path="/" element={<Index />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/cadastro" element={<Cadastro />} />
+      <Route path="/pagamento" element={<PagamentoPage />} />
+      
+      <Route path="/termos" element={<Termos />} />
+      <Route path="/privacidade" element={<Privacidade />} />
+      <Route path="/contato" element={<ContatoPage />} />
+      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/minha-conta" element={<ProtectedRoute><MinhaContaPage /></ProtectedRoute>} />
+      <Route path="/comprar-creditos" element={<ProtectedRoute><ComprarCreditosPage /></ProtectedRoute>} />
+      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -27,21 +50,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/cadastro" element={<Cadastro />} />
-            <Route path="/pagamento" element={<PagamentoPage />} />
-            
-            <Route path="/termos" element={<Termos />} />
-            <Route path="/privacidade" element={<Privacidade />} />
-            <Route path="/contato" element={<ContatoPage />} />
-            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/minha-conta" element={<ProtectedRoute><MinhaContaPage /></ProtectedRoute>} />
-            <Route path="/comprar-creditos" element={<ProtectedRoute><ComprarCreditosPage /></ProtectedRoute>} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <AppContent />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
