@@ -72,6 +72,12 @@ export default function Dashboard() {
       return;
     }
 
+    // Criar nova sessão se não existir
+    if (!currentSessionId) {
+      const newSessionId = `session-${Date.now()}`;
+      setCurrentSessionId(newSessionId);
+    }
+
     const userMessage: Message = {
       id: Date.now().toString(),
       text: inputMessage,
@@ -128,6 +134,23 @@ export default function Dashboard() {
       };
 
       setMessages(prev => [...prev, aiResponse]);
+
+      // Salvar a conversa no histórico
+      try {
+        await supabase
+          .from('query_history')
+          .insert({
+            user_id: user?.id,
+            prompt_text: userMessage.text,
+            response_text: aiResponse.text,
+            credits_consumed: costPerSearch
+          });
+      } catch (historyError) {
+        console.error('Erro ao salvar no histórico:', historyError);
+      }
+
+      // Atualizar o histórico local
+      await loadChatHistory();
 
       // Atualizar os créditos após resposta bem-sucedida
       await refreshProfile();
@@ -255,47 +278,53 @@ export default function Dashboard() {
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
-        .limit(50);
+        .limit(100);
 
       if (error) throw error;
 
-      // Agrupar por sessões (dia + primeira pergunta)
+      // Agrupar conversas por data e sessão
       const sessionsMap = new Map<string, ChatSession>();
       
       data?.forEach((query) => {
-        const date = new Date(query.created_at).toLocaleDateString('pt-BR');
-        const sessionKey = `${date}-${query.prompt_text.substring(0, 20)}`;
+        const date = new Date(query.created_at);
+        const dateStr = date.toLocaleDateString('pt-BR');
+        const timeStr = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        
+        // Criar uma chave única para cada consulta individual
+        const sessionKey = `${query.id}`;
         
         if (!sessionsMap.has(sessionKey)) {
           sessionsMap.set(sessionKey, {
             id: sessionKey,
-            title: query.prompt_text.length > 50 ? 
-              query.prompt_text.substring(0, 50) + '...' : 
+            title: query.prompt_text.length > 40 ? 
+              query.prompt_text.substring(0, 40) + '...' : 
               query.prompt_text,
-            preview: query.response_text?.substring(0, 100) + '...' || 'Sem resposta',
-            timestamp: new Date(query.created_at),
-            messages: []
+            preview: query.response_text?.substring(0, 80) + '...' || 'Sem resposta',
+            timestamp: date,
+            messages: [
+              {
+                id: `user-${query.id}`,
+                text: query.prompt_text,
+                sender: 'user',
+                timestamp: date
+              },
+              {
+                id: `ai-${query.id}`,
+                text: query.response_text || 'Sem resposta',
+                sender: 'ai',
+                timestamp: date
+              }
+            ]
           });
         }
-
-        const session = sessionsMap.get(sessionKey)!;
-        session.messages.push(
-          {
-            id: `user-${query.id}`,
-            text: query.prompt_text,
-            sender: 'user',
-            timestamp: new Date(query.created_at)
-          },
-          {
-            id: `ai-${query.id}`,
-            text: query.response_text || 'Sem resposta',
-            sender: 'ai',
-            timestamp: new Date(query.created_at)
-          }
-        );
       });
 
-      setChatSessions(Array.from(sessionsMap.values()));
+      // Ordenar sessões por timestamp (mais recente primeiro)
+      const sessions = Array.from(sessionsMap.values()).sort((a, b) => 
+        b.timestamp.getTime() - a.timestamp.getTime()
+      );
+      
+      setChatSessions(sessions);
     } catch (error) {
       console.error('Erro ao carregar histórico:', error);
     }
