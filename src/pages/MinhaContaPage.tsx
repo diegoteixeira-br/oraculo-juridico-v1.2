@@ -276,8 +276,7 @@ export default function MinhaContaPage() {
                   className="flex-1 border-primary/20 hover:bg-primary/10 text-sm sm:text-base py-3 sm:py-2"
                 >
                   <History className="w-4 h-4 mr-2" />
-                  <span className="hidden sm:inline">Ver Histórico Completo</span>
-                  <span className="sm:hidden">Histórico</span>
+                  Ver Histórico
                 </Button>
               </div>
             </div>
