@@ -162,11 +162,16 @@ export default function Dashboard() {
           .insert({
             user_id: user?.id,
             session_id: sessionId,
-            prompt_text: null, // Não duplicar a pergunta
+            prompt_text: userMessage.text, // Manter a pergunta para referência
             response_text: aiResponse.text,
             message_type: 'ai_response',
             credits_consumed: costPerSearch
           });
+        
+        console.log('Resposta da IA salva no histórico:', {
+          sessionId,
+          responseLength: aiResponse.text.length
+        });
       } catch (historyError) {
         console.error('Erro ao salvar resposta da IA no histórico:', historyError);
       }
