@@ -69,10 +69,10 @@ export default function Dashboard() {
     if (totalCredits < costPerSearch) {
       toast({
         title: "Créditos insuficientes",
-        description: "Você não tem créditos suficientes para realizar esta consulta. Compre mais créditos para continuar.",
+        description: "Você não tem créditos suficientes para realizar esta consulta. Acesse 'Minha Conta' para comprar mais créditos.",
         variant: "destructive",
       });
-      navigate('/comprar-creditos');
+      navigate('/minha-conta');
       return;
     }
 
@@ -790,16 +790,6 @@ export default function Dashboard() {
                     </span>
                   )}
                 </div>
-                {totalCredits < 10 && (
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    onClick={() => navigate('/comprar-creditos')}
-                    className="text-xs"
-                  >
-                    Comprar
-                  </Button>
-                )}
               </div>
               
               {/* Hidden File Input */}
