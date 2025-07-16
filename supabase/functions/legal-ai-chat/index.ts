@@ -68,7 +68,75 @@ serve(async (req) => {
 4. Apontar quando uma questão requer análise mais aprofundada por um advogado
 5. Usar linguagem acessível, mas tecnicamente correta
 
+Quando arquivos PDF ou imagens forem fornecidos, analise-os detalhadamente e forneça uma explicação completa sobre o conteúdo, incluindo:
+- Resumo do documento
+- Pontos principais e relevantes
+- Análise jurídica do conteúdo
+- Implicações legais
+- Recomendações práticas
+
 Sempre indique quando uma situação exige consultoria jurídica presencial.`;
+
+    // Preparar mensagens para a OpenAI
+    let messages = [
+      { role: 'system', content: systemPrompt }
+    ];
+
+    // Processar mensagem do usuário
+    if (attachedFiles && attachedFiles.length > 0) {
+      // Se há arquivos anexados, usar gpt-4o para melhor suporte a imagens
+      const userMessage = {
+        role: 'user',
+        content: [
+          { type: 'text', text: message }
+        ]
+      };
+
+      // Adicionar arquivos à mensagem
+      for (const file of attachedFiles) {
+        if (file.type.startsWith('image/')) {
+          userMessage.content.push({
+            type: 'image_url',
+            image_url: {
+              url: file.data
+            }
+          });
+        } else if (file.type === 'application/pdf') {
+          // Para PDFs, extrair texto e adicionar como contexto
+          try {
+            // Tentar extrair texto do PDF (base64)
+            const pdfText = `[PDF ANEXADO: ${file.name}]
+            
+Por favor, analise este documento PDF que foi anexado. O usuário gostaria de uma análise detalhada do conteúdo, incluindo:
+- Resumo do documento
+- Pontos principais e cláusulas importantes
+- Análise jurídica do conteúdo
+- Possíveis implicações legais
+- Recomendações práticas
+
+Forneça uma resposta completa e detalhada sobre o documento.`;
+            
+            userMessage.content.push({
+              type: 'text',
+              text: pdfText
+            });
+          } catch (pdfError) {
+            console.error('Error processing PDF:', pdfError);
+            userMessage.content.push({
+              type: 'text',
+              text: `[PDF ANEXADO: ${file.name}] - Documento PDF detectado. Por favor, descreva o conteúdo do documento para que eu possa analisá-lo adequadamente.`
+            });
+          }
+        }
+      }
+
+      messages.push(userMessage);
+    } else {
+      // Mensagem simples sem arquivos
+      messages.push({ role: 'user', content: message });
+    }
+
+    console.log('Messages prepared for OpenAI:', messages.length, 'messages');
 
     // Chamar a API da OpenAI
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -78,13 +146,10 @@ Sempre indique quando uma situação exige consultoria jurídica presencial.`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: message }
-        ],
+        model: attachedFiles && attachedFiles.length > 0 ? 'gpt-4o' : 'gpt-4o-mini',
+        messages: messages,
         temperature: 0.7,
-        max_tokens: 2000,
+        max_tokens: 3000,
       }),
     });
 
