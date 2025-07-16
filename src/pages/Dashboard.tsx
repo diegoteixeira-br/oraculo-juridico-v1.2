@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, Settings, LogOut, Send, Bot, User, Clock, CreditCard, Paperclip, X, FileText, Image, History, Plus } from "lucide-react";
+import { MessageCircle, Settings, LogOut, Send, Bot, User, Clock, CreditCard, Paperclip, X, FileText, Image, History, Plus, Trash2, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,6 +8,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -401,6 +403,69 @@ export default function Dashboard() {
     setCurrentSessionId(session.id);
   };
 
+  // Função para excluir uma conversa específica
+  const deleteConversation = async (sessionId: string) => {
+    try {
+      const { error } = await supabase
+        .from('query_history')
+        .delete()
+        .eq('session_id', sessionId)
+        .eq('user_id', user?.id);
+
+      if (error) throw error;
+
+      // Atualizar estado local
+      setChatSessions(prev => prev.filter(session => session.id !== sessionId));
+      
+      // Se a conversa excluída era a atual, limpar o chat
+      if (currentSessionId === sessionId) {
+        setMessages([]);
+        setCurrentSessionId(null);
+      }
+
+      toast({
+        title: "Conversa excluída",
+        description: "A conversa foi excluída com sucesso.",
+      });
+    } catch (error) {
+      console.error('Erro ao excluir conversa:', error);
+      toast({
+        title: "Erro ao excluir",
+        description: "Não foi possível excluir a conversa. Tente novamente.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Função para limpar todo o histórico
+  const clearAllHistory = async () => {
+    try {
+      const { error } = await supabase
+        .from('query_history')
+        .delete()
+        .eq('user_id', user?.id);
+
+      if (error) throw error;
+
+      // Limpar estado local
+      setChatSessions([]);
+      setMessages([]);
+      setCurrentSessionId(null);
+
+      toast({
+        title: "Histórico limpo",
+        description: "Todo o histórico foi excluído com sucesso.",
+      });
+    } catch (error) {
+      console.error('Erro ao limpar histórico:', error);
+      toast({
+        title: "Erro ao limpar histórico",
+        description: "Não foi possível limpar o histórico. Tente novamente.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const AppSidebar = () => (
     <Sidebar className="w-64 md:w-64 w-full bg-slate-800 border-slate-700 flex flex-col">
       <SidebarHeader className="p-4">
@@ -418,6 +483,36 @@ export default function Dashboard() {
           <Plus className="w-4 h-4" />
           Nova Conversa
         </Button>
+        
+        {/* Limpar Histórico Button */}
+        {chatSessions.length > 0 && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full mt-2 flex items-center gap-2 text-xs border-destructive/20 text-destructive hover:bg-destructive/10"
+              >
+                <Trash2 className="w-3 h-3" />
+                Limpar Histórico
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Limpar todo o histórico</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Esta ação não pode ser desfeita. Isso irá excluir permanentemente todas as suas conversas.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={clearAllHistory} className="bg-destructive hover:bg-destructive/90">
+                  Excluir Tudo
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
       </SidebarHeader>
       
       <SidebarContent className="px-2 flex-1 flex flex-col">
@@ -436,22 +531,56 @@ export default function Dashboard() {
                 </p>
               ) : (
                 chatSessions.map((session) => (
-                  <Button
+                  <div
                     key={session.id}
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => loadChatSession(session)}
-                    className={`w-full p-2 h-auto flex flex-col items-start text-left hover:bg-primary/10 ${
-                      currentSessionId === session.id ? 'bg-primary/10 text-primary' : 'text-muted-foreground'
+                    className={`group flex items-center gap-2 p-2 rounded-lg hover:bg-primary/10 ${
+                      currentSessionId === session.id ? 'bg-primary/10' : ''
                     }`}
                   >
-                    <div className="text-xs font-medium truncate w-full">
-                      {session.title}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      {session.timestamp.toLocaleDateString('pt-BR')}
-                    </div>
-                  </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => loadChatSession(session)}
+                      className="flex-1 p-1 h-auto flex flex-col items-start text-left justify-start"
+                    >
+                      <div className="text-xs font-medium truncate w-full text-left">
+                        {session.title}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1 text-left">
+                        {session.timestamp.toLocaleDateString('pt-BR')}
+                      </div>
+                    </Button>
+                    
+                    {/* Botão de exclusão */}
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/20"
+                        >
+                          <Trash2 className="w-3 h-3 text-destructive" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Excluir conversa</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Tem certeza que deseja excluir esta conversa? Esta ação não pode ser desfeita.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction 
+                            onClick={() => deleteConversation(session.id)}
+                            className="bg-destructive hover:bg-destructive/90"
+                          >
+                            Excluir
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 ))
               )}
             </div>
