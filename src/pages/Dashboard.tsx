@@ -21,6 +21,7 @@ interface AttachedFile {
   size: number;
   type: string;
   url: string;
+  data?: string; // Base64 data
 }
 
 interface Message {
@@ -237,7 +238,7 @@ export default function Dashboard() {
     const files = e.target.files;
     if (!files) return;
 
-    Array.from(files).forEach(file => {
+    Array.from(files).forEach(async file => {
       // Validar tipo de arquivo (PDFs e imagens)
       const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
       if (!allowedTypes.includes(file.type)) {
@@ -259,15 +260,39 @@ export default function Dashboard() {
         return;
       }
 
-      const newFile: AttachedFile = {
-        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        url: URL.createObjectURL(file)
-      };
+      try {
+        // Converter arquivo para base64
+        const base64Data = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            if (typeof reader.result === 'string') {
+              resolve(reader.result);
+            } else {
+              reject(new Error('Failed to read file'));
+            }
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
 
-      setAttachedFiles(prev => [...prev, newFile]);
+        const newFile: AttachedFile = {
+          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          url: URL.createObjectURL(file),
+          data: base64Data // Adicionar dados base64
+        };
+
+        setAttachedFiles(prev => [...prev, newFile]);
+      } catch (error) {
+        console.error('Error reading file:', error);
+        toast({
+          title: "Erro ao processar arquivo",
+          description: "Não foi possível processar o arquivo. Tente novamente.",
+          variant: "destructive",
+        });
+      }
     });
 
     // Limpar input
