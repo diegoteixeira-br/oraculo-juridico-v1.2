@@ -238,18 +238,18 @@ export default function MinhaContaPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-primary/10 rounded-lg border border-primary/20">
-                <div className="text-2xl font-bold text-primary">{totalAvailableCredits}</div>
-                <div className="text-sm text-muted-foreground">Total Disponíveis</div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="text-center p-3 sm:p-4 bg-primary/10 rounded-lg border border-primary/20">
+                <div className="text-xl sm:text-2xl font-bold text-primary">{totalAvailableCredits}</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Total Disponíveis</div>
               </div>
-              <div className="text-center p-4 bg-green-600/10 rounded-lg border border-green-600/20">
-                <div className="text-2xl font-bold text-green-400">{dailyCredits}</div>
-                <div className="text-sm text-muted-foreground">Créditos Diários</div>
+              <div className="text-center p-3 sm:p-4 bg-green-600/10 rounded-lg border border-green-600/20">
+                <div className="text-xl sm:text-2xl font-bold text-green-400">{dailyCredits}</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Créditos Diários</div>
               </div>
-              <div className="text-center p-4 bg-secondary/10 rounded-lg border border-secondary/20">
-                <div className="text-2xl font-bold text-secondary-foreground">{userCredits}</div>
-                <div className="text-sm text-muted-foreground">Créditos Comprados</div>
+              <div className="text-center p-3 sm:p-4 bg-secondary/10 rounded-lg border border-secondary/20">
+                <div className="text-xl sm:text-2xl font-bold text-secondary-foreground">{userCredits}</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Créditos Comprados</div>
               </div>
             </div>
             
@@ -261,21 +261,23 @@ export default function MinhaContaPage() {
             </div>
             
             <div className="pt-4 border-t border-slate-600">
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Button 
                   onClick={() => navigate("/comprar-creditos")}
-                  className="flex-1 bg-primary hover:bg-primary/90"
+                  className="flex-1 bg-primary hover:bg-primary/90 text-sm sm:text-base py-3 sm:py-2"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Comprar Mais Créditos
+                  <span className="hidden sm:inline">Comprar Mais Créditos</span>
+                  <span className="sm:hidden">Comprar Créditos</span>
                 </Button>
                 <Button 
                   onClick={() => navigate("/historico-transacoes")}
                   variant="outline"
-                  className="flex-1 border-primary/20 hover:bg-primary/10"
+                  className="flex-1 border-primary/20 hover:bg-primary/10 text-sm sm:text-base py-3 sm:py-2"
                 >
                   <History className="w-4 h-4 mr-2" />
-                  Ver Histórico Completo
+                  <span className="hidden sm:inline">Ver Histórico Completo</span>
+                  <span className="sm:hidden">Histórico</span>
                 </Button>
               </div>
             </div>
