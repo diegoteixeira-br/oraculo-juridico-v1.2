@@ -100,19 +100,22 @@ export default function MinhaContaPage() {
 
     setIsUploadingAvatar(true);
     try {
-      // Criar um nome único para o arquivo
+      // Criar um nome único para o arquivo com estrutura de pasta
       const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+      const fileName = `${user.id}/avatar-${Date.now()}.${fileExt}`;
       
-      // Usar um bucket público simples para avatares
+      // Fazer upload do arquivo
       const { data, error } = await supabase.storage
         .from('avatars')
         .upload(fileName, file, {
           cacheControl: '3600',
-          upsert: false
+          upsert: true  // Permite sobrescrever arquivos existentes
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Storage error:', error);
+        throw error;
+      }
 
       // Obter URL pública
       const { data: { publicUrl } } = supabase.storage
@@ -125,7 +128,10 @@ export default function MinhaContaPage() {
         .update({ avatar_url: publicUrl })
         .eq('user_id', user.id);
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error('Profile update error:', updateError);
+        throw updateError;
+      }
 
       setAvatarUrl(publicUrl);
       await refreshProfile();
@@ -138,7 +144,7 @@ export default function MinhaContaPage() {
       console.error('Error uploading avatar:', error);
       toast({
         title: "Erro ao fazer upload",
-        description: "Não foi possível atualizar sua foto de perfil.",
+        description: "Não foi possível atualizar sua foto de perfil. Tente novamente.",
         variant: "destructive",
       });
     } finally {
