@@ -403,7 +403,7 @@ export default function Dashboard() {
     setCurrentSessionId(session.id);
   };
 
-  // Função para excluir uma conversa específica
+  // Função para excluir uma conversa específica (sem confirmação)
   const deleteConversation = async (sessionId: string) => {
     try {
       const { error } = await supabase
@@ -483,36 +483,6 @@ export default function Dashboard() {
           <Plus className="w-4 h-4" />
           Nova Conversa
         </Button>
-        
-        {/* Limpar Histórico Button */}
-        {chatSessions.length > 0 && (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full mt-2 flex items-center gap-2 text-xs border-destructive/20 text-destructive hover:bg-destructive/10"
-              >
-                <Trash2 className="w-3 h-3" />
-                Limpar Histórico
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Limpar todo o histórico</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Esta ação não pode ser desfeita. Isso irá excluir permanentemente todas as suas conversas.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={clearAllHistory} className="bg-destructive hover:bg-destructive/90">
-                  Excluir Tudo
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        )}
       </SidebarHeader>
       
       <SidebarContent className="px-2 flex-1 flex flex-col">
@@ -533,53 +503,39 @@ export default function Dashboard() {
                 chatSessions.map((session) => (
                   <div
                     key={session.id}
-                    className={`group flex items-center gap-2 p-2 rounded-lg hover:bg-primary/10 ${
+                    className={`relative group p-2 rounded-lg hover:bg-primary/10 ${
                       currentSessionId === session.id ? 'bg-primary/10' : ''
                     }`}
                   >
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => loadChatSession(session)}
-                      className="flex-1 p-1 h-auto flex flex-col items-start text-left justify-start"
-                    >
-                      <div className="text-xs font-medium truncate w-full text-left">
-                        {session.title}
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-1 text-left">
-                        {session.timestamp.toLocaleDateString('pt-BR')}
-                      </div>
-                    </Button>
-                    
-                    {/* Botão de exclusão */}
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/20"
+                          className="w-full h-auto p-1 flex flex-col items-start text-left justify-start"
                         >
-                          <Trash2 className="w-3 h-3 text-destructive" />
+                          <div className="text-xs font-medium truncate w-full text-left">
+                            {session.title}
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1 text-left">
+                            {session.timestamp.toLocaleDateString('pt-BR')}
+                          </div>
                         </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Excluir conversa</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Tem certeza que deseja excluir esta conversa? Esta ação não pode ser desfeita.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction 
-                            onClick={() => deleteConversation(session.id)}
-                            className="bg-destructive hover:bg-destructive/90"
-                          >
-                            Excluir
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-48">
+                        <DropdownMenuItem onClick={() => loadChatSession(session)}>
+                          <MessageCircle className="w-4 h-4 mr-2" />
+                          Carregar conversa
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => deleteConversation(session.id)}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Excluir conversa
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 ))
               )}
