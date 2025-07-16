@@ -84,49 +84,69 @@ Sempre indique quando uma situação exige consultoria jurídica presencial.`;
 
     // Processar mensagem do usuário
     if (attachedFiles && attachedFiles.length > 0) {
-      // Se há arquivos anexados, usar gpt-4o para melhor suporte a imagens
+      // Se há arquivos anexados, usar gpt-4o para melhor suporte a imagens e OCR
       const userMessage = {
         role: 'user',
         content: [
-          { type: 'text', text: message }
+          { type: 'text', text: message || 'Analise os documentos anexados conforme as instruções do sistema.' }
         ]
       };
 
       // Adicionar arquivos à mensagem
       for (const file of attachedFiles) {
         if (file.type.startsWith('image/')) {
+          // Para imagens, usar vision do GPT-4o
           userMessage.content.push({
             type: 'image_url',
             image_url: {
               url: file.data
             }
           });
-        } else if (file.type === 'application/pdf') {
-          // Para PDFs, extrair texto e adicionar como contexto
-          try {
-            // Tentar extrair texto do PDF (base64)
-            const pdfText = `[PDF ANEXADO: ${file.name}]
-            
-Por favor, analise este documento PDF que foi anexado. O usuário gostaria de uma análise detalhada do conteúdo, incluindo:
-- Resumo do documento
-- Pontos principais e cláusulas importantes
-- Análise jurídica do conteúdo
-- Possíveis implicações legais
-- Recomendações práticas
+          
+          // Adicionar contexto específico para imagens
+          userMessage.content.push({
+            type: 'text',
+            text: `[IMAGEM ANEXADA: ${file.name}]
 
-Forneça uma resposta completa e detalhada sobre o documento.`;
-            
-            userMessage.content.push({
-              type: 'text',
-              text: pdfText
-            });
-          } catch (pdfError) {
-            console.error('Error processing PDF:', pdfError);
-            userMessage.content.push({
-              type: 'text',
-              text: `[PDF ANEXADO: ${file.name}] - Documento PDF detectado. Por favor, descreva o conteúdo do documento para que eu possa analisá-lo adequadamente.`
-            });
-          }
+Esta imagem pode conter:
+- Documentos escaneados que precisam de análise OCR
+- Contratos, petições ou outros documentos jurídicos
+- Certidões, alvarás ou documentos oficiais
+- Prints de tela ou capturas de documentos
+
+Por favor, analise todo o texto visível na imagem e forneça:
+1. Transcrição completa do conteúdo legível
+2. Análise jurídica detalhada
+3. Identificação do tipo de documento
+4. Pontos importantes e cláusulas relevantes
+5. Implicações legais
+6. Recomendações práticas
+
+Use suas capacidades de OCR para extrair e analisar todo o texto presente na imagem.`
+          });
+        } else if (file.type === 'application/pdf') {
+          // Para PDFs, orientar o GPT-4o sobre como processar
+          userMessage.content.push({
+            type: 'text',
+            text: `[PDF ANEXADO: ${file.name}]
+
+Este PDF pode ser:
+- Um documento com texto selecionável (PDF nativo)
+- Um documento escaneado (PDF com imagens)
+- Um documento híbrido (parte texto, parte imagem)
+
+IMPORTANTE: Como não posso processar PDFs diretamente, preciso que você:
+
+1. Informe ao usuário que PDFs não podem ser processados diretamente
+2. Oriente o usuário sobre as alternativas:
+   - Para PDFs com texto: converter para .txt e reenviar
+   - Para PDFs escaneados: converter cada página em imagem (PNG/JPG) e reenviar
+   - Usar ferramentas de OCR externas para extrair o texto
+
+3. Caso o usuário descreva o conteúdo do PDF, forneça análise baseada na descrição
+
+Explique essas limitações de forma clara e ofereça suporte para quando o usuário retornar com o conteúdo em formato adequado.`
+          });
         }
       }
 
