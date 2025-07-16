@@ -13,6 +13,11 @@ async function extractTextFromPdf(fileData: string, fileName: string, openAIKey:
   try {
     console.log(`Extracting text from PDF: ${fileName}`);
     
+    // Validar se fileData existe
+    if (!fileData || typeof fileData !== 'string') {
+      throw new Error('Dados do arquivo PDF não encontrados ou inválidos');
+    }
+    
     // Converter base64 para blob
     let binaryData;
     if (fileData.includes(',')) {
@@ -98,6 +103,11 @@ async function extractTextFromPdf(fileData: string, fileName: string, openAIKey:
 async function extractTextFromImage(fileData: string, fileName: string, openAIKey: string): Promise<string> {
   try {
     console.log(`Extracting text from image: ${fileName}`);
+    
+    // Validar se fileData existe
+    if (!fileData || typeof fileData !== 'string') {
+      throw new Error('Dados da imagem não encontrados ou inválidos');
+    }
     
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -201,6 +211,17 @@ serve(async (req) => {
     if (attachedFiles && attachedFiles.length > 0) {
       for (const file of attachedFiles) {
         try {
+          // Verificar se o arquivo tem dados válidos
+          if (!file || !file.data || !file.name || !file.type) {
+            console.error('Invalid file data:', file);
+            return new Response(JSON.stringify({ 
+              error: 'Arquivo inválido ou corrompido. Por favor, tente novamente com outro arquivo.' 
+            }), {
+              status: 400,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            });
+          }
+          
           if (file.type === 'application/pdf') {
             const texto = await extractTextFromPdf(file.data, file.name, openAIKey);
             textoExtraido += texto + '\n\n';
