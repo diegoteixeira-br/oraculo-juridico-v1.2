@@ -228,57 +228,126 @@ serve(async (req) => {
 
     console.log('Sending structured data to OpenAI:', dadosEstruturados);
 
-    // Fazer chamada para OpenAI com dados estruturados
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    // Criar um thread para o assistente
+    const threadResponse = await fetch('https://api.openai.com/v1/threads', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${openAIKey}`,
         'Content-Type': 'application/json',
+        'OpenAI-Beta': 'assistants=v2',
       },
-      body: JSON.stringify({
-        model: 'gpt-4o',
-        messages: [
-          {
-            role: 'system',
-            content: `Você é um assistente jurídico especializado em direito brasileiro. Você recebe dados estruturados com "texto_extraido_do_documento" e "pergunta_do_usuario". 
-
-Analise o documento extraído e responda a pergunta do usuário de forma:
-1. Clara e objetiva
-2. Baseada na legislação vigente e jurisprudência consolidada
-3. Incluindo referências legais quando aplicável
-4. Apontando quando uma questão requer análise mais aprofundada por um advogado
-5. Usando linguagem acessível, mas tecnicamente correta
-
-Sempre forneça:
-- Resumo do documento (se houver)
-- Pontos principais e relevantes
-- Análise jurídica do conteúdo
-- Implicações legais
-- Recomendações práticas
-
-Sempre indique quando uma situação exige consultoria jurídica presencial.`
-          },
-          {
-            role: 'user',
-            content: JSON.stringify(dadosEstruturados)
-          }
-        ],
-        max_tokens: 4000,
-        temperature: 0.7,
-      }),
+      body: JSON.stringify({}),
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('OpenAI API error:', errorText);
-      return new Response(JSON.stringify({ error: 'Erro na API da OpenAI' }), {
+    if (!threadResponse.ok) {
+      const errorText = await threadResponse.text();
+      console.error('Error creating thread:', errorText);
+      return new Response(JSON.stringify({ error: 'Erro ao criar thread' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    const data = await response.json();
-    const aiMessage = data.choices[0].message.content;
+    const thread = await threadResponse.json();
+
+    // Adicionar mensagem ao thread
+    const messageResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/messages`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIKey}`,
+        'Content-Type': 'application/json',
+        'OpenAI-Beta': 'assistants=v2',
+      },
+      body: JSON.stringify({
+        role: 'user',
+        content: JSON.stringify(dadosEstruturados),
+      }),
+    });
+
+    if (!messageResponse.ok) {
+      const errorText = await messageResponse.text();
+      console.error('Error adding message:', errorText);
+      return new Response(JSON.stringify({ error: 'Erro ao adicionar mensagem' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Executar o assistente
+    const runResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/runs`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIKey}`,
+        'Content-Type': 'application/json',
+        'OpenAI-Beta': 'assistants=v2',
+      },
+      body: JSON.stringify({
+        assistant_id: 'asst_k2kLxJFfqwqTh3BwgxPCheDp',
+      }),
+    });
+
+    if (!runResponse.ok) {
+      const errorText = await runResponse.text();
+      console.error('Error running assistant:', errorText);
+      return new Response(JSON.stringify({ error: 'Erro ao executar assistente' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const run = await runResponse.json();
+
+    // Aguardar a conclusão do run
+    let runStatus = run.status;
+    let runId = run.id;
+    
+    while (runStatus === 'queued' || runStatus === 'in_progress') {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const statusResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/runs/${runId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${openAIKey}`,
+          'OpenAI-Beta': 'assistants=v2',
+        },
+      });
+
+      if (!statusResponse.ok) {
+        throw new Error('Erro ao verificar status do run');
+      }
+
+      const statusData = await statusResponse.json();
+      runStatus = statusData.status;
+    }
+
+    if (runStatus !== 'completed') {
+      console.error('Run failed with status:', runStatus);
+      return new Response(JSON.stringify({ error: 'Erro na execução do assistente' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Obter as mensagens do thread
+    const messagesResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/messages`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${openAIKey}`,
+        'OpenAI-Beta': 'assistants=v2',
+      },
+    });
+
+    if (!messagesResponse.ok) {
+      const errorText = await messagesResponse.text();
+      console.error('Error getting messages:', errorText);
+      return new Response(JSON.stringify({ error: 'Erro ao obter mensagens' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const messages = await messagesResponse.json();
+    const aiMessage = messages.data[0].content[0].text.value;
     
     console.log('AI response received:', aiMessage.substring(0, 100) + '...');
 
