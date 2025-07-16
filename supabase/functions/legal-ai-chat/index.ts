@@ -135,11 +135,25 @@ Sempre indique quando uma situação exige consultoria jurídica presencial.`,
       for (const file of attachedFiles) {
         if (file.type === 'application/pdf' || file.type.startsWith('image/')) {
           try {
-            console.log(`Uploading file: ${file.name}`);
+            console.log(`Uploading file: ${file.name}, type: ${file.type}`);
+            
+            // Validar se o arquivo tem dados
+            if (!file.data || typeof file.data !== 'string') {
+              console.error(`File ${file.name} has invalid data:`, file.data);
+              continue;
+            }
             
             // Converter base64 para blob
-            const base64Data = file.data.split(',')[1];
-            const binaryData = atob(base64Data);
+            let binaryData;
+            if (file.data.includes(',')) {
+              // Se tem vírgula, assumir que é data URL
+              const base64Data = file.data.split(',')[1];
+              binaryData = atob(base64Data);
+            } else {
+              // Se não tem vírgula, assumir que já é base64 puro
+              binaryData = atob(file.data);
+            }
+            
             const bytes = new Uint8Array(binaryData.length);
             for (let i = 0; i < binaryData.length; i++) {
               bytes[i] = binaryData.charCodeAt(i);
