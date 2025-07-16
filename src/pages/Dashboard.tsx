@@ -48,6 +48,7 @@ export default function Dashboard() {
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [hasUnsavedMessages, setHasUnsavedMessages] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { user, profile, signOut, useCredits, refreshProfile } = useAuth();
   const { toast } = useToast();
@@ -293,10 +294,20 @@ export default function Dashboard() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
+  // Função para rolar para o final do chat
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   // Carregar histórico de conversas
   useEffect(() => {
     loadChatHistory();
   }, [user]);
+
+  // Rolar para o final quando mensagens mudarem ou quando estiver digitando
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isTyping]);
 
   const loadChatHistory = async () => {
     if (!user) return;
@@ -689,6 +700,9 @@ export default function Dashboard() {
                       </div>
                     </div>
                   )}
+                  
+                  {/* Invisible div to scroll to */}
+                  <div ref={messagesEndRef} />
                 </div>
               )}
             </ScrollArea>
