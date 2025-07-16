@@ -76,7 +76,8 @@ export default function Dashboard() {
     // Criar nova sessão se não existir
     let sessionId = currentSessionId;
     if (!sessionId) {
-      sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      // Usar crypto.randomUUID() para gerar um UUID válido
+      sessionId = crypto.randomUUID();
       setCurrentSessionId(sessionId);
     }
 
@@ -95,7 +96,7 @@ export default function Dashboard() {
     setHasUnsavedMessages(true);
 
     try {
-      // Salvar a mensagem do usuário primeiro
+      // Salvar a mensagem do usuário no histórico
       try {
         await supabase
           .from('query_history')
@@ -161,7 +162,7 @@ export default function Dashboard() {
           .insert({
             user_id: user?.id,
             session_id: sessionId,
-            prompt_text: userMessage.text,
+            prompt_text: null, // Não duplicar a pergunta
             response_text: aiResponse.text,
             message_type: 'ai_response',
             credits_consumed: costPerSearch
@@ -310,18 +311,9 @@ export default function Dashboard() {
         const sessionKey = query.session_id;
         
         if (!sessionsMap.has(sessionKey)) {
-          // Pegar o primeiro prompt da sessão como título
-          const firstQuery = data.find(q => 
-            q.session_id === sessionKey && q.message_type === 'user_query'
-          );
-          
           sessionsMap.set(sessionKey, {
             id: sessionKey,
-            title: firstQuery ? (
-              firstQuery.prompt_text.length > 50 ? 
-                firstQuery.prompt_text.substring(0, 50) + '...' : 
-                firstQuery.prompt_text
-            ) : 'Conversa sem título',
+            title: 'Nova conversa',
             preview: '',
             timestamp: new Date(query.created_at),
             messages: []
@@ -331,13 +323,20 @@ export default function Dashboard() {
         const session = sessionsMap.get(sessionKey)!;
         
         // Adicionar mensagem do usuário
-        if (query.message_type === 'user_query') {
+        if (query.message_type === 'user_query' && query.prompt_text) {
           session.messages.push({
             id: `user-${query.id}`,
             text: query.prompt_text,
             sender: 'user',
             timestamp: new Date(query.created_at)
           });
+          
+          // Usar primeira pergunta como título da sessão
+          if (session.title === 'Nova conversa') {
+            session.title = query.prompt_text.length > 50 ? 
+              query.prompt_text.substring(0, 50) + '...' : 
+              query.prompt_text;
+          }
         }
         
         // Adicionar resposta da IA
@@ -349,7 +348,7 @@ export default function Dashboard() {
             timestamp: new Date(query.created_at)
           });
           
-          // Usar parte da resposta como preview
+          // Usar parte da resposta como preview se ainda não tiver
           if (!session.preview) {
             session.preview = query.response_text.substring(0, 80) + '...';
           }
@@ -360,16 +359,16 @@ export default function Dashboard() {
       sessionsMap.forEach(session => {
         session.messages.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
         
-        // Atualizar timestamp da sessão para o último message
+        // Atualizar timestamp da sessão para a última mensagem
         if (session.messages.length > 0) {
           session.timestamp = session.messages[session.messages.length - 1].timestamp;
         }
       });
 
       // Converter para array e ordenar por timestamp (mais recente primeiro)
-      const sessions = Array.from(sessionsMap.values()).sort((a, b) => 
-        b.timestamp.getTime() - a.timestamp.getTime()
-      );
+      const sessions = Array.from(sessionsMap.values())
+        .filter(session => session.messages.length > 0) // Apenas sessões com mensagens
+        .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
       
       setChatSessions(sessions);
     } catch (error) {
