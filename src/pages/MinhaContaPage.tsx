@@ -4,22 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-
-interface CreditTransaction {
-  id: string;
-  transaction_type: 'purchase' | 'usage' | 'bonus' | 'daily_usage';
-  amount: number;
-  description: string;
-  created_at: string;
-  status: string;
-}
 
 export default function MinhaContaPage() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -37,9 +26,6 @@ export default function MinhaContaPage() {
   const { toast } = useToast();
   const { user, profile, signOut, refreshProfile } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
-  const [transactions, setTransactions] = useState<CreditTransaction[]>([]);
-  const [loadingTransactions, setLoadingTransactions] = useState(false);
 
   // Sistema de créditos - valores reais do banco
   const userCredits = profile?.credits || 0;
@@ -47,32 +33,10 @@ export default function MinhaContaPage() {
   const totalCreditsPurchased = profile?.total_credits_purchased || 0;
   const totalAvailableCredits = dailyCredits + userCredits;
 
-  // Carregar transações do usuário e avatar
+  // Carregar avatar
   useEffect(() => {
-    const loadTransactions = async () => {
-      if (!user?.id) return;
-      
-      setLoadingTransactions(true);
-      try {
-        const { data, error } = await supabase
-          .from('credit_transactions')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-          .limit(10);
-        
-        if (error) throw error;
-        setTransactions((data || []) as CreditTransaction[]);
-      } catch (error) {
-        console.error('Error loading transactions:', error);
-      } finally {
-        setLoadingTransactions(false);
-      }
-    };
-
-    loadTransactions();
     setAvatarUrl(profile?.avatar_url || null);
-  }, [user?.id, profile?.avatar_url]);
+  }, [profile?.avatar_url]);
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -308,7 +272,7 @@ export default function MinhaContaPage() {
           </CardContent>
         </Card>
 
-        {/* Histórico de Transações */}
+        {/* Histórico de Transações - Botão para página dedicada */}
         <Card className="bg-slate-800 border-slate-700">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -316,70 +280,23 @@ export default function MinhaContaPage() {
               Histórico de Transações
             </CardTitle>
             <CardDescription>
-              Últimas 10 transações de créditos
+              Visualize todas as suas transações de créditos
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {loadingTransactions ? (
-              <div className="text-center py-4">
-                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-                <p className="text-sm text-muted-foreground mt-2">Carregando...</p>
-              </div>
-            ) : transactions.length > 0 ? (
-              <div className="space-y-3">
-                {transactions.map((transaction) => (
-                  <div key={transaction.id} className="flex items-center justify-between p-4 bg-secondary/10 rounded-lg border border-secondary/20">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <Badge 
-                          variant={transaction.transaction_type === 'purchase' ? 'default' : 'secondary'}
-                          className={
-                            transaction.transaction_type === 'purchase' 
-                              ? 'bg-green-600 hover:bg-green-600/80' 
-                              : transaction.transaction_type === 'daily_usage'
-                              ? 'bg-blue-600 hover:bg-blue-600/80'
-                              : 'bg-orange-600 hover:bg-orange-600/80'
-                          }
-                        >
-                          {transaction.transaction_type === 'purchase' 
-                            ? 'Compra Cakto' 
-                            : transaction.transaction_type === 'daily_usage'
-                            ? 'Uso Diário'
-                            : 'Uso'}
-                        </Badge>
-                        <span className={`text-sm font-semibold ${
-                          transaction.amount > 0 ? 'text-green-400' : 'text-orange-400'
-                        }`}>
-                          {transaction.amount > 0 ? '+' : ''}{transaction.amount} créditos
-                        </span>
-                      </div>
-                      <p className="text-sm text-foreground mb-1">
-                        {transaction.description}
-                      </p>
-                      {transaction.transaction_type === 'purchase' && (
-                        <p className="text-xs text-green-400 font-medium mb-1">
-                          Compra realizada via Cakto • Quantidade: {transaction.amount} créditos
-                        </p>
-                      )}
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(transaction.created_at).toLocaleDateString('pt-BR', {
-                          day: '2-digit',
-                          month: '2-digit',
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <CreditCard className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
-                <p className="text-muted-foreground">Nenhuma transação encontrada</p>
-              </div>
-            )}
+            <div className="text-center py-6">
+              <History className="w-12 h-12 text-primary mx-auto mb-4" />
+              <p className="text-muted-foreground mb-4">
+                Acesse o histórico completo de suas transações de créditos
+              </p>
+              <Button 
+                onClick={() => navigate("/historico-transacoes")}
+                className="bg-primary hover:bg-primary/90"
+              >
+                <History className="w-4 h-4 mr-2" />
+                Ver Histórico Completo
+              </Button>
+            </div>
           </CardContent>
         </Card>
 

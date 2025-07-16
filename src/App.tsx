@@ -16,6 +16,7 @@ import Termos from "./pages/Termos";
 import Privacidade from "./pages/Privacidade";
 import Dashboard from "./pages/Dashboard";
 import MinhaContaPage from "./pages/MinhaContaPage";
+import HistoricoTransacoesPage from "./pages/HistoricoTransacoesPage";
 import ContatoPage from "./pages/ContatoPage";
 import ComprarCreditosPage from "./pages/ComprarCreditosPage";
 
@@ -36,6 +37,7 @@ function AppContent() {
       <Route path="/contato" element={<ContatoPage />} />
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/minha-conta" element={<ProtectedRoute><MinhaContaPage /></ProtectedRoute>} />
+      <Route path="/historico-transacoes" element={<ProtectedRoute><HistoricoTransacoesPage /></ProtectedRoute>} />
       <Route path="/comprar-creditos" element={<ProtectedRoute><ComprarCreditosPage /></ProtectedRoute>} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
