@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
-import { Eye, EyeOff, Save, ArrowLeft, User, Lock, CreditCard, History, Plus } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Eye, EyeOff, Save, ArrowLeft, User, Lock, CreditCard, History, Plus, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
@@ -25,7 +26,8 @@ export default function MinhaContaPage() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -34,6 +36,7 @@ export default function MinhaContaPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user, profile, signOut, refreshProfile } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [transactions, setTransactions] = useState<CreditTransaction[]>([]);
   const [loadingTransactions, setLoadingTransactions] = useState(false);
@@ -44,7 +47,7 @@ export default function MinhaContaPage() {
   const totalCreditsPurchased = profile?.total_credits_purchased || 0;
   const totalAvailableCredits = dailyCredits + userCredits;
 
-  // Carregar transações do usuário
+  // Carregar transações do usuário e avatar
   useEffect(() => {
     const loadTransactions = async () => {
       if (!user?.id) return;
@@ -68,7 +71,80 @@ export default function MinhaContaPage() {
     };
 
     loadTransactions();
-  }, [user?.id]);
+    setAvatarUrl(profile?.avatar_url || null);
+  }, [user?.id, profile?.avatar_url]);
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user?.id) return;
+
+    // Validar tamanho do arquivo (máximo 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "Arquivo muito grande",
+        description: "O arquivo deve ter no máximo 5MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validar tipo de arquivo
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Tipo de arquivo inválido",
+        description: "Por favor, selecione uma imagem.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+    try {
+      // Criar um nome único para o arquivo
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+      
+      // Usar um bucket público simples para avatares
+      const { data, error } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) throw error;
+
+      // Obter URL pública
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      // Atualizar perfil do usuário
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('user_id', user.id);
+
+      if (updateError) throw updateError;
+
+      setAvatarUrl(publicUrl);
+      await refreshProfile();
+      
+      toast({
+        title: "Foto atualizada!",
+        description: "Sua foto de perfil foi atualizada com sucesso.",
+      });
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      toast({
+        title: "Erro ao fazer upload",
+        description: "Não foi possível atualizar sua foto de perfil.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,6 +205,37 @@ export default function MinhaContaPage() {
             alt="Oráculo Jurídico" 
             className="h-20 w-auto mx-auto mb-4"
           />
+          
+          {/* Avatar do usuário */}
+          <div className="relative inline-block mb-4">
+            <Avatar className="w-20 h-20 mx-auto border-2 border-primary/20">
+              <AvatarImage src={avatarUrl || ""} />
+              <AvatarFallback className="text-lg bg-primary/20 text-primary">
+                {user?.email?.substring(0, 2).toUpperCase() || "DT"}
+              </AvatarFallback>
+            </Avatar>
+            <Button
+              variant="outline"
+              size="sm"
+              className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full bg-primary hover:bg-primary/90 border-primary"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploadingAvatar}
+            >
+              {isUploadingAvatar ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Camera className="w-4 h-4 text-white" />
+              )}
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarUpload}
+              className="hidden"
+            />
+          </div>
+          
           <h1 className="text-3xl font-bold text-primary mb-2">Minha Conta</h1>
           <p className="text-muted-foreground">
             Gerencie suas configurações e dados da conta
@@ -183,20 +290,13 @@ export default function MinhaContaPage() {
               </span>
             </div>
             
-            <div className="pt-4 border-t border-slate-600 flex gap-2">
+            <div className="pt-4 border-t border-slate-600">
               <Button 
                 onClick={() => navigate("/comprar-creditos")}
-                className="flex-1 bg-primary hover:bg-primary/90"
+                className="w-full bg-primary hover:bg-primary/90"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Comprar Mais Créditos
-              </Button>
-              <Button 
-                onClick={() => refreshProfile()}
-                variant="outline"
-                size="sm"
-              >
-                Atualizar
               </Button>
             </div>
           </CardContent>
@@ -222,32 +322,39 @@ export default function MinhaContaPage() {
             ) : transactions.length > 0 ? (
               <div className="space-y-3">
                 {transactions.map((transaction) => (
-                  <div key={transaction.id} className="flex items-center justify-between p-3 bg-secondary/10 rounded-lg">
+                  <div key={transaction.id} className="flex items-center justify-between p-4 bg-secondary/10 rounded-lg border border-secondary/20">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                         <Badge 
+                      <div className="flex items-center gap-3 mb-2">
+                        <Badge 
                           variant={transaction.transaction_type === 'purchase' ? 'default' : 'secondary'}
                           className={
                             transaction.transaction_type === 'purchase' 
-                              ? 'bg-green-600' 
+                              ? 'bg-green-600 hover:bg-green-600/80' 
                               : transaction.transaction_type === 'daily_usage'
-                              ? 'bg-blue-600'
-                              : 'bg-orange-600'
+                              ? 'bg-blue-600 hover:bg-blue-600/80'
+                              : 'bg-orange-600 hover:bg-orange-600/80'
                           }
                         >
                           {transaction.transaction_type === 'purchase' 
-                            ? 'Compra' 
+                            ? 'Compra Cakto' 
                             : transaction.transaction_type === 'daily_usage'
                             ? 'Uso Diário'
                             : 'Uso'}
                         </Badge>
-                        <span className="text-sm font-medium">
+                        <span className={`text-sm font-semibold ${
+                          transaction.amount > 0 ? 'text-green-400' : 'text-orange-400'
+                        }`}>
                           {transaction.amount > 0 ? '+' : ''}{transaction.amount} créditos
                         </span>
                       </div>
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="text-sm text-foreground mb-1">
                         {transaction.description}
                       </p>
+                      {transaction.transaction_type === 'purchase' && (
+                        <p className="text-xs text-green-400 font-medium mb-1">
+                          Compra realizada via Cakto • Quantidade: {transaction.amount} créditos
+                        </p>
+                      )}
                       <p className="text-xs text-muted-foreground">
                         {new Date(transaction.created_at).toLocaleDateString('pt-BR', {
                           day: '2-digit',
