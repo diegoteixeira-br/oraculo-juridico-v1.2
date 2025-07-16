@@ -261,44 +261,27 @@ export default function MinhaContaPage() {
             </div>
             
             <div className="pt-4 border-t border-slate-600">
-              <Button 
-                onClick={() => navigate("/comprar-creditos")}
-                className="w-full bg-primary hover:bg-primary/90"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Comprar Mais Créditos
-              </Button>
+              <div className="flex gap-3">
+                <Button 
+                  onClick={() => navigate("/comprar-creditos")}
+                  className="flex-1 bg-primary hover:bg-primary/90"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Comprar Mais Créditos
+                </Button>
+                <Button 
+                  onClick={() => navigate("/historico-transacoes")}
+                  variant="outline"
+                  className="flex-1 border-primary/20 hover:bg-primary/10"
+                >
+                  <History className="w-4 h-4 mr-2" />
+                  Ver Histórico Completo
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Histórico de Transações - Botão para página dedicada */}
-        <Card className="bg-slate-800 border-slate-700">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <History className="w-5 h-5" />
-              Histórico de Transações
-            </CardTitle>
-            <CardDescription>
-              Visualize todas as suas transações de créditos
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-6">
-              <History className="w-12 h-12 text-primary mx-auto mb-4" />
-              <p className="text-muted-foreground mb-4">
-                Acesse o histórico completo de suas transações de créditos
-              </p>
-              <Button 
-                onClick={() => navigate("/historico-transacoes")}
-                className="bg-primary hover:bg-primary/90"
-              >
-                <History className="w-4 h-4 mr-2" />
-                Ver Histórico Completo
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Account Info Card */}
         <Card className="bg-slate-800 border-slate-700">
