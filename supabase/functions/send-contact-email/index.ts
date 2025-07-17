@@ -29,7 +29,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Enviar email para o suporte
     const emailResponse = await resend.emails.send({
-      from: "Contato <onboarding@resend.dev>",
+      from: "Contato <nao-responda@oraculojuridico.com.br>",
       to: ["contato@oraculojuridico.com.br"],
       reply_to: email,
       subject: `[Contato] ${assunto}`,
@@ -47,7 +47,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Enviar confirmação para o usuário
     await resend.emails.send({
-      from: "Oráculo Jurídico <onboarding@resend.dev>",
+      from: "Oráculo Jurídico <nao-responda@oraculojuridico.com.br>",
       to: [email],
       subject: "Mensagem recebida - Oráculo Jurídico",
       html: `
