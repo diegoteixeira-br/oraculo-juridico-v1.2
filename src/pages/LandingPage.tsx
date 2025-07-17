@@ -39,31 +39,19 @@ const LandingPage = () => {
     },
     {
       question: "Meus créditos gratuitos se acumulam se eu não usar?",
-      answer: "Não. Os 3 créditos gratuitos são renovados diariamente, ou seja, você tem direito a 3 novas consultas grátis a cada dia. Eles não são cumulativos. Para ter um saldo de créditos para usar quando quiser, você pode adquirir um de nossos pacotes."
-    },
-    {
-      question: "Os créditos que eu compro têm data de validade?",
-      answer: "Não! Uma das grandes vantagens dos nossos pacotes é que os créditos não expiram. Você pode comprá-los hoje e usá-los ao longo de semanas ou meses, conforme a sua necessidade."
-    },
-    {
-      question: "O que acontece quando meus créditos acabam?",
-      answer: "Se você estiver em um pacote pago e seus créditos acabarem, você pode simplesmente comprar um novo pacote a qualquer momento para continuar usando a ferramenta sem interrupções. Se você estiver no plano gratuito, basta aguardar a renovação dos seus 3 créditos diários no dia seguinte."
-    },
-    {
-      question: "Quais formas de pagamento vocês aceitam para os pacotes?",
-      answer: "Aceitamos as principais formas de pagamento, incluindo Cartão de Crédito e Pix, através da nossa plataforma de pagamento segura, a Cakto."
+      answer: "Não. Os 3 créditos gratuitos são renovados diariamente, ou seja, você tem direito a 3 novas consultas grátis a cada dia. Eles não são cumulativos. Para ter um saldo de créditos para usar quando quiser, você pode adquirir pacotes extras dentro da sua conta."
     },
     {
       question: "Preciso cadastrar um cartão de crédito para usar o plano gratuito?",
-      answer: "Não. Para criar sua conta no plano gratuito e usar seus 3 créditos diários, você não precisa fornecer nenhuma informação de pagamento. Você só precisará inserir seus dados de pagamento quando decidir comprar um pacote de créditos."
+      answer: "Não. Para criar sua conta no plano gratuito e usar seus 3 créditos diários, você não precisa fornecer nenhuma informação de pagamento. Você só precisará inserir seus dados de pagamento se decidir comprar créditos extras dentro da sua conta."
     },
     {
       question: "As informações da IA são confiáveis?",
       answer: "Nossa IA é uma ferramenta de auxílio poderosa, mas não substitui o julgamento profissional de um advogado. Sempre confira as fontes citadas."
     },
     {
-      question: "Posso cancelar a qualquer momento?",
-      answer: "Sim, e com nosso novo sistema de créditos, não há nenhuma burocracia! Como não trabalhamos com assinaturas ou cobranças recorrentes, você tem total liberdade e controle.\n\nPara a Conta Gratuita: Você pode simplesmente parar de usar quando quiser, sem nenhum compromisso. Se desejar excluir seus dados, basta solicitar a exclusão da sua conta.\n\nPara os Pacotes Pagos: A compra de créditos é uma transação única, não uma assinatura. Portanto, não existe uma mensalidade para ser cancelada. Você compra seu pacote, usa os créditos no seu ritmo e só compra mais se e quando precisar."
+      question: "Como posso comprar créditos extras?",
+      answer: "Após criar sua conta gratuita e fazer login, você terá acesso à área de compra de créditos onde poderá adquirir pacotes extras conforme sua necessidade. Os créditos comprados não expiram."
     }
   ];
 
@@ -113,7 +101,7 @@ const LandingPage = () => {
             to="/cadastro"
             className="inline-block btn-primary text-lg px-8 py-4 animate-fade-in"
           >
-            Crie sua Conta Gratuita
+            Crie sua Conta Gratuita Agora
           </Link>
         </div>
       </section>
@@ -178,9 +166,9 @@ const LandingPage = () => {
               <div className="w-16 h-16 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6">
                 1
               </div>
-              <h3 className="text-xl font-semibold mb-4 text-foreground">Cadastre-se</h3>
+              <h3 className="text-xl font-semibold mb-4 text-foreground">Cadastre-se Gratuitamente</h3>
               <p className="text-muted-foreground">
-                Crie sua conta gratuita e comece a usar com 3 créditos renovados diariamente. Sem compromisso.
+                Crie sua conta gratuita e comece a usar imediatamente com 3 créditos renovados diariamente. Sem compromisso, sem cartão de crédito.
               </p>
             </div>
             
@@ -268,153 +256,69 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Preços */}
+      {/* Conta Gratuita */}
       <section className="py-20 px-4 bg-muted/20">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-6 text-foreground">
-              Comece gratuitamente e evolua conforme sua necessidade
+              Comece gratuitamente agora mesmo
             </h2>
             <p className="text-lg text-muted-foreground">
-              Crie sua conta gratuita agora e depois compre créditos extras quando precisar. Sem compromisso.
+              Crie sua conta gratuita e teste nossa IA jurídica sem compromisso
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
-            {/* Card 1: Plano Gratuito - DESTAQUE */}
-            <div className="card-signup p-6 text-center relative transform scale-105 border-2 border-primary">
+          <div className="max-w-md mx-auto">
+            <div className="card-signup p-8 text-center transform scale-105 border-2 border-primary">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-bold">
-                COMECE AQUI
+                100% GRATUITO
               </div>
-              <h3 className="text-2xl font-bold mb-3 text-foreground mt-2">Conta Gratuita</h3>
-              <div className="mb-4">
-                <span className="text-4xl font-bold text-primary">R$ 0</span>
+              <h3 className="text-3xl font-bold mb-4 text-foreground mt-2">Conta Gratuita</h3>
+              <div className="mb-6">
+                <span className="text-5xl font-bold text-primary">R$ 0</span>
+                <p className="text-muted-foreground mt-2">
+                  Para sempre, sem compromisso
+                </p>
               </div>
-              <p className="text-muted-foreground mb-4 text-sm">
-                Perfeito para testar a plataforma e para consultas diárias.
-              </p>
               
-              <div className="space-y-2 mb-6">
-                <div className="flex items-center space-x-2 text-sm">
-                  <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                  <span className="text-muted-foreground">3 créditos por dia</span>
+              <div className="space-y-3 mb-8">
+                <div className="flex items-center space-x-3 text-left">
+                  <Check className="w-5 h-5 text-primary flex-shrink-0" />
+                  <span className="text-muted-foreground">3 créditos renovados diariamente</span>
                 </div>
-                <div className="flex items-center space-x-2 text-sm">
-                  <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                  <span className="text-muted-foreground">Acesso à IA Jurídica</span>
+                <div className="flex items-center space-x-3 text-left">
+                  <Check className="w-5 h-5 text-primary flex-shrink-0" />
+                  <span className="text-muted-foreground">Acesso completo à IA Jurídica</span>
                 </div>
-                <div className="flex items-center space-x-2 text-sm">
-                  <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                <div className="flex items-center space-x-3 text-left">
+                  <Check className="w-5 h-5 text-primary flex-shrink-0" />
                   <span className="text-muted-foreground">Histórico de conversas</span>
                 </div>
-                <div className="flex items-center space-x-2 text-sm">
-                  <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                  <span className="text-muted-foreground">Sem compromisso</span>
+                <div className="flex items-center space-x-3 text-left">
+                  <Check className="w-5 h-5 text-primary flex-shrink-0" />
+                  <span className="text-muted-foreground">Sem cartão de crédito necessário</span>
+                </div>
+                <div className="flex items-center space-x-3 text-left">
+                  <Check className="w-5 h-5 text-primary flex-shrink-0" />
+                  <span className="text-muted-foreground">Opção de comprar créditos extras</span>
                 </div>
               </div>
               
               <Link
                 to="/cadastro"
-                className="inline-block w-full py-3 px-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-lg font-semibold"
+                className="inline-block w-full py-4 px-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-lg font-semibold text-lg"
               >
                 Criar Conta Gratuita
               </Link>
             </div>
-
-            {/* Card 2: Pacote Básico */}
-            <div className="card-signup p-6 text-center relative">
-              <h3 className="text-2xl font-bold mb-3 text-foreground">Pacote Básico</h3>
-              <div className="mb-4">
-                <span className="text-4xl font-bold text-foreground">R$ 59,90</span>
-              </div>
-              <p className="text-muted-foreground mb-4 text-sm">
-                Ideal para estudantes e profissionais com demanda moderada.
-              </p>
-              
-              <div className="space-y-2 mb-6">
-                <div className="flex items-center space-x-2 text-sm">
-                  <Check className="w-4 h-4 text-secondary flex-shrink-0" />
-                  <span className="text-muted-foreground">50 créditos extras</span>
-                </div>
-                <div className="flex items-center space-x-2 text-sm">
-                  <Check className="w-4 h-4 text-secondary flex-shrink-0" />
-                  <span className="text-muted-foreground">Sem data de expiração</span>
-                </div>
-                <div className="flex items-center space-x-2 text-sm">
-                  <Check className="w-4 h-4 text-secondary flex-shrink-0" />
-                  <span className="text-muted-foreground">Use quando quiser</span>
-                </div>
-                <div className="flex items-center space-x-2 text-sm">
-                  <Check className="w-4 h-4 text-secondary flex-shrink-0" />
-                  <span className="text-muted-foreground">+ Conta gratuita</span>
-                </div>
-              </div>
-              
-              <Link
-                to="/cadastro"
-                className="inline-block w-full py-3 px-6 border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors rounded-lg font-semibold"
-              >
-                Criar Conta e Comprar
-              </Link>
-            </div>
-
-            {/* Card 3: Pacote Premium */}
-            <div className="card-signup p-6 text-center relative">
-              <div className="absolute top-2 right-2">
-                <span className="bg-green-600 text-white px-2 py-1 rounded text-xs font-bold">
-                  ECONOMIZE 20%
-                </span>
-              </div>
-              <h3 className="text-2xl font-bold mb-3 text-foreground">Pacote Premium</h3>
-              <div className="mb-4">
-                <div className="flex items-center justify-center gap-2">
-                  <span className="text-4xl font-bold text-foreground">R$ 97,00</span>
-                  <span className="text-sm text-muted-foreground line-through">R$ 120,00</span>
-                </div>
-              </div>
-              <p className="text-muted-foreground mb-4 text-sm">
-                O melhor custo-benefício para advogados e escritórios.
-              </p>
-              
-              <div className="space-y-2 mb-6">
-                <div className="flex items-center space-x-2 text-sm">
-                  <Check className="w-4 h-4 text-secondary flex-shrink-0" />
-                  <span className="text-muted-foreground">100 créditos extras</span>
-                </div>
-                <div className="flex items-center space-x-2 text-sm">
-                  <Check className="w-4 h-4 text-secondary flex-shrink-0" />
-                  <span className="text-muted-foreground">Sem data de expiração</span>
-                </div>
-                <div className="flex items-center space-x-2 text-sm">
-                  <Check className="w-4 h-4 text-secondary flex-shrink-0" />
-                  <span className="text-muted-foreground">Acesso prioritário à IA</span>
-                </div>
-                <div className="flex items-center space-x-2 text-sm">
-                  <Check className="w-4 h-4 text-secondary flex-shrink-0" />
-                  <span className="text-muted-foreground">Suporte prioritário</span>
-                </div>
-                <div className="flex items-center space-x-2 text-sm">
-                  <Check className="w-4 h-4 text-secondary flex-shrink-0" />
-                  <span className="text-muted-foreground">+ Conta gratuita</span>
-                </div>
-              </div>
-              
-              <Link
-                to="/cadastro"
-                className="inline-block w-full py-3 px-6 border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors rounded-lg font-semibold"
-              >
-                Criar Conta e Comprar
-              </Link>
-            </div>
           </div>
 
-          {/* Seção FAQ sobre Créditos - ATUALIZADA */}
-          <div className="bg-card p-8 rounded-lg border border-border text-center">
-            <h3 className="text-2xl font-bold mb-4 text-foreground">
-              Como funciona?
+          <div className="mt-12 text-center bg-card p-6 rounded-lg border border-border">
+            <h3 className="text-xl font-bold mb-3 text-foreground">
+              Precisa de mais créditos?
             </h3>
-            <p className="text-lg text-muted-foreground max-w-4xl mx-auto">
-              Primeiro você cria sua conta gratuita e ganha 3 créditos diários para testar. Depois, se precisar de mais créditos, pode comprar pacotes extras na sua área da conta. Os créditos comprados nunca expiram e você usa quando quiser!
+            <p className="text-muted-foreground">
+              Após criar sua conta, você poderá comprar pacotes de créditos extras que nunca expiram. Use conforme sua necessidade!
             </p>
           </div>
         </div>
