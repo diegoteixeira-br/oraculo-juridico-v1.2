@@ -31,7 +31,6 @@ interface AuthContextType {
   resetPassword: (email: string) => Promise<any>;
   updatePassword: (newPassword: string) => Promise<any>;
   resendConfirmation: (email: string) => Promise<any>;
-  isAdmin: () => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -41,20 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isAdminUser, setIsAdminUser] = useState(false);
 
-  const checkAdminStatus = async (userId: string) => {
-    try {
-      const { data: isAdmin, error } = await supabase
-        .rpc('is_user_admin', { user_id: userId });
-      
-      if (error) throw error;
-      setIsAdminUser(isAdmin || false);
-    } catch (error) {
-      console.error('Error checking admin status:', error);
-      setIsAdminUser(false);
-    }
-  };
 
   const fetchProfile = async (userId: string) => {
     try {
@@ -69,9 +55,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       if (error) throw error;
       setProfile(data);
-      
-      // Verificar status de admin
-      await checkAdminStatus(userId);
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
@@ -94,9 +77,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (profile) {
         setProfile(profile);
       }
-      
-      // Verificar status de admin
-      await checkAdminStatus(user.id);
     } catch (error) {
       console.error('Error refreshing profile:', error);
     }
@@ -135,9 +115,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return totalCredits > 0;
   };
 
-  const isAdmin = () => {
-    return isAdminUser;
-  };
 
   const signUp = async (email: string, password: string, fullName?: string) => {
     // URL de redirecionamento para confirmar email
@@ -168,7 +145,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     setProfile(null);
-    setIsAdminUser(false);
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   };
@@ -223,7 +199,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }, 0);
         } else {
           setProfile(null);
-          setIsAdminUser(false);
         }
         
         setLoading(false);
@@ -264,8 +239,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refreshProfile,
     resetPassword,
     updatePassword,
-    resendConfirmation,
-    isAdmin
+    resendConfirmation
   };
 
   return (

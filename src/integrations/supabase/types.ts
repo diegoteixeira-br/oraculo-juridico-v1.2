@@ -14,27 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      admins: {
-        Row: {
-          created_at: string
-          id: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       credit_transactions: {
         Row: {
           amount: number
@@ -210,10 +189,6 @@ export type Database = {
       hnswhandler: {
         Args: { "": unknown }
         Returns: unknown
-      }
-      is_user_admin: {
-        Args: { user_id: string }
-        Returns: boolean
       }
       ivfflat_bit_support: {
         Args: { "": unknown }
