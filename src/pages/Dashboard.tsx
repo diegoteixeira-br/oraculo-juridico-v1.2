@@ -1,5 +1,6 @@
+
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, Settings, LogOut, Send, Bot, User, Clock, CreditCard, Paperclip, X, FileText, Image, History, Plus, Trash2, MoreHorizontal } from "lucide-react";
+import { MessageCircle, Settings, LogOut, Send, Bot, User, Clock, CreditCard, History, Plus, Trash2, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,21 +16,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
-interface AttachedFile {
-  id: string;
-  name: string;
-  size: number;
-  type: string;
-  url: string;
-  data?: string; // Base64 data
-}
-
 interface Message {
   id: string;
   text: string;
   sender: 'user' | 'ai';
   timestamp: Date;
-  attachedFiles?: AttachedFile[];
 }
 
 interface ChatSession {
@@ -44,11 +35,9 @@ export default function Dashboard() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [hasUnsavedMessages, setHasUnsavedMessages] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { user, profile, signOut, useCredits, refreshProfile } = useAuth();
@@ -64,7 +53,7 @@ export default function Dashboard() {
   const costPerSearch = 1; // Custo por pesquisa
 
   const handleSendMessage = async () => {
-    if (!inputMessage.trim() && attachedFiles.length === 0) return;
+    if (!inputMessage.trim()) return;
 
     // Verificar se o usuário tem créditos suficientes
     if (totalCredits < costPerSearch) {
@@ -89,13 +78,11 @@ export default function Dashboard() {
       id: Date.now().toString(),
       text: inputMessage,
       sender: 'user',
-      timestamp: new Date(),
-      attachedFiles: attachedFiles.length > 0 ? [...attachedFiles] : undefined
+      timestamp: new Date()
     };
 
     setMessages(prev => [...prev, userMessage]);
     setInputMessage("");
-    setAttachedFiles([]);
     setIsTyping(true);
     setHasUnsavedMessages(true);
 
@@ -120,8 +107,7 @@ export default function Dashboard() {
       const { data, error } = await supabase.functions.invoke('legal-ai-chat', {
         body: {
           message: userMessage.text,
-          userId: user?.id,
-          attachedFiles: userMessage.attachedFiles
+          userId: user?.id
         }
       });
 
@@ -228,95 +214,6 @@ export default function Dashboard() {
 
   const handleMyAccount = () => {
     navigate('/minha-conta');
-  };
-
-  const handleFileAttachment = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-
-    Array.from(files).forEach(async file => {
-      // Validar tipo de arquivo (PDFs e imagens)
-      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
-      if (!allowedTypes.includes(file.type)) {
-        toast({
-          title: "Tipo de arquivo não suportado",
-          description: "Apenas PDFs e imagens (JPG, PNG, WEBP) são permitidos.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Validar tamanho do arquivo (máximo 10MB)
-      if (file.size > 10 * 1024 * 1024) {
-        toast({
-          title: "Arquivo muito grande",
-          description: "O arquivo deve ter no máximo 10MB.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      try {
-        // Converter arquivo para base64
-        const base64Data = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => {
-            if (typeof reader.result === 'string') {
-              resolve(reader.result);
-            } else {
-              reject(new Error('Failed to read file'));
-            }
-          };
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-
-        const newFile: AttachedFile = {
-          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          url: URL.createObjectURL(file),
-          data: base64Data // Adicionar dados base64
-        };
-
-        setAttachedFiles(prev => [...prev, newFile]);
-      } catch (error) {
-        console.error('Error reading file:', error);
-        toast({
-          title: "Erro ao processar arquivo",
-          description: "Não foi possível processar o arquivo. Tente novamente.",
-          variant: "destructive",
-        });
-      }
-    });
-
-    // Limpar input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
-  const removeAttachedFile = (fileId: string) => {
-    setAttachedFiles(prev => {
-      const fileToRemove = prev.find(f => f.id === fileId);
-      if (fileToRemove) {
-        URL.revokeObjectURL(fileToRemove.url);
-      }
-      return prev.filter(f => f.id !== fileId);
-    });
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
   // Função para rolar para o final do chat
@@ -677,25 +574,6 @@ export default function Dashboard() {
                            <div className="flex-1">
                              <p className="text-sm leading-relaxed">{message.text}</p>
                              
-                             {/* Show attached files */}
-                             {message.attachedFiles && message.attachedFiles.length > 0 && (
-                               <div className="mt-2 space-y-2">
-                                 {message.attachedFiles.map((file) => (
-                                   <div key={file.id} className="flex items-center gap-2 p-2 bg-background/50 rounded-md">
-                                     {file.type.startsWith('image/') ? (
-                                       <Image className="w-4 h-4 text-primary flex-shrink-0" />
-                                     ) : (
-                                       <FileText className="w-4 h-4 text-primary flex-shrink-0" />
-                                     )}
-                                     <div className="flex-1 min-w-0">
-                                       <p className="text-xs font-medium truncate">{file.name}</p>
-                                       <p className="text-xs text-muted-foreground">{formatFileSize(file.size)}</p>
-                                     </div>
-                                   </div>
-                                 ))}
-                               </div>
-                             )}
-                             
                              <span className="text-xs text-muted-foreground mt-1 block">
                                {message.timestamp.toLocaleTimeString('pt-BR', {
                                  hour: '2-digit',
@@ -734,50 +612,7 @@ export default function Dashboard() {
 
             {/* Input Area */}
             <div className="p-3 md:p-6 border-t border-slate-700 bg-slate-800">
-              {/* Attached Files Preview */}
-              {attachedFiles.length > 0 && (
-                <div className="mb-4 space-y-2">
-                  <p className="text-sm text-muted-foreground">Arquivos anexados:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {attachedFiles.map((file) => (
-                      <div key={file.id} className="flex items-center gap-2 p-2 bg-background/50 rounded-md">
-                        {file.type.startsWith('image/') ? (
-                          <Image className="w-4 h-4 text-primary flex-shrink-0" />
-                        ) : (
-                          <FileText className="w-4 h-4 text-primary flex-shrink-0" />
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium truncate max-w-24 md:max-w-32">{file.name}</p>
-                          <p className="text-xs text-muted-foreground">{formatFileSize(file.size)}</p>
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => removeAttachedFile(file.id)}
-                          className="h-6 w-6 p-0 hover:bg-destructive/20"
-                        >
-                          <X className="w-3 h-3" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              
               <div className="flex gap-2">
-                <div className="flex gap-1">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={handleFileAttachment}
-                    disabled={isTyping}
-                    className="p-2 h-12 md:h-16 border-slate-600 hover:border-primary"
-                  >
-                    <Paperclip className="w-4 h-4 md:w-5 md:h-5" />
-                  </Button>
-                </div>
-                
                 <Textarea
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
@@ -789,7 +624,7 @@ export default function Dashboard() {
                 
                 <Button
                   onClick={handleSendMessage}
-                  disabled={(!inputMessage.trim() && attachedFiles.length === 0) || isTyping}
+                  disabled={!inputMessage.trim() || isTyping}
                   className="btn-primary p-3 md:p-4 w-12 h-12 md:w-16 md:h-16 rounded-lg"
                 >
                   <Send className="w-4 h-4 md:w-5 md:h-5" />
@@ -816,16 +651,6 @@ export default function Dashboard() {
                   )}
                 </div>
               </div>
-              
-              {/* Hidden File Input */}
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                accept=".pdf,image/*"
-                multiple
-                className="hidden"
-              />
             </div>
           </div>
         </main>
