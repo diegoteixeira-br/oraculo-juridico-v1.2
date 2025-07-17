@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { MessageCircle, Settings, LogOut, Send, Bot, User, Clock, CreditCard, History, Plus, Trash2, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -475,31 +474,6 @@ export default function Dashboard() {
             </div>
           </ScrollArea>
         </div>
-        
-        {/* Menu Principal - Fixo na parte inferior */}
-        <div className="border-t border-slate-700 pt-2 mt-2">
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton 
-                onClick={handleMyAccount}
-                className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-primary hover:bg-primary/10 text-sm"
-              >
-                <Settings className="w-4 h-4" />
-                <span>Minha Conta</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            
-            <SidebarMenuItem>
-              <SidebarMenuButton 
-                onClick={handleLogout}
-                className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-primary hover:bg-primary/10 text-sm"
-              >
-                <LogOut className="w-4 h-4" />
-                <span>Sair</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </div>
       </SidebarContent>
     </Sidebar>
   );
@@ -519,12 +493,28 @@ export default function Dashboard() {
             <div className="flex items-center gap-2 md:gap-4">
               <div className="flex items-center gap-1 md:gap-2">
                 <span className="text-xs md:text-sm text-muted-foreground hidden sm:inline">Olá, {userName}!</span>
-                <Avatar className="w-7 h-7 md:w-8 md:h-8">
-                  <AvatarImage src={profile?.avatar_url || ""} />
-                  <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                    {userInitials}
-                  </AvatarFallback>
-                </Avatar>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="p-0 h-auto">
+                      <Avatar className="w-7 h-7 md:w-8 md:h-8 cursor-pointer">
+                        <AvatarImage src={profile?.avatar_url || ""} />
+                        <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                          {userInitials}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem onClick={handleMyAccount}>
+                      <Settings className="w-4 h-4 mr-2" />
+                      Minha Conta
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleLogout}>
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Sair
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           </header>
