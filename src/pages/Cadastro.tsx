@@ -35,6 +35,12 @@ export default function Cadastro() {
             description: "Este email já possui uma conta. Faça login ou use outro email.",
             variant: "destructive",
           });
+        } else if (result.error.message.includes('rate limit') || result.error.message.includes('429')) {
+          toast({
+            title: "Muitas tentativas de cadastro",
+            description: "Aguarde alguns minutos antes de tentar novamente. O limite de envio de emails foi excedido temporariamente.",
+            variant: "destructive",
+          });
         } else {
           throw result.error;
         }
@@ -42,8 +48,8 @@ export default function Cadastro() {
         toast({
           title: "Conta criada!",
           description: selectedPlan 
-            ? "Sua conta foi criada com sucesso. Agora finalize o pagamento para ter acesso completo!" 
-            : "Sua conta foi criada com sucesso!",
+            ? "Sua conta foi criada com sucesso. Verifique seu email para confirmar e depois finalize o pagamento!" 
+            : "Sua conta foi criada com sucesso! Verifique seu email para confirmar.",
         });
         
         if (selectedPlan) {
@@ -53,11 +59,19 @@ export default function Cadastro() {
         }
       }
     } catch (error: any) {
-      toast({
-        title: "Erro",
-        description: error.message || "Ocorreu um erro inesperado. Tente novamente.",
-        variant: "destructive",
-      });
+      if (error.message && (error.message.includes('rate limit') || error.message.includes('429'))) {
+        toast({
+          title: "Limite de emails excedido",
+          description: "Muitas tentativas de cadastro foram feitas. Aguarde 15 minutos e tente novamente.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Erro",
+          description: error.message || "Ocorreu um erro inesperado. Tente novamente.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }
