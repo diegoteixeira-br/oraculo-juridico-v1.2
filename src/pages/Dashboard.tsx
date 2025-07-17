@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -565,21 +566,29 @@ export default function Dashboard() {
                     </p>
                   </div>
                   
-                  {/* Exemplos de Perguntas - Centralizado e Compacto */}
+                  {/* Exemplos de Perguntas - Com Tooltip */}
                   <div className="w-full max-w-5xl">
                     <h3 className="text-lg font-medium mb-4 text-center">Exemplos de perguntas:</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {exampleQuestions.map((question, index) => (
-                        <Button
-                          key={index}
-                          variant="outline"
-                          className="text-left justify-start h-auto p-3 text-xs md:text-sm bg-slate-800 border-slate-600 hover:bg-slate-700 hover:border-primary/50 transition-colors"
-                          onClick={() => handleExampleClick(question)}
-                        >
-                          <span className="line-clamp-3">{question}</span>
-                        </Button>
-                      ))}
-                    </div>
+                    <TooltipProvider>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {exampleQuestions.map((question, index) => (
+                          <Tooltip key={index}>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className="text-left justify-start h-auto p-3 text-xs md:text-sm bg-slate-800 border-slate-600 hover:bg-slate-700 hover:border-primary/50 transition-colors min-h-[80px]"
+                                onClick={() => handleExampleClick(question)}
+                              >
+                                <span className="line-clamp-4 leading-relaxed">{question}</span>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-xs p-3">
+                              <p className="text-sm">{question}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        ))}
+                      </div>
+                    </TooltipProvider>
                   </div>
                 </div>
               ) : (
