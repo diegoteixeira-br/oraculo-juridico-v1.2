@@ -273,100 +273,55 @@ const LandingPage = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-6 text-foreground">
-              Escolha o plano ideal para sua necessidade
+              Comece gratuitamente e evolua conforme sua necessidade
             </h2>
             <p className="text-lg text-muted-foreground">
-              Comece gratuitamente ou compre créditos para uso intensivo. Sem mensalidades, sem compromisso.
+              Crie sua conta gratuita agora e depois compre créditos extras quando precisar. Sem compromisso.
             </p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8 mb-16">
-            {/* Card 1: Plano Gratuito */}
-            <div className="card-signup p-6 text-center relative">
-              <h3 className="text-2xl font-bold mb-3 text-foreground">Gratuito</h3>
+            {/* Card 1: Plano Gratuito - DESTAQUE */}
+            <div className="card-signup p-6 text-center relative transform scale-105 border-2 border-primary">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-bold">
+                COMECE AQUI
+              </div>
+              <h3 className="text-2xl font-bold mb-3 text-foreground mt-2">Conta Gratuita</h3>
               <div className="mb-4">
-                <span className="text-4xl font-bold text-foreground">R$ 0</span>
+                <span className="text-4xl font-bold text-primary">R$ 0</span>
               </div>
               <p className="text-muted-foreground mb-4 text-sm">
-                Perfeito para testar a plataforma e para consultas esporádicas.
+                Perfeito para testar a plataforma e para consultas diárias.
               </p>
               
               <div className="space-y-2 mb-6">
                 <div className="flex items-center space-x-2 text-sm">
-                  <Check className="w-4 h-4 text-secondary flex-shrink-0" />
+                  <Check className="w-4 h-4 text-primary flex-shrink-0" />
                   <span className="text-muted-foreground">3 créditos por dia</span>
                 </div>
                 <div className="flex items-center space-x-2 text-sm">
-                  <Check className="w-4 h-4 text-secondary flex-shrink-0" />
+                  <Check className="w-4 h-4 text-primary flex-shrink-0" />
                   <span className="text-muted-foreground">Acesso à IA Jurídica</span>
                 </div>
                 <div className="flex items-center space-x-2 text-sm">
-                  <Check className="w-4 h-4 text-secondary flex-shrink-0" />
+                  <Check className="w-4 h-4 text-primary flex-shrink-0" />
                   <span className="text-muted-foreground">Histórico de conversas</span>
+                </div>
+                <div className="flex items-center space-x-2 text-sm">
+                  <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                  <span className="text-muted-foreground">Sem compromisso</span>
                 </div>
               </div>
               
               <Link
                 to="/cadastro"
-                className="inline-block w-full py-3 px-6 border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors rounded-lg font-semibold"
-              >
-                Cadastre-se Grátis
-              </Link>
-            </div>
-
-            {/* Card 2: Pacote Premium (Destaque) */}
-            <div className="card-signup p-6 text-center relative transform scale-105 border-2 border-primary">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-bold">
-                MAIS POPULAR
-              </div>
-              <div className="absolute top-2 right-2">
-                <span className="bg-green-600 text-white px-2 py-1 rounded text-xs font-bold">
-                  ECONOMIZE 20%
-                </span>
-              </div>
-              <h3 className="text-2xl font-bold mb-3 text-foreground mt-2">Pacote Premium</h3>
-              <div className="mb-4">
-                <div className="flex items-center justify-center gap-2">
-                  <span className="text-4xl font-bold text-primary">R$ 97,00</span>
-                  <span className="text-sm text-muted-foreground line-through">R$ 120,00</span>
-                </div>
-              </div>
-              <p className="text-muted-foreground mb-4 text-sm">
-                O melhor custo-benefício para advogados e escritórios.
-              </p>
-              
-              <div className="space-y-2 mb-6">
-                <div className="flex items-center space-x-2 text-sm">
-                  <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                  <span className="text-muted-foreground">100 créditos para usar quando quiser</span>
-                </div>
-                <div className="flex items-center space-x-2 text-sm">
-                  <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                  <span className="text-muted-foreground">Sem data de expiração</span>
-                </div>
-                <div className="flex items-center space-x-2 text-sm">
-                  <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                  <span className="text-muted-foreground">Acesso prioritário à IA</span>
-                </div>
-                <div className="flex items-center space-x-2 text-sm">
-                  <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                  <span className="text-muted-foreground">Suporte prioritário</span>
-                </div>
-                <div className="flex items-center space-x-2 text-sm">
-                  <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                  <span className="text-muted-foreground">Relatórios avançados</span>
-                </div>
-              </div>
-              
-              <Link
-                to="/cadastro?plano=premium"
                 className="inline-block w-full py-3 px-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-lg font-semibold"
               >
-                Comprar Créditos
+                Criar Conta Gratuita
               </Link>
             </div>
 
-            {/* Card 3: Pacote Básico */}
+            {/* Card 2: Pacote Básico */}
             <div className="card-signup p-6 text-center relative">
               <h3 className="text-2xl font-bold mb-3 text-foreground">Pacote Básico</h3>
               <div className="mb-4">
@@ -379,7 +334,7 @@ const LandingPage = () => {
               <div className="space-y-2 mb-6">
                 <div className="flex items-center space-x-2 text-sm">
                   <Check className="w-4 h-4 text-secondary flex-shrink-0" />
-                  <span className="text-muted-foreground">50 créditos para usar quando quiser</span>
+                  <span className="text-muted-foreground">50 créditos extras</span>
                 </div>
                 <div className="flex items-center space-x-2 text-sm">
                   <Check className="w-4 h-4 text-secondary flex-shrink-0" />
@@ -387,26 +342,79 @@ const LandingPage = () => {
                 </div>
                 <div className="flex items-center space-x-2 text-sm">
                   <Check className="w-4 h-4 text-secondary flex-shrink-0" />
-                  <span className="text-muted-foreground">Acesso à IA Jurídica</span>
+                  <span className="text-muted-foreground">Use quando quiser</span>
+                </div>
+                <div className="flex items-center space-x-2 text-sm">
+                  <Check className="w-4 h-4 text-secondary flex-shrink-0" />
+                  <span className="text-muted-foreground">+ Conta gratuita</span>
                 </div>
               </div>
               
               <Link
-                to="/cadastro?plano=basic"
+                to="/cadastro"
                 className="inline-block w-full py-3 px-6 border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors rounded-lg font-semibold"
               >
-                Comprar Créditos
+                Criar Conta e Comprar
+              </Link>
+            </div>
+
+            {/* Card 3: Pacote Premium */}
+            <div className="card-signup p-6 text-center relative">
+              <div className="absolute top-2 right-2">
+                <span className="bg-green-600 text-white px-2 py-1 rounded text-xs font-bold">
+                  ECONOMIZE 20%
+                </span>
+              </div>
+              <h3 className="text-2xl font-bold mb-3 text-foreground">Pacote Premium</h3>
+              <div className="mb-4">
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-4xl font-bold text-foreground">R$ 97,00</span>
+                  <span className="text-sm text-muted-foreground line-through">R$ 120,00</span>
+                </div>
+              </div>
+              <p className="text-muted-foreground mb-4 text-sm">
+                O melhor custo-benefício para advogados e escritórios.
+              </p>
+              
+              <div className="space-y-2 mb-6">
+                <div className="flex items-center space-x-2 text-sm">
+                  <Check className="w-4 h-4 text-secondary flex-shrink-0" />
+                  <span className="text-muted-foreground">100 créditos extras</span>
+                </div>
+                <div className="flex items-center space-x-2 text-sm">
+                  <Check className="w-4 h-4 text-secondary flex-shrink-0" />
+                  <span className="text-muted-foreground">Sem data de expiração</span>
+                </div>
+                <div className="flex items-center space-x-2 text-sm">
+                  <Check className="w-4 h-4 text-secondary flex-shrink-0" />
+                  <span className="text-muted-foreground">Acesso prioritário à IA</span>
+                </div>
+                <div className="flex items-center space-x-2 text-sm">
+                  <Check className="w-4 h-4 text-secondary flex-shrink-0" />
+                  <span className="text-muted-foreground">Suporte prioritário</span>
+                </div>
+                <div className="flex items-center space-x-2 text-sm">
+                  <Check className="w-4 h-4 text-secondary flex-shrink-0" />
+                  <span className="text-muted-foreground">+ Conta gratuita</span>
+                </div>
+              </div>
+              
+              <Link
+                to="/cadastro"
+                className="inline-block w-full py-3 px-6 border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors rounded-lg font-semibold"
+              >
+                Criar Conta e Comprar
               </Link>
             </div>
           </div>
 
-          {/* Seção FAQ sobre Créditos */}
+          {/* Seção FAQ sobre Créditos - ATUALIZADA */}
           <div className="bg-card p-8 rounded-lg border border-border text-center">
             <h3 className="text-2xl font-bold mb-4 text-foreground">
-              Como funcionam os créditos?
+              Como funciona?
             </h3>
             <p className="text-lg text-muted-foreground max-w-4xl mx-auto">
-              É simples. Cada pergunta completa que você faz à nossa Inteligência Artificial consome 1 crédito. No plano gratuito, seu crédito é renovado a cada 24 horas. Nos pacotes pagos, os créditos não expiram e você pode comprar mais sempre que precisar.
+              Primeiro você cria sua conta gratuita e ganha 3 créditos diários para testar. Depois, se precisar de mais créditos, pode comprar pacotes extras na sua área da conta. Os créditos comprados nunca expiram e você usa quando quiser!
             </p>
           </div>
         </div>
