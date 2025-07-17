@@ -15,6 +15,7 @@ interface Profile {
   total_credits_purchased: number;
   daily_credits: number;
   last_daily_reset: string;
+  is_admin: boolean;
 }
 
 interface AuthContextType {
@@ -31,6 +32,7 @@ interface AuthContextType {
   resetPassword: (email: string) => Promise<any>;
   updatePassword: (newPassword: string) => Promise<any>;
   resendConfirmation: (email: string) => Promise<any>;
+  isAdmin: () => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -112,6 +114,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Com sistema de créditos, verifica se tem créditos disponíveis (diários + comprados)
     const totalCredits = (profile.daily_credits || 0) + (profile.credits || 0);
     return totalCredits > 0;
+  };
+
+  const isAdmin = () => {
+    return profile?.is_admin || false;
   };
 
   const signUp = async (email: string, password: string, fullName?: string) => {
@@ -237,7 +243,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refreshProfile,
     resetPassword,
     updatePassword,
-    resendConfirmation
+    resendConfirmation,
+    isAdmin
   };
 
   return (

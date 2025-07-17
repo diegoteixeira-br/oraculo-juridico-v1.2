@@ -9,23 +9,16 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 
-// Lista de emails de administrador
-const ADMIN_EMAILS = [
-  'admin@oraculojuridico.com.br',
-  'marizafonsecademeneses@gmail.com' // Adicione outros emails de admin aqui
-];
-
 export default function TestWebhook() {
   const [email, setEmail] = useState('');
   const [plan, setPlan] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const { toast } = useToast();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, isAdmin } = useAuth();
   const navigate = useNavigate();
 
-  // Verificar se o usuário é admin
-  const isAdmin = user?.email && ADMIN_EMAILS.includes(user.email);
+  // Verificar se o usuário é admin (agora usando o campo do banco)
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -38,7 +31,7 @@ export default function TestWebhook() {
       return;
     }
 
-    if (!authLoading && user && !isAdmin) {
+    if (!authLoading && user && !isAdmin()) {
       toast({
         title: "Acesso negado",
         description: "Esta página é restrita para administradores.",
@@ -62,7 +55,7 @@ export default function TestWebhook() {
   }
 
   // Não mostrar conteúdo se não for admin
-  if (!isAdmin) {
+  if (!isAdmin()) {
     return null;
   }
 

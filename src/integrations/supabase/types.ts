@@ -58,6 +58,7 @@ export type Database = {
           daily_credits: number | null
           full_name: string | null
           id: string
+          is_admin: boolean
           last_daily_reset: string | null
           plan_type: string | null
           subscription_end_date: string | null
@@ -75,6 +76,7 @@ export type Database = {
           daily_credits?: number | null
           full_name?: string | null
           id?: string
+          is_admin?: boolean
           last_daily_reset?: string | null
           plan_type?: string | null
           subscription_end_date?: string | null
@@ -92,6 +94,7 @@ export type Database = {
           daily_credits?: number | null
           full_name?: string | null
           id?: string
+          is_admin?: boolean
           last_daily_reset?: string | null
           plan_type?: string | null
           subscription_end_date?: string | null
@@ -189,6 +192,10 @@ export type Database = {
       hnswhandler: {
         Args: { "": unknown }
         Returns: unknown
+      }
+      is_user_admin: {
+        Args: { user_id: string }
+        Returns: boolean
       }
       ivfflat_bit_support: {
         Args: { "": unknown }
