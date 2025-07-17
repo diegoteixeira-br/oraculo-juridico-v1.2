@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { 
   Clock, 
@@ -33,6 +32,13 @@ const LandingPage = () => {
     setOpenFaq(openFaq === index ? null : index);
   };
 
+  const scrollToFreeAccount = () => {
+    const freeAccountSection = document.getElementById('free-account-section');
+    if (freeAccountSection) {
+      freeAccountSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   const faqData = [
     {
       question: "Como funcionam os créditos?",
@@ -65,17 +71,11 @@ const LandingPage = () => {
             Oráculo Jurídico
           </h1>
           
-          <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="flex items-center">
             {/* Login button */}
             <Link to="/login" className="text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-1 sm:space-x-2 border border-border rounded-lg px-2 py-1.5 sm:px-4 sm:py-2 hover:bg-muted/10">
               <Smartphone className="w-3 h-3 sm:w-4 sm:h-4" />
               <span className="text-xs sm:text-sm">Login</span>
-            </Link>
-            
-            {/* Criar Conta button */}
-            <Link to="/cadastro" className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center space-x-1 sm:space-x-2 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 md:px-4">
-              <Users className="w-3 h-3 sm:w-4 sm:h-4" />
-              <span className="text-xs sm:text-sm">Criar Conta</span>
             </Link>
           </div>
         </div>
@@ -98,12 +98,12 @@ const LandingPage = () => {
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-4xl mx-auto animate-fade-in">
             Chega de perder horas em pesquisa. Com o Oráculo Jurídico, você acessa uma IA treinada para o Direito brasileiro e obtém respostas fundamentadas em segundos.
           </p>
-          <Link
-            to="/cadastro"
+          <button
+            onClick={scrollToFreeAccount}
             className="inline-block btn-primary text-lg px-8 py-4 animate-fade-in"
           >
-            Crie sua Conta Gratuita Agora
-          </Link>
+            Quero Começar Gratuitamente
+          </button>
         </div>
       </section>
 
@@ -258,7 +258,7 @@ const LandingPage = () => {
       </section>
 
       {/* Conta Gratuita */}
-      <section className="py-20 px-4 bg-muted/20">
+      <section id="free-account-section" className="py-20 px-4 bg-muted/20">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-6 text-foreground">
