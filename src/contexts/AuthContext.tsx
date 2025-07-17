@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -112,7 +113,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signUp = async (email: string, password: string, fullName?: string) => {
-    const redirectUrl = `${window.location.origin}/`;
+    // Use a URL completa do site ao invés de window.location.origin
+    const redirectUrl = 'https://oraculojuridico.com.br/';
     
     const { data, error } = await supabase.auth.signUp({
       email,
