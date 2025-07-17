@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      admins: {
+        Row: {
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       credit_transactions: {
         Row: {
           amount: number
@@ -58,7 +79,6 @@ export type Database = {
           daily_credits: number | null
           full_name: string | null
           id: string
-          is_admin: boolean
           last_daily_reset: string | null
           plan_type: string | null
           subscription_end_date: string | null
@@ -76,7 +96,6 @@ export type Database = {
           daily_credits?: number | null
           full_name?: string | null
           id?: string
-          is_admin?: boolean
           last_daily_reset?: string | null
           plan_type?: string | null
           subscription_end_date?: string | null
@@ -94,7 +113,6 @@ export type Database = {
           daily_credits?: number | null
           full_name?: string | null
           id?: string
-          is_admin?: boolean
           last_daily_reset?: string | null
           plan_type?: string | null
           subscription_end_date?: string | null

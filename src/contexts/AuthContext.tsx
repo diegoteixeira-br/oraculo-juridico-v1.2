@@ -15,7 +15,6 @@ interface Profile {
   total_credits_purchased: number;
   daily_credits: number;
   last_daily_reset: string;
-  is_admin: boolean;
 }
 
 interface AuthContextType {
@@ -42,6 +41,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdminUser, setIsAdminUser] = useState(false);
+
+  const checkAdminStatus = async (userId: string) => {
+    try {
+      const { data: isAdmin, error } = await supabase
+        .rpc('is_user_admin', { user_id: userId });
+      
+      if (error) throw error;
+      setIsAdminUser(isAdmin || false);
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+      setIsAdminUser(false);
+    }
+  };
 
   const fetchProfile = async (userId: string) => {
     try {
@@ -56,6 +69,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       if (error) throw error;
       setProfile(data);
+      
+      // Verificar status de admin
+      await checkAdminStatus(userId);
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
@@ -78,6 +94,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (profile) {
         setProfile(profile);
       }
+      
+      // Verificar status de admin
+      await checkAdminStatus(user.id);
     } catch (error) {
       console.error('Error refreshing profile:', error);
     }
@@ -117,7 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const isAdmin = () => {
-    return profile?.is_admin || false;
+    return isAdminUser;
   };
 
   const signUp = async (email: string, password: string, fullName?: string) => {
@@ -149,6 +168,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     setProfile(null);
+    setIsAdminUser(false);
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   };
@@ -203,6 +223,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }, 0);
         } else {
           setProfile(null);
+          setIsAdminUser(false);
         }
         
         setLoading(false);
