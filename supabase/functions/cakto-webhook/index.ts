@@ -30,7 +30,8 @@ serve(async (req) => {
     }
 
     // Verificar se o pagamento foi aprovado
-    if (body.status !== 'approved' && body.status !== 'paid') {
+    const validStatuses = ['approved', 'paid', 'completed', 'success'];
+    if (!validStatuses.includes(body.status)) {
       console.log('Payment not approved, status:', body.status);
       return new Response('Payment not approved', { status: 200, headers: corsHeaders });
     }
@@ -62,18 +63,40 @@ serve(async (req) => {
       return new Response('User not found', { status: 404, headers: corsHeaders });
     }
 
-    // Mapear produtos Cakto para créditos
+    // Mapear produtos Cakto para créditos baseado no nome ou ID
     const productCreditsMap: { [key: string]: number } = {
       'qx2hqko_472740': 50,  // Pacote Básico
       'qnjypg7_472753': 100, // Pacote Premium
+      'Pacote Básico 50 créditos-Oráculo Jurídico': 50,
+      'Pacote Premium 100 créditos-Oráculo Jurídico': 100,
     };
 
-    // Extrair ID do produto da URL ou do corpo
+    // Extrair ID do produto, nome do produto ou valor para determinar créditos
     const productId = body.product_id || body.checkout_url?.split('/')?.pop()?.split('_')[0];
-    const credits = productCreditsMap[productId] || 0;
+    const productName = body.product_name || body.name;
+    const amount = body.amount || body.value || body.total;
+    
+    console.log('Product info:', { productId, productName, amount });
+    
+    let credits = 0;
+    
+    // Tentar mapear por ID ou nome
+    if (productId && productCreditsMap[productId]) {
+      credits = productCreditsMap[productId];
+    } else if (productName && productCreditsMap[productName]) {
+      credits = productCreditsMap[productName];
+    } else if (amount) {
+      // Mapear por valor se não encontrar por ID ou nome
+      const amountValue = parseFloat(amount.toString().replace(/[^\d.,]/g, '').replace(',', '.'));
+      if (amountValue >= 90 && amountValue <= 100) {
+        credits = 100; // Pacote Premium
+      } else if (amountValue >= 50 && amountValue <= 65) {
+        credits = 50; // Pacote Básico
+      }
+    }
 
     if (credits === 0) {
-      console.log('Produto não encontrado ou sem créditos definidos:', productId);
+      console.log('Produto não encontrado ou sem créditos definidos:', { productId, productName, amount });
       return new Response('Product not found', { status: 400, headers: corsHeaders });
     }
 
