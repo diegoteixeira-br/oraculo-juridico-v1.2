@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { 
   Clock, 
@@ -315,10 +316,10 @@ const LandingPage = () => {
 
           <div className="mt-12 text-center bg-card p-6 rounded-lg border border-border">
             <h3 className="text-xl font-bold mb-3 text-foreground">
-              Precisa de mais créditos?
+              Quer mais consultas?
             </h3>
             <p className="text-muted-foreground">
-              Após criar sua conta, você poderá comprar pacotes de créditos extras que nunca expiram. Use conforme sua necessidade!
+              Após criar sua conta, você poderá comprar créditos extras que nunca expiram para usar quando quiser.
             </p>
           </div>
         </div>
