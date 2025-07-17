@@ -505,18 +505,18 @@ export default function Dashboard() {
         
         <main className="flex-1 flex flex-col">
           {/* Header */}
-          <header className="h-16 flex items-center justify-between px-4 md:px-6 border-b border-slate-700 bg-slate-800">
+          <header className="h-14 flex items-center justify-between px-4 md:px-6 border-b border-slate-700 bg-slate-800">
             <div className="flex items-center gap-2 md:gap-4">
               <SidebarTrigger className="lg:hidden" />
-              <h1 className="text-lg md:text-xl font-semibold truncate">Oráculo Jurídico</h1>
+              <h1 className="text-base md:text-lg font-semibold truncate">Oráculo Jurídico</h1>
             </div>
             <div className="flex items-center gap-2 md:gap-4">
               <div className="flex items-center gap-1 md:gap-2">
-                <span className="text-xs md:text-sm text-muted-foreground hidden sm:inline">Olá, {userName}!</span>
+                <span className="text-xs text-muted-foreground hidden sm:inline">Olá, {userName}!</span>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="p-0 h-auto">
-                      <Avatar className="w-7 h-7 md:w-8 md:h-8 cursor-pointer">
+                      <Avatar className="w-6 h-6 md:w-7 md:h-7 cursor-pointer">
                         <AvatarImage src={profile?.avatar_url || ""} />
                         <AvatarFallback className="bg-primary text-primary-foreground text-xs">
                           {userInitials}
@@ -542,48 +542,48 @@ export default function Dashboard() {
           {/* Chat Area */}
           <div className="flex-1 flex flex-col">
             {/* Messages Area */}
-            <ScrollArea className="flex-1 p-3 md:p-6">
+            <ScrollArea className="flex-1 p-2 md:p-4">
               {messages.length === 0 ? (
-                <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] text-center space-y-6 max-w-6xl mx-auto px-4">
-                  <div className="flex flex-col items-center space-y-4">
-                    <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Bot className="w-6 h-6 md:w-8 md:h-8 text-primary" />
+                <div className="flex flex-col items-center justify-center min-h-[calc(100vh-160px)] text-center space-y-3 max-w-6xl mx-auto px-2">
+                  <div className="flex flex-col items-center space-y-2">
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Bot className="w-5 h-5 md:w-6 md:h-6 text-primary" />
                     </div>
-                    <div className="space-y-2">
-                      <h2 className="text-xl md:text-2xl font-semibold">Como posso te ajudar hoje?</h2>
-                      <p className="text-sm md:text-base text-muted-foreground max-w-md mx-auto">
+                    <div className="space-y-1">
+                      <h2 className="text-lg md:text-xl font-semibold">Como posso te ajudar hoje?</h2>
+                      <p className="text-xs md:text-sm text-muted-foreground max-w-md mx-auto">
                         Sou sua IA de assistência jurídica. Faça uma pergunta sobre legislação, jurisprudência ou doutrina.
                       </p>
                     </div>
                   </div>
                   
-                  {/* Credits Display */}
-                  <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg max-w-md mx-auto">
-                    <p className="text-xs md:text-sm text-primary text-center">
+                  {/* Credits Display - Mais compacto */}
+                  <div className="p-2 bg-primary/10 border border-primary/20 rounded-lg max-w-md mx-auto">
+                    <p className="text-xs text-primary text-center">
                       💡 Você tem {totalCredits} créditos disponíveis 
                       {dailyCredits > 0 && ` (${dailyCredits} diários + ${userCredits} comprados)`}. 
                       Cada pesquisa custa {costPerSearch} crédito.
                     </p>
                   </div>
                   
-                  {/* Exemplos de Perguntas - Com Tooltip */}
+                  {/* Exemplos de Perguntas - Mais compacto */}
                   <div className="w-full max-w-5xl">
-                    <h3 className="text-lg font-medium mb-4 text-center">Exemplos de perguntas:</h3>
+                    <h3 className="text-base font-medium mb-2 text-center">Exemplos de perguntas:</h3>
                     <TooltipProvider>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                         {exampleQuestions.map((question, index) => (
                           <Tooltip key={index}>
                             <TooltipTrigger asChild>
                               <Button
                                 variant="outline"
-                                className="text-left justify-start h-auto p-3 text-xs md:text-sm bg-slate-800 border-slate-600 hover:bg-slate-700 hover:border-primary/50 transition-colors min-h-[80px]"
+                                className="text-left justify-start h-auto p-2 text-xs bg-slate-800 border-slate-600 hover:bg-slate-700 hover:border-primary/50 transition-colors min-h-[60px]"
                                 onClick={() => handleExampleClick(question)}
                               >
-                                <span className="line-clamp-4 leading-relaxed">{question}</span>
+                                <span className="line-clamp-3 leading-tight">{question}</span>
                               </Button>
                             </TooltipTrigger>
-                            <TooltipContent side="top" className="max-w-xs p-3">
-                              <p className="text-sm">{question}</p>
+                            <TooltipContent side="top" className="max-w-xs p-2">
+                              <p className="text-xs">{question}</p>
                             </TooltipContent>
                           </Tooltip>
                         ))}
@@ -648,29 +648,29 @@ export default function Dashboard() {
               )}
             </ScrollArea>
 
-            {/* Input Area */}
-            <div className="p-3 md:p-6 border-t border-slate-700 bg-slate-800">
+            {/* Input Area - Mais compacto */}
+            <div className="p-2 md:p-4 border-t border-slate-700 bg-slate-800">
               <div className="flex gap-2">
                 <Textarea
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Digite sua pergunta aqui e pressione Enter..."
-                  className="flex-1 min-h-[48px] md:min-h-[60px] text-sm md:text-base resize-none bg-background border-slate-600 focus:border-primary"
+                  className="flex-1 min-h-[40px] md:min-h-[50px] text-sm resize-none bg-background border-slate-600 focus:border-primary"
                   disabled={isTyping}
                 />
                 
                 <Button
                   onClick={handleSendMessage}
                   disabled={!inputMessage.trim() || isTyping}
-                  className="btn-primary p-3 md:p-4 w-12 h-12 md:w-16 md:h-16 rounded-lg"
+                  className="btn-primary p-2 md:p-3 w-10 h-10 md:w-12 md:h-12 rounded-lg"
                 >
-                  <Send className="w-4 h-4 md:w-5 md:h-5" />
+                  <Send className="w-4 h-4" />
                 </Button>
               </div>
 
-              {/* Credits Display - moved below text area */}
-              <div className="flex items-center justify-between mt-4 p-2 md:p-3 bg-slate-700 rounded-lg">
+              {/* Credits Display - Mais compacto */}
+              <div className="flex items-center justify-between mt-2 p-2 bg-slate-700 rounded-lg">
                 <div className="flex items-center gap-1 md:gap-2">
                   <CreditCard className="w-3 h-3 md:w-4 md:h-4 text-primary" />
                   <Badge 
