@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,14 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Mail } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { ArrowLeft, Mail, RefreshCw } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function RedefinirSenha() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [emailEnviado, setEmailEnviado] = useState(false);
   
+  const { resetPassword, resendConfirmation } = useAuth();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,14 +22,10 @@ export default function RedefinirSenha() {
     setLoading(true);
 
     try {
-      const redirectUrl = `${window.location.origin}/login`;
-      
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: redirectUrl
-      });
+      const result = await resetPassword(email);
 
-      if (error) {
-        if (error.message.includes('rate limit') || error.message.includes('429')) {
+      if (result.error) {
+        if (result.error.message.includes('rate limit') || result.error.message.includes('429')) {
           toast({
             title: "Muitas tentativas",
             description: "Aguarde alguns minutos antes de tentar novamente.",
@@ -36,7 +34,7 @@ export default function RedefinirSenha() {
         } else {
           toast({
             title: "Erro",
-            description: error.message || "Ocorreu um erro ao enviar o email. Tente novamente.",
+            description: result.error.message || "Ocorreu um erro ao enviar o email. Tente novamente.",
             variant: "destructive",
           });
         }
@@ -51,6 +49,35 @@ export default function RedefinirSenha() {
       toast({
         title: "Erro",
         description: error.message || "Ocorreu um erro inesperado. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendConfirmation = async () => {
+    setLoading(true);
+    
+    try {
+      const result = await resendConfirmation(email);
+      
+      if (result.error) {
+        toast({
+          title: "Erro",
+          description: result.error.message || "Erro ao reenviar confirmação.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Email de confirmação reenviado!",
+          description: "Verifique sua caixa de entrada.",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: error.message || "Ocorreu um erro inesperado.",
         variant: "destructive",
       });
     } finally {
@@ -108,6 +135,25 @@ export default function RedefinirSenha() {
                     className="w-full"
                   >
                     Enviar novamente
+                  </Button>
+                  
+                  <Button
+                    onClick={handleResendConfirmation}
+                    variant="outline"
+                    className="w-full"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                        Reenviando...
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw className="w-4 h-4 mr-2" />
+                        Reenviar confirmação
+                      </>
+                    )}
                   </Button>
                   
                   <Button

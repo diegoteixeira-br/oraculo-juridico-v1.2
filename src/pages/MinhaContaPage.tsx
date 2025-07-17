@@ -24,7 +24,7 @@ export default function MinhaContaPage() {
   
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user, profile, signOut, refreshProfile } = useAuth();
+  const { user, profile, signOut, refreshProfile, updatePassword } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Sistema de créditos - valores reais do banco
@@ -139,20 +139,36 @@ export default function MinhaContaPage() {
 
     setIsLoading(true);
 
-    // Simular mudança de senha
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      // Usar a nova função updatePassword do AuthContext
+      const result = await updatePassword(newPassword);
 
-    toast({
-      title: "Senha alterada com sucesso!",
-      description: "Sua senha foi atualizada.",
-    });
+      if (result.error) {
+        toast({
+          title: "Erro ao alterar senha",
+          description: result.error.message || "Não foi possível alterar a senha.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Senha alterada com sucesso!",
+          description: "Sua senha foi atualizada.",
+        });
 
-    setCurrentPassword("");
-    setNewPassword("");
-    setConfirmPassword("");
-    setIsLoading(false);
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: error.message || "Ocorreu um erro inesperado.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
@@ -282,7 +298,6 @@ export default function MinhaContaPage() {
             </div>
           </CardContent>
         </Card>
-
 
         {/* Account Info Card */}
         <Card className="bg-slate-800 border-slate-700">
@@ -440,7 +455,6 @@ export default function MinhaContaPage() {
             </form>
           </CardContent>
         </Card>
-
       </div>
     </div>
   );

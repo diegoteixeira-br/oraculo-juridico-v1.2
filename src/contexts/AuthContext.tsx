@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -29,6 +28,9 @@ interface AuthContextType {
   hasActiveAccess: () => boolean;
   useCredits: (amount: number, description?: string) => Promise<boolean>;
   refreshProfile: () => Promise<void>;
+  resetPassword: (email: string) => Promise<any>;
+  updatePassword: (newPassword: string) => Promise<any>;
+  resendConfirmation: (email: string) => Promise<any>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -113,8 +115,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signUp = async (email: string, password: string, fullName?: string) => {
-    // Use a URL completa do site ao invés de window.location.origin
-    const redirectUrl = 'https://oraculojuridico.com.br/';
+    // URL de redirecionamento para confirmar email
+    const redirectUrl = 'https://oraculojuridico.com.br/dashboard';
     
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -143,6 +145,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setProfile(null);
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+  };
+
+  // Nova função para redefinir senha
+  const resetPassword = async (email: string) => {
+    const redirectUrl = 'https://oraculojuridico.com.br/login';
+    
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectUrl
+    });
+    
+    return { data, error };
+  };
+
+  // Nova função para atualizar senha
+  const updatePassword = async (newPassword: string) => {
+    const { data, error } = await supabase.auth.updateUser({
+      password: newPassword
+    });
+    
+    return { data, error };
+  };
+
+  // Nova função para reenviar confirmação
+  const resendConfirmation = async (email: string) => {
+    const redirectUrl = 'https://oraculojuridico.com.br/dashboard';
+    
+    const { data, error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email,
+      options: {
+        emailRedirectTo: redirectUrl
+      }
+    });
+    
+    return { data, error };
   };
 
   useEffect(() => {
@@ -197,7 +234,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signOut,
     hasActiveAccess,
     useCredits,
-    refreshProfile
+    refreshProfile,
+    resetPassword,
+    updatePassword,
+    resendConfirmation
   };
 
   return (
