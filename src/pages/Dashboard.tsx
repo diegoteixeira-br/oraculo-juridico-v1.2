@@ -543,36 +543,40 @@ export default function Dashboard() {
             {/* Messages Area */}
             <ScrollArea className="flex-1 p-3 md:p-6">
               {messages.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-center space-y-4 max-w-4xl mx-auto px-4">
-                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Bot className="w-6 h-6 md:w-8 md:h-8 text-primary" />
-                  </div>
-                  <div className="space-y-2">
-                    <h2 className="text-xl md:text-2xl font-semibold">Como posso te ajudar hoje?</h2>
-                    <p className="text-sm md:text-base text-muted-foreground max-w-md mx-auto">
-                      Sou sua IA de assistência jurídica. Faça uma pergunta sobre legislação, jurisprudência ou doutrina.
-                    </p>
-                    <div className="mt-4 p-3 bg-primary/10 border border-primary/20 rounded-lg max-w-md mx-auto">
-                      <p className="text-xs md:text-sm text-primary">
-                        💡 Você tem {totalCredits} créditos disponíveis 
-                        {dailyCredits > 0 && `(${dailyCredits} diários + ${userCredits} comprados)`}. 
-                        Cada pesquisa custa {costPerSearch} crédito.
+                <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] text-center space-y-6 max-w-6xl mx-auto px-4">
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Bot className="w-6 h-6 md:w-8 md:h-8 text-primary" />
+                    </div>
+                    <div className="space-y-2">
+                      <h2 className="text-xl md:text-2xl font-semibold">Como posso te ajudar hoje?</h2>
+                      <p className="text-sm md:text-base text-muted-foreground max-w-md mx-auto">
+                        Sou sua IA de assistência jurídica. Faça uma pergunta sobre legislação, jurisprudência ou doutrina.
                       </p>
                     </div>
                   </div>
                   
-                  {/* Exemplos de Perguntas */}
-                  <div className="w-full max-w-4xl mt-8">
-                    <h3 className="text-lg font-medium mb-4 text-left">Exemplos de perguntas:</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {/* Credits Display */}
+                  <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg max-w-md mx-auto">
+                    <p className="text-xs md:text-sm text-primary text-center">
+                      💡 Você tem {totalCredits} créditos disponíveis 
+                      {dailyCredits > 0 && ` (${dailyCredits} diários + ${userCredits} comprados)`}. 
+                      Cada pesquisa custa {costPerSearch} crédito.
+                    </p>
+                  </div>
+                  
+                  {/* Exemplos de Perguntas - Centralizado e Compacto */}
+                  <div className="w-full max-w-5xl">
+                    <h3 className="text-lg font-medium mb-4 text-center">Exemplos de perguntas:</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                       {exampleQuestions.map((question, index) => (
                         <Button
                           key={index}
                           variant="outline"
-                          className="text-left justify-start h-auto p-4 text-sm bg-slate-800 border-slate-600 hover:bg-slate-700 hover:border-primary/50"
+                          className="text-left justify-start h-auto p-3 text-xs md:text-sm bg-slate-800 border-slate-600 hover:bg-slate-700 hover:border-primary/50 transition-colors"
                           onClick={() => handleExampleClick(question)}
                         >
-                          {question}
+                          <span className="line-clamp-3">{question}</span>
                         </Button>
                       ))}
                     </div>
