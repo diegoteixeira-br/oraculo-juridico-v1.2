@@ -142,21 +142,34 @@ export default function Login() {
               </Button>
             </form>
 
-            <div className="mt-6">
-              <Separator />
-              <div className="mt-4 text-center">
-                <p className="text-sm text-muted-foreground">
-                  Não tem uma conta?
-                </p>
+            <div className="mt-6 space-y-4">
+              <div className="text-center">
                 <Button
                   asChild
                   variant="link"
-                  className="mt-1"
+                  className="text-sm p-0 h-auto"
                 >
-                  <Link to="/cadastro">
-                    Criar conta gratuita
+                  <Link to="/redefinir-senha">
+                    Esqueci minha senha
                   </Link>
                 </Button>
+              </div>
+              
+              <Separator />
+              
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground inline">
+                  Não tem uma conta?{" "}
+                  <Button
+                    asChild
+                    variant="link"
+                    className="p-0 h-auto text-sm font-medium"
+                  >
+                    <Link to="/cadastro">
+                      Criar conta gratuita
+                    </Link>
+                  </Button>
+                </p>
               </div>
             </div>
           </CardContent>

@@ -9,6 +9,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
+import RedefinirSenha from "./pages/RedefinirSenha";
 import PagamentoPage from "./pages/PagamentoPage";
 
 import NotFound from "./pages/NotFound";
@@ -30,6 +31,7 @@ function AppContent() {
       <Route path="/" element={<Index />} />
       <Route path="/login" element={<Login />} />
       <Route path="/cadastro" element={<Cadastro />} />
+      <Route path="/redefinir-senha" element={<RedefinirSenha />} />
       <Route path="/pagamento" element={<PagamentoPage />} />
       
       <Route path="/termos" element={<Termos />} />
