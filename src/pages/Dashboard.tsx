@@ -544,14 +544,14 @@ export default function Dashboard() {
             {/* Messages Area */}
             <ScrollArea className="flex-1 p-2 md:p-4">
               {messages.length === 0 ? (
-                <div className="flex flex-col items-center justify-center min-h-[calc(100vh-160px)] text-center space-y-3 max-w-6xl mx-auto px-2">
-                  <div className="flex flex-col items-center space-y-2">
-                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Bot className="w-5 h-5 md:w-6 md:h-6 text-primary" />
+                <div className="flex flex-col items-center justify-center h-full text-center space-y-2 max-w-6xl mx-auto px-2">
+                  <div className="flex flex-col items-center space-y-1">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Bot className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                     </div>
                     <div className="space-y-1">
-                      <h2 className="text-lg md:text-xl font-semibold">Como posso te ajudar hoje?</h2>
-                      <p className="text-xs md:text-sm text-muted-foreground max-w-md mx-auto">
+                      <h2 className="text-base md:text-lg font-semibold">Como posso te ajudar hoje?</h2>
+                      <p className="text-xs text-muted-foreground max-w-md mx-auto">
                         Sou sua IA de assistência jurídica. Faça uma pergunta sobre legislação, jurisprudência ou doutrina.
                       </p>
                     </div>
@@ -568,18 +568,18 @@ export default function Dashboard() {
                   
                   {/* Exemplos de Perguntas - Mais compacto */}
                   <div className="w-full max-w-5xl">
-                    <h3 className="text-base font-medium mb-2 text-center">Exemplos de perguntas:</h3>
+                    <h3 className="text-sm font-medium mb-2 text-center">Exemplos de perguntas:</h3>
                     <TooltipProvider>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
                         {exampleQuestions.map((question, index) => (
                           <Tooltip key={index}>
                             <TooltipTrigger asChild>
                               <Button
                                 variant="outline"
-                                className="text-left justify-start h-auto p-2 text-xs bg-slate-800 border-slate-600 hover:bg-slate-700 hover:border-primary/50 transition-colors min-h-[60px]"
+                                className="text-left justify-start h-auto p-2 text-xs bg-slate-800 border-slate-600 hover:bg-slate-700 hover:border-primary/50 transition-colors min-h-[50px]"
                                 onClick={() => handleExampleClick(question)}
                               >
-                                <span className="line-clamp-3 leading-tight">{question}</span>
+                                <span className="line-clamp-2 leading-tight">{question}</span>
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent side="top" className="max-w-xs p-2">
