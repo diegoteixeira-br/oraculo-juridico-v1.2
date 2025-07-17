@@ -20,7 +20,6 @@ import MinhaContaPage from "./pages/MinhaContaPage";
 import HistoricoTransacoesPage from "./pages/HistoricoTransacoesPage";
 import ContatoPage from "./pages/ContatoPage";
 import ComprarCreditosPage from "./pages/ComprarCreditosPage";
-import TestWebhook from "./pages/TestWebhook";
 
 
 const queryClient = new QueryClient();
@@ -43,7 +42,6 @@ function AppContent() {
       <Route path="/minha-conta" element={<ProtectedRoute><MinhaContaPage /></ProtectedRoute>} />
       <Route path="/historico-transacoes" element={<ProtectedRoute><HistoricoTransacoesPage /></ProtectedRoute>} />
       <Route path="/comprar-creditos" element={<ProtectedRoute><ComprarCreditosPage /></ProtectedRoute>} />
-      <Route path="/test-webhook" element={<TestWebhook />} />
       
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
