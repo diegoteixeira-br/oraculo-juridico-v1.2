@@ -45,8 +45,15 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
+    console.log("Email para suporte enviado:", emailResponse);
+    
+    if (emailResponse.error) {
+      console.error("Erro ao enviar email para suporte:", emailResponse.error);
+      throw new Error(`Erro ao enviar email para suporte: ${emailResponse.error.message}`);
+    }
+
     // Enviar confirmação para o usuário
-    await resend.emails.send({
+    const confirmationResponse = await resend.emails.send({
       from: "Oráculo Jurídico <nao-responda@oraculojuridico.com.br>",
       to: [email],
       subject: "Mensagem recebida - Oráculo Jurídico",
@@ -60,6 +67,12 @@ const handler = async (req: Request): Promise<Response> => {
         <p>Atenciosamente,<br>Equipe Oráculo Jurídico</p>
       `,
     });
+
+    console.log("Email de confirmação enviado:", confirmationResponse);
+    
+    if (confirmationResponse.error) {
+      console.error("Erro ao enviar confirmação:", confirmationResponse.error);
+    }
 
     console.log("Email enviado com sucesso:", emailResponse);
 
