@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from "react";
-import { ArrowLeft, CreditCard, History, Plus, Camera } from "lucide-react";
+import { useState, useEffect } from "react";
+import { CreditCard, History, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -12,10 +12,6 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [userCredits, setUserCredits] = useState(0);
   const [dailyCredits, setDailyCredits] = useState(0);
   const [totalCreditsPurchased, setTotalCreditsPurchased] = useState(0);
@@ -29,12 +25,11 @@ export default function Dashboard() {
       try {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('avatar_url, credits, daily_credits, total_credits_purchased')
+          .select('credits, daily_credits, total_credits_purchased')
           .eq('user_id', user.id)
           .single();
 
         if (profile) {
-          setAvatarUrl(profile.avatar_url);
           setUserCredits(profile.credits || 0);
           setDailyCredits(profile.daily_credits || 0);
           setTotalCreditsPurchased(profile.total_credits_purchased || 0);
@@ -47,92 +42,14 @@ export default function Dashboard() {
     loadUserData();
   }, [user?.id]);
 
-  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file || !user?.id) return;
-
-    // Validação do arquivo
-    if (!file.type.startsWith('image/')) {
-      toast({
-        title: "Erro no upload",
-        description: "Por favor, selecione apenas arquivos de imagem.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      toast({
-        title: "Arquivo muito grande",
-        description: "O arquivo deve ter no máximo 5MB.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsUploadingAvatar(true);
-
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}-${Math.random()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      // Upload da imagem
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: true
-        });
-
-      if (uploadError) throw uploadError;
-
-      // Obter URL pública
-      const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
-      const publicUrl = data.publicUrl;
-
-      // Atualizar perfil no banco
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ avatar_url: publicUrl })
-        .eq('user_id', user.id);
-
-      if (updateError) throw updateError;
-
-      setAvatarUrl(publicUrl);
-      toast({
-        title: "Avatar atualizado!",
-        description: "Sua foto de perfil foi atualizada com sucesso.",
-      });
-
-    } catch (error: any) {
-      console.error('Erro no upload:', error);
-      toast({
-        title: "Erro no upload",
-        description: error.message || "Não foi possível fazer upload da imagem.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsUploadingAvatar(false);
-    }
-  };
+  const chartData = [
+    { name: 'Créditos Diários', value: dailyCredits, color: '#10b981' },
+    { name: 'Créditos Comprados', value: userCredits, color: '#3b82f6' }
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
       <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              onClick={() => navigate("/chat")}
-              className="text-primary hover:text-primary/80"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Voltar ao Chat
-            </Button>
-          </div>
-        </div>
 
         <div className="text-center">
           <img 
@@ -141,35 +58,6 @@ export default function Dashboard() {
             className="h-20 w-auto mx-auto mb-4"
           />
           
-          {/* Avatar do usuário */}
-          <div className="relative inline-block mb-4">
-            <Avatar className="w-20 h-20 mx-auto border-2 border-primary/20">
-              <AvatarImage src={avatarUrl || ""} />
-              <AvatarFallback className="text-lg bg-primary/20 text-primary">
-                {user?.email?.substring(0, 2).toUpperCase() || "DT"}
-              </AvatarFallback>
-            </Avatar>
-            <Button
-              variant="outline"
-              size="sm"
-              className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full bg-primary hover:bg-primary/90 border-primary"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploadingAvatar}
-            >
-              {isUploadingAvatar ? (
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <Camera className="w-4 h-4 text-white" />
-              )}
-            </Button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleAvatarUpload}
-              className="hidden"
-            />
-          </div>
           
           <h1 className="text-3xl font-bold text-primary mb-2">Dashboard</h1>
           <p className="text-muted-foreground">
@@ -193,59 +81,103 @@ export default function Dashboard() {
           </p>
         </div>
 
-        {/* Credits Details Card */}
-        <Card className="bg-slate-800 border-slate-700">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CreditCard className="w-5 h-5" />
-              Seus Créditos
-            </CardTitle>
-            <CardDescription>
-              Informações sobre seus créditos
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center p-6 bg-primary/10 rounded-lg border border-primary/20">
-                <div className="text-3xl font-bold text-primary">{totalAvailableCredits}</div>
-                <div className="text-sm text-muted-foreground">Total Disponíveis</div>
+        {/* Credits Details Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Credits Stats */}
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CreditCard className="w-5 h-5" />
+                Seus Créditos
+              </CardTitle>
+              <CardDescription>
+                Informações sobre seus créditos
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 gap-4">
+                <div className="text-center p-6 bg-primary/10 rounded-lg border border-primary/20">
+                  <div className="text-3xl font-bold text-primary">{totalAvailableCredits}</div>
+                  <div className="text-sm text-muted-foreground">Total Disponíveis</div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-4 bg-green-600/10 rounded-lg border border-green-600/20">
+                    <div className="text-2xl font-bold text-green-400">{dailyCredits}</div>
+                    <div className="text-xs text-muted-foreground">Créditos Diários</div>
+                  </div>
+                  <div className="text-center p-4 bg-blue-600/10 rounded-lg border border-blue-600/20">
+                    <div className="text-2xl font-bold text-blue-400">{userCredits}</div>
+                    <div className="text-xs text-muted-foreground">Créditos Comprados</div>
+                  </div>
+                </div>
               </div>
-              <div className="text-center p-6 bg-green-600/10 rounded-lg border border-green-600/20">
-                <div className="text-3xl font-bold text-green-400">{dailyCredits}</div>
-                <div className="text-sm text-muted-foreground">Créditos Diários</div>
+              
+              <div className="flex items-center justify-between py-4 border-t border-slate-600">
+                <span className="font-medium">Custo por pesquisa:</span>
+                <span className="text-primary font-bold">1 crédito</span>
               </div>
-              <div className="text-center p-6 bg-secondary/10 rounded-lg border border-secondary/20">
-                <div className="text-3xl font-bold text-secondary-foreground">{userCredits}</div>
-                <div className="text-sm text-muted-foreground">Créditos Comprados</div>
+              
+              <div className="flex flex-col gap-4">
+                <Button 
+                  onClick={() => navigate("/comprar-creditos")}
+                  className="w-full bg-primary hover:bg-primary/90 py-3"
+                  size="lg"
+                >
+                  <Plus className="w-5 h-5 mr-2" />
+                  Comprar Mais Créditos
+                </Button>
+                <Button 
+                  onClick={() => navigate("/historico-transacoes")}
+                  variant="outline"
+                  className="w-full border-primary/20 hover:bg-primary/10 py-3"
+                  size="lg"
+                >
+                  <History className="w-5 h-5 mr-2" />
+                  Ver Histórico
+                </Button>
               </div>
-            </div>
-            
-            <div className="flex items-center justify-between py-4 border-t border-slate-600">
-              <span className="font-medium">Custo por pesquisa:</span>
-              <span className="text-primary font-bold">1 crédito</span>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                onClick={() => navigate("/comprar-creditos")}
-                className="flex-1 bg-primary hover:bg-primary/90 py-3"
-                size="lg"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Comprar Mais Créditos
-              </Button>
-              <Button 
-                onClick={() => navigate("/historico-transacoes")}
-                variant="outline"
-                className="flex-1 border-primary/20 hover:bg-primary/10 py-3"
-                size="lg"
-              >
-                <History className="w-5 h-5 mr-2" />
-                Ver Histórico
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+
+          {/* Pie Chart */}
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle>Distribuição de Créditos</CardTitle>
+              <CardDescription>
+                Visualização dos seus créditos por tipo
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={chartData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={40}
+                      outerRadius={80}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {chartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: '#1e293b', 
+                        border: '1px solid #475569',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
