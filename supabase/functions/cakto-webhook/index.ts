@@ -35,14 +35,18 @@ serve(async (req) => {
       return new Response('Unauthorized', { status: 401, headers: corsHeaders });
     }
 
-    // Verificar se o pagamento foi aprovado
-    const validStatuses = ['approved', 'paid', 'completed', 'success', 'payment_approved'];
+    // Verificar o status do pagamento/reembolso
+    const approvedStatuses = ['approved', 'paid', 'completed', 'success', 'payment_approved'];
+    const refundStatuses = ['refund', 'refunded', 'reembolso', 'cancelled', 'canceled'];
     const paymentStatus = body.status || body.payment_status || body.state;
     console.log('Status do pagamento:', paymentStatus);
     
-    if (!validStatuses.includes(paymentStatus)) {
-      console.log('Payment not approved, status:', paymentStatus);
-      return new Response('Payment not approved', { status: 200, headers: corsHeaders });
+    const isApproved = approvedStatuses.includes(paymentStatus);
+    const isRefund = refundStatuses.includes(paymentStatus);
+    
+    if (!isApproved && !isRefund) {
+      console.log('Status not recognized, status:', paymentStatus);
+      return new Response('Status not recognized', { status: 200, headers: corsHeaders });
     }
 
     // Buscar usuário pelo email ou ID fornecido pelo webhook
@@ -144,25 +148,46 @@ serve(async (req) => {
       return new Response('Product not found', { status: 400, headers: corsHeaders });
     }
 
-    // Adicionar créditos ao usuário usando a função do banco
-    const { data: result, error: creditError } = await supabase
-      .rpc('add_credits_to_user', {
-        p_user_id: user.id,
-        p_credits: credits,
-        p_transaction_id: body.transaction_id || body.id,
-        p_description: `Compra de ${credits} créditos via Cakto`
+    if (isApproved) {
+      // Adicionar créditos ao usuário usando a função do banco
+      const { data: result, error: creditError } = await supabase
+        .rpc('add_credits_to_user', {
+          p_user_id: user.id,
+          p_credits: credits,
+          p_transaction_id: body.transaction_id || body.id,
+          p_description: `Compra de ${credits} créditos via Cakto`
+        });
+
+      if (creditError || !result) {
+        console.error('Error adding credits:', creditError);
+        return new Response('Error adding credits', { status: 500, headers: corsHeaders });
+      }
+
+      console.log('Successfully added credits to user:', userEmail, 'Credits:', credits);
+      return new Response('Credits added successfully', { 
+        status: 200, 
+        headers: corsHeaders 
       });
+    } else if (isRefund) {
+      // Estornar créditos do usuário
+      const { data: result, error: creditError } = await supabase
+        .rpc('use_credits', {
+          p_user_id: user.id,
+          p_credits: credits,
+          p_description: `Estorno de ${credits} créditos - Reembolso Cakto`
+        });
 
-    if (creditError || !result) {
-      console.error('Error adding credits:', creditError);
-      return new Response('Error adding credits', { status: 500, headers: corsHeaders });
+      if (creditError || !result) {
+        console.error('Error refunding credits:', creditError);
+        return new Response('Error refunding credits', { status: 500, headers: corsHeaders });
+      }
+
+      console.log('Successfully refunded credits from user:', userEmail, 'Credits:', credits);
+      return new Response('Credits refunded successfully', { 
+        status: 200, 
+        headers: corsHeaders 
+      });
     }
-
-    console.log('Successfully added credits to user:', userEmail, 'Credits:', credits);
-    return new Response('Credits added successfully', { 
-      status: 200, 
-      headers: corsHeaders 
-    });
 
   } catch (error) {
     console.error('Webhook error:', error);
