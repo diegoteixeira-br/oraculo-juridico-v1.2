@@ -48,16 +48,11 @@ export default function Cadastro() {
       } else {
         toast({
           title: "Conta criada!",
-          description: selectedPlan 
-            ? "Sua conta foi criada com sucesso. Verifique seu email para confirmar e depois finalize o pagamento!" 
-            : "Sua conta foi criada com sucesso! Verifique seu email para confirmar.",
+          description: "Sua conta foi criada com sucesso! Verifique seu email para confirmar.",
         });
         
-        if (selectedPlan) {
-          navigate(`/comprar-creditos?plano=${selectedPlan}`);
-        } else {
-          navigate('/dashboard');
-        }
+        // Redirecionar para página de confirmação de email
+        navigate(`/confirmar-email?email=${encodeURIComponent(email)}${selectedPlan ? `&plano=${selectedPlan}` : ''}`);
       }
     } catch (error: any) {
       if (error.message && (error.message.includes('rate limit') || error.message.includes('429'))) {

@@ -6,6 +6,7 @@ const pageNames: Record<string, string> = {
   '/dashboard': 'Dashboard',
   '/login': 'Login',
   '/cadastro': 'Cadastro',
+  '/confirmar-email': 'Confirmar Email',
   '/comprar-creditos': 'Comprar Créditos',
   '/pagamento': 'Pagamento',
   '/minha-conta': 'Minha Conta',

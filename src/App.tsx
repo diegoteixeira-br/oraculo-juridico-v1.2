@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
 import RedefinirSenha from "./pages/RedefinirSenha";
 import PagamentoPage from "./pages/PagamentoPage";
+import ConfirmarEmail from "./pages/ConfirmarEmail";
 
 import NotFound from "./pages/NotFound";
 import Termos from "./pages/Termos";
@@ -32,6 +33,7 @@ function AppContent() {
       <Route path="/" element={<Index />} />
       <Route path="/login" element={<Login />} />
       <Route path="/cadastro" element={<Cadastro />} />
+      <Route path="/confirmar-email" element={<ConfirmarEmail />} />
       <Route path="/redefinir-senha" element={<RedefinirSenha />} />
       <Route path="/pagamento" element={<PagamentoPage />} />
       
