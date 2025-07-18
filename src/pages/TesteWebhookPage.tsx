@@ -6,14 +6,38 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
-
 export default function TesteWebhookPage() {
   usePageTitle();
   
   const [email, setEmail] = useState("");
   const [produto, setProduto] = useState("basic");
   const [isLoading, setIsLoading] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [adminUser, setAdminUser] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
   const { toast } = useToast();
+
+  // Credenciais fixas para admin
+  const ADMIN_CREDENTIALS = {
+    username: "admin",
+    password: "admin2024!"
+  };
+
+  const handleAdminLogin = () => {
+    if (adminUser === ADMIN_CREDENTIALS.username && adminPassword === ADMIN_CREDENTIALS.password) {
+      setIsAuthenticated(true);
+      toast({
+        title: "Login realizado com sucesso!",
+        description: "Bem-vindo à área administrativa.",
+      });
+    } else {
+      toast({
+        title: "Credenciais inválidas",
+        description: "Usuário ou senha incorretos.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const testarWebhook = async () => {
     setIsLoading(true);
@@ -66,6 +90,55 @@ export default function TesteWebhookPage() {
     }
   };
 
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader className="text-center">
+              <CardTitle className="text-primary">🔒 Área Administrativa</CardTitle>
+              <CardDescription>
+                Entre com suas credenciais para acessar o painel admin
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="adminUser">Usuário</Label>
+                <Input
+                  id="adminUser"
+                  type="text"
+                  value={adminUser}
+                  onChange={(e) => setAdminUser(e.target.value)}
+                  placeholder="Digite o usuário admin"
+                  className="bg-slate-700 border-slate-600"
+                />
+              </div>
+              <div>
+                <Label htmlFor="adminPassword">Senha</Label>
+                <Input
+                  id="adminPassword"
+                  type="password"
+                  value={adminPassword}
+                  onChange={(e) => setAdminPassword(e.target.value)}
+                  placeholder="Digite a senha admin"
+                  className="bg-slate-700 border-slate-600"
+                  onKeyPress={(e) => e.key === 'Enter' && handleAdminLogin()}
+                />
+              </div>
+              <Button
+                onClick={handleAdminLogin}
+                disabled={!adminUser || !adminPassword}
+                className="w-full bg-primary hover:bg-primary/90"
+              >
+                Entrar
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
       <div className="max-w-2xl mx-auto space-y-6">
@@ -75,6 +148,14 @@ export default function TesteWebhookPage() {
           <p className="text-muted-foreground">
             Página restrita - Use esta página para testar se o webhook está funcionando corretamente
           </p>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setIsAuthenticated(false)}
+            className="mt-2"
+          >
+            Sair
+          </Button>
         </div>
 
         <Card className="bg-slate-800 border-slate-700">

@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { usePageTitle } from "./hooks/usePageTitle";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import AdminRoute from "@/components/AdminRoute";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
@@ -37,7 +36,7 @@ function AppContent() {
       <Route path="/cadastro" element={<Cadastro />} />
       <Route path="/confirmar-email" element={<ConfirmarEmail />} />
           <Route path="/redefinir-senha" element={<RedefinirSenha />} />
-          <Route path="/teste-webhook" element={<AdminRoute><TesteWebhookPage /></AdminRoute>} />
+          <Route path="/teste-webhook" element={<TesteWebhookPage />} />
       <Route path="/pagamento" element={<PagamentoPage />} />
       
       <Route path="/termos" element={<Termos />} />
