@@ -12,7 +12,8 @@ const pageNames: Record<string, string> = {
   '/minha-conta': 'Minha Conta',
   '/contato': 'Contato',
   '/termos': 'Termos de Uso',
-  '/privacidade': 'Política de Privacidade'
+  '/privacidade': 'Política de Privacidade',
+  '/teste-webhook': 'Teste Webhook'
 };
 
 export const usePageTitle = () => {

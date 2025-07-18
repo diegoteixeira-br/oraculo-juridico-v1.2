@@ -58,8 +58,8 @@ export default function ComprarCreditosPage() {
 
   const handlePurchase = (packageId: string) => {
     const checkoutUrls = {
-      basic: "https://pay.cakto.com.br/qx2hqko_472740",
-      premium: "https://pay.cakto.com.br/qnjypg7_472753"
+      basic: "https://pay.cakto.com.br/qx2hqko_472740?utm_source=oraculo_juridico&utm_campaign=basic&utm_medium=website",
+      premium: "https://pay.cakto.com.br/qnjypg7_472753?utm_source=oraculo_juridico&utm_campaign=premium&utm_medium=website"
     };
 
     const url = checkoutUrls[packageId as keyof typeof checkoutUrls];

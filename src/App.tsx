@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
 import RedefinirSenha from "./pages/RedefinirSenha";
+import TesteWebhookPage from "./pages/TesteWebhookPage";
 import PagamentoPage from "./pages/PagamentoPage";
 import ConfirmarEmail from "./pages/ConfirmarEmail";
 
@@ -34,7 +35,8 @@ function AppContent() {
       <Route path="/login" element={<Login />} />
       <Route path="/cadastro" element={<Cadastro />} />
       <Route path="/confirmar-email" element={<ConfirmarEmail />} />
-      <Route path="/redefinir-senha" element={<RedefinirSenha />} />
+          <Route path="/redefinir-senha" element={<RedefinirSenha />} />
+          <Route path="/teste-webhook" element={<TesteWebhookPage />} />
       <Route path="/pagamento" element={<PagamentoPage />} />
       
       <Route path="/termos" element={<Termos />} />
