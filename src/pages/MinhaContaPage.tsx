@@ -226,78 +226,8 @@ export default function MinhaContaPage() {
           <p className="text-muted-foreground">
             Gerencie suas configurações e dados da conta
           </p>
-            <div className="mt-4 p-4 bg-primary/10 border border-primary/20 rounded-lg">
-            <div className="flex items-center gap-2 justify-center">
-              <CreditCard className="w-5 h-5 text-primary" />
-              <span className="font-medium text-primary">
-                {totalAvailableCredits} créditos disponíveis
-              </span>
-            </div>
-            <p className="text-sm text-primary/80 mt-2 text-center">
-              {dailyCredits > 0 && (
-                <span>{dailyCredits} créditos diários + </span>
-              )}
-              {userCredits} créditos comprados
-            </p>
-          </div>
         </div>
 
-        {/* Credits Status Card */}
-        <Card className="bg-slate-800 border-slate-700">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CreditCard className="w-5 h-5" />
-              Seus Créditos
-            </CardTitle>
-            <CardDescription>
-              Informações sobre seus créditos
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="text-center p-3 sm:p-4 bg-primary/10 rounded-lg border border-primary/20">
-                <div className="text-xl sm:text-2xl font-bold text-primary">{totalAvailableCredits}</div>
-                <div className="text-xs sm:text-sm text-muted-foreground">Total Disponíveis</div>
-              </div>
-              <div className="text-center p-3 sm:p-4 bg-green-600/10 rounded-lg border border-green-600/20">
-                <div className="text-xl sm:text-2xl font-bold text-green-400">{dailyCredits}</div>
-                <div className="text-xs sm:text-sm text-muted-foreground">Créditos Diários</div>
-              </div>
-              <div className="text-center p-3 sm:p-4 bg-secondary/10 rounded-lg border border-secondary/20">
-                <div className="text-xl sm:text-2xl font-bold text-secondary-foreground">{userCredits}</div>
-                <div className="text-xs sm:text-sm text-muted-foreground">Créditos Comprados</div>
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Custo por pesquisa:</span>
-              <span className="text-sm text-muted-foreground">
-                1 crédito
-              </span>
-            </div>
-            
-            <div className="pt-4 border-t border-slate-600">
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button 
-                  onClick={() => navigate("/comprar-creditos")}
-                  className="flex-1 bg-primary hover:bg-primary/90 text-sm sm:text-base py-3 sm:py-2"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  <span className="hidden sm:inline">Comprar Mais Créditos</span>
-                  <span className="sm:hidden">Comprar Créditos</span>
-                </Button>
-                <Button 
-                  onClick={() => navigate("/historico-transacoes")}
-                  variant="outline"
-                  className="flex-1 border-primary/20 hover:bg-primary/10 text-sm sm:text-base py-3 sm:py-2"
-                >
-                  <History className="w-4 h-4 mr-2" />
-                  Ver Histórico
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Account Info Card */}
         <Card className="bg-slate-800 border-slate-700">

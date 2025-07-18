@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 const pageNames: Record<string, string> = {
   '/': 'Home',
   '/dashboard': 'Dashboard',
+  '/chat': 'Chat',
   '/login': 'Login',
   '/cadastro': 'Cadastro',
   '/confirmar-email': 'Confirmar Email',

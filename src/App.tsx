@@ -18,6 +18,7 @@ import NotFound from "./pages/NotFound";
 import Termos from "./pages/Termos";
 import Privacidade from "./pages/Privacidade";
 import Dashboard from "./pages/Dashboard";
+import Chat from "./pages/Chat";
 import MinhaContaPage from "./pages/MinhaContaPage";
 import HistoricoTransacoesPage from "./pages/HistoricoTransacoesPage";
 import ContatoPage from "./pages/ContatoPage";
@@ -43,6 +44,7 @@ function AppContent() {
       <Route path="/privacidade" element={<Privacidade />} />
       <Route path="/contato" element={<ContatoPage />} />
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
       <Route path="/minha-conta" element={<ProtectedRoute><MinhaContaPage /></ProtectedRoute>} />
       <Route path="/historico-transacoes" element={<ProtectedRoute><HistoricoTransacoesPage /></ProtectedRoute>} />
       <Route path="/comprar-creditos" element={<ProtectedRoute><ComprarCreditosPage /></ProtectedRoute>} />
