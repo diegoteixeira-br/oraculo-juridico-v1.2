@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Mail, CheckCircle, ArrowLeft } from 'lucide-react';
+import { Mail, CheckCircle } from 'lucide-react';
 
 export default function ConfirmarEmail() {
   const [searchParams] = useSearchParams();
@@ -58,20 +57,6 @@ export default function ConfirmarEmail() {
             </div>
           </div>
 
-          <div className="space-y-3">
-            <Button asChild className="w-full">
-              <Link to="/login">
-                Ir para Login
-              </Link>
-            </Button>
-            
-            <Button variant="outline" asChild className="w-full">
-              <Link to="/">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Voltar ao Início
-              </Link>
-            </Button>
-          </div>
         </CardContent>
       </Card>
     </div>
