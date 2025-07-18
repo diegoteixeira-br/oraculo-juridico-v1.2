@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
+
 export default function TesteWebhookPage() {
   usePageTitle();
   
@@ -69,9 +70,10 @@ export default function TesteWebhookPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-primary mb-2">Teste do Webhook Cakto</h1>
+          <h1 className="text-3xl font-bold text-primary mb-2">🔒 Área Administrativa</h1>
+          <h2 className="text-xl font-semibold text-white mb-2">Teste do Webhook Cakto</h2>
           <p className="text-muted-foreground">
-            Use esta página para testar se o webhook está funcionando corretamente
+            Página restrita - Use esta página para testar se o webhook está funcionando corretamente
           </p>
         </div>
 
