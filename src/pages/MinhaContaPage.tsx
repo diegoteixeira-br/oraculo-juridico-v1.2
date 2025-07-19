@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { Eye, EyeOff, Save, ArrowLeft, User, Lock, CreditCard, History, Plus, Camera } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Eye, EyeOff, Save, User, Lock, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import UserMenu from "@/components/UserMenu";
 
 export default function MinhaContaPage() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -27,13 +28,7 @@ export default function MinhaContaPage() {
   const { user, profile, signOut, refreshProfile, updatePassword } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Sistema de créditos - valores reais do banco
-  const userCredits = profile?.credits || 0;
-  const dailyCredits = profile?.daily_credits || 0;
-  const totalCreditsPurchased = profile?.total_credits_purchased || 0;
-  const totalAvailableCredits = dailyCredits + userCredits;
-
-  // Carregar avatar
+  // Atualizar avatar quando profile mudar
   useEffect(() => {
     setAvatarUrl(profile?.avatar_url || null);
   }, [profile?.avatar_url]);
@@ -172,24 +167,17 @@ export default function MinhaContaPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
-      <div className="max-w-2xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/dashboard")}
-            className="text-primary hover:text-primary/80"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Voltar ao Dashboard
-          </Button>
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Header com Menu */}
+        <div className="flex justify-end mb-6">
+          <UserMenu hideOptions={["account"]} />
         </div>
 
         <div className="text-center">
           <img 
             src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
             alt="Oráculo Jurídico" 
-            className="h-20 w-auto mx-auto mb-4"
+            className="h-16 w-auto mx-auto mb-4"
           />
           
           {/* Avatar do usuário */}
@@ -228,163 +216,164 @@ export default function MinhaContaPage() {
           </p>
         </div>
 
-
-        {/* Account Info Card */}
-        <Card className="bg-slate-800 border-slate-700">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="w-5 h-5" />
-              Informações da Conta
-            </CardTitle>
-            <CardDescription>
-              Dados básicos da sua conta
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Nome</Label>
-                <Input
-                  id="name"
-                  value={profile?.full_name || user?.email || ""}
-                  className="bg-slate-700 border-slate-600 focus:border-primary"
-                  disabled
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={user?.email || ""}
-                  className="bg-slate-700 border-slate-600 focus:border-primary"
-                  disabled
-                />
-              </div>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Para alterar essas informações, entre em contato com o suporte.
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Change Password Card */}
-        <Card className="bg-slate-800 border-slate-700">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Lock className="w-5 h-5" />
-              Alterar Senha
-            </CardTitle>
-            <CardDescription>
-              Mantenha sua conta segura alterando sua senha regularmente
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handlePasswordChange} className="space-y-4">
-              {/* Current Password */}
-              <div className="space-y-2">
-                <Label htmlFor="current-password">Senha Atual</Label>
-                <div className="relative">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Account Info Card */}
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <User className="w-5 h-5" />
+                Informações da Conta
+              </CardTitle>
+              <CardDescription>
+                Dados básicos da sua conta
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Nome</Label>
                   <Input
-                    id="current-password"
-                    type={showCurrentPassword ? "text" : "password"}
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="bg-slate-700 border-slate-600 focus:border-primary pr-10"
-                    required
+                    id="name"
+                    value={profile?.full_name || user?.email || ""}
+                    className="bg-slate-700 border-slate-600 focus:border-primary"
+                    disabled
                   />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
-                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                  >
-                    {showCurrentPassword ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </Button>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={user?.email || ""}
+                    className="bg-slate-700 border-slate-600 focus:border-primary"
+                    disabled
+                  />
                 </div>
               </div>
+              <p className="text-sm text-muted-foreground">
+                Para alterar essas informações, entre em contato com o suporte.
+              </p>
+            </CardContent>
+          </Card>
 
-              {/* New Password */}
-              <div className="space-y-2">
-                <Label htmlFor="new-password">Nova Senha</Label>
-                <div className="relative">
-                  <Input
-                    id="new-password"
-                    type={showNewPassword ? "text" : "password"}
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="bg-slate-700 border-slate-600 focus:border-primary pr-10"
-                    required
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
-                    onClick={() => setShowNewPassword(!showNewPassword)}
-                  >
-                    {showNewPassword ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </Button>
-                </div>
-              </div>
-
-              {/* Confirm New Password */}
-              <div className="space-y-2">
-                <Label htmlFor="confirm-password">Confirmar Nova Senha</Label>
-                <div className="relative">
-                  <Input
-                    id="confirm-password"
-                    type={showConfirmPassword ? "text" : "password"}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="bg-slate-700 border-slate-600 focus:border-primary pr-10"
-                    required
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </Button>
-                </div>
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full bg-primary hover:bg-primary/90"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Alterando senha...
+          {/* Change Password Card */}
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Lock className="w-5 h-5" />
+                Alterar Senha
+              </CardTitle>
+              <CardDescription>
+                Mantenha sua conta segura alterando sua senha regularmente
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handlePasswordChange} className="space-y-4">
+                {/* Current Password */}
+                <div className="space-y-2">
+                  <Label htmlFor="current-password">Senha Atual</Label>
+                  <div className="relative">
+                    <Input
+                      id="current-password"
+                      type={showCurrentPassword ? "text" : "password"}
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      className="bg-slate-700 border-slate-600 focus:border-primary pr-10"
+                      required
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
+                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                    >
+                      {showCurrentPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </Button>
                   </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <Save className="w-4 h-4" />
-                    Alterar Senha
+                </div>
+
+                {/* New Password */}
+                <div className="space-y-2">
+                  <Label htmlFor="new-password">Nova Senha</Label>
+                  <div className="relative">
+                    <Input
+                      id="new-password"
+                      type={showNewPassword ? "text" : "password"}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="bg-slate-700 border-slate-600 focus:border-primary pr-10"
+                      required
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                    >
+                      {showNewPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </Button>
                   </div>
-                )}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+                </div>
+
+                {/* Confirm New Password */}
+                <div className="space-y-2">
+                  <Label htmlFor="confirm-password">Confirmar Nova Senha</Label>
+                  <div className="relative">
+                    <Input
+                      id="confirm-password"
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="bg-slate-700 border-slate-600 focus:border-primary pr-10"
+                      required
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full bg-primary hover:bg-primary/90"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Alterando senha...
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Save className="w-4 h-4" />
+                      Alterar Senha
+                    </div>
+                  )}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

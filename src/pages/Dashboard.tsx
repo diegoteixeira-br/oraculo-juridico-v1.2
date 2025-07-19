@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import UserMenu from "@/components/UserMenu";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -49,15 +50,18 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-6xl mx-auto space-y-6">
+        {/* Header com Menu */}
+        <div className="flex justify-end mb-6">
+          <UserMenu hideOptions={["dashboard"]} />
+        </div>
 
         <div className="text-center">
           <img 
             src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
             alt="Oráculo Jurídico" 
-            className="h-20 w-auto mx-auto mb-4"
+            className="h-16 w-auto mx-auto mb-4"
           />
-          
           
           <h1 className="text-3xl font-bold text-primary mb-2">Dashboard</h1>
           <p className="text-muted-foreground">
@@ -82,7 +86,7 @@ export default function Dashboard() {
         </div>
 
         {/* Credits Details Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           {/* Credits Stats */}
           <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
@@ -179,22 +183,6 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className="bg-slate-800 border-slate-700 hover:border-primary/50 transition-colors cursor-pointer" onClick={() => navigate("/chat")}>
-            <CardContent className="p-6 text-center">
-              <h3 className="text-lg font-semibold mb-2">Iniciar Consulta</h3>
-              <p className="text-muted-foreground text-sm">Faça uma nova pergunta jurídica</p>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-slate-800 border-slate-700 hover:border-primary/50 transition-colors cursor-pointer" onClick={() => navigate("/minha-conta")}>
-            <CardContent className="p-6 text-center">
-              <h3 className="text-lg font-semibold mb-2">Minha Conta</h3>
-              <p className="text-muted-foreground text-sm">Gerencie suas configurações</p>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </div>
   );
