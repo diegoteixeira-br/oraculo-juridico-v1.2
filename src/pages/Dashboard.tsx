@@ -172,67 +172,111 @@ export default function Dashboard() {
               <div className="relative">
                 {/* Scroll horizontal container */}
                 <div className="overflow-x-auto pb-4">
-                  <div className="flex gap-3 w-max">
+                  <div className="flex gap-4 w-max">
                     {legalDocuments.map((doc) => (
                       <div 
                         key={doc.id} 
-                        className="bg-slate-700 border border-slate-600 rounded-lg p-3 hover:border-primary/50 transition-all cursor-pointer hover:scale-105 flex-shrink-0 w-48"
+                        className="cursor-pointer hover:scale-105 transition-all flex-shrink-0"
                         onClick={() => handleViewDocument(doc.id)}
                       >
-                        {/* Preview miniatura */}
-                        <div className="mb-2">
-                          <div className="bg-white p-2 rounded shadow-sm text-[8px] leading-tight h-16 overflow-hidden">
-                            <div className="font-bold text-center border-b border-slate-300 pb-0.5 mb-1 text-slate-800">
-                              {doc.category === 'contrato' && 'CONTRATO'}
-                              {doc.category === 'peticao' && 'PETIÇÃO'}
-                              {doc.category === 'procuracao' && 'PROCURAÇÃO'}
-                              {doc.category === 'documento' && 'DOCUMENTO'}
-                            </div>
-                            <div className="text-slate-600 space-y-0.5">
-                              {doc.category === 'contrato' && (
-                                <>
-                                  <div className="border-b border-slate-200">Partes: _________</div>
-                                  <div>1. OBJETO</div>
-                                  <div>2. PAGAMENTO</div>
-                                </>
-                              )}
-                              {doc.category === 'peticao' && (
-                                <>
-                                  <div>Exmo. Sr. Juiz</div>
-                                  <div>FATOS:</div>
-                                  <div>PEDIDOS:</div>
-                                </>
-                              )}
-                              {doc.category === 'procuracao' && (
-                                <>
-                                  <div>Outorgante: ____</div>
-                                  <div>PODERES:</div>
-                                  <div>□ Representar</div>
-                                </>
-                              )}
-                              {doc.category === 'documento' && (
-                                <>
-                                  <div>Declaro que...</div>
-                                  <div>_____________</div>
-                                  <div>Assinatura</div>
-                                </>
-                              )}
+                        {/* Documento em formato A4 miniatura */}
+                        <div className="bg-white rounded-lg shadow-lg border border-gray-300 p-4 w-48 h-64 relative overflow-hidden">
+                          {/* Cabeçalho do documento */}
+                          <div className="text-center border-b-2 border-gray-300 pb-2 mb-3">
+                            <h1 className="font-bold text-xs text-gray-800 uppercase tracking-wide">
+                              {doc.title}
+                            </h1>
+                          </div>
+                          
+                          {/* Conteúdo do documento simulado */}
+                          <div className="text-[6px] leading-tight text-gray-700 space-y-1">
+                            {doc.category === 'contrato' && (
+                              <>
+                                <div className="font-semibold">CONTRATANTE:</div>
+                                <div className="border-b border-gray-200 h-2"></div>
+                                <div className="font-semibold mt-2">CONTRATADO:</div>
+                                <div className="border-b border-gray-200 h-2"></div>
+                                <div className="font-semibold mt-2">CLÁUSULA 1ª - DO OBJETO</div>
+                                <div className="text-gray-500">O presente contrato tem por objeto...</div>
+                                <div className="border-b border-gray-200 h-1 mt-1"></div>
+                                <div className="font-semibold mt-2">CLÁUSULA 2ª - OBRIGAÇÕES</div>
+                                <div className="text-gray-500">O CONTRATADO se obriga a...</div>
+                                <div className="border-b border-gray-200 h-1 mt-1"></div>
+                                <div className="font-semibold mt-2">CLÁUSULA 3ª - PAGAMENTO</div>
+                                <div className="text-gray-500">Pelos serviços prestados...</div>
+                              </>
+                            )}
+                            {doc.category === 'peticao' && (
+                              <>
+                                <div className="text-right font-semibold">Exmo. Sr. Juiz de Direito</div>
+                                <div className="text-center font-semibold mt-2">{doc.title}</div>
+                                <div className="mt-2">
+                                  <div className="font-semibold">Requerente:</div>
+                                  <div className="border-b border-gray-200 h-2"></div>
+                                </div>
+                                <div className="mt-2">
+                                  <div className="font-semibold">DOS FATOS:</div>
+                                  <div className="text-gray-500">Vem o requerente...</div>
+                                  <div className="border-b border-gray-200 h-1 mt-1"></div>
+                                </div>
+                                <div className="mt-2">
+                                  <div className="font-semibold">DOS PEDIDOS:</div>
+                                  <div className="text-gray-500">Requer...</div>
+                                </div>
+                              </>
+                            )}
+                            {doc.category === 'procuracao' && (
+                              <>
+                                <div className="text-center font-bold">PROCURAÇÃO</div>
+                                <div className="mt-2">
+                                  <div className="font-semibold">OUTORGANTE:</div>
+                                  <div className="border-b border-gray-200 h-2"></div>
+                                </div>
+                                <div className="mt-2">
+                                  <div className="font-semibold">OUTORGADO:</div>
+                                  <div className="border-b border-gray-200 h-2"></div>
+                                </div>
+                                <div className="mt-2">
+                                  <div className="font-semibold">PODERES:</div>
+                                  <div className="text-gray-500">☐ Representar em juízo</div>
+                                  <div className="text-gray-500">☐ Assinar documentos</div>
+                                  <div className="text-gray-500">☐ Receber valores</div>
+                                </div>
+                              </>
+                            )}
+                            {doc.category === 'documento' && (
+                              <>
+                                <div className="text-center font-bold">DECLARAÇÃO</div>
+                                <div className="mt-3 text-gray-600">
+                                  <div>Eu, _________________,</div>
+                                  <div className="mt-1">declaro para os devidos fins que</div>
+                                  <div className="border-b border-gray-200 h-2 mt-1"></div>
+                                  <div className="border-b border-gray-200 h-2 mt-1"></div>
+                                  <div className="border-b border-gray-200 h-2 mt-1"></div>
+                                </div>
+                                <div className="mt-4 text-right">
+                                  <div>________________, __ de _______ de ____</div>
+                                  <div className="mt-2">_________________________</div>
+                                  <div className="text-center">Assinatura</div>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                          
+                          {/* Rodapé com informações */}
+                          <div className="absolute bottom-2 left-2 right-2">
+                            <div className="bg-slate-800 text-white px-2 py-1 rounded text-[8px] flex justify-between items-center">
+                              <span className="capitalize">{doc.category}</span>
+                              <span>{doc.min_credits_required} créd.</span>
                             </div>
                           </div>
                         </div>
                         
-                        {/* Título e descrição */}
-                        <h3 className="font-semibold text-xs mb-1 line-clamp-2">{doc.title}</h3>
-                        <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{doc.description}</p>
-                        
-                        {/* Badge categoria */}
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs px-2 py-1 bg-primary/20 text-primary rounded-full">
-                            {doc.category}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            {doc.min_credits_required} créd.
-                          </span>
+                        {/* Título abaixo do documento */}
+                        <div className="mt-2 text-center">
+                          <h3 className="font-semibold text-xs text-white truncate w-48">
+                            {doc.title}
+                          </h3>
                         </div>
                       </div>
                     ))}
