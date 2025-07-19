@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import UserMenu from "@/components/UserMenu";
 
 interface Message {
   id: string;
@@ -511,31 +512,7 @@ export default function Dashboard() {
               <h1 className="text-base md:text-lg font-semibold truncate">Oráculo Jurídico</h1>
             </div>
             <div className="flex items-center gap-2 md:gap-4">
-              <div className="flex items-center gap-1 md:gap-2">
-                <span className="text-xs text-muted-foreground hidden sm:inline">Olá, {userName}!</span>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="p-0 h-auto">
-                      <Avatar className="w-6 h-6 md:w-7 md:h-7 cursor-pointer">
-                        <AvatarImage src={profile?.avatar_url || ""} />
-                        <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                          {userInitials}
-                        </AvatarFallback>
-                      </Avatar>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem onClick={handleMyAccount}>
-                      <Settings className="w-4 h-4 mr-2" />
-                      Minha Conta
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleLogout}>
-                      <LogOut className="w-4 h-4 mr-2" />
-                      Sair
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+              <UserMenu hideOptions={["chat"]} />
             </div>
           </header>
 
