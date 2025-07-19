@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const creditPackages = [
   {
@@ -56,15 +57,32 @@ export default function ComprarCreditosPage() {
     }
   }, [selectedPlan]);
 
-  const handlePurchase = (packageId: string) => {
-    const checkoutUrls = {
-      basic: "https://pay.cakto.com.br/qx2hqko_472740?utm_source=oraculo_juridico&utm_campaign=basic&utm_medium=website",
-      premium: "https://pay.cakto.com.br/qnjypg7_472753?utm_source=oraculo_juridico&utm_campaign=premium&utm_medium=website"
-    };
+  const handlePurchase = async (packageId: string) => {
+    try {
+      setIsLoading(true);
+      setSelectedPackage(packageId);
 
-    const url = checkoutUrls[packageId as keyof typeof checkoutUrls];
-    if (url) {
-      window.open(url, '_blank');
+      const { data, error } = await supabase.functions.invoke('create-payment', {
+        body: { packageId }
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      } else {
+        throw new Error('URL de pagamento não recebida');
+      }
+    } catch (error) {
+      console.error('Erro ao criar pagamento:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao processar pagamento. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+      setSelectedPackage(null);
     }
   };
 

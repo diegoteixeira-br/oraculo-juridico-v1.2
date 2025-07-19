@@ -15,10 +15,8 @@ export default function PagamentoPage() {
     }
   }, [user, navigate]);
 
-  const handleCaktoPayment = () => {
-    // SUBSTITUA PELA URL REAL DA CAKTO
-    const caktoUrl = "https://pay.cakto.com.br/76f5dfq_469425"; 
-    window.open(caktoUrl, '_blank');
+  const handleStripePayment = () => {
+    navigate('/comprar-creditos');
   };
 
 
@@ -45,10 +43,10 @@ export default function PagamentoPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CreditCard className="w-5 h-5" />
-              Pagamento via Cakto
+              Pagamento via Stripe
             </CardTitle>
             <CardDescription>
-              Complete o pagamento para ativar sua conta e ter acesso total ao Oráculo Jurídico
+              Complete a compra de créditos para começar a usar o Oráculo Jurídico
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -73,20 +71,20 @@ export default function PagamentoPage() {
 
             <div className="space-y-4">
               <Button 
-                onClick={handleCaktoPayment}
+                onClick={handleStripePayment}
                 className="w-full"
                 size="lg"
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
-                Finalizar Pagamento na Cakto
+                Comprar Créditos
               </Button>
               
               <div className="bg-green-50 dark:bg-green-950 p-4 rounded-lg text-center">
                 <p className="text-sm font-medium text-green-800 dark:text-green-200 mb-1">
-                  ✨ Ativação Automática
+                  ✨ Processamento Seguro
                 </p>
                 <p className="text-sm text-green-700 dark:text-green-300">
-                  Sua conta será ativada automaticamente assim que o pagamento for confirmado na Cakto!
+                  Seus créditos serão adicionados automaticamente após o pagamento confirmado!
                 </p>
               </div>
             </div>
@@ -94,10 +92,10 @@ export default function PagamentoPage() {
             <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg">
               <h3 className="font-medium mb-2">📋 Instruções:</h3>
               <ol className="text-sm space-y-1 text-muted-foreground">
-                <li>1. Clique em "Finalizar Pagamento na Cakto"</li>
-                <li>2. Complete o pagamento na plataforma da Cakto</li>
-                <li>3. Aguarde alguns instantes - a ativação é automática!</li>
-                <li>4. Acesse o dashboard para usar todas as funcionalidades</li>
+                <li>1. Clique em "Comprar Créditos"</li>
+                <li>2. Escolha seu pacote de créditos</li>
+                <li>3. Complete o pagamento no Stripe</li>
+                <li>4. Seus créditos serão adicionados automaticamente!</li>
               </ol>
             </div>
           </CardContent>

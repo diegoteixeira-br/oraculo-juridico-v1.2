@@ -10,7 +10,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
 import RedefinirSenha from "./pages/RedefinirSenha";
-import TesteWebhookPage from "./pages/TesteWebhookPage";
+
 import PagamentoPage from "./pages/PagamentoPage";
 import ConfirmarEmail from "./pages/ConfirmarEmail";
 
@@ -23,6 +23,7 @@ import MinhaContaPage from "./pages/MinhaContaPage";
 import HistoricoTransacoesPage from "./pages/HistoricoTransacoesPage";
 import ContatoPage from "./pages/ContatoPage";
 import ComprarCreditosPage from "./pages/ComprarCreditosPage";
+import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 
 
 const queryClient = new QueryClient();
@@ -37,7 +38,7 @@ function AppContent() {
       <Route path="/cadastro" element={<Cadastro />} />
       <Route path="/confirmar-email" element={<ConfirmarEmail />} />
           <Route path="/redefinir-senha" element={<RedefinirSenha />} />
-          <Route path="/teste-webhook" element={<TesteWebhookPage />} />
+          
       <Route path="/pagamento" element={<PagamentoPage />} />
       
       <Route path="/termos" element={<Termos />} />
@@ -48,6 +49,7 @@ function AppContent() {
       <Route path="/minha-conta" element={<ProtectedRoute><MinhaContaPage /></ProtectedRoute>} />
       <Route path="/historico-transacoes" element={<ProtectedRoute><HistoricoTransacoesPage /></ProtectedRoute>} />
       <Route path="/comprar-creditos" element={<ProtectedRoute><ComprarCreditosPage /></ProtectedRoute>} />
+      <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccessPage /></ProtectedRoute>} />
       
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
