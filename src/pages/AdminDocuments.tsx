@@ -64,13 +64,20 @@ export default function AdminDocuments() {
 
   const handleEdit = (doc: Document) => {
     setEditingDocument(doc);
+    // Ensure template_variables is always an array
+    const templateVars = Array.isArray(doc.template_variables) 
+      ? doc.template_variables 
+      : doc.template_variables 
+        ? [doc.template_variables] 
+        : null;
+    
     setFormData({
       title: doc.title,
       content: doc.content,
       category: doc.category,
       description: doc.description || '',
       min_credits_required: doc.min_credits_required,
-      template_variables: doc.template_variables
+      template_variables: templateVars
     });
     setIsCreating(false);
   };
@@ -375,7 +382,7 @@ export default function AdminDocuments() {
                 </p>
               </div>
 
-              {formData.template_variables && (
+              {formData.template_variables && Array.isArray(formData.template_variables) && (
                 <div>
                   <Label>Variáveis Detectadas</Label>
                   <div className="flex flex-wrap gap-2 mt-2">
