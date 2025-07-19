@@ -87,15 +87,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header com Menu */}
-        <div className="flex justify-between items-center mb-6">
-          <Button 
-            onClick={() => navigate("/admin/documentos")}
-            variant="outline"
-            className="border-primary/20 hover:bg-primary/10"
-          >
-            <FileText className="w-4 h-4 mr-2" />
-            Admin Documentos
-          </Button>
+        <div className="flex justify-end mb-6">
           <UserMenu hideOptions={["dashboard"]} />
         </div>
 

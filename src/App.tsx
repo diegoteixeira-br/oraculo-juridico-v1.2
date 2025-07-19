@@ -25,6 +25,8 @@ import ContatoPage from "./pages/ContatoPage";
 import ComprarCreditosPage from "./pages/ComprarCreditosPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import AdminDocuments from "./pages/AdminDocuments";
+import AdminLogin from "./pages/AdminLogin";
+import AdminProtectedRoute from "./components/AdminProtectedRoute";
 
 
 const queryClient = new QueryClient();
@@ -51,7 +53,8 @@ function AppContent() {
       <Route path="/historico-transacoes" element={<ProtectedRoute><HistoricoTransacoesPage /></ProtectedRoute>} />
       <Route path="/comprar-creditos" element={<ProtectedRoute><ComprarCreditosPage /></ProtectedRoute>} />
       <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccessPage /></ProtectedRoute>} />
-      <Route path="/admin/documentos" element={<ProtectedRoute><AdminDocuments /></ProtectedRoute>} />
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin/documentos" element={<AdminProtectedRoute><AdminDocuments /></AdminProtectedRoute>} />
       
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />

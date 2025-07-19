@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Upload, Edit, Trash2, Plus, Save, X, FileText, Download } from "lucide-react";
+import { Upload, Edit, Trash2, Plus, Save, X, FileText, Download, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,9 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import UserMenu from "@/components/UserMenu";
 
 interface Document {
   id: string;
@@ -25,7 +23,6 @@ interface Document {
 }
 
 export default function AdminDocuments() {
-  const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -43,13 +40,8 @@ export default function AdminDocuments() {
   });
 
   useEffect(() => {
-    // Verificar se é admin (por enquanto qualquer usuário autenticado pode acessar)
-    if (!user) {
-      navigate('/login');
-      return;
-    }
     loadDocuments();
-  }, [user, navigate]);
+  }, []);
 
   const loadDocuments = async () => {
     try {
@@ -257,6 +249,16 @@ export default function AdminDocuments() {
     }));
   };
 
+  const handleLogout = () => {
+    sessionStorage.removeItem("admin_authenticated");
+    sessionStorage.removeItem("admin_login_time");
+    toast({
+      title: "Logout realizado",
+      description: "Você foi desconectado da área administrativa"
+    });
+    navigate("/admin/login");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
       <div className="max-w-6xl mx-auto space-y-6">
@@ -266,7 +268,14 @@ export default function AdminDocuments() {
             <h1 className="text-3xl font-bold text-primary">Administração de Documentos</h1>
             <p className="text-muted-foreground">Gerencie seus documentos jurídicos</p>
           </div>
-          <UserMenu />
+          <Button 
+            onClick={handleLogout}
+            variant="outline"
+            className="border-red-500/20 hover:bg-red-500/10 text-red-400"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Sair
+          </Button>
         </div>
 
         {/* Botões de ação */}
