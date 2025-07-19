@@ -1,0 +1,283 @@
+import { useState, useEffect } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Download, Copy, Check } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+
+interface DocumentViewerProps {
+  documentId: string | null;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+interface LegalDocument {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  content: string;
+  template_variables: any;
+  min_credits_required: number;
+}
+
+export default function DocumentViewer({ documentId, isOpen, onClose }: DocumentViewerProps) {
+  const [document, setDocument] = useState<LegalDocument | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState<Record<string, string>>({});
+  const [processedContent, setProcessedContent] = useState("");
+  const [copied, setCopied] = useState(false);
+  const { toast } = useToast();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (documentId && isOpen) {
+      loadDocument();
+    }
+  }, [documentId, isOpen]);
+
+  useEffect(() => {
+    if (document) {
+      processTemplate();
+    }
+  }, [document, formData]);
+
+  const loadDocument = async () => {
+    if (!documentId) return;
+    
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('legal_documents')
+        .select('*')
+        .eq('id', documentId)
+        .single();
+
+      if (error) throw error;
+      
+      setDocument(data);
+      
+      // Registrar visualização
+      if (user?.id) {
+        await supabase
+          .from('user_document_access')
+          .insert({
+            user_id: user.id,
+            document_id: documentId,
+            access_type: 'view'
+          });
+      }
+      
+    } catch (error) {
+      console.error('Erro ao carregar documento:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar o documento",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const processTemplate = () => {
+    if (!document) return;
+    
+    let content = document.content;
+    
+    // Substituir variáveis do template
+    Object.entries(formData).forEach(([key, value]) => {
+      const regex = new RegExp(`{{${key}}}`, 'g');
+      content = content.replace(regex, value || `[${key.replace(/_/g, ' ').toUpperCase()}]`);
+    });
+    
+    // Mostrar variáveis não preenchidas
+    content = content.replace(/{{(\w+)}}/g, (match, variable) => {
+      return `[${variable.replace(/_/g, ' ').toUpperCase()}]`;
+    });
+    
+    setProcessedContent(content);
+  };
+
+  const handleInputChange = (key: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+
+  const copyToClipboard = async () => {
+    try {
+      // Converter HTML para texto simples básico
+      const textContent = processedContent
+        .replace(/<\/p>/g, '\n\n')
+        .replace(/<\/h[1-6]>/g, '\n\n')
+        .replace(/<\/li>/g, '\n')
+        .replace(/<br\s*\/?>/g, '\n')
+        .replace(/<[^>]*>/g, '')
+        .replace(/&nbsp;/g, ' ')
+        .trim();
+      
+      await navigator.clipboard.writeText(textContent);
+      setCopied(true);
+      toast({
+        title: "Copiado!",
+        description: "Documento copiado para a área de transferência"
+      });
+      
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error('Erro ao copiar:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível copiar o documento",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const downloadDocument = async () => {
+    try {
+      // Criar um documento HTML completo para download
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <title>${document?.title}</title>
+          <style>
+            body { font-family: 'Times New Roman', Times, serif; line-height: 1.6; margin: 40px; }
+            .document-header h1 { text-align: center; margin-bottom: 30px; }
+            h1, h2, h3 { color: #333; }
+            p { margin-bottom: 12px; }
+            .signature-section { margin-top: 40px; }
+            .signatures { display: flex; justify-content: space-between; margin-top: 60px; }
+            .signature { text-align: center; }
+            ul, ol { margin-left: 20px; }
+          </style>
+        </head>
+        <body>
+          ${processedContent}
+        </body>
+        </html>
+      `;
+      
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const link = globalThis.document.createElement('a');
+      link.href = url;
+      link.download = `${document?.title.replace(/\s+/g, '_')}.html`;
+      globalThis.document.body.appendChild(link);
+      link.click();
+      globalThis.document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      // Registrar download
+      if (user?.id && documentId) {
+        await supabase
+          .from('user_document_access')
+          .insert({
+            user_id: user.id,
+            document_id: documentId,
+            access_type: 'download'
+          });
+      }
+      
+      toast({
+        title: "Download iniciado",
+        description: "O documento foi baixado com sucesso"
+      });
+      
+    } catch (error) {
+      console.error('Erro ao baixar documento:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível baixar o documento",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Extrair variáveis do template
+  const templateVariables = document?.content.match(/{{(\w+)}}/g)?.map(match => 
+    match.replace(/[{}]/g, '')
+  ).filter((value, index, self) => self.indexOf(value) === index) || [];
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center justify-between">
+            <span>{document?.title}</span>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={copyToClipboard}
+                disabled={!processedContent}
+              >
+                {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                {copied ? "Copiado" : "Copiar"}
+              </Button>
+              <Button
+                size="sm"
+                onClick={downloadDocument}
+                disabled={!processedContent}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Baixar
+              </Button>
+            </div>
+          </DialogTitle>
+        </DialogHeader>
+
+        {loading ? (
+          <div className="flex items-center justify-center h-40">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+              <p>Carregando documento...</p>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Formulário de variáveis */}
+            {templateVariables.length > 0 && (
+              <div className="lg:col-span-1">
+                <h3 className="font-semibold mb-4">Preencher Dados</h3>
+                <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+                  {templateVariables.map((variable) => (
+                    <div key={variable}>
+                      <Label htmlFor={variable} className="text-sm">
+                        {variable.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      </Label>
+                      <Input
+                        id={variable}
+                        value={formData[variable] || ''}
+                        onChange={(e) => handleInputChange(variable, e.target.value)}
+                        placeholder={`Digite ${variable.replace(/_/g, ' ')}`}
+                        className="mt-1"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Visualização do documento */}
+            <div className={`${templateVariables.length > 0 ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
+              <h3 className="font-semibold mb-4">Prévia do Documento</h3>
+              <div 
+                className="border border-slate-300 rounded-lg p-6 bg-white text-black min-h-[60vh] overflow-y-auto"
+                style={{ fontFamily: 'Times New Roman, Times, serif' }}
+                dangerouslySetInnerHTML={{ __html: processedContent }}
+              />
+            </div>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
