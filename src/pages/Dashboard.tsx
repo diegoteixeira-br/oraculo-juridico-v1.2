@@ -16,6 +16,7 @@ export default function Dashboard() {
   const [userCredits, setUserCredits] = useState(0);
   const [dailyCredits, setDailyCredits] = useState(0);
   const [totalCreditsPurchased, setTotalCreditsPurchased] = useState(0);
+  const [creditsUsed, setCreditsUsed] = useState(0);
 
   const totalAvailableCredits = userCredits + dailyCredits;
 
@@ -34,6 +35,10 @@ export default function Dashboard() {
           setUserCredits(profile.credits || 0);
           setDailyCredits(profile.daily_credits || 0);
           setTotalCreditsPurchased(profile.total_credits_purchased || 0);
+          
+          // Calcular créditos usados: total comprado - total disponível
+          const totalUsed = (profile.total_credits_purchased || 0) - (profile.credits || 0);
+          setCreditsUsed(Math.max(0, totalUsed));
         }
       } catch (error) {
         console.error('Erro ao carregar dados do usuário:', error);
@@ -44,8 +49,8 @@ export default function Dashboard() {
   }, [user?.id]);
 
   const chartData = [
-    { name: 'Créditos Diários', value: dailyCredits, color: '#10b981' },
-    { name: 'Créditos Comprados', value: userCredits, color: '#3b82f6' }
+    { name: 'Créditos Disponíveis', value: totalAvailableCredits, color: '#10b981' },
+    { name: 'Créditos Usados', value: creditsUsed, color: '#ef4444' }
   ];
 
   return (
@@ -384,24 +389,24 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          {/* Pie Chart */}
+          {/* Credits Chart */}
           <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
               <CardTitle>Distribuição de Créditos</CardTitle>
               <CardDescription>
-                Visualização dos seus créditos por tipo
+                Análise completa do uso dos seus créditos
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-64">
+              <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={chartData}
                       cx="50%"
                       cy="50%"
-                      innerRadius={40}
-                      outerRadius={80}
+                      innerRadius={60}
+                      outerRadius={100}
                       paddingAngle={5}
                       dataKey="value"
                     >
@@ -410,15 +415,60 @@ export default function Dashboard() {
                       ))}
                     </Pie>
                     <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: '#1e293b', 
-                        border: '1px solid #475569',
-                        borderRadius: '8px'
+                      formatter={(value, name) => [
+                        `${value} crédito${value !== 1 ? 's' : ''}`, 
+                        name
+                      ]}
+                      contentStyle={{
+                        backgroundColor: '#1e293b',
+                        border: '1px solid #334155',
+                        borderRadius: '8px',
+                        color: '#f1f5f9'
                       }}
                     />
                     <Legend />
                   </PieChart>
                 </ResponsiveContainer>
+              </div>
+              
+              {/* Estatísticas detalhadas */}
+              <div className="space-y-4 mt-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-4 bg-green-600/10 rounded-lg border border-green-600/20">
+                    <div className="text-2xl font-bold text-green-400">{totalAvailableCredits}</div>
+                    <div className="text-sm text-muted-foreground">Disponíveis</div>
+                  </div>
+                  <div className="text-center p-4 bg-red-600/10 rounded-lg border border-red-600/20">
+                    <div className="text-2xl font-bold text-red-400">{creditsUsed}</div>
+                    <div className="text-sm text-muted-foreground">Usados</div>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-3 bg-emerald-600/10 rounded-lg border border-emerald-600/20">
+                    <div className="text-lg font-bold text-emerald-400">{dailyCredits}</div>
+                    <div className="text-xs text-muted-foreground">Créditos Diários</div>
+                  </div>
+                  <div className="text-center p-3 bg-blue-600/10 rounded-lg border border-blue-600/20">
+                    <div className="text-lg font-bold text-blue-400">{userCredits}</div>
+                    <div className="text-xs text-muted-foreground">Créditos Comprados</div>
+                  </div>
+                </div>
+
+                <div className="bg-slate-700/50 p-4 rounded-lg border border-slate-600">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium">Total Comprado:</span>
+                    <span className="text-primary font-bold">{totalCreditsPurchased}</span>
+                  </div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium">Total Usado:</span>
+                    <span className="text-red-400 font-bold">{creditsUsed}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium">Restante:</span>
+                    <span className="text-green-400 font-bold">{totalAvailableCredits}</span>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
