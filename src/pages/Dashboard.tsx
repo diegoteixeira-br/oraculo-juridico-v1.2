@@ -165,78 +165,89 @@ export default function Dashboard() {
                 Documentos Jurídicos Pré-feitos
               </CardTitle>
               <CardDescription>
-                Templates prontos para download - Disponível para usuários premium
+                Documentos prontos para usar - clique para editar e baixar
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {legalDocuments.map((doc) => (
-                  <div key={doc.id} className="group bg-slate-700/50 border border-slate-600 rounded-lg p-4 hover:bg-slate-700 transition-colors">
-                    <div className="aspect-[3/4] bg-white rounded mb-3 flex items-center justify-center">
-                      <div className="text-slate-800 text-xs text-center p-2">
-                        <div className="font-bold mb-2">{doc.title.toUpperCase()}</div>
-                        <div className="space-y-1 text-[8px]">
-                          <div className="border-b border-slate-300 pb-1">
-                            {doc.category === 'contrato' && 'Contratante: _______________'}
-                            {doc.category === 'peticao' && 'Exmo. Sr. Dr. Juiz de Direito'}
-                            {doc.category === 'procuracao' && 'Outorgante: _______________'}
-                          </div>
-                          <div className="border-b border-slate-300 pb-1">
-                            {doc.category === 'contrato' && 'Contratado: _______________'}
-                            {doc.category === 'peticao' && 'Requerente: _______________'}
-                            {doc.category === 'procuracao' && 'Outorgado: _______________'}
-                          </div>
-                          <div className="text-left space-y-1">
-                            {doc.category === 'contrato' && (
-                              <>
-                                <div>1. DO OBJETO</div>
-                                <div>2. DAS OBRIGAÇÕES</div>
-                                <div>3. DO PAGAMENTO</div>
-                                <div>4. DA VIGÊNCIA</div>
-                              </>
-                            )}
-                            {doc.category === 'peticao' && (
-                              <>
-                                <div>DOS FATOS:</div>
-                                <div>DO DIREITO:</div>
-                                <div>DOS PEDIDOS:</div>
-                              </>
-                            )}
-                            {doc.category === 'procuracao' && (
-                              <>
-                                <div>PODERES:</div>
-                                <div>□ Receber citação</div>
-                                <div>□ Contestar</div>
-                                <div>□ Transigir</div>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <h3 className="font-semibold text-sm mb-2">{doc.title}</h3>
-                    <p className="text-xs text-muted-foreground mb-3">{doc.description}</p>
-                    <div className="flex gap-2">
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        className="flex-1"
+              <div className="relative">
+                {/* Scroll horizontal container */}
+                <div className="overflow-x-auto pb-4">
+                  <div className="flex gap-3 w-max">
+                    {legalDocuments.map((doc) => (
+                      <div 
+                        key={doc.id} 
+                        className="bg-slate-700 border border-slate-600 rounded-lg p-3 hover:border-primary/50 transition-all cursor-pointer hover:scale-105 flex-shrink-0 w-48"
                         onClick={() => handleViewDocument(doc.id)}
                       >
-                        <Eye className="w-3 h-3 mr-1" />
-                        Ver
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        className="flex-1"
-                        onClick={() => handleDownloadDocument(doc.id)}
-                      >
-                        <Download className="w-3 h-3 mr-1" />
-                        Baixar
-                      </Button>
-                    </div>
+                        {/* Preview miniatura */}
+                        <div className="mb-2">
+                          <div className="bg-white p-2 rounded shadow-sm text-[8px] leading-tight h-16 overflow-hidden">
+                            <div className="font-bold text-center border-b border-slate-300 pb-0.5 mb-1 text-slate-800">
+                              {doc.category === 'contrato' && 'CONTRATO'}
+                              {doc.category === 'peticao' && 'PETIÇÃO'}
+                              {doc.category === 'procuracao' && 'PROCURAÇÃO'}
+                              {doc.category === 'documento' && 'DOCUMENTO'}
+                            </div>
+                            <div className="text-slate-600 space-y-0.5">
+                              {doc.category === 'contrato' && (
+                                <>
+                                  <div className="border-b border-slate-200">Partes: _________</div>
+                                  <div>1. OBJETO</div>
+                                  <div>2. PAGAMENTO</div>
+                                </>
+                              )}
+                              {doc.category === 'peticao' && (
+                                <>
+                                  <div>Exmo. Sr. Juiz</div>
+                                  <div>FATOS:</div>
+                                  <div>PEDIDOS:</div>
+                                </>
+                              )}
+                              {doc.category === 'procuracao' && (
+                                <>
+                                  <div>Outorgante: ____</div>
+                                  <div>PODERES:</div>
+                                  <div>□ Representar</div>
+                                </>
+                              )}
+                              {doc.category === 'documento' && (
+                                <>
+                                  <div>Declaro que...</div>
+                                  <div>_____________</div>
+                                  <div>Assinatura</div>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Título e descrição */}
+                        <h3 className="font-semibold text-xs mb-1 line-clamp-2">{doc.title}</h3>
+                        <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{doc.description}</p>
+                        
+                        {/* Badge categoria */}
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs px-2 py-1 bg-primary/20 text-primary rounded-full">
+                            {doc.category}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {doc.min_credits_required} créd.
+                          </span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
+                
+                {/* Indicador de scroll */}
+                <div className="absolute right-0 top-0 bottom-4 w-8 bg-gradient-to-l from-slate-800 to-transparent pointer-events-none"></div>
+              </div>
+              
+              {/* Instruções */}
+              <div className="mt-4 p-3 bg-slate-900/50 rounded border border-slate-600">
+                <p className="text-xs text-muted-foreground text-center">
+                  💡 <strong>Dica:</strong> Clique em qualquer documento para editar os campos e baixar personalizado
+                </p>
               </div>
             </CardContent>
           </Card>
