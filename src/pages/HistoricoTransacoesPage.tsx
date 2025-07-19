@@ -167,11 +167,11 @@ export default function HistoricoTransacoesPage() {
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
-              onClick={() => navigate("/minha-conta")}
+              onClick={() => navigate("/dashboard")}
               className="text-primary hover:text-primary/80"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Voltar para Minha Conta
+              Voltar para Dashboard
             </Button>
           </div>
           <Button
