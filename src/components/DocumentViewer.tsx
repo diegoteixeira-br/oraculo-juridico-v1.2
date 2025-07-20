@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Download, Copy, Check } from "lucide-react";
+import { Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -104,7 +102,28 @@ export default function DocumentViewer({ documentId, isOpen, onClose }: Document
   };
 
   const copyToClipboard = async () => {
+    if (!document || !user?.id) return;
+    
     try {
+      // Verificar e consumir créditos antes de copiar
+      const { data: useCreditsResult, error: creditsError } = await supabase.rpc(
+        'use_credits',
+        {
+          p_user_id: user.id,
+          p_credits: document.min_credits_required,
+          p_description: `Cópia do documento: ${document.title}`
+        }
+      );
+
+      if (creditsError || !useCreditsResult) {
+        toast({
+          title: "Créditos insuficientes",
+          description: `Você precisa de ${document.min_credits_required} créditos para copiar este documento`,
+          variant: "destructive"
+        });
+        return;
+      }
+
       // Converter HTML para texto simples básico
       const textContent = processedContent
         .replace(/<\/p>/g, '\n\n')
@@ -119,7 +138,7 @@ export default function DocumentViewer({ documentId, isOpen, onClose }: Document
       setCopied(true);
       toast({
         title: "Copiado!",
-        description: "Documento copiado para a área de transferência"
+        description: `Documento copiado! ${document.min_credits_required} créditos utilizados.`
       });
       
       setTimeout(() => setCopied(false), 2000);
@@ -214,15 +233,7 @@ export default function DocumentViewer({ documentId, isOpen, onClose }: Document
                 disabled={!processedContent}
               >
                 {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                {copied ? "Copiado" : "Copiar"}
-              </Button>
-              <Button
-                size="sm"
-                onClick={downloadDocument}
-                disabled={!processedContent}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Baixar
+                {copied ? "Copiado" : `Copiar (${document?.min_credits_required || 0} créditos)`}
               </Button>
             </div>
           </DialogTitle>
@@ -241,11 +252,15 @@ export default function DocumentViewer({ documentId, isOpen, onClose }: Document
             <div className="w-full">
               <h3 className="font-semibold mb-4">Documento</h3>
               <div 
-                className="border border-slate-300 rounded-lg p-6 bg-white text-black min-h-[60vh] overflow-y-auto"
+                className="border border-slate-300 rounded-lg p-6 bg-white text-black min-h-[60vh] overflow-y-auto select-none"
                 style={{ 
                   fontFamily: 'Times New Roman, Times, serif',
                   lineHeight: '1.6',
-                  fontSize: '14px'
+                  fontSize: '14px',
+                  userSelect: 'none',
+                  WebkitUserSelect: 'none',
+                  MozUserSelect: 'none',
+                  msUserSelect: 'none'
                 }}
                 dangerouslySetInnerHTML={{ __html: processedContent }}
               />
