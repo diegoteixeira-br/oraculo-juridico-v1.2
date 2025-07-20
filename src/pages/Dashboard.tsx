@@ -104,22 +104,6 @@ export default function Dashboard() {
           </p>
         </div>
 
-        {/* Credit Overview Banner */}
-        <div className="mt-4 p-6 bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/30 rounded-xl">
-          <div className="flex items-center gap-3 justify-center">
-            <CreditCard className="w-6 h-6 text-primary" />
-            <span className="text-2xl font-bold text-primary">
-              {totalAvailableCredits} créditos disponíveis
-            </span>
-          </div>
-          <p className="text-center text-primary/80 mt-2">
-            {dailyCredits > 0 && (
-              <span>{dailyCredits} créditos diários + </span>
-            )}
-            {userCredits} créditos comprados
-          </p>
-        </div>
-
         {/* Como usar o Chat */}
         <Card className="bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/30">
           <CardHeader>
@@ -180,7 +164,7 @@ export default function Dashboard() {
                         onClick={() => handleViewDocument(doc.id)}
                       >
                         {/* Documento em formato A4 miniatura */}
-                        <div className="bg-white rounded-lg shadow-lg border border-gray-300 p-4 w-48 h-64 relative overflow-hidden">
+                        <div className="bg-white rounded-lg shadow-lg border border-gray-300 p-3 w-40 h-52 relative overflow-hidden">
                           {/* Cabeçalho do documento */}
                           <div className="text-center border-b-2 border-gray-300 pb-2 mb-3">
                             <h1 className="font-bold text-xs text-gray-800 uppercase tracking-wide">
@@ -274,7 +258,7 @@ export default function Dashboard() {
                         
                         {/* Título abaixo do documento */}
                         <div className="mt-2 text-center">
-                          <h3 className="font-semibold text-xs text-white truncate w-48">
+                          <h3 className="font-semibold text-xs text-white truncate w-40">
                             {doc.title}
                           </h3>
                         </div>
@@ -296,6 +280,22 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         )}
+
+        {/* Credit Overview Banner */}
+        <div className="mt-4 p-6 bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/30 rounded-xl">
+          <div className="flex items-center gap-3 justify-center">
+            <CreditCard className="w-6 h-6 text-primary" />
+            <span className="text-2xl font-bold text-primary">
+              {totalAvailableCredits} créditos disponíveis
+            </span>
+          </div>
+          <p className="text-center text-primary/80 mt-2">
+            {dailyCredits > 0 && (
+              <span>{dailyCredits} créditos diários + </span>
+            )}
+            {userCredits} créditos comprados
+          </p>
+        </div>
 
         {/* Credits Details Cards */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
