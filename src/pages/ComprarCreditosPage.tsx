@@ -127,7 +127,7 @@ export default function ComprarCreditosPage() {
               
               {pkg.discount && (
                 <div className="absolute -top-2 -right-2 z-10">
-                  <Badge variant="destructive" className="bg-green-600 hover:bg-green-600/80 text-white">
+                  <Badge variant="destructive" className="bg-green-600 hover:bg-green-600/80 text-white text-xs px-2 py-1">
                     {pkg.discount}
                   </Badge>
                 </div>
