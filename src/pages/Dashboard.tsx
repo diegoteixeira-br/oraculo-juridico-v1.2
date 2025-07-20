@@ -135,7 +135,7 @@ export default function Dashboard() {
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
               <div className="flex-1 space-y-2">
                 <p className="text-primary/90">
-                  • Cada consulta consome apenas <strong>1 crédito</strong>
+                  • Cada chat consome apenas <strong>1 crédito</strong>
                 </p>
                 <p className="text-primary/90">
                   • Respostas baseadas na legislação brasileira
