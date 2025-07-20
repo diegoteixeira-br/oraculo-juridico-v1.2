@@ -160,13 +160,13 @@ export default function HistoricoTransacoesPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
-      <div className="max-w-6xl mx-auto space-y-6">
+      <div className="max-w-5xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <Button
             onClick={exportTransactions}
             variant="outline"
-            className="border-primary text-primary hover:bg-primary/10"
+            className="border-primary text-primary hover:bg-primary/10 text-sm md:text-base"
           >
             <Download className="w-4 h-4 mr-2" />
             Exportar CSV
@@ -179,10 +179,10 @@ export default function HistoricoTransacoesPage() {
           <img 
             src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
             alt="Oráculo Jurídico" 
-            className="h-16 w-auto mx-auto mb-4"
+            className="h-12 md:h-16 w-auto mx-auto mb-4"
           />
-          <h1 className="text-3xl font-bold text-primary mb-2">Histórico de Transações</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2">Histórico de Transações</h1>
+          <p className="text-sm md:text-base text-muted-foreground">
             Visualize todas as suas transações de créditos
           </p>
         </div>
@@ -190,28 +190,28 @@ export default function HistoricoTransacoesPage() {
         {/* Filters */}
         <Card className="bg-slate-800 border-slate-700">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Filter className="w-5 h-5" />
+            <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+              <Filter className="w-4 h-4 md:w-5 md:h-5" />
               Filtros
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="search">Buscar por descrição</Label>
+                <Label htmlFor="search" className="text-sm">Buscar por descrição</Label>
                 <Input
                   id="search"
                   placeholder="Digite para buscar..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="bg-slate-700 border-slate-600 focus:border-primary"
+                  className="bg-slate-700 border-slate-600 focus:border-primary text-sm"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="type">Tipo de transação</Label>
+                <Label htmlFor="type" className="text-sm">Tipo de transação</Label>
                 <Select value={typeFilter} onValueChange={setTypeFilter}>
-                  <SelectTrigger id="type" className="bg-slate-700 border-slate-600">
+                  <SelectTrigger id="type" className="bg-slate-700 border-slate-600 text-sm">
                     <SelectValue placeholder="Selecione o tipo" />
                   </SelectTrigger>
                   <SelectContent>
@@ -225,9 +225,9 @@ export default function HistoricoTransacoesPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="date">Período</Label>
+                <Label htmlFor="date" className="text-sm">Período</Label>
                 <Select value={dateFilter} onValueChange={setDateFilter}>
-                  <SelectTrigger id="date" className="bg-slate-700 border-slate-600">
+                  <SelectTrigger id="date" className="bg-slate-700 border-slate-600 text-sm">
                     <SelectValue placeholder="Selecione o período" />
                   </SelectTrigger>
                   <SelectContent>
@@ -246,11 +246,11 @@ export default function HistoricoTransacoesPage() {
         {/* Transactions List */}
         <Card className="bg-slate-800 border-slate-700">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <History className="w-5 h-5" />
+            <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+              <History className="w-4 h-4 md:w-5 md:h-5" />
               Transações ({filteredTransactions.length})
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-sm">
               {filteredTransactions.length === transactions.length 
                 ? "Todas as transações" 
                 : `${filteredTransactions.length} de ${transactions.length} transações`
@@ -264,25 +264,25 @@ export default function HistoricoTransacoesPage() {
                 <p className="text-sm text-muted-foreground mt-2">Carregando transações...</p>
               </div>
             ) : filteredTransactions.length > 0 ? (
-              <div className="space-y-4">
+              <div className="space-y-3 md:space-y-4">
                 {filteredTransactions.map((transaction) => (
-                  <div key={transaction.id} className="p-4 bg-secondary/10 rounded-lg border border-secondary/20 hover:bg-secondary/20 transition-colors">
+                  <div key={transaction.id} className="p-3 md:p-4 bg-secondary/10 rounded-lg border border-secondary/20 hover:bg-secondary/20 transition-colors">
                     <div className="flex-1">
-                      <div className="flex items-center justify-between mb-3">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between mb-3 gap-2">
                         <div className="flex items-center gap-3">
                           <Badge 
                             variant="secondary"
-                            className={getTransactionTypeBadgeColor(transaction.transaction_type)}
+                            className={`${getTransactionTypeBadgeColor(transaction.transaction_type)} text-xs`}
                           >
                             {getTransactionTypeLabel(transaction.transaction_type)}
                           </Badge>
-                          <span className={`text-lg font-bold ${
+                          <span className={`text-base md:text-lg font-bold ${
                             transaction.amount > 0 ? 'text-green-400' : 'text-orange-400'
                           }`}>
                             {transaction.amount > 0 ? '+' : ''}{transaction.amount} créditos
                           </span>
                         </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-xs md:text-sm text-muted-foreground">
                           {new Date(transaction.created_at).toLocaleDateString('pt-BR', {
                             day: '2-digit',
                             month: '2-digit',
@@ -293,7 +293,7 @@ export default function HistoricoTransacoesPage() {
                         </div>
                       </div>
                       
-                      <p className="text-sm text-foreground mb-2">
+                      <p className="text-xs md:text-sm text-foreground mb-2">
                         {transaction.description}
                       </p>
                       
@@ -314,11 +314,11 @@ export default function HistoricoTransacoesPage() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <CreditCard className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <p className="text-lg font-medium text-muted-foreground mb-2">
+                <CreditCard className="w-12 h-12 md:w-16 md:h-16 text-muted-foreground mx-auto mb-4" />
+                <p className="text-base md:text-lg font-medium text-muted-foreground mb-2">
                   Nenhuma transação encontrada
                 </p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs md:text-sm text-muted-foreground">
                   {searchTerm || typeFilter !== "all" || dateFilter !== "all" 
                     ? "Tente ajustar os filtros para encontrar suas transações"
                     : "Você ainda não possui transações de créditos"
