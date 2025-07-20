@@ -86,8 +86,14 @@ export default function DocumentViewer({ documentId, isOpen, onClose }: Document
   const processTemplate = () => {
     if (!document) return;
     
-    // Simplesmente mostrar o conteúdo como foi criado no admin
-    setProcessedContent(document.content);
+    // Converter quebras de linha para HTML preservando a formatação
+    const content = document.content
+      .replace(/\n\n/g, '</p><p>')  // Dupla quebra = novo parágrafo
+      .replace(/\n/g, '<br>')       // Quebra simples = quebra de linha
+      .replace(/^/, '<p>')          // Adicionar abertura do primeiro parágrafo
+      .replace(/$/, '</p>');        // Adicionar fechamento do último parágrafo
+    
+    setProcessedContent(content);
   };
 
   const handleInputChange = (key: string, value: string) => {
@@ -236,7 +242,11 @@ export default function DocumentViewer({ documentId, isOpen, onClose }: Document
               <h3 className="font-semibold mb-4">Documento</h3>
               <div 
                 className="border border-slate-300 rounded-lg p-6 bg-white text-black min-h-[60vh] overflow-y-auto"
-                style={{ fontFamily: 'Times New Roman, Times, serif' }}
+                style={{ 
+                  fontFamily: 'Times New Roman, Times, serif',
+                  lineHeight: '1.6',
+                  fontSize: '14px'
+                }}
                 dangerouslySetInnerHTML={{ __html: processedContent }}
               />
             </div>
