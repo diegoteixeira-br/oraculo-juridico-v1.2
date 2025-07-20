@@ -86,20 +86,8 @@ export default function DocumentViewer({ documentId, isOpen, onClose }: Document
   const processTemplate = () => {
     if (!document) return;
     
-    let content = document.content;
-    
-    // Substituir variáveis do template
-    Object.entries(formData).forEach(([key, value]) => {
-      const regex = new RegExp(`{{${key}}}`, 'g');
-      content = content.replace(regex, value || `[${key.replace(/_/g, ' ').toUpperCase()}]`);
-    });
-    
-    // Mostrar variáveis não preenchidas
-    content = content.replace(/{{(\w+)}}/g, (match, variable) => {
-      return `[${variable.replace(/_/g, ' ').toUpperCase()}]`;
-    });
-    
-    setProcessedContent(content);
+    // Simplesmente mostrar o conteúdo como foi criado no admin
+    setProcessedContent(document.content);
   };
 
   const handleInputChange = (key: string, value: string) => {
@@ -242,33 +230,10 @@ export default function DocumentViewer({ documentId, isOpen, onClose }: Document
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Formulário de variáveis */}
-            {templateVariables.length > 0 && (
-              <div className="lg:col-span-1">
-                <h3 className="font-semibold mb-4">Preencher Dados</h3>
-                <div className="space-y-4 max-h-[60vh] overflow-y-auto">
-                  {templateVariables.map((variable) => (
-                    <div key={variable}>
-                      <Label htmlFor={variable} className="text-sm">
-                        {variable.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                      </Label>
-                      <Input
-                        id={variable}
-                        value={formData[variable] || ''}
-                        onChange={(e) => handleInputChange(variable, e.target.value)}
-                        placeholder={`Digite ${variable.replace(/_/g, ' ')}`}
-                        className="mt-1"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
+          <div className="w-full">
             {/* Visualização do documento */}
-            <div className={`${templateVariables.length > 0 ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
-              <h3 className="font-semibold mb-4">Prévia do Documento</h3>
+            <div className="w-full">
+              <h3 className="font-semibold mb-4">Documento</h3>
               <div 
                 className="border border-slate-300 rounded-lg p-6 bg-white text-black min-h-[60vh] overflow-y-auto"
                 style={{ fontFamily: 'Times New Roman, Times, serif' }}
