@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, CreditCard, Check, Star } from "lucide-react";
+import { CreditCard, Check, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import UserMenu from "@/components/UserMenu";
 
 const creditPackages = [
   {
@@ -45,7 +46,6 @@ const creditPackages = [
 export default function ComprarCreditosPage() {
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const selectedPlan = searchParams.get('plano');
@@ -90,15 +90,8 @@ export default function ComprarCreditosPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/minha-conta")}
-            className="text-primary hover:text-primary/80"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Voltar para Minha Conta
-          </Button>
+        <div className="flex justify-end">
+          <UserMenu />
         </div>
 
         <div className="text-center">

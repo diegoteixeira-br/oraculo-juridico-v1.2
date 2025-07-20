@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, History, CreditCard, Download, Filter, Calendar } from "lucide-react";
+import { History, CreditCard, Download, Filter, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import UserMenu from "@/components/UserMenu";
 
 interface CreditTransaction {
   id: string;
@@ -28,7 +28,6 @@ export default function HistoricoTransacoesPage() {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [dateFilter, setDateFilter] = useState<string>("all");
   
-  const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -164,16 +163,6 @@ export default function HistoricoTransacoesPage() {
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              onClick={() => navigate("/dashboard")}
-              className="text-primary hover:text-primary/80"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Voltar para Dashboard
-            </Button>
-          </div>
           <Button
             onClick={exportTransactions}
             variant="outline"
@@ -182,6 +171,7 @@ export default function HistoricoTransacoesPage() {
             <Download className="w-4 h-4 mr-2" />
             Exportar CSV
           </Button>
+          <UserMenu />
         </div>
 
         {/* Title */}
