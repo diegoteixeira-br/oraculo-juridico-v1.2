@@ -258,13 +258,13 @@ const LandingPage = () => {
       </section>
 
       {/* Conta Gratuita */}
-      <section id="free-account-section" className="py-20 px-4 bg-muted/20">
+      <section id="free-account-section" className="py-10 sm:py-16 px-4 bg-muted/20">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-6 text-foreground">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6 text-foreground">
               Comece gratuitamente agora mesmo
             </h2>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-base sm:text-lg text-muted-foreground">
               Crie sua conta gratuita e teste nossa IA jurídica sem compromisso
             </p>
           </div>
