@@ -87,7 +87,7 @@ const LandingPage = () => {
           <img 
             src={heroBrain} 
             alt="AI Technology"
-            className="w-full h-full object-cover opacity-20"
+            className="w-full h-full object-cover object-center opacity-20"
           />
         </div>
         <div className="relative max-w-6xl mx-auto text-center">
@@ -380,7 +380,7 @@ const LandingPage = () => {
               <img 
                 src={legalOffice} 
                 alt="Escritório Jurídico Moderno"
-                className="w-full h-96 object-cover rounded-lg"
+                className="w-full h-64 sm:h-80 md:h-96 object-cover object-center rounded-lg"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent rounded-lg"></div>
               <div className="absolute bottom-6 left-6 right-6">
