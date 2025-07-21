@@ -293,6 +293,15 @@ export type Database = {
           similarity: number
         }[]
       }
+      process_refund: {
+        Args: {
+          p_user_id: string
+          p_refunded_credits: number
+          p_transaction_id?: string
+          p_description?: string
+        }
+        Returns: boolean
+      }
       reset_daily_credits_if_needed: {
         Args: { p_user_id: string }
         Returns: boolean
