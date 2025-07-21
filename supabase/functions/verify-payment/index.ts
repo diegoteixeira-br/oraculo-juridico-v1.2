@@ -41,6 +41,25 @@ serve(async (req) => {
       const packageId = session.metadata?.package_id;
 
       if (userId && credits > 0) {
+        // Check if this transaction was already processed
+        const { data: existingTransaction } = await supabaseClient
+          .from('credit_transactions')
+          .select('id')
+          .eq('cakto_transaction_id', session.id)
+          .maybeSingle();
+        
+        if (existingTransaction) {
+          // Transaction already processed
+          return new Response(JSON.stringify({ 
+            success: true, 
+            message: "Transaction already processed",
+            transaction_id: session.id
+          }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+            status: 200,
+          });
+        }
+
         // Add credits to user
         const { error } = await supabaseClient.rpc('add_credits_to_user', {
           p_user_id: userId,
