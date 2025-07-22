@@ -198,7 +198,7 @@ serve(async (req) => {
     }
 
     const totalCredits = (profile.daily_credits || 0) + (profile.credits || 0);
-    if (totalCredits < 1) {
+    if (totalCredits < 0.01) {
       return new Response(JSON.stringify({ error: 'Créditos insuficientes' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -336,7 +336,7 @@ ${JSON.stringify(dadosEstruturados, null, 2)}`;
     // Usar os créditos proporcionalmente após resposta bem-sucedida
     const { error: creditsError } = await supabase.rpc('use_credits', {
       p_user_id: userId,
-      p_credits: Math.ceil(creditsConsumed), // Arredondar para cima
+      p_credits: creditsConsumed, // Valor exato calculado baseado em tokens
       p_description: `Consulta jurídica (${totalTokens} tokens)`
     });
 
@@ -352,7 +352,7 @@ ${JSON.stringify(dadosEstruturados, null, 2)}`;
         user_id: userId,
         prompt_text: JSON.stringify(dadosEstruturados),
         response_text: aiMessage,
-        credits_consumed: Math.ceil(creditsConsumed), // Usar valor real calculado
+        credits_consumed: creditsConsumed, // Usar valor exato calculado
         message_type: 'legal_consultation'
       });
 

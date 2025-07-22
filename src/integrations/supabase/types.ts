@@ -319,7 +319,9 @@ export type Database = {
         Returns: number
       }
       use_credits: {
-        Args: { p_user_id: string; p_credits: number; p_description?: string }
+        Args:
+          | { p_user_id: string; p_credits: number; p_description?: string }
+          | { p_user_id: string; p_credits: number; p_description?: string }
         Returns: boolean
       }
       vector_avg: {
