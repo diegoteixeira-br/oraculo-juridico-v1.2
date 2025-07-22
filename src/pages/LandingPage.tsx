@@ -42,15 +42,15 @@ const LandingPage = () => {
   const faqData = [
     {
       question: "Como funcionam os créditos?",
-      answer: "É muito simples. Cada pergunta completa que você faz à nossa Inteligência Artificial consome 1 crédito. Ao se cadastrar, você entra no nosso plano gratuito e ganha 3 créditos que se renovam a cada 24 horas."
+      answer: "É muito simples. Cada pergunta completa que você faz à nossa Inteligência Artificial consome créditos proporcionalmente ao uso (1 crédito = 1.500 tokens). Ao se cadastrar, você entra no nosso plano gratuito e ganha 2 créditos que se renovam a cada 24 horas."
     },
     {
       question: "Meus créditos gratuitos se acumulam se eu não usar?",
-      answer: "Não. Os 3 créditos gratuitos são renovados diariamente, ou seja, você tem direito a 3 novas consultas grátis a cada dia. Eles não são cumulativos. Para ter um saldo de créditos para usar quando quiser, você pode adquirir pacotes extras dentro da sua conta."
+      answer: "Não. Os 2 créditos gratuitos são renovados diariamente, ou seja, você tem direito a novas consultas grátis a cada dia. Eles não são cumulativos. Para ter um saldo de créditos para usar quando quiser, você pode adquirir pacotes extras dentro da sua conta."
     },
     {
       question: "Preciso cadastrar um cartão de crédito para usar o plano gratuito?",
-      answer: "Não. Para criar sua conta no plano gratuito e usar seus 3 créditos diários, você não precisa fornecer nenhuma informação de pagamento. Você só precisará inserir seus dados de pagamento se decidir comprar créditos extras dentro da sua conta."
+      answer: "Não. Para criar sua conta no plano gratuito e usar seus 2 créditos diários, você não precisa fornecer nenhuma informação de pagamento. Você só precisará inserir seus dados de pagamento se decidir comprar créditos extras dentro da sua conta."
     },
     {
       question: "As informações da IA são confiáveis?",
@@ -169,7 +169,7 @@ const LandingPage = () => {
               </div>
               <h3 className="text-xl font-semibold mb-4 text-foreground">Cadastre-se Gratuitamente</h3>
               <p className="text-muted-foreground">
-                Crie sua conta gratuita e comece a usar imediatamente com 3 créditos renovados diariamente. Sem compromisso, sem cartão de crédito.
+                Crie sua conta gratuita e comece a usar imediatamente com 2 créditos renovados diariamente. Sem compromisso, sem cartão de crédito.
               </p>
             </div>
             
@@ -285,7 +285,7 @@ const LandingPage = () => {
               <div className="space-y-3 mb-8">
                 <div className="flex items-center space-x-3 text-left">
                   <Check className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-muted-foreground">3 créditos renovados diariamente</span>
+                  <span className="text-muted-foreground">2 créditos renovados diariamente</span>
                 </div>
                 <div className="flex items-center space-x-3 text-left">
                   <Check className="w-5 h-5 text-primary flex-shrink-0" />

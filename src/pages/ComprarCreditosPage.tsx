@@ -11,34 +11,38 @@ import UserMenu from "@/components/UserMenu";
 const creditPackages = [
   {
     id: "basic",
-    name: "Pacote Básico",
+    name: "Plano Padrão",
     credits: 50,
     price: 59.90,
     originalPrice: null,
     discount: null,
     popular: false,
     features: [
-      "50 créditos",
-      "Sem data de expiração",
-      "Pesquisas ilimitadas",
+      "50 créditos = 75.000 tokens",
+      "Validade: 90 dias",
+      "Consultas jurídicas ilimitadas",
+      "Suporte a arquivos PDF",
+      "Suporte a imagens",
       "Suporte por email"
     ]
   },
   {
     id: "premium",
-    name: "Pacote Premium",
+    name: "Plano Avançado",
     credits: 100,
     price: 97.00,
     originalPrice: 120.00,
-    discount: "ECONOMIZE 20%",
+    discount: "ECONOMIZE 23%",
     popular: true,
     features: [
-      "100 créditos",
-      "Sem data de expiração",
-      "Pesquisas ilimitadas",
+      "100 créditos = 150.000 tokens",
+      "Validade: 180 dias",
+      "Consultas jurídicas ilimitadas",
+      "Suporte a arquivos PDF",
+      "Suporte a imagens",
       "Suporte prioritário",
-      "Acesso prioritário à IA",
-      "Relatórios avançados"
+      "Processamento otimizado",
+      "Relatórios detalhados"
     ]
   }
 ];
@@ -103,8 +107,13 @@ export default function ComprarCreditosPage() {
           <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2">Comprar Créditos</h1>
           <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
             Escolha o pacote de créditos ideal para suas necessidades. 
-            Cada crédito permite uma pesquisa completa no Oráculo Jurídico.
+            Cada crédito equivale a 1.500 tokens e é cobrado proporcionalmente ao uso.
           </p>
+          <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-3 mt-4 max-w-lg mx-auto">
+            <p className="text-xs text-muted-foreground">
+              💡 <strong>Como funciona:</strong> O consumo é calculado pelos tokens usados na pergunta + resposta + processamento de arquivos/imagens
+            </p>
+          </div>
         </div>
 
         {/* Packages Grid */}

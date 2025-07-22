@@ -8,6 +8,16 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Função para contar tokens aproximadamente (1 token ≈ 4 caracteres)
+function estimateTokens(text: string): number {
+  return Math.ceil(text.length / 4);
+}
+
+// Função para calcular créditos baseado em tokens (1 crédito = 1.500 tokens)
+function tokensToCredits(tokens: number): number {
+  return Math.max(0.01, tokens / 1500); // Mínimo de 0.01 crédito
+}
+
 // Função para extrair texto de PDF usando API da OpenAI
 async function extractTextFromPdf(fileData: string, fileName: string, openAIKey: string): Promise<string> {
   try {
@@ -249,7 +259,19 @@ serve(async (req) => {
 
     console.log('Sending structured data to OpenAI:', dadosEstruturados);
 
-    // Usar diretamente o modelo GPT-4o para resposta mais confiável
+    // Decidir qual modelo usar baseado no conteúdo
+    const hasAttachedFiles = attachedFiles && attachedFiles.length > 0;
+    const modelToUse = hasAttachedFiles ? 'gpt-4o' : 'gpt-4.1-2025-04-14'; // GPT-4o para arquivos/imagens, GPT-4.1 para texto
+    
+    // Calcular tokens do prompt
+    const promptContent = `Baseado nos dados estruturados a seguir, forneça uma resposta jurídica completa:
+
+${JSON.stringify(dadosEstruturados, null, 2)}`;
+    
+    const promptTokens = estimateTokens(promptContent);
+    console.log(`Usando modelo: ${modelToUse}, Tokens do prompt: ${promptTokens}`);
+
+    // Usar o modelo apropriado para a consulta
     const chatResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -257,7 +279,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: modelToUse,
         messages: [
           {
             role: 'system',
@@ -265,9 +287,7 @@ serve(async (req) => {
           },
           {
             role: 'user',
-            content: `Baseado nos dados estruturados a seguir, forneça uma resposta jurídica completa:
-
-${JSON.stringify(dadosEstruturados, null, 2)}`
+            content: promptContent
           }
         ],
         max_tokens: 4000,
@@ -289,11 +309,18 @@ ${JSON.stringify(dadosEstruturados, null, 2)}`
     
     console.log('AI response received:', aiMessage.substring(0, 100) + '...');
 
-    // Usar os créditos após resposta bem-sucedida
+    // Calcular tokens reais da resposta
+    const responseTokens = estimateTokens(aiMessage);
+    const totalTokens = promptTokens + responseTokens;
+    const creditsConsumed = tokensToCredits(totalTokens);
+    
+    console.log(`Tokens totais: ${totalTokens} (prompt: ${promptTokens}, response: ${responseTokens}), Créditos consumidos: ${creditsConsumed}`);
+
+    // Usar os créditos proporcionalmente após resposta bem-sucedida
     const { error: creditsError } = await supabase.rpc('use_credits', {
       p_user_id: userId,
-      p_credits: 1,
-      p_description: 'Consulta jurídica via chat'
+      p_credits: Math.ceil(creditsConsumed), // Arredondar para cima
+      p_description: `Consulta jurídica (${totalTokens} tokens)`
     });
 
     if (creditsError) {
@@ -308,7 +335,7 @@ ${JSON.stringify(dadosEstruturados, null, 2)}`
         user_id: userId,
         prompt_text: JSON.stringify(dadosEstruturados),
         response_text: aiMessage,
-        credits_consumed: 1,
+        credits_consumed: Math.ceil(creditsConsumed), // Usar valor real calculado
         message_type: 'legal_consultation'
       });
 
