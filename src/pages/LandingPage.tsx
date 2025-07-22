@@ -1,69 +1,38 @@
 import { Link } from "react-router-dom";
-import { 
-  Clock, 
-  DollarSign, 
-  AlertTriangle, 
-  Shield, 
-  Globe, 
-  Smartphone, 
-  History, 
-  Lock,
-  Check,
-  ChevronDown,
-  ChevronRight,
-  Brain,
-  Zap,
-  Users,
-  Award,
-  Scale,
-  Gavel,
-  FileText,
-  Building
-} from "lucide-react";
+import { Clock, DollarSign, AlertTriangle, Shield, Globe, Smartphone, History, Lock, Check, ChevronDown, ChevronRight, Brain, Zap, Users, Award, Scale, Gavel, FileText, Building } from "lucide-react";
 import { useState } from "react";
 import heroBrain from "../assets/hero-brain-legal.jpg";
 import legalOffice from "../assets/legal-office.jpg";
-
-
 const LandingPage = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
   };
-
   const scrollToFreeAccount = () => {
     const freeAccountSection = document.getElementById('free-account-section');
     if (freeAccountSection) {
-      freeAccountSection.scrollIntoView({ behavior: 'smooth' });
+      freeAccountSection.scrollIntoView({
+        behavior: 'smooth'
+      });
     }
   };
-
-  const faqData = [
-    {
-      question: "Como funcionam os créditos?",
-      answer: "É muito simples. Cada pergunta completa que você faz à nossa Inteligência Artificial consome créditos proporcionalmente ao uso (1 crédito = 1.500 tokens). Ao se cadastrar, você entra no nosso plano gratuito e ganha 2 créditos que se renovam a cada 24 horas."
-    },
-    {
-      question: "Meus créditos gratuitos se acumulam se eu não usar?",
-      answer: "Não. Os 2 créditos gratuitos são renovados diariamente, ou seja, você tem direito a novas consultas grátis a cada dia. Eles não são cumulativos. Para ter um saldo de créditos para usar quando quiser, você pode adquirir pacotes extras dentro da sua conta."
-    },
-    {
-      question: "Preciso cadastrar um cartão de crédito para usar o plano gratuito?",
-      answer: "Não. Para criar sua conta no plano gratuito e usar seus 2 créditos diários, você não precisa fornecer nenhuma informação de pagamento. Você só precisará inserir seus dados de pagamento se decidir comprar créditos extras dentro da sua conta."
-    },
-    {
-      question: "As informações da IA são confiáveis?",
-      answer: "Nossa IA é uma ferramenta de auxílio poderosa, mas não substitui o julgamento profissional de um advogado. Sempre confira as fontes citadas."
-    },
-    {
-      question: "Como posso comprar créditos extras?",
-      answer: "Após criar sua conta gratuita e fazer login, você terá acesso à área de compra de créditos onde poderá adquirir pacotes extras conforme sua necessidade. Os créditos comprados não expiram."
-    }
-  ];
-
-  return (
-    <div className="min-h-screen bg-background text-foreground">
+  const faqData = [{
+    question: "Como funcionam os créditos?",
+    answer: "É muito simples. Cada pergunta completa que você faz à nossa Inteligência Artificial consome créditos proporcionalmente ao uso (1 crédito = 1.500 tokens). Ao se cadastrar, você entra no nosso plano gratuito e ganha 2 créditos que se renovam a cada 24 horas."
+  }, {
+    question: "Meus créditos gratuitos se acumulam se eu não usar?",
+    answer: "Não. Os 2 créditos gratuitos são renovados diariamente, ou seja, você tem direito a novas consultas grátis a cada dia. Eles não são cumulativos. Para ter um saldo de créditos para usar quando quiser, você pode adquirir pacotes extras dentro da sua conta."
+  }, {
+    question: "Preciso cadastrar um cartão de crédito para usar o plano gratuito?",
+    answer: "Não. Para criar sua conta no plano gratuito e usar seus 2 créditos diários, você não precisa fornecer nenhuma informação de pagamento. Você só precisará inserir seus dados de pagamento se decidir comprar créditos extras dentro da sua conta."
+  }, {
+    question: "As informações da IA são confiáveis?",
+    answer: "Nossa IA é uma ferramenta de auxílio poderosa, mas não substitui o julgamento profissional de um advogado. Sempre confira as fontes citadas."
+  }, {
+    question: "Como posso comprar créditos extras?",
+    answer: "Após criar sua conta gratuita e fazer login, você terá acesso à área de compra de créditos onde poderá adquirir pacotes extras conforme sua necessidade. Os créditos comprados não expiram."
+  }];
+  return <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
       <header className="py-6 px-4 border-b border-border">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
@@ -84,11 +53,7 @@ const LandingPage = () => {
       {/* Hero Section */}
       <section className="relative py-20 px-4 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-background/80">
-          <img 
-            src={heroBrain} 
-            alt="AI Technology"
-            className="w-full h-full object-cover object-center opacity-20"
-          />
+          <img src={heroBrain} alt="AI Technology" className="w-full h-full object-cover object-center opacity-20" />
         </div>
         <div className="relative max-w-6xl mx-auto text-center">
           <h2 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
@@ -98,10 +63,7 @@ const LandingPage = () => {
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-4xl mx-auto animate-fade-in">
             Chega de perder horas em pesquisa. Com o Oráculo Jurídico, você acessa uma IA treinada para o Direito brasileiro e obtém respostas fundamentadas em segundos.
           </p>
-          <button
-            onClick={scrollToFreeAccount}
-            className="inline-block btn-primary text-lg px-8 py-4 animate-fade-in"
-          >
+          <button onClick={scrollToFreeAccount} className="inline-block btn-primary text-lg px-8 py-4 animate-fade-in">
             Quero Começar Gratuitamente
           </button>
         </div>
@@ -168,9 +130,7 @@ const LandingPage = () => {
                 1
               </div>
               <h3 className="text-xl font-semibold mb-4 text-foreground">Cadastre-se Gratuitamente</h3>
-              <p className="text-muted-foreground">
-                Crie sua conta gratuita e comece a usar imediatamente com 2 créditos renovados diariamente. Sem compromisso, sem cartão de crédito.
-              </p>
+              <p className="text-muted-foreground">Crie sua conta gratuita e comece a usar imediatamente com 2 créditos renovados diariamente. Sem compromisso, sem cartão de crédito.</p>
             </div>
             
             <div className="text-center">
@@ -305,10 +265,7 @@ const LandingPage = () => {
                 </div>
               </div>
               
-              <Link
-                to="/cadastro"
-                className="inline-block w-full py-4 px-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-lg font-semibold text-lg"
-              >
+              <Link to="/cadastro" className="inline-block w-full py-4 px-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-lg font-semibold text-lg">
                 Criar Conta Gratuita
               </Link>
             </div>
@@ -377,11 +334,7 @@ const LandingPage = () => {
             </div>
             
             <div className="relative">
-              <img 
-                src={legalOffice} 
-                alt="Escritório Jurídico Moderno"
-                className="w-full h-64 sm:h-80 md:h-96 object-cover object-center rounded-lg"
-              />
+              <img src={legalOffice} alt="Escritório Jurídico Moderno" className="w-full h-64 sm:h-80 md:h-96 object-cover object-center rounded-lg" />
               <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent rounded-lg"></div>
               <div className="absolute bottom-6 left-6 right-6">
                 <div className="flex items-center space-x-4 bg-card/90 backdrop-blur-sm rounded-lg p-4">
@@ -407,28 +360,17 @@ const LandingPage = () => {
           </div>
           
           <div className="space-y-4">
-            {faqData.map((faq, index) => (
-              <div key={index} className="card-signup">
-                <button
-                  onClick={() => toggleFaq(index)}
-                  className="w-full p-6 text-left flex items-center justify-between hover:bg-muted/10 transition-colors"
-                >
+            {faqData.map((faq, index) => <div key={index} className="card-signup">
+                <button onClick={() => toggleFaq(index)} className="w-full p-6 text-left flex items-center justify-between hover:bg-muted/10 transition-colors">
                   <h3 className="text-lg font-semibold text-foreground">
                     {faq.question}
                   </h3>
-                  {openFaq === index ? (
-                    <ChevronDown className="w-5 h-5 text-muted-foreground" />
-                  ) : (
-                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                  )}
+                  {openFaq === index ? <ChevronDown className="w-5 h-5 text-muted-foreground" /> : <ChevronRight className="w-5 h-5 text-muted-foreground" />}
                 </button>
-                {openFaq === index && (
-                  <div className="px-6 pb-6">
+                {openFaq === index && <div className="px-6 pb-6">
                     <p className="text-muted-foreground">{faq.answer}</p>
-                  </div>
-                )}
-              </div>
-            ))}
+                  </div>}
+              </div>)}
           </div>
         </div>
       </section>
@@ -463,8 +405,6 @@ const LandingPage = () => {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default LandingPage;
