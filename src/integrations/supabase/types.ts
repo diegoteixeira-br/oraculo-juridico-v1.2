@@ -220,12 +220,19 @@ export type Database = {
     }
     Functions: {
       add_credits_to_user: {
-        Args: {
-          p_user_id: string
-          p_credits: number
-          p_transaction_id?: string
-          p_description?: string
-        }
+        Args:
+          | {
+              p_user_id: string
+              p_credits: number
+              p_transaction_id?: string
+              p_description?: string
+            }
+          | {
+              p_user_id: string
+              p_credits: number
+              p_transaction_id?: string
+              p_description?: string
+            }
         Returns: boolean
       }
       binary_quantize: {
