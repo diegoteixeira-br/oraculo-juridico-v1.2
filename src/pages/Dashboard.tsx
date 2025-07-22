@@ -36,12 +36,12 @@ export default function Dashboard() {
           .single();
 
         if (profile) {
-          setUserCredits(profile.credits || 0);
-          setDailyCredits(profile.daily_credits || 0);
+          setUserCredits(Number(profile.credits || 0));
+          setDailyCredits(Number(profile.daily_credits || 0));
           setTotalCreditsPurchased(profile.total_credits_purchased || 0);
           
           // Calcular créditos usados: total comprado - total disponível
-          const totalUsed = (profile.total_credits_purchased || 0) - (profile.credits || 0);
+          const totalUsed = (profile.total_credits_purchased || 0) - Number(profile.credits || 0);
           setCreditsUsed(Math.max(0, totalUsed));
         }
       } catch (error) {
@@ -286,14 +286,14 @@ export default function Dashboard() {
           <div className="flex items-center gap-3 justify-center">
             <CreditCard className="w-6 h-6 text-primary" />
             <span className="text-2xl font-bold text-primary">
-              {totalAvailableCredits} créditos disponíveis
+              {totalAvailableCredits.toFixed(2)} créditos disponíveis
             </span>
           </div>
           <p className="text-center text-primary/80 mt-2">
             {dailyCredits > 0 && (
-              <span>{dailyCredits} créditos diários + </span>
+              <span>{dailyCredits.toFixed(2)} créditos diários + </span>
             )}
-            {userCredits} créditos comprados
+            {userCredits.toFixed(2)} créditos comprados
           </p>
         </div>
 
@@ -313,16 +313,16 @@ export default function Dashboard() {
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 gap-4">
                 <div className="text-center p-6 bg-primary/10 rounded-lg border border-primary/20">
-                  <div className="text-3xl font-bold text-primary">{totalAvailableCredits}</div>
+                  <div className="text-3xl font-bold text-primary">{totalAvailableCredits.toFixed(2)}</div>
                   <div className="text-sm text-muted-foreground">Total Disponíveis</div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-4 bg-green-600/10 rounded-lg border border-green-600/20">
-                    <div className="text-2xl font-bold text-green-400">{dailyCredits}</div>
+                    <div className="text-2xl font-bold text-green-400">{dailyCredits.toFixed(2)}</div>
                     <div className="text-xs text-muted-foreground">Créditos Diários</div>
                   </div>
                   <div className="text-center p-4 bg-blue-600/10 rounded-lg border border-blue-600/20">
-                    <div className="text-2xl font-bold text-blue-400">{userCredits}</div>
+                    <div className="text-2xl font-bold text-blue-400">{userCredits.toFixed(2)}</div>
                     <div className="text-xs text-muted-foreground">Créditos Comprados</div>
                   </div>
                 </div>
