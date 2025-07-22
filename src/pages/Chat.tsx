@@ -73,8 +73,8 @@ export default function Dashboard() {
   const userInitials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
   // Sistema de créditos
-  const userCredits = profile?.credits || 0; // Créditos comprados
-  const dailyCredits = profile?.daily_credits || 0; // Créditos diários
+  const userCredits = Number(profile?.credits || 0); // Créditos comprados
+  const dailyCredits = Number(profile?.daily_credits || 0); // Créditos diários
   const totalCredits = userCredits + dailyCredits; // Total disponível
   const costPerSearch = 1; // Custo por pesquisa
 
@@ -624,8 +624,8 @@ export default function Dashboard() {
                   {/* Credits Display - Mais compacto */}
                   <div className="p-2 bg-primary/10 border border-primary/20 rounded-lg max-w-md mx-auto">
                     <p className="text-xs text-primary text-center">
-                      💡 Você tem {totalCredits} créditos disponíveis 
-                      {dailyCredits > 0 && ` (${dailyCredits} diários + ${userCredits} comprados)`}. 
+                      💡 Você tem {totalCredits.toFixed(2)} créditos disponíveis 
+                      {dailyCredits > 0 && ` (${dailyCredits.toFixed(2)} diários + ${userCredits.toFixed(2)} comprados)`}. 
                       Cada pesquisa custa {costPerSearch} crédito.
                     </p>
                   </div>
@@ -818,24 +818,44 @@ export default function Dashboard() {
                 </Button>
               </div>
 
-              {/* Credits Display - Mais compacto */}
-              <div className="flex items-center justify-between mt-2 p-2 bg-slate-700 rounded-lg">
-                <div className="flex items-center gap-1 md:gap-2">
-                  <CreditCard className="w-3 h-3 md:w-4 md:h-4 text-primary" />
-                  <Badge 
-                    variant="default" 
-                    className={`text-xs ${totalCredits > 10 ? 'bg-primary' : totalCredits > 0 ? 'bg-yellow-600' : 'bg-red-600'}`}
-                  >
-                    {totalCredits} créditos
-                  </Badge>
-                  <span className="text-xs text-muted-foreground hidden sm:inline">
-                    ({costPerSearch} crédito/pesquisa)
-                  </span>
+              {/* Credits Display com Barra de Progresso */}
+              <div className="mt-2 p-3 bg-slate-700 rounded-lg space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <CreditCard className="w-4 h-4 text-primary" />
+                    <Badge 
+                      variant="default" 
+                      className={`text-xs ${totalCredits > 10 ? 'bg-primary' : totalCredits > 0 ? 'bg-yellow-600' : 'bg-red-600'}`}
+                    >
+                      {totalCredits.toFixed(2)} créditos
+                    </Badge>
+                    <span className="text-xs text-muted-foreground hidden sm:inline">
+                      ({costPerSearch} crédito/pesquisa)
+                    </span>
+                  </div>
                   {dailyCredits > 0 && (
                     <span className="text-xs text-green-400">
-                      | {dailyCredits} diários
+                      {dailyCredits.toFixed(2)} diários
                     </span>
                   )}
+                </div>
+                
+                {/* Barra de Progresso dos Créditos */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>Créditos Disponíveis</span>
+                    <span>{Math.round((totalCredits / 20) * 100)}%</span>
+                  </div>
+                  <div className="w-full bg-slate-600 rounded-full h-2">
+                    <div 
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        totalCredits > 15 ? 'bg-green-500' : 
+                        totalCredits > 5 ? 'bg-yellow-500' : 
+                        'bg-red-500'
+                      }`}
+                      style={{ width: `${Math.min((totalCredits / 20) * 100, 100)}%` }}
+                    ></div>
+                  </div>
                 </div>
               </div>
             </div>
