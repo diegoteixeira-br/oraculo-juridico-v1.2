@@ -238,6 +238,23 @@ serve(async (req) => {
           } else if (file.type.startsWith('image/')) {
             const texto = await extractTextFromImage(file.data, file.name, openAIKey);
             textoExtraido += texto + '\n\n';
+          } else if (file.type === 'text/plain' || file.type.includes('document') || file.type.includes('word')) {
+            // Processar arquivos de texto (.txt, .doc, .docx)
+            try {
+              let textContent = '';
+              if (file.data.includes(',')) {
+                const base64Data = file.data.split(',')[1];
+                textContent = atob(base64Data);
+              } else {
+                textContent = atob(file.data);
+              }
+              textoExtraido += `Conteúdo do arquivo ${file.name}:\n${textContent}\n\n`;
+            } catch (error) {
+              console.error(`Error decoding text file ${file.name}:`, error);
+              // Para arquivos mais complexos como .docx, usar OpenAI para extrair
+              const texto = await extractTextFromPdf(file.data, file.name, openAIKey);
+              textoExtraido += texto + '\n\n';
+            }
           }
         } catch (error) {
           console.error(`Error processing file ${file.name}:`, error);

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, Settings, LogOut, Send, Bot, User, Clock, CreditCard, History, Plus, Trash2, MoreHorizontal } from "lucide-react";
+import { MessageCircle, Settings, LogOut, Send, Bot, User, Clock, CreditCard, History, Plus, Trash2, MoreHorizontal, Paperclip, X, FileText, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,6 +22,14 @@ interface Message {
   text: string;
   sender: 'user' | 'ai';
   timestamp: Date;
+  attachedFiles?: AttachedFile[];
+}
+
+interface AttachedFile {
+  name: string;
+  type: string;
+  size: number;
+  data: string; // base64 encoded
 }
 
 interface ChatSession {
@@ -54,7 +62,9 @@ export default function Dashboard() {
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [hasUnsavedMessages, setHasUnsavedMessages] = useState(false);
+  const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { user, profile, signOut, useCredits, refreshProfile } = useAuth();
   const { toast } = useToast();
@@ -68,8 +78,82 @@ export default function Dashboard() {
   const totalCredits = userCredits + dailyCredits; // Total disponível
   const costPerSearch = 1; // Custo por pesquisa
 
+  // Função para lidar com seleção de arquivos
+  const handleFileSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    
+    if (files.length === 0) return;
+    
+    // Verificar limite de arquivos
+    if (attachedFiles.length + files.length > 3) {
+      toast({
+        title: "Limite de arquivos excedido",
+        description: "Você pode enviar até 3 arquivos por vez.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Processar cada arquivo
+    files.forEach((file) => {
+      // Verificar tamanho do arquivo (10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        toast({
+          title: "Arquivo muito grande",
+          description: `O arquivo ${file.name} é maior que 10MB.`,
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // Verificar tipo de arquivo
+      const allowedTypes = ['.pdf', '.doc', '.docx', '.txt', '.png', '.jpg', '.jpeg', '.webp'];
+      const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+      
+      if (!allowedTypes.includes(fileExtension)) {
+        toast({
+          title: "Tipo de arquivo não suportado",
+          description: `O arquivo ${file.name} não é suportado. Use: PDF, DOC, DOCX, TXT, PNG, JPG, JPEG, WEBP.`,
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // Converter arquivo para base64
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64 = e.target?.result as string;
+        
+        const newFile: AttachedFile = {
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          data: base64
+        };
+        
+        setAttachedFiles(prev => [...prev, newFile]);
+      };
+      reader.readAsDataURL(file);
+    });
+    
+    // Limpar input
+    if (event.target) {
+      event.target.value = '';
+    }
+  };
+
+  // Função para remover arquivo anexado
+  const removeAttachedFile = (index: number) => {
+    setAttachedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Função para abrir seletor de arquivos
+  const openFileSelector = () => {
+    fileInputRef.current?.click();
+  };
+
   const handleSendMessage = async () => {
-    if (!inputMessage.trim()) return;
+    if (!inputMessage.trim() && attachedFiles.length === 0) return;
 
     // Verificar se o usuário tem créditos suficientes
     if (totalCredits < costPerSearch) {
@@ -94,11 +178,13 @@ export default function Dashboard() {
       id: Date.now().toString(),
       text: inputMessage,
       sender: 'user',
-      timestamp: new Date()
+      timestamp: new Date(),
+      attachedFiles: attachedFiles.length > 0 ? [...attachedFiles] : undefined
     };
 
     setMessages(prev => [...prev, userMessage]);
     setInputMessage("");
+    setAttachedFiles([]); // Limpar arquivos anexados
     setIsTyping(true);
     setHasUnsavedMessages(true);
 
@@ -123,7 +209,8 @@ export default function Dashboard() {
       const { data, error } = await supabase.functions.invoke('legal-ai-chat', {
         body: {
           message: userMessage.text,
-          userId: user?.id
+          userId: user?.id,
+          attachedFiles: userMessage.attachedFiles || []
         }
       });
 
@@ -587,15 +674,40 @@ export default function Dashboard() {
                             <Bot className="w-5 h-5 mt-0.5 text-primary flex-shrink-0" />
                           )}
                            <div className="flex-1">
-                             <p className="text-sm leading-relaxed">{message.text}</p>
-                             
-                             <span className="text-xs text-muted-foreground mt-1 block">
-                               {message.timestamp.toLocaleTimeString('pt-BR', {
-                                 hour: '2-digit',
-                                 minute: '2-digit'
-                               })}
-                             </span>
-                           </div>
+                              <p className="text-sm leading-relaxed">{message.text}</p>
+                              
+                              {/* Mostrar arquivos anexados na mensagem do usuário */}
+                              {message.sender === 'user' && message.attachedFiles && message.attachedFiles.length > 0 && (
+                                <div className="mt-2 space-y-1">
+                                  <div className="text-xs text-muted-foreground flex items-center gap-1">
+                                    <Paperclip className="w-3 h-3" />
+                                    Arquivos anexados:
+                                  </div>
+                                  <div className="flex flex-wrap gap-1">
+                                    {message.attachedFiles.map((file, index) => (
+                                      <div
+                                        key={index}
+                                        className="flex items-center gap-1 bg-primary/10 rounded px-2 py-1 text-xs"
+                                      >
+                                        {file.type.startsWith('image/') ? (
+                                          <Image className="w-3 h-3 text-blue-400" />
+                                        ) : (
+                                          <FileText className="w-3 h-3 text-green-400" />
+                                        )}
+                                        <span className="truncate max-w-[80px]">{file.name}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              <span className="text-xs text-muted-foreground mt-1 block">
+                                {message.timestamp.toLocaleTimeString('pt-BR', {
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </span>
+                            </div>
                           {message.sender === 'user' && (
                             <User className="w-5 h-5 mt-0.5 text-primary flex-shrink-0" />
                           )}
@@ -627,7 +739,67 @@ export default function Dashboard() {
 
             {/* Input Area - Mais compacto */}
             <div className="p-2 md:p-4 border-t border-slate-700 bg-slate-800">
+              {/* Arquivos Anexados */}
+              {attachedFiles.length > 0 && (
+                <div className="mb-2 space-y-2">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Paperclip className="w-3 h-3" />
+                    Arquivos anexados ({attachedFiles.length}/3):
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {attachedFiles.map((file, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-2 bg-slate-700 rounded-lg px-3 py-2 text-xs"
+                      >
+                        {file.type.startsWith('image/') ? (
+                          <Image className="w-3 h-3 text-blue-400" />
+                        ) : (
+                          <FileText className="w-3 h-3 text-green-400" />
+                        )}
+                        <span className="max-w-[100px] truncate">{file.name}</span>
+                        <span className="text-muted-foreground">
+                          ({(file.size / 1024).toFixed(1)}KB)
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeAttachedFile(index)}
+                          className="h-4 w-4 p-0 hover:bg-red-500/20"
+                        >
+                          <X className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
               <div className="flex gap-2">
+                <div className="flex gap-1">
+                  {/* Botão de Anexar Arquivo */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={openFileSelector}
+                    disabled={isTyping || attachedFiles.length >= 3}
+                    className="p-2 md:p-3 w-10 h-10 md:w-12 md:h-12 rounded-lg border-slate-600 hover:bg-slate-700"
+                    title="Anexar arquivo (PDF, imagem, documento)"
+                  >
+                    <Paperclip className="w-4 h-4" />
+                  </Button>
+                  
+                  {/* Input file invisível */}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg,.webp"
+                    onChange={handleFileSelection}
+                    className="hidden"
+                  />
+                </div>
+                
                 <Textarea
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
@@ -639,7 +811,7 @@ export default function Dashboard() {
                 
                 <Button
                   onClick={handleSendMessage}
-                  disabled={!inputMessage.trim() || isTyping}
+                  disabled={(!inputMessage.trim() && attachedFiles.length === 0) || isTyping}
                   className="btn-primary p-2 md:p-3 w-10 h-10 md:w-12 md:h-12 rounded-lg"
                 >
                   <Send className="w-4 h-4" />
