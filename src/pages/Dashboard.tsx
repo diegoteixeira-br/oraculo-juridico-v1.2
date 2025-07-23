@@ -141,8 +141,8 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Documentos Pré-feitos - só aparece se tem mais de 3 créditos */}
-        {totalAvailableCredits > 3 && (
+        {/* Documentos Pré-feitos - só aparece se tem mais de 3.000 tokens */}
+        {totalAvailableCredits > 3000 && (
           <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -158,7 +158,10 @@ export default function Dashboard() {
                 {/* Scroll horizontal container */}
                 <div className="overflow-x-auto pb-4">
                   <div className="flex gap-4 w-max">
-                    {legalDocuments.map((doc) => (
+                    {legalDocuments.filter(doc => {
+                      const requiredTokens = doc.min_tokens_required || 3000;
+                      return totalAvailableCredits >= requiredTokens;
+                    }).map((doc) => (
                       <div 
                         key={doc.id} 
                         className="cursor-pointer hover:scale-105 transition-all flex-shrink-0"
