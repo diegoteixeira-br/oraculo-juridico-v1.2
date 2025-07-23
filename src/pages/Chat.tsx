@@ -9,6 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import ReactMarkdown from "react-markdown";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useNavigate } from "react-router-dom";
@@ -675,7 +676,9 @@ export default function Dashboard() {
                             <Bot className="w-5 h-5 mt-0.5 text-primary flex-shrink-0" />
                           )}
                            <div className="flex-1">
-                              <div className="text-sm leading-relaxed whitespace-pre-line break-words">{message.text}</div>
+                              <div className="text-sm leading-relaxed">
+                                <ReactMarkdown>{message.text}</ReactMarkdown>
+                              </div>
                               
                               {/* Mostrar arquivos anexados na mensagem do usuário */}
                               {message.sender === 'user' && message.attachedFiles && message.attachedFiles.length > 0 && (
