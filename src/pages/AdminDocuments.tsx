@@ -16,7 +16,7 @@ interface Document {
   content: string;
   category: string;
   description: string;
-  min_credits_required: number;
+  min_tokens_required: number;
   template_variables: any;
   is_active: boolean;
   file_url?: string;
@@ -35,7 +35,7 @@ export default function AdminDocuments() {
     content: '',
     category: '',
     description: '',
-    min_credits_required: 3,
+    min_tokens_required: 3000,
     template_variables: null
   });
 
@@ -76,7 +76,7 @@ export default function AdminDocuments() {
       content: doc.content,
       category: doc.category,
       description: doc.description || '',
-      min_credits_required: doc.min_credits_required,
+      min_tokens_required: doc.min_tokens_required,
       template_variables: templateVars
     });
     setIsCreating(false);
@@ -89,7 +89,7 @@ export default function AdminDocuments() {
       content: '',
       category: '',
       description: '',
-      min_credits_required: 3,
+      min_tokens_required: 3000,
       template_variables: null
     });
     setIsCreating(true);
@@ -106,7 +106,7 @@ export default function AdminDocuments() {
             content: formData.content,
             category: formData.category,
             description: formData.description,
-            min_credits_required: formData.min_credits_required,
+            min_tokens_required: formData.min_tokens_required,
             template_variables: formData.template_variables
           })
           .eq('id', editingDocument.id);
@@ -126,7 +126,7 @@ export default function AdminDocuments() {
             content: formData.content,
             category: formData.category,
             description: formData.description,
-            min_credits_required: formData.min_credits_required,
+            min_tokens_required: formData.min_tokens_required,
             template_variables: formData.template_variables,
             is_active: true
           });
@@ -346,14 +346,18 @@ export default function AdminDocuments() {
               </div>
 
               <div>
-                <Label htmlFor="credits">Créditos Necessários</Label>
+                <Label htmlFor="tokens">Tokens Necessários</Label>
                 <Input
-                  id="credits"
+                  id="tokens"
                   type="number"
-                  min="1"
-                  value={formData.min_credits_required}
-                  onChange={(e) => setFormData(prev => ({ ...prev, min_credits_required: parseInt(e.target.value) || 3 }))}
+                  min="100"
+                  step="100"
+                  value={formData.min_tokens_required}
+                  onChange={(e) => setFormData(prev => ({ ...prev, min_tokens_required: parseInt(e.target.value) || 3000 }))}
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Mínimo de tokens necessários para acessar este documento
+                </p>
               </div>
 
               <div>
@@ -432,7 +436,7 @@ export default function AdminDocuments() {
                     <p className="text-sm text-muted-foreground">{doc.description}</p>
                     <div className="flex gap-4 mt-2">
                       <span className="text-xs text-primary">Categoria: {doc.category}</span>
-                      <span className="text-xs text-primary">Créditos: {doc.min_credits_required}</span>
+                      <span className="text-xs text-primary">Tokens: {doc.min_tokens_required.toLocaleString()}</span>
                       <span className="text-xs text-primary">Status: {doc.is_active ? 'Ativo' : 'Inativo'}</span>
                     </div>
                   </div>
