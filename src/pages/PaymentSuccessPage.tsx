@@ -37,11 +37,11 @@ export default function PaymentSuccessPage() {
         if (error) throw error;
 
         if (data?.success) {
-          setCreditsAdded(data.credits_added);
-          await refreshProfile(); // Atualiza o perfil para mostrar novos créditos
+          setCreditsAdded(data.tokens_added);
+          await refreshProfile(); // Atualiza o perfil para mostrar novos tokens
           toast({
             title: "Pagamento Confirmado!",
-            description: `${data.credits_added} créditos foram adicionados à sua conta.`,
+            description: `${data.tokens_added} tokens foram adicionados à sua conta.`,
           });
         } else {
           toast({
@@ -95,16 +95,16 @@ export default function PaymentSuccessPage() {
               <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
                 <div className="flex items-center justify-center gap-2 text-primary mb-2">
                   <CreditCard className="w-5 h-5" />
-                  <span className="font-semibold">Créditos Adicionados</span>
+                  <span className="font-semibold">Tokens Adicionados</span>
                 </div>
                 <p className="text-2xl font-bold text-primary">
-                  +{creditsAdded} créditos
+                  +{creditsAdded} tokens
                 </p>
               </div>
             )}
             
             <p className="text-muted-foreground">
-              Seus créditos foram adicionados com sucesso à sua conta. 
+              Seus tokens foram adicionados com sucesso à sua conta. 
               Agora você pode fazer suas consultas no Oráculo Jurídico!
             </p>
 

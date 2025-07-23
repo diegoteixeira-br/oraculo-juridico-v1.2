@@ -30,9 +30,10 @@ serve(async (req) => {
 
     // Retrieve checkout session
     const session = await stripe.checkout.sessions.retrieve(session_id);
-    console.log("💳 Status do pagamento:", session.payment_status);
-    
-    if (session.payment_status === "paid") {
+        console.log("💳 Status do pagamento:", session.payment_status);
+        console.log("📋 Metadata da sessão:", session.metadata);
+        
+        if (session.payment_status === "paid") {
       // Create Supabase client with service role for bypassing RLS
       const supabaseClient = createClient(
         Deno.env.get("SUPABASE_URL") ?? "",
@@ -74,6 +75,14 @@ serve(async (req) => {
         }
 
         // Add tokens to user using RPC function
+        console.log("🚀 Chamando add_tokens_to_user com:", {
+          p_user_id: userId,
+          p_tokens: tokens,
+          p_plan_type: planType,
+          p_transaction_id: session_id,
+          p_description: `Compra de ${tokens.toLocaleString()} tokens - ${packageId}`
+        });
+
         const { data: result, error: rpcError } = await supabaseClient.rpc('add_tokens_to_user', {
           p_user_id: userId,
           p_tokens: tokens,
@@ -92,6 +101,8 @@ serve(async (req) => {
         }
 
         console.log("✅ Tokens adicionados com sucesso!");
+
+        console.log("✅ Tokens adicionados com sucesso! Resultado:", result);
 
         return new Response(JSON.stringify({ 
           success: true, 
