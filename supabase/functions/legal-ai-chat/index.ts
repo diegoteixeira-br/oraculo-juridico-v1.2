@@ -13,10 +13,6 @@ function estimateTokens(text: string): number {
   return Math.ceil(text.length / 4);
 }
 
-// Função para calcular créditos baseado em tokens (1 crédito = 1.500 tokens)
-function tokensToCredits(tokens: number): number {
-  return Math.max(0.01, tokens / 1500); // Mínimo de 0.01 crédito
-}
 
 // Função para extrair texto de PDF usando API da OpenAI
 async function extractTextFromPdf(fileData: string, fileName: string, openAIKey: string): Promise<string> {
@@ -182,10 +178,10 @@ serve(async (req) => {
     
     console.log('Processing legal query:', { message, userId, attachedFilesCount: attachedFiles?.length || 0 });
 
-    // Verificar se o usuário tem créditos suficientes
+    // Verificar se o usuário tem tokens suficientes
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('credits, daily_credits')
+      .select('tokens, daily_tokens, plan_tokens, plan_type')
       .eq('user_id', userId)
       .single();
 
@@ -197,9 +193,12 @@ serve(async (req) => {
       });
     }
 
-    const totalCredits = (profile.daily_credits || 0) + (profile.credits || 0);
-    if (totalCredits < 0.01) {
-      return new Response(JSON.stringify({ error: 'Créditos insuficientes' }), {
+    const availableTokens = profile.plan_type === 'gratuito' 
+      ? (profile.daily_tokens || 0)
+      : (profile.plan_tokens || 0);
+      
+    if (availableTokens < 100) {
+      return new Response(JSON.stringify({ error: 'Tokens insuficientes' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -329,20 +328,19 @@ ${JSON.stringify(dadosEstruturados, null, 2)}`;
     // Calcular tokens reais da resposta
     const responseTokens = estimateTokens(aiMessage);
     const totalTokens = promptTokens + responseTokens;
-    const creditsConsumed = tokensToCredits(totalTokens);
     
-    console.log(`Tokens totais: ${totalTokens} (prompt: ${promptTokens}, response: ${responseTokens}), Créditos consumidos: ${creditsConsumed}`);
+    console.log(`Tokens totais: ${totalTokens} (prompt: ${promptTokens}, response: ${responseTokens})`);
 
-    // Usar os créditos proporcionalmente após resposta bem-sucedida
-    const { error: creditsError } = await supabase.rpc('use_credits', {
+    // Usar os tokens após resposta bem-sucedida
+    const { error: tokensError } = await supabase.rpc('use_tokens', {
       p_user_id: userId,
-      p_credits: creditsConsumed, // Valor exato calculado baseado em tokens
+      p_tokens: totalTokens, // Usar tokens reais consumidos
       p_description: `Consulta jurídica (${totalTokens} tokens)`
     });
 
-    if (creditsError) {
-      console.error('Error using credits:', creditsError);
-      // Continua mesmo com erro nos créditos, pois a resposta já foi gerada
+    if (tokensError) {
+      console.error('Error using tokens:', tokensError);
+      // Continua mesmo com erro nos tokens, pois a resposta já foi gerada
     }
 
     // Salvar no histórico de consultas
@@ -352,7 +350,7 @@ ${JSON.stringify(dadosEstruturados, null, 2)}`;
         user_id: userId,
         prompt_text: JSON.stringify(dadosEstruturados),
         response_text: aiMessage,
-        credits_consumed: creditsConsumed, // Usar valor exato calculado
+        credits_consumed: Math.ceil(totalTokens / 1000), // Compatibilidade com histórico
         message_type: 'legal_consultation'
       });
 
@@ -364,7 +362,7 @@ ${JSON.stringify(dadosEstruturados, null, 2)}`;
     return new Response(JSON.stringify({ 
       response: aiMessage,
       success: true,
-      creditsConsumed: creditsConsumed, // Retornar os créditos consumidos para o frontend
+      tokensConsumed: totalTokens, // Retornar os tokens consumidos para o frontend
       totalTokens: totalTokens
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

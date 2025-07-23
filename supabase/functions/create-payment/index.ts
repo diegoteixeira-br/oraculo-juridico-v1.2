@@ -21,13 +21,13 @@ serve(async (req) => {
     
     // Validate package
     const packages = {
-      "50-credits": { name: "50 Créditos", credits: 50, price: 2000 },
-      "100-credits": { name: "100 Créditos", credits: 100, price: 3500 }
+      "basico": { name: "Plano Básico", tokens: 75000, price: 5990, planType: "basico" },
+      "premium": { name: "Plano Premium", tokens: 150000, price: 9700, planType: "premium" }
     };
 
     const selectedPackage = packages[packageId as keyof typeof packages];
     if (!selectedPackage) {
-      throw new Error("Pacote de créditos inválido");
+      throw new Error("Pacote de tokens inválido");
     }
     
     console.log("✅ Pacote selecionado:", selectedPackage);
@@ -72,7 +72,7 @@ serve(async (req) => {
             currency: "brl",
             product_data: { 
               name: selectedPackage.name,
-              description: `${selectedPackage.credits} créditos para o Oráculo Jurídico`
+              description: `${selectedPackage.tokens.toLocaleString()} tokens para o Oráculo Jurídico`
             },
             unit_amount: selectedPackage.price, // Preço em centavos
           },
@@ -85,7 +85,8 @@ serve(async (req) => {
       metadata: {
         user_id: user.id,
         package_id: packageId,
-        credits: selectedPackage.credits.toString()
+        tokens: selectedPackage.tokens.toString(),
+        plan_type: selectedPackage.planType
       }
     });
 

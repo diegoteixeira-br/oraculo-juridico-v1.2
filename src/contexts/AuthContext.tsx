@@ -11,9 +11,10 @@ interface Profile {
   trial_start_date: string;
   trial_end_date: string;
   subscription_end_date?: string;
-  credits: number;
-  total_credits_purchased: number;
-  daily_credits: number;
+  tokens: number;
+  daily_tokens: number;
+  plan_tokens: number;
+  plan_type: string;
   last_daily_reset: string;
 }
 
@@ -26,7 +27,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<any>;
   signOut: () => Promise<void>;
   hasActiveAccess: () => boolean;
-  useCredits: (amount: number, description?: string) => Promise<boolean>;
+  useTokens: (amount: number, description?: string) => Promise<boolean>;
   refreshProfile: () => Promise<void>;
   resetPassword: (email: string) => Promise<any>;
   updatePassword: (newPassword: string) => Promise<any>;
@@ -44,8 +45,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchProfile = async (userId: string) => {
     try {
-      // Primeiro, resetar créditos diários se necessário
-      await supabase.rpc('reset_daily_credits_if_needed', { p_user_id: userId });
+      // Primeiro, resetar tokens diários se necessário
+      await supabase.rpc('reset_daily_tokens_if_needed', { p_user_id: userId });
       
       const { data, error } = await supabase
         .from('profiles')
@@ -64,8 +65,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!user?.id) return;
     
     try {
-      // Primeiro, resetar créditos diários se necessário
-      await supabase.rpc('reset_daily_credits_if_needed', { p_user_id: user.id });
+      // Primeiro, resetar tokens diários se necessário
+      await supabase.rpc('reset_daily_tokens_if_needed', { p_user_id: user.id });
       
       // Buscar perfil atualizado
       const { data: profile } = await supabase
@@ -82,27 +83,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const useCredits = async (amount: number, description: string = 'Uso de créditos') => {
+  const useTokens = async (amount: number, description: string = 'Uso de tokens') => {
     if (!user?.id) return false;
 
     try {
       const { data: result, error } = await supabase
-        .rpc('use_credits', {
+        .rpc('use_tokens', {
           p_user_id: user.id,
-          p_credits: amount,
+          p_tokens: amount,
           p_description: description
         });
 
       if (error || !result) {
-        console.error('Error using credits:', error);
+        console.error('Error using tokens:', error);
         return false;
       }
 
-      // Atualizar o perfil após usar créditos
+      // Atualizar o perfil após usar tokens
       await refreshProfile();
       return true;
     } catch (error) {
-      console.error('Error using credits:', error);
+      console.error('Error using tokens:', error);
       return false;
     }
   };
@@ -110,9 +111,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const hasActiveAccess = () => {
     if (!profile) return false;
     
-    // Com sistema de créditos, verifica se tem créditos disponíveis (diários + comprados)
-    const totalCredits = (profile.daily_credits || 0) + (profile.credits || 0);
-    return totalCredits > 0;
+    // Com sistema de tokens, verifica se tem tokens disponíveis
+    if (profile.plan_type === 'gratuito') {
+      return (profile.daily_tokens || 0) > 0;
+    } else {
+      return (profile.plan_tokens || 0) > 0;
+    }
   };
 
 
@@ -235,7 +239,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signIn,
     signOut,
     hasActiveAccess,
-    useCredits,
+    useTokens,
     refreshProfile,
     resetPassword,
     updatePassword,

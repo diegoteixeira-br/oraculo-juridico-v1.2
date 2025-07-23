@@ -8,36 +8,34 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import UserMenu from "@/components/UserMenu";
 
-const creditPackages = [
+const tokenPackages = [
   {
-    id: "50-credits",
-    name: "50 Créditos",
-    credits: 50,
-    price: 20.00,
-    originalPrice: 25.00,
-    discount: "20% OFF",
+    id: "basico",
+    name: "Plano Básico",
+    tokens: 75000,
+    price: 59.90,
+    planType: "basico",
     popular: true,
     features: [
-      "Consultas jurídicas ilimitadas",
-      "Análise de documentos",
-      "Suporte prioritário",
-      "Válido por 12 meses"
+      "75.000 tokens",
+      "Acesso a todos os documentos",
+      "Suporte por email",
+      "Sem expiração"
     ]
   },
   {
-    id: "100-credits",
-    name: "100 Créditos",
-    credits: 100,
-    price: 35.00,
-    originalPrice: 50.00,
-    discount: "30% OFF",
+    id: "premium",
+    name: "Plano Premium",
+    tokens: 150000,
+    price: 97.00,
+    planType: "premium",
     popular: false,
     features: [
-      "Consultas jurídicas ilimitadas",
-      "Análise de documentos",
-      "Suporte prioritário VIP",
-      "Relatórios detalhados",
-      "Válido por 12 meses"
+      "150.000 tokens",
+      "Acesso a todos os documentos",
+      "Suporte prioritário",
+      "Chat direto com especialistas",
+      "Sem expiração"
     ]
   }
 ];
@@ -99,21 +97,26 @@ export default function ComprarCreditosPage() {
             alt="Oráculo Jurídico" 
             className="h-16 w-auto mx-auto mb-4"
           />
-          <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2">Comprar Créditos</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2">Planos de Tokens</h1>
           <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
-            Escolha o pacote de créditos ideal para suas necessidades. 
-            Cada crédito equivale a 1.500 tokens e é cobrado proporcionalmente ao uso.
+            Escolha o plano ideal para suas necessidades. 
+            Os tokens são consumidos conforme o uso nas consultas e análises.
           </p>
           <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-3 mt-4 max-w-lg mx-auto">
             <p className="text-xs text-muted-foreground">
-              💡 <strong>Como funciona:</strong> O consumo é calculado pelos tokens usados na pergunta + resposta + processamento de arquivos/imagens
+              💡 <strong>Como funciona:</strong> O consumo é calculado pelos tokens usados na pergunta + resposta + processamento de documentos
+            </p>
+          </div>
+          <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-3 mt-2 max-w-lg mx-auto">
+            <p className="text-xs text-blue-200">
+              🎁 <strong>Plano Gratuito:</strong> 3.000 tokens diários (renova automaticamente)
             </p>
           </div>
         </div>
 
         {/* Packages Grid */}
         <div className="grid md:grid-cols-2 gap-4 max-w-2xl mx-auto">
-          {creditPackages.map((pkg) => (
+          {tokenPackages.map((pkg) => (
             <Card 
               key={pkg.id}
               className={`relative bg-slate-800 border-slate-700 transition-all duration-300 hover:scale-105 ${
@@ -129,20 +132,13 @@ export default function ComprarCreditosPage() {
                 </div>
               )}
               
-              {pkg.discount && (
-                <div className="absolute -top-2 -right-2 z-10">
-                  <Badge variant="destructive" className="bg-green-600 hover:bg-green-600/80 text-white text-xs px-2 py-1">
-                    {pkg.discount}
-                  </Badge>
-                </div>
-              )}
 
               <CardHeader className="text-center pt-6 pb-4">
                 <CardTitle className="text-lg md:text-xl font-bold text-primary">
                   {pkg.name}
                 </CardTitle>
                 <CardDescription className="text-xl md:text-2xl font-bold text-white">
-                  {pkg.credits} créditos
+                  {pkg.tokens.toLocaleString()} tokens
                 </CardDescription>
               </CardHeader>
 
@@ -152,14 +148,9 @@ export default function ComprarCreditosPage() {
                     <span className="text-2xl md:text-3xl font-bold text-primary">
                       R$ {pkg.price.toFixed(2).replace('.', ',')}
                     </span>
-                    {pkg.originalPrice && (
-                      <span className="text-sm text-muted-foreground line-through">
-                        R$ {pkg.originalPrice.toFixed(2).replace('.', ',')}
-                      </span>
-                    )}
                   </div>
                   <p className="text-xs md:text-sm text-muted-foreground">
-                    R$ {(pkg.price / pkg.credits).toFixed(2).replace('.', ',')} por crédito
+                    R$ {(pkg.price / (pkg.tokens / 1000)).toFixed(3).replace('.', ',')} por 1k tokens
                   </p>
                 </div>
 

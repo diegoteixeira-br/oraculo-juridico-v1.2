@@ -41,16 +41,17 @@ serve(async (req) => {
       );
 
       const userId = session.metadata?.user_id;
-      const credits = parseInt(session.metadata?.credits || "0");
+      const tokens = parseInt(session.metadata?.tokens || "0");
       const packageId = session.metadata?.package_id;
+      const planType = session.metadata?.plan_type || 'gratuito';
 
-      console.log("📝 Dados extraídos:", { userId, credits, packageId });
+      console.log("📝 Dados extraídos:", { userId, tokens, packageId, planType });
 
-      if (!userId || !credits) {
+      if (!userId || !tokens) {
         throw new Error("Dados de pagamento incompletos");
       }
 
-      if (userId && credits > 0) {
+      if (userId && tokens > 0) {
         // Check if this transaction was already processed
         const { data: existingTransaction } = await supabaseClient
           .from('credit_transactions')
@@ -62,7 +63,8 @@ serve(async (req) => {
           console.log("⚠️ Transação já processada anteriormente");
           return new Response(JSON.stringify({ 
             success: true, 
-            credits_added: credits,
+            tokens_added: tokens,
+            plan_type: planType,
             transaction_id: session_id,
             already_processed: true
           }), {
@@ -71,28 +73,30 @@ serve(async (req) => {
           });
         }
 
-        // Add credits to user using RPC function
-        const { data: result, error: rpcError } = await supabaseClient.rpc('add_credits_to_user', {
+        // Add tokens to user using RPC function
+        const { data: result, error: rpcError } = await supabaseClient.rpc('add_tokens_to_user', {
           p_user_id: userId,
-          p_credits: credits,
+          p_tokens: tokens,
+          p_plan_type: planType,
           p_transaction_id: session_id,
-          p_description: `Compra de ${credits} créditos - ${packageId}`
+          p_description: `Compra de ${tokens.toLocaleString()} tokens - ${packageId}`
         });
 
         if (rpcError) {
-          console.error("❌ Erro ao adicionar créditos:", rpcError);
-          throw new Error("Erro ao processar créditos");
+          console.error("❌ Erro ao adicionar tokens:", rpcError);
+          throw new Error("Erro ao processar tokens");
         }
 
         if (!result) {
-          throw new Error("Falha ao adicionar créditos");
+          throw new Error("Falha ao adicionar tokens");
         }
 
-        console.log("✅ Créditos adicionados com sucesso!");
+        console.log("✅ Tokens adicionados com sucesso!");
 
         return new Response(JSON.stringify({ 
           success: true, 
-          credits_added: credits,
+          tokens_added: tokens,
+          plan_type: planType,
           transaction_id: session_id
         }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },

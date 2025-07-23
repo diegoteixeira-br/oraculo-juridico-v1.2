@@ -67,17 +67,17 @@ export default function Dashboard() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
-  const { user, profile, signOut, useCredits, refreshProfile } = useAuth();
+  const { user, profile, signOut, useTokens, refreshProfile } = useAuth();
   const { toast } = useToast();
 
   const userName = profile?.full_name || user?.email || "Usuário";
   const userInitials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
-  // Sistema de créditos
-  const userCredits = Number(profile?.credits || 0); // Créditos comprados
-  const dailyCredits = Number(profile?.daily_credits || 0); // Créditos diários
-  const totalCredits = userCredits + dailyCredits; // Total disponível
-  const costPerSearch = 1; // Custo por pesquisa
+  // Sistema de tokens
+  const planTokens = Number(profile?.plan_tokens || 0); // Tokens do plano
+  const dailyTokens = Number(profile?.daily_tokens || 0); // Tokens diários
+  const totalTokens = profile?.plan_type === 'gratuito' ? dailyTokens : planTokens; // Total disponível
+  const userPlanType = profile?.plan_type || 'gratuito';
 
   // Função para lidar com seleção de arquivos
   const handleFileSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -156,14 +156,18 @@ export default function Dashboard() {
   const handleSendMessage = async () => {
     if (!inputMessage.trim() && attachedFiles.length === 0) return;
 
-    // Verificar se o usuário tem créditos suficientes (mínimo de 0.01)
-    if (totalCredits < 0.01) {
+    // Verificar se o usuário tem tokens suficientes
+    if (totalTokens < 100) {
       toast({
-        title: "Créditos insuficientes",
-        description: "Você não tem créditos suficientes para realizar esta consulta. Acesse 'Minha Conta' para comprar mais créditos.",
+        title: "Tokens insuficientes",
+        description: userPlanType === 'gratuito' 
+          ? "Você não tem tokens diários suficientes para realizar esta consulta."
+          : "Você não tem tokens suficientes para realizar esta consulta. Acesse 'Minha Conta' para comprar mais tokens.",
         variant: "destructive",
       });
-      navigate('/minha-conta');
+      if (userPlanType !== 'gratuito') {
+        navigate('/comprar-creditos');
+      }
       return;
     }
 
@@ -623,11 +627,13 @@ export default function Dashboard() {
                     </div>
                   </div>
                   
-                  {/* Credits Display - Mais compacto */}
+                   {/* Tokens Display - Mais compacto */}
                   <div className="p-2 bg-primary/10 border border-primary/20 rounded-lg max-w-md mx-auto">
                      <p className="text-xs text-primary text-center">
-                       💡 Você tem {totalCredits.toFixed(2)} créditos ({Math.floor(totalCredits * 1500).toLocaleString()} tokens) disponíveis 
-                       {dailyCredits > 0 && ` (${dailyCredits.toFixed(2)} diários + ${userCredits.toFixed(2)} comprados)`}. 
+                       💡 Você tem {totalTokens.toLocaleString()} tokens disponíveis 
+                       {userPlanType === 'gratuito' 
+                         ? ` (${dailyTokens.toLocaleString()} tokens diários)` 
+                         : ` (Plano ${userPlanType})`}. 
                        O custo varia de acordo com o tamanho da consulta.
                      </p>
                   </div>
@@ -822,24 +828,24 @@ export default function Dashboard() {
                 </Button>
               </div>
 
-              {/* Credits Display com Barra de Progresso */}
+              {/* Tokens Display com Barra de Progresso */}
               <div className="mt-2 p-3 bg-slate-700 rounded-lg space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <CreditCard className="w-4 h-4 text-primary" />
                     <Badge 
                       variant="default" 
-                      className={`text-xs ${totalCredits > 10 ? 'bg-primary' : totalCredits > 0 ? 'bg-yellow-600' : 'bg-red-600'}`}
+                      className={`text-xs ${totalTokens > 10000 ? 'bg-primary' : totalTokens > 1000 ? 'bg-yellow-600' : 'bg-red-600'}`}
                     >
-                      {totalCredits.toFixed(2)} créditos
+                      {totalTokens.toLocaleString()} tokens
                     </Badge>
                     <span className="text-xs text-muted-foreground hidden sm:inline">
                       (custo variável por consulta)
                     </span>
                   </div>
-                  {dailyCredits > 0 && (
+                  {userPlanType === 'gratuito' && (
                     <span className="text-xs text-green-400">
-                      {dailyCredits.toFixed(2)} diários
+                      {dailyTokens.toLocaleString()} diários
                     </span>
                   )}
                 </div>
@@ -848,16 +854,18 @@ export default function Dashboard() {
                 <div className="space-y-1">
                   <div className="flex justify-between text-xs text-muted-foreground">
                     <span>Tokens Disponíveis</span>
-                    <span>{Math.floor(totalCredits * 1500).toLocaleString()}</span>
+                    <span>{totalTokens.toLocaleString()}</span>
                   </div>
                   <div className="w-full bg-slate-600 rounded-full h-2">
                     <div 
                       className={`h-2 rounded-full transition-all duration-300 ${
-                        totalCredits * 1500 > 22500 ? 'bg-green-500' : 
-                        totalCredits * 1500 > 7500 ? 'bg-yellow-500' : 
+                        totalTokens > 50000 ? 'bg-green-500' : 
+                        totalTokens > 10000 ? 'bg-yellow-500' : 
                         'bg-red-500'
                       }`}
-                      style={{ width: `${Math.min((totalCredits * 1500 / 30000) * 100, 100)}%` }}
+                      style={{ 
+                        width: `${Math.min((totalTokens / (userPlanType === 'premium' ? 150000 : userPlanType === 'basico' ? 75000 : 3000)) * 100, 100)}%` 
+                      }}
                     ></div>
                   </div>
                 </div>

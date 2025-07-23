@@ -96,15 +96,15 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
-          credits: number | null
-          daily_credits: number | null
+          daily_tokens: number | null
           full_name: string | null
           id: string
           last_daily_reset: string | null
+          plan_tokens: number | null
           plan_type: string | null
           subscription_end_date: string | null
           subscription_status: string | null
-          total_credits_purchased: number | null
+          tokens: number | null
           trial_end_date: string | null
           trial_start_date: string | null
           updated_at: string
@@ -113,15 +113,15 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
-          credits?: number | null
-          daily_credits?: number | null
+          daily_tokens?: number | null
           full_name?: string | null
           id?: string
           last_daily_reset?: string | null
+          plan_tokens?: number | null
           plan_type?: string | null
           subscription_end_date?: string | null
           subscription_status?: string | null
-          total_credits_purchased?: number | null
+          tokens?: number | null
           trial_end_date?: string | null
           trial_start_date?: string | null
           updated_at?: string
@@ -130,15 +130,15 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
-          credits?: number | null
-          daily_credits?: number | null
+          daily_tokens?: number | null
           full_name?: string | null
           id?: string
           last_daily_reset?: string | null
+          plan_tokens?: number | null
           plan_type?: string | null
           subscription_end_date?: string | null
           subscription_status?: string | null
-          total_credits_purchased?: number | null
+          tokens?: number | null
           trial_end_date?: string | null
           trial_start_date?: string | null
           updated_at?: string
@@ -235,6 +235,16 @@ export type Database = {
             }
         Returns: boolean
       }
+      add_tokens_to_user: {
+        Args: {
+          p_user_id: string
+          p_tokens: number
+          p_plan_type: string
+          p_transaction_id?: string
+          p_description?: string
+        }
+        Returns: boolean
+      }
       binary_quantize: {
         Args: { "": string } | { "": unknown }
         Returns: unknown
@@ -313,6 +323,10 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: boolean
       }
+      reset_daily_tokens_if_needed: {
+        Args: { p_user_id: string }
+        Returns: boolean
+      }
       sparsevec_out: {
         Args: { "": unknown }
         Returns: unknown
@@ -329,6 +343,10 @@ export type Database = {
         Args:
           | { p_user_id: string; p_credits: number; p_description?: string }
           | { p_user_id: string; p_credits: number; p_description?: string }
+        Returns: boolean
+      }
+      use_tokens: {
+        Args: { p_user_id: string; p_tokens: number; p_description?: string }
         Returns: boolean
       }
       vector_avg: {

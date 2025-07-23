@@ -31,18 +31,19 @@ export default function Dashboard() {
       try {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('credits, daily_credits, total_credits_purchased')
+          .select('tokens, daily_tokens, plan_tokens, plan_type')
           .eq('user_id', user.id)
           .single();
 
         if (profile) {
-          setUserCredits(Number(profile.credits || 0));
-          setDailyCredits(Number(profile.daily_credits || 0));
-          setTotalCreditsPurchased(profile.total_credits_purchased || 0);
+          setUserCredits(Number(profile.plan_tokens || 0));
+          setDailyCredits(Number(profile.daily_tokens || 0));
+          setTotalCreditsPurchased(Number(profile.plan_tokens || 0));
           
-          // Calcular créditos usados: total comprado - total disponível
-          const totalUsed = (profile.total_credits_purchased || 0) - Number(profile.credits || 0);
-          setCreditsUsed(Math.max(0, totalUsed));
+          // Calcular tokens usados baseado no plano inicial
+          const initialTokens = profile.plan_type === 'basico' ? 75000 : profile.plan_type === 'premium' ? 150000 : 0;
+          const tokensUsed = initialTokens > 0 ? Math.max(0, initialTokens - Number(profile.plan_tokens || 0)) : 0;
+          setCreditsUsed(tokensUsed);
         }
       } catch (error) {
         console.error('Erro ao carregar dados do usuário:', error);
