@@ -94,8 +94,8 @@ export default function Dashboard() {
   };
 
   const chartData = [
-    { name: 'Tokens Disponíveis', value: totalAvailableCredits, color: '#10b981' },
-    { name: 'Tokens Usados', value: creditsUsed, color: '#ef4444' }
+    { name: 'Tokens Disponíveis', value: Math.floor(totalAvailableCredits), color: '#10b981' },
+    { name: 'Tokens Usados', value: Math.floor(creditsUsed), color: '#ef4444' }
   ];
 
   return (
@@ -305,7 +305,7 @@ export default function Dashboard() {
             <CreditCard className="w-6 h-6 text-primary" />
             <div className="text-center">
               <span className="text-2xl font-bold text-primary block">
-                {Math.floor(totalAvailableCredits * 1500).toLocaleString()} tokens disponíveis
+                {Math.floor(totalAvailableCredits).toLocaleString()} tokens disponíveis
               </span>
             </div>
           </div>
