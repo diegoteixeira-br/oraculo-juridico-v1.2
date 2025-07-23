@@ -99,8 +99,6 @@ serve(async (req) => {
           status: 200,
         });
       }
-    }
-
     } else {
       console.log("⏳ Pagamento ainda não confirmado");
       return new Response(JSON.stringify({ 
