@@ -54,8 +54,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .eq('user_id', userId)
         .single();
       
-      if (error) throw error;
-      setProfile(data);
+      if (error && error.code !== 'PGRST116') {
+        // PGRST116 = no rows returned - ignore este erro específico
+        throw error;
+      }
+      
+      if (data) {
+        setProfile(data);
+      }
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
@@ -69,11 +75,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await supabase.rpc('reset_daily_tokens_if_needed', { p_user_id: user.id });
       
       // Buscar perfil atualizado
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('user_id', user.id)
         .single();
+      
+      if (error && error.code !== 'PGRST116') {
+        // PGRST116 = no rows returned - ignore este erro específico
+        throw error;
+      }
       
       if (profile) {
         setProfile(profile);
