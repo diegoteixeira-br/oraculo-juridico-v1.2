@@ -17,20 +17,20 @@ const LandingPage = () => {
     }
   };
   const faqData = [{
-    question: "Como funcionam os créditos?",
-    answer: "É muito simples. Cada pergunta completa que você faz à nossa Inteligência Artificial consome créditos proporcionalmente ao uso (1 crédito = 1.500 tokens). Ao se cadastrar, você entra no nosso plano gratuito e ganha 2 créditos que se renovam a cada 24 horas."
+    question: "Como funcionam os tokens?",
+    answer: "É muito simples. Cada pergunta completa que você faz à nossa Inteligência Artificial consome tokens de acordo com o tamanho da consulta. Ao se cadastrar, você entra no nosso plano gratuito e ganha 3.000 tokens que se renovam a cada 24 horas."
   }, {
-    question: "Meus créditos gratuitos se acumulam se eu não usar?",
-    answer: "Não. Os 2 créditos gratuitos são renovados diariamente, ou seja, você tem direito a novas consultas grátis a cada dia. Eles não são cumulativos. Para ter um saldo de créditos para usar quando quiser, você pode adquirir pacotes extras dentro da sua conta."
+    question: "Meus tokens gratuitos se acumulam se eu não usar?",
+    answer: "Não. Os 3.000 tokens gratuitos são renovados diariamente, ou seja, você tem direito a novas consultas grátis a cada dia. Eles não são cumulativos. Para ter tokens ilimitados para usar quando quiser, você pode adquirir planos pagos dentro da sua conta."
   }, {
     question: "Preciso cadastrar um cartão de crédito para usar o plano gratuito?",
-    answer: "Não. Para criar sua conta no plano gratuito e usar seus 2 créditos diários, você não precisa fornecer nenhuma informação de pagamento. Você só precisará inserir seus dados de pagamento se decidir comprar créditos extras dentro da sua conta."
+    answer: "Não. Para criar sua conta no plano gratuito e usar seus 3.000 tokens diários, você não precisa fornecer nenhuma informação de pagamento. Você só precisará inserir seus dados de pagamento se decidir assinar um plano pago."
   }, {
     question: "As informações da IA são confiáveis?",
     answer: "Nossa IA é uma ferramenta de auxílio poderosa, mas não substitui o julgamento profissional de um advogado. Sempre confira as fontes citadas."
   }, {
-    question: "Como posso comprar créditos extras?",
-    answer: "Após criar sua conta gratuita e fazer login, você terá acesso à área de compra de créditos onde poderá adquirir pacotes extras conforme sua necessidade. Os créditos comprados não expiram."
+    question: "Como posso adquirir mais tokens?",
+    answer: "Após criar sua conta gratuita e fazer login, você terá acesso à área de planos onde poderá adquirir o Plano Básico (75.000 tokens por R$ 59,90) ou Premium (150.000 tokens por R$ 97,00). Os tokens dos planos pagos não expiram."
   }];
   return <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
@@ -130,7 +130,7 @@ const LandingPage = () => {
                 1
               </div>
               <h3 className="text-xl font-semibold mb-4 text-foreground">Cadastre-se Gratuitamente</h3>
-              <p className="text-muted-foreground">Crie sua conta gratuita e comece a usar imediatamente com 2 créditos renovados diariamente. Sem compromisso, sem cartão de crédito.</p>
+              <p className="text-muted-foreground">Crie sua conta gratuita e comece a usar imediatamente com 3.000 tokens renovados diariamente. Sem compromisso, sem cartão de crédito.</p>
             </div>
             
             <div className="text-center">
@@ -245,7 +245,7 @@ const LandingPage = () => {
               <div className="space-y-3 mb-8">
                 <div className="flex items-center space-x-3 text-left">
                   <Check className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-muted-foreground">2 créditos renovados diariamente</span>
+                  <span className="text-muted-foreground">3.000 tokens renovados diariamente</span>
                 </div>
                 <div className="flex items-center space-x-3 text-left">
                   <Check className="w-5 h-5 text-primary flex-shrink-0" />
@@ -261,7 +261,7 @@ const LandingPage = () => {
                 </div>
                 <div className="flex items-center space-x-3 text-left">
                   <Check className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-muted-foreground">Opção de comprar créditos extras</span>
+                  <span className="text-muted-foreground">Opção de assinar planos pagos</span>
                 </div>
               </div>
               
@@ -273,10 +273,10 @@ const LandingPage = () => {
 
           <div className="mt-12 text-center bg-card p-6 rounded-lg border border-border">
             <h3 className="text-xl font-bold mb-3 text-foreground">
-              Quer mais consultas?
+              Precisa de mais tokens?
             </h3>
             <p className="text-muted-foreground">
-              Após criar sua conta, você poderá comprar créditos extras que nunca expiram para usar quando quiser.
+              Após criar sua conta, você poderá assinar nossos planos: Básico (75.000 tokens por R$ 59,90) ou Premium (150.000 tokens por R$ 97,00). Os tokens dos planos pagos nunca expiram.
             </p>
           </div>
         </div>
