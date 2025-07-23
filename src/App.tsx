@@ -32,34 +32,37 @@ import AdminProtectedRoute from "./components/AdminProtectedRoute";
 const queryClient = new QueryClient();
 
 function AppContent() {
-  usePageTitle();
-  
   return (
     <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/cadastro" element={<Cadastro />} />
-      <Route path="/confirmar-email" element={<ConfirmarEmail />} />
-          <Route path="/redefinir-senha" element={<RedefinirSenha />} />
+      <Route path="/" element={<PageWrapper><Index /></PageWrapper>} />
+      <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
+      <Route path="/cadastro" element={<PageWrapper><Cadastro /></PageWrapper>} />
+      <Route path="/confirmar-email" element={<PageWrapper><ConfirmarEmail /></PageWrapper>} />
+          <Route path="/redefinir-senha" element={<PageWrapper><RedefinirSenha /></PageWrapper>} />
           
-      <Route path="/pagamento" element={<PagamentoPage />} />
+      <Route path="/pagamento" element={<PageWrapper><PagamentoPage /></PageWrapper>} />
       
-      <Route path="/termos" element={<Termos />} />
-      <Route path="/privacidade" element={<Privacidade />} />
-      <Route path="/contato" element={<ContatoPage />} />
-      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-      <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
-      <Route path="/minha-conta" element={<ProtectedRoute><MinhaContaPage /></ProtectedRoute>} />
-      <Route path="/historico-transacoes" element={<ProtectedRoute><HistoricoTransacoesPage /></ProtectedRoute>} />
-      <Route path="/comprar-creditos" element={<ProtectedRoute><ComprarCreditosPage /></ProtectedRoute>} />
-      <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccessPage /></ProtectedRoute>} />
-      <Route path="/admin/login" element={<AdminLogin />} />
-      <Route path="/admin/documentos" element={<AdminProtectedRoute><AdminDocuments /></AdminProtectedRoute>} />
+      <Route path="/termos" element={<PageWrapper><Termos /></PageWrapper>} />
+      <Route path="/privacidade" element={<PageWrapper><Privacidade /></PageWrapper>} />
+      <Route path="/contato" element={<PageWrapper><ContatoPage /></PageWrapper>} />
+      <Route path="/dashboard" element={<PageWrapper><ProtectedRoute><Dashboard /></ProtectedRoute></PageWrapper>} />
+      <Route path="/chat" element={<PageWrapper><ProtectedRoute><Chat /></ProtectedRoute></PageWrapper>} />
+      <Route path="/minha-conta" element={<PageWrapper><ProtectedRoute><MinhaContaPage /></ProtectedRoute></PageWrapper>} />
+      <Route path="/historico-transacoes" element={<PageWrapper><ProtectedRoute><HistoricoTransacoesPage /></ProtectedRoute></PageWrapper>} />
+      <Route path="/comprar-creditos" element={<PageWrapper><ProtectedRoute><ComprarCreditosPage /></ProtectedRoute></PageWrapper>} />
+      <Route path="/payment-success" element={<PageWrapper><ProtectedRoute><PaymentSuccessPage /></ProtectedRoute></PageWrapper>} />
+      <Route path="/admin/login" element={<PageWrapper><AdminLogin /></PageWrapper>} />
+      <Route path="/admin/documentos" element={<PageWrapper><AdminProtectedRoute><AdminDocuments /></AdminProtectedRoute></PageWrapper>} />
       
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-      <Route path="*" element={<NotFound />} />
+      <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
     </Routes>
   );
+}
+
+function PageWrapper({ children }: { children: React.ReactNode }) {
+  usePageTitle();
+  return <>{children}</>;
 }
 
 const App = () => (
