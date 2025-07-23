@@ -148,7 +148,7 @@ export default function ComprarCreditosPage() {
                 <div className="text-center">
                   {pkg.discount && (
                     <div className="mb-1">
-                      <Badge className="bg-red-600 text-white text-xs">
+                      <Badge className="bg-green-600 text-white text-xs">
                         {pkg.discount}
                       </Badge>
                     </div>
