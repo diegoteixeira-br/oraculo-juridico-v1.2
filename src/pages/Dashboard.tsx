@@ -285,15 +285,20 @@ export default function Dashboard() {
         <div className="mt-4 p-6 bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/30 rounded-xl">
           <div className="flex items-center gap-3 justify-center">
             <CreditCard className="w-6 h-6 text-primary" />
-            <span className="text-2xl font-bold text-primary">
-              {totalAvailableCredits.toFixed(2)} créditos disponíveis
-            </span>
+            <div className="text-center">
+              <span className="text-2xl font-bold text-primary block">
+                {totalAvailableCredits.toFixed(2)} créditos disponíveis
+              </span>
+              <span className="text-lg text-primary/80">
+                ≈ {Math.floor(totalAvailableCredits * 1500).toLocaleString()} tokens
+              </span>
+            </div>
           </div>
           <p className="text-center text-primary/80 mt-2">
             {dailyCredits > 0 && (
-              <span>{dailyCredits.toFixed(2)} créditos diários + </span>
+              <span>{dailyCredits.toFixed(2)} créditos diários ({Math.floor(dailyCredits * 1500).toLocaleString()} tokens) + </span>
             )}
-            {userCredits.toFixed(2)} créditos comprados
+            {userCredits.toFixed(2)} créditos comprados ({Math.floor(userCredits * 1500).toLocaleString()} tokens)
           </p>
         </div>
 
@@ -315,15 +320,18 @@ export default function Dashboard() {
                 <div className="text-center p-6 bg-primary/10 rounded-lg border border-primary/20">
                   <div className="text-3xl font-bold text-primary">{totalAvailableCredits.toFixed(2)}</div>
                   <div className="text-sm text-muted-foreground">Total Disponíveis</div>
+                  <div className="text-xs text-primary/70 mt-1">≈ {Math.floor(totalAvailableCredits * 1500).toLocaleString()} tokens</div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-4 bg-green-600/10 rounded-lg border border-green-600/20">
                     <div className="text-2xl font-bold text-green-400">{dailyCredits.toFixed(2)}</div>
                     <div className="text-xs text-muted-foreground">Créditos Diários</div>
+                    <div className="text-xs text-green-400/70">{Math.floor(dailyCredits * 1500).toLocaleString()} tokens</div>
                   </div>
                   <div className="text-center p-4 bg-blue-600/10 rounded-lg border border-blue-600/20">
                     <div className="text-2xl font-bold text-blue-400">{userCredits.toFixed(2)}</div>
                     <div className="text-xs text-muted-foreground">Créditos Comprados</div>
+                    <div className="text-xs text-blue-400/70">{Math.floor(userCredits * 1500).toLocaleString()} tokens</div>
                   </div>
                 </div>
               </div>

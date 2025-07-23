@@ -625,7 +625,7 @@ export default function Dashboard() {
                   {/* Credits Display - Mais compacto */}
                   <div className="p-2 bg-primary/10 border border-primary/20 rounded-lg max-w-md mx-auto">
                      <p className="text-xs text-primary text-center">
-                       💡 Você tem {totalCredits.toFixed(2)} créditos disponíveis 
+                       💡 Você tem {totalCredits.toFixed(2)} créditos ({Math.floor(totalCredits * 1500).toLocaleString()} tokens) disponíveis 
                        {dailyCredits > 0 && ` (${dailyCredits.toFixed(2)} diários + ${userCredits.toFixed(2)} comprados)`}. 
                        O custo varia de acordo com o tamanho da consulta.
                      </p>
@@ -841,20 +841,20 @@ export default function Dashboard() {
                   )}
                 </div>
                 
-                {/* Barra de Progresso dos Créditos */}
+                {/* Barra de Progresso dos Tokens */}
                 <div className="space-y-1">
                   <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>Créditos Disponíveis</span>
-                    <span>{Math.round((totalCredits / 20) * 100)}%</span>
+                    <span>Tokens Disponíveis</span>
+                    <span>{Math.floor(totalCredits * 1500).toLocaleString()}</span>
                   </div>
                   <div className="w-full bg-slate-600 rounded-full h-2">
                     <div 
                       className={`h-2 rounded-full transition-all duration-300 ${
-                        totalCredits > 15 ? 'bg-green-500' : 
-                        totalCredits > 5 ? 'bg-yellow-500' : 
+                        totalCredits * 1500 > 22500 ? 'bg-green-500' : 
+                        totalCredits * 1500 > 7500 ? 'bg-yellow-500' : 
                         'bg-red-500'
                       }`}
-                      style={{ width: `${Math.min((totalCredits / 20) * 100, 100)}%` }}
+                      style={{ width: `${Math.min((totalCredits * 1500 / 30000) * 100, 100)}%` }}
                     ></div>
                   </div>
                 </div>
