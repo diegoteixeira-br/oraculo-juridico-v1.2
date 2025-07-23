@@ -1,12 +1,40 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Mail, CheckCircle } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 export default function ConfirmarEmail() {
   const [searchParams] = useSearchParams();
   const email = searchParams.get('email') || '';
   const selectedPlan = searchParams.get('plano');
+  const [isResending, setIsResending] = useState(false);
+  const { resendConfirmation } = useAuth();
+  const { toast } = useToast();
+
+  const handleResendConfirmation = async () => {
+    if (!email) return;
+    
+    setIsResending(true);
+    try {
+      await resendConfirmation(email);
+      toast({
+        title: "Email reenviado!",
+        description: "Verifique sua caixa de entrada e spam.",
+        variant: "default",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro ao reenviar email",
+        description: "Tente novamente em alguns minutos.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsResending(false);
+    }
+  };
 
   useEffect(() => {
     document.title = 'Oráculo Jurídico - Confirmar Email';
@@ -49,11 +77,20 @@ export default function ConfirmarEmail() {
               </div>
             )}
             
-            <div className="bg-secondary/30 p-4 rounded-lg">
+            <div className="bg-secondary/30 p-4 rounded-lg space-y-3">
               <p className="text-xs text-muted-foreground">
                 <strong>Não recebeu o email?</strong><br />
                 Verifique sua caixa de spam ou lixo eletrônico.
               </p>
+              <Button 
+                onClick={handleResendConfirmation}
+                disabled={isResending}
+                variant="outline"
+                size="sm"
+                className="w-full"
+              >
+                {isResending ? "Reenviando..." : "Reenviar email de confirmação"}
+              </Button>
             </div>
           </div>
 
