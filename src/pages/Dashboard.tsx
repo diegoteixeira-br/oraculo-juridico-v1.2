@@ -39,11 +39,25 @@ export default function Dashboard() {
           setUserCredits(Number(profile.plan_tokens || 0));
           setDailyCredits(Number(profile.daily_tokens || 0));
           setTotalCreditsPurchased(Number(profile.plan_tokens || 0));
-          
-          // Calcular tokens usados baseado no plano inicial
-          const initialTokens = profile.plan_type === 'basico' ? 75000 : profile.plan_type === 'premium' ? 150000 : 0;
-          const tokensUsed = initialTokens > 0 ? Math.max(0, initialTokens - Number(profile.plan_tokens || 0)) : 0;
-          setCreditsUsed(tokensUsed);
+        }
+
+        // Calcular tokens realmente usados baseado no histórico de transações
+        const { data: transactions } = await supabase
+          .from('credit_transactions')
+          .select('amount, transaction_type')
+          .eq('user_id', user.id);
+
+        if (transactions) {
+          let totalUsed = 0;
+          transactions.forEach(transaction => {
+            if (transaction.transaction_type === 'usage' || 
+                transaction.transaction_type === 'daily_usage') {
+              totalUsed += Math.abs(transaction.amount); // Usar valor absoluto pois são negativos
+            }
+          });
+          setCreditsUsed(totalUsed);
+        } else {
+          setCreditsUsed(0);
         }
       } catch (error) {
         console.error('Erro ao carregar dados do usuário:', error);
@@ -80,8 +94,8 @@ export default function Dashboard() {
   };
 
   const chartData = [
-    { name: 'Créditos Disponíveis', value: totalAvailableCredits, color: '#10b981' },
-    { name: 'Créditos Usados', value: creditsUsed, color: '#ef4444' }
+    { name: 'Tokens Disponíveis', value: totalAvailableCredits, color: '#10b981' },
+    { name: 'Tokens Usados', value: creditsUsed, color: '#ef4444' }
   ];
 
   return (
@@ -370,9 +384,9 @@ export default function Dashboard() {
           {/* Credits Chart */}
           <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
-              <CardTitle>Distribuição de Créditos</CardTitle>
+              <CardTitle>Distribuição de Tokens</CardTitle>
               <CardDescription>
-                Análise completa do uso dos seus créditos
+                Análise completa do uso dos seus tokens
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -394,7 +408,7 @@ export default function Dashboard() {
                     </Pie>
                     <Tooltip 
                       formatter={(value, name) => [
-                        `${value} crédito${value !== 1 ? 's' : ''}`, 
+                        `${Number(value).toLocaleString()} token${value !== 1 ? 's' : ''}`, 
                         name
                       ]}
                       contentStyle={{
@@ -413,11 +427,12 @@ export default function Dashboard() {
               <div className="space-y-4 mt-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-4 bg-green-600/10 rounded-lg border border-green-600/20">
-                    <div className="text-2xl font-bold text-green-400">{totalAvailableCredits}</div>
-                    <div className="text-sm text-muted-foreground">Disponíveis</div>
+                    <div className="text-2xl font-bold text-green-400">{totalAvailableCredits.toLocaleString()}</div>
+                    <div className="text-sm text-muted-foreground">Tokens Disponíveis</div>
                   </div>
                   <div className="text-center p-4 bg-red-600/10 rounded-lg border border-red-600/20">
-                    <div className="text-2xl font-bold text-red-400">{creditsUsed}</div>
+                    <div className="text-2xl font-bold text-red-400">{creditsUsed.toLocaleString()}</div>
+                    <div className="text-sm text-muted-foreground">Tokens Usados</div>
                     <div className="text-sm text-muted-foreground">Usados</div>
                   </div>
                 </div>
