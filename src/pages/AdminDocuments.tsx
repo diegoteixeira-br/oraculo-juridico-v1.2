@@ -406,6 +406,15 @@ export default function AdminDocuments() {
                   </div>
                 </div>
               )}
+              
+              {formData.template_variables && !Array.isArray(formData.template_variables) && (
+                <div>
+                  <Label>Variáveis Detectadas</Label>
+                  <div className="bg-orange-500/20 text-orange-300 p-2 rounded text-sm">
+                    Formato de variáveis não reconhecido: {JSON.stringify(formData.template_variables)}
+                  </div>
+                </div>
+              )}
 
               <div className="flex gap-4">
                 <Button onClick={handleSave} className="bg-primary hover:bg-primary/90">
