@@ -119,7 +119,7 @@ export default function Dashboard() {
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
               <div className="flex-1 space-y-2">
                 <p className="text-primary/90">
-                  • Cada consulta consome apenas <strong>1 crédito</strong>
+                  • O custo varia de acordo com o tamanho da consulta
                 </p>
                 <p className="text-primary/90">
                   • Respostas baseadas na legislação brasileira
@@ -330,7 +330,7 @@ export default function Dashboard() {
               
               <div className="flex items-center justify-between py-4 border-t border-slate-600">
                 <span className="font-medium">Custo por pesquisa:</span>
-                <span className="text-primary font-bold">1 crédito</span>
+                <span className="text-primary font-bold">Variável por consulta</span>
               </div>
               
               <div className="flex flex-col gap-4">

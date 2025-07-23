@@ -155,8 +155,8 @@ export default function Dashboard() {
   const handleSendMessage = async () => {
     if (!inputMessage.trim() && attachedFiles.length === 0) return;
 
-    // Verificar se o usuário tem créditos suficientes
-    if (totalCredits < costPerSearch) {
+    // Verificar se o usuário tem créditos suficientes (mínimo de 0.01)
+    if (totalCredits < 0.01) {
       toast({
         title: "Créditos insuficientes",
         description: "Você não tem créditos suficientes para realizar esta consulta. Acesse 'Minha Conta' para comprar mais créditos.",
@@ -258,12 +258,13 @@ export default function Dashboard() {
             prompt_text: userMessage.text, // Manter a pergunta para referência
             response_text: aiResponse.text,
             message_type: 'ai_response',
-            credits_consumed: costPerSearch
+            credits_consumed: data.creditsConsumed || 0 // Usar os créditos realmente consumidos pela IA
           });
         
         console.log('Resposta da IA salva no histórico:', {
           sessionId,
-          responseLength: aiResponse.text.length
+          responseLength: aiResponse.text.length,
+          creditsConsumed: data.creditsConsumed
         });
       } catch (historyError) {
         console.error('Erro ao salvar resposta da IA no histórico:', historyError);
@@ -623,11 +624,11 @@ export default function Dashboard() {
                   
                   {/* Credits Display - Mais compacto */}
                   <div className="p-2 bg-primary/10 border border-primary/20 rounded-lg max-w-md mx-auto">
-                    <p className="text-xs text-primary text-center">
-                      💡 Você tem {totalCredits.toFixed(2)} créditos disponíveis 
-                      {dailyCredits > 0 && ` (${dailyCredits.toFixed(2)} diários + ${userCredits.toFixed(2)} comprados)`}. 
-                      Cada pesquisa custa {costPerSearch} crédito.
-                    </p>
+                     <p className="text-xs text-primary text-center">
+                       💡 Você tem {totalCredits.toFixed(2)} créditos disponíveis 
+                       {dailyCredits > 0 && ` (${dailyCredits.toFixed(2)} diários + ${userCredits.toFixed(2)} comprados)`}. 
+                       O custo varia de acordo com o tamanho da consulta.
+                     </p>
                   </div>
                   
                   {/* Exemplos de Perguntas - Mais compacto */}
@@ -830,7 +831,7 @@ export default function Dashboard() {
                       {totalCredits.toFixed(2)} créditos
                     </Badge>
                     <span className="text-xs text-muted-foreground hidden sm:inline">
-                      ({costPerSearch} crédito/pesquisa)
+                      (custo variável por consulta)
                     </span>
                   </div>
                   {dailyCredits > 0 && (

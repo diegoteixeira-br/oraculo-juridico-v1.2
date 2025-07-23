@@ -363,7 +363,9 @@ ${JSON.stringify(dadosEstruturados, null, 2)}`;
     // Retornar resposta da IA
     return new Response(JSON.stringify({ 
       response: aiMessage,
-      success: true
+      success: true,
+      creditsConsumed: creditsConsumed, // Retornar os créditos consumidos para o frontend
+      totalTokens: totalTokens
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
