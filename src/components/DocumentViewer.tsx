@@ -19,7 +19,8 @@ interface LegalDocument {
   category: string;
   content: string;
   template_variables: any;
-  min_credits_required: number;
+  min_tokens_required?: number;
+  min_credits_required?: number; // Manter para compatibilidade
 }
 
 export default function DocumentViewer({ documentId, isOpen, onClose }: DocumentViewerProps) {
@@ -105,20 +106,22 @@ export default function DocumentViewer({ documentId, isOpen, onClose }: Document
     if (!document || !user?.id) return;
     
     try {
-      // Verificar e consumir créditos antes de copiar
-      const { data: useCreditsResult, error: creditsError } = await supabase.rpc(
-        'use_credits',
+      // Verificar e consumir tokens antes de copiar
+      const tokensRequired = document.min_tokens_required || document.min_credits_required * 1000 || 3000;
+      
+      const { data: useTokensResult, error: tokensError } = await supabase.rpc(
+        'use_tokens',
         {
           p_user_id: user.id,
-          p_credits: document.min_credits_required,
+          p_tokens: tokensRequired,
           p_description: `Cópia do documento: ${document.title}`
         }
       );
 
-      if (creditsError || !useCreditsResult) {
+      if (tokensError || !useTokensResult) {
         toast({
-          title: "Créditos insuficientes",
-          description: `Você precisa de ${document.min_credits_required} créditos para copiar este documento`,
+          title: "Tokens insuficientes",
+          description: `Você precisa de ${tokensRequired.toLocaleString()} tokens para copiar este documento`,
           variant: "destructive"
         });
         return;
@@ -138,7 +141,7 @@ export default function DocumentViewer({ documentId, isOpen, onClose }: Document
       setCopied(true);
       toast({
         title: "Copiado!",
-        description: `Documento copiado! ${document.min_credits_required} créditos utilizados.`
+        description: `Documento copiado! ${tokensRequired.toLocaleString()} tokens utilizados.`
       });
       
       setTimeout(() => setCopied(false), 2000);
@@ -234,8 +237,9 @@ export default function DocumentViewer({ documentId, isOpen, onClose }: Document
             variant="outline"
             size="lg"
             onClick={() => {
+              const tokensRequired = document?.min_tokens_required || document?.min_credits_required * 1000 || 3000;
               // Confirmação antes de copiar para evitar cliques acidentais
-              if (window.confirm(`Tem certeza que deseja copiar este documento? Serão consumidos ${document?.min_credits_required || 0} créditos.`)) {
+              if (window.confirm(`Tem certeza que deseja copiar este documento? Serão consumidos ${tokensRequired.toLocaleString()} tokens.`)) {
                 copyToClipboard();
               }
             }}
@@ -243,7 +247,7 @@ export default function DocumentViewer({ documentId, isOpen, onClose }: Document
             className="bg-primary/10 hover:bg-primary/20 border-primary/30 text-primary font-semibold px-8 py-3"
           >
             {copied ? <Check className="w-5 h-5 mr-2" /> : <Copy className="w-5 h-5 mr-2" />}
-            {copied ? "Copiado!" : `Copiar Documento (${document?.min_credits_required || 0} créditos)`}
+            {copied ? "Copiado!" : `Copiar Documento (${(document?.min_tokens_required || document?.min_credits_required * 1000 || 3000).toLocaleString()} tokens)`}
           </Button>
         </div>
 

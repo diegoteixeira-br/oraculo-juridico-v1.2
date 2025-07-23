@@ -59,7 +59,7 @@ export type Database = {
           file_url: string | null
           id: string
           is_active: boolean
-          min_credits_required: number
+          min_tokens_required: number | null
           template_variables: Json | null
           title: string
           updated_at: string
@@ -72,7 +72,7 @@ export type Database = {
           file_url?: string | null
           id?: string
           is_active?: boolean
-          min_credits_required?: number
+          min_tokens_required?: number | null
           template_variables?: Json | null
           title: string
           updated_at?: string
@@ -85,7 +85,7 @@ export type Database = {
           file_url?: string | null
           id?: string
           is_active?: boolean
-          min_credits_required?: number
+          min_tokens_required?: number | null
           template_variables?: Json | null
           title?: string
           updated_at?: string

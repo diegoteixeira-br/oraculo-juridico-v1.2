@@ -16,7 +16,8 @@ interface Document {
   content: string;
   category: string;
   description: string;
-  min_tokens_required: number;
+  min_tokens_required?: number; // Opcional para compatibilidade
+  min_credits_required?: number; // Manter para compatibilidade durante migração
   template_variables: any;
   is_active: boolean;
   file_url?: string;
@@ -51,7 +52,14 @@ export default function AdminDocuments() {
         .order('title');
 
       if (error) throw error;
-      setDocuments(data || []);
+      
+      // Garantir compatibilidade com documentos antigos
+      const processedData = (data || []).map(doc => ({
+        ...doc,
+        min_tokens_required: doc.min_tokens_required || (doc as any).min_credits_required * 1000 || 3000
+      }));
+      
+      setDocuments(processedData);
     } catch (error) {
       console.error('Erro ao carregar documentos:', error);
       toast({
@@ -76,7 +84,7 @@ export default function AdminDocuments() {
       content: doc.content,
       category: doc.category,
       description: doc.description || '',
-      min_tokens_required: doc.min_tokens_required,
+      min_tokens_required: doc.min_tokens_required || 3000,
       template_variables: templateVars
     });
     setIsCreating(false);
@@ -436,7 +444,7 @@ export default function AdminDocuments() {
                     <p className="text-sm text-muted-foreground">{doc.description}</p>
                     <div className="flex gap-4 mt-2">
                       <span className="text-xs text-primary">Categoria: {doc.category}</span>
-                      <span className="text-xs text-primary">Tokens: {doc.min_tokens_required.toLocaleString()}</span>
+                      <span className="text-xs text-primary">Tokens: {(doc.min_tokens_required || 3000).toLocaleString()}</span>
                       <span className="text-xs text-primary">Status: {doc.is_active ? 'Ativo' : 'Inativo'}</span>
                     </div>
                   </div>
