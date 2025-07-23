@@ -275,9 +275,7 @@ const LandingPage = () => {
             <h3 className="text-xl font-bold mb-3 text-foreground">
               Precisa de mais tokens?
             </h3>
-            <p className="text-muted-foreground">
-              Após criar sua conta, você poderá assinar nossos planos: Básico (75.000 tokens por R$ 59,90) ou Premium (150.000 tokens por R$ 97,00). Os tokens dos planos pagos nunca expiram.
-            </p>
+            <p className="text-muted-foreground">Após criar sua conta, você poderá adquirir tokens: Básico (75.000 tokens por R$ 59,90) ou Premium (150.000 tokens por R$ 97,00). Os tokens dos planos pagos nunca expiram.</p>
           </div>
         </div>
       </section>
