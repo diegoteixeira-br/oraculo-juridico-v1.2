@@ -157,17 +157,15 @@ export default function Dashboard() {
     if (!inputMessage.trim() && attachedFiles.length === 0) return;
 
     // Verificar se o usuário tem tokens suficientes
-    if (totalTokens < 100) {
+    if (totalTokens < 1000) { // Aumentar o mínimo para 1000 tokens
       toast({
         title: "Tokens insuficientes",
         description: userPlanType === 'gratuito' 
-          ? "Você não tem tokens diários suficientes para realizar esta consulta."
-          : "Você não tem tokens suficientes para realizar esta consulta. Acesse 'Minha Conta' para comprar mais tokens.",
+          ? "Você precisa de pelo menos 1.000 tokens para realizar uma consulta. Aguarde a renovação dos tokens diários ou adquira um plano."
+          : "Você não tem tokens suficientes para realizar esta consulta. Compre mais tokens para continuar usando o chat.",
         variant: "destructive",
       });
-      if (userPlanType !== 'gratuito') {
-        navigate('/comprar-creditos');
-      }
+      navigate('/comprar-creditos');
       return;
     }
 
@@ -613,7 +611,54 @@ export default function Dashboard() {
           <div className="flex-1 flex flex-col">
             {/* Messages Area */}
             <ScrollArea className="flex-1 p-2 md:p-4">
-              {messages.length === 0 ? (
+              {totalTokens < 1000 ? (
+                <div className="flex flex-col items-center justify-center h-full text-center space-y-4 max-w-2xl mx-auto px-4">
+                  <div className="flex flex-col items-center space-y-2">
+                    <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center">
+                      <CreditCard className="w-8 h-8 text-red-400" />
+                    </div>
+                    <div className="space-y-2">
+                      <h2 className="text-xl font-bold text-red-400">Tokens Insuficientes</h2>
+                      <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                        Você precisa de pelo menos 1.000 tokens para usar o chat jurídico.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="w-full max-w-md bg-red-900/20 border border-red-600/30 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-muted-foreground">
+                        {userPlanType === 'gratuito' ? 'Tokens Diários Restantes' : 'Tokens do Plano'}
+                      </span>
+                      <Badge variant="destructive">
+                        {totalTokens.toLocaleString()} tokens
+                      </Badge>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {userPlanType === 'gratuito' 
+                        ? 'Renovação diária às 00:00 (3.000 tokens gratuitos)'
+                        : 'Necessário comprar mais tokens para continuar'
+                      }
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Button 
+                      onClick={() => navigate('/comprar-creditos')}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      <CreditCard className="mr-2 h-4 w-4" />
+                      Comprar Tokens
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => navigate('/dashboard')}
+                    >
+                      Voltar ao Dashboard
+                    </Button>
+                  </div>
+                </div>
+              ) : messages.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center space-y-2 max-w-6xl mx-auto px-2">
                   <div className="flex flex-col items-center space-y-1">
                     <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -787,14 +832,14 @@ export default function Dashboard() {
               
               <div className="flex gap-2">
                 <div className="flex gap-1">
-                  {/* Botão de Anexar Arquivo */}
+                   {/* Botão de Anexar Arquivo */}
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={openFileSelector}
-                    disabled={isTyping || attachedFiles.length >= 3}
+                    disabled={isTyping || attachedFiles.length >= 3 || totalTokens < 1000}
                     className="p-2 md:p-3 w-10 h-10 md:w-12 md:h-12 rounded-lg border-slate-600 hover:bg-slate-700"
-                    title="Anexar arquivo (PDF, imagem, documento)"
+                    title={totalTokens < 1000 ? "Tokens insuficientes" : "Anexar arquivo (PDF, imagem, documento)"}
                   >
                     <Paperclip className="w-4 h-4" />
                   </Button>
@@ -814,17 +859,23 @@ export default function Dashboard() {
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Digite sua pergunta aqui e pressione Enter..."
+                  placeholder={totalTokens < 1000 
+                    ? "Tokens insuficientes para usar o chat..." 
+                    : "Digite sua pergunta aqui e pressione Enter..."
+                  }
                   className="flex-1 min-h-[40px] md:min-h-[50px] text-sm resize-none bg-background border-slate-600 focus:border-primary"
-                  disabled={isTyping}
+                  disabled={isTyping || totalTokens < 1000}
                 />
                 
                 <Button
-                  onClick={handleSendMessage}
-                  disabled={(!inputMessage.trim() && attachedFiles.length === 0) || isTyping}
-                  className="btn-primary p-2 md:p-3 w-10 h-10 md:w-12 md:h-12 rounded-lg"
+                  onClick={totalTokens < 1000 ? () => navigate('/comprar-creditos') : handleSendMessage}
+                  disabled={totalTokens >= 1000 && ((!inputMessage.trim() && attachedFiles.length === 0) || isTyping)}
+                  className={totalTokens < 1000 
+                    ? "bg-green-600 hover:bg-green-700 p-2 md:p-3 w-10 h-10 md:w-12 md:h-12 rounded-lg" 
+                    : "btn-primary p-2 md:p-3 w-10 h-10 md:w-12 md:h-12 rounded-lg"
+                  }
                 >
-                  <Send className="w-4 h-4" />
+                  {totalTokens < 1000 ? <CreditCard className="w-4 h-4" /> : <Send className="w-4 h-4" />}
                 </Button>
               </div>
 
