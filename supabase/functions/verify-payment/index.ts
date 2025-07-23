@@ -14,10 +14,13 @@ serve(async (req) => {
   }
 
   try {
+    console.log("🔍 Iniciando verificação de pagamento...");
+    
     const { session_id } = await req.json();
+    console.log("🎫 Session ID recebido:", session_id);
     
     if (!session_id) {
-      throw new Error("Session ID é obrigatório");
+      throw new Error("Session ID não fornecido");
     }
 
     // Initialize Stripe
@@ -27,6 +30,7 @@ serve(async (req) => {
 
     // Retrieve checkout session
     const session = await stripe.checkout.sessions.retrieve(session_id);
+    console.log("💳 Status do pagamento:", session.payment_status);
     
     if (session.payment_status === "paid") {
       // Create Supabase client with service role for bypassing RLS
@@ -40,6 +44,12 @@ serve(async (req) => {
       const credits = parseInt(session.metadata?.credits || "0");
       const packageId = session.metadata?.package_id;
 
+      console.log("📝 Dados extraídos:", { userId, credits, packageId });
+
+      if (!userId || !credits) {
+        throw new Error("Dados de pagamento incompletos");
+      }
+
       if (userId && credits > 0) {
         // Check if this transaction was already processed
         const { data: existingTransaction } = await supabaseClient
@@ -49,34 +59,41 @@ serve(async (req) => {
           .maybeSingle();
         
         if (existingTransaction) {
-          // Transaction already processed
+          console.log("⚠️ Transação já processada anteriormente");
           return new Response(JSON.stringify({ 
             success: true, 
-            message: "Transaction already processed",
-            transaction_id: session.id
+            credits_added: credits,
+            transaction_id: session_id,
+            already_processed: true
           }), {
             headers: { ...corsHeaders, "Content-Type": "application/json" },
             status: 200,
           });
         }
 
-        // Add credits to user
-        const { error } = await supabaseClient.rpc('add_credits_to_user', {
+        // Add credits to user using RPC function
+        const { data: result, error: rpcError } = await supabaseClient.rpc('add_credits_to_user', {
           p_user_id: userId,
           p_credits: credits,
-          p_transaction_id: session.id,
-          p_description: `Compra de créditos via Stripe - ${packageId}`
+          p_transaction_id: session_id,
+          p_description: `Compra de ${credits} créditos - ${packageId}`
         });
 
-        if (error) {
-          console.error("Erro ao adicionar créditos:", error);
+        if (rpcError) {
+          console.error("❌ Erro ao adicionar créditos:", rpcError);
           throw new Error("Erro ao processar créditos");
         }
+
+        if (!result) {
+          throw new Error("Falha ao adicionar créditos");
+        }
+
+        console.log("✅ Créditos adicionados com sucesso!");
 
         return new Response(JSON.stringify({ 
           success: true, 
           credits_added: credits,
-          transaction_id: session.id
+          transaction_id: session_id
         }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
           status: 200,
@@ -84,13 +101,16 @@ serve(async (req) => {
       }
     }
 
-    return new Response(JSON.stringify({ 
-      success: false, 
-      payment_status: session.payment_status 
-    }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
-    });
+    } else {
+      console.log("⏳ Pagamento ainda não confirmado");
+      return new Response(JSON.stringify({ 
+        success: false, 
+        payment_status: session.payment_status 
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
 
   } catch (error) {
     console.error("Erro ao verificar pagamento:", error);

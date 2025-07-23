@@ -10,39 +10,34 @@ import UserMenu from "@/components/UserMenu";
 
 const creditPackages = [
   {
-    id: "basic",
-    name: "Plano Padrão",
+    id: "50-credits",
+    name: "50 Créditos",
     credits: 50,
-    price: 59.90,
-    originalPrice: null,
-    discount: null,
-    popular: false,
+    price: 20.00,
+    originalPrice: 25.00,
+    discount: "20% OFF",
+    popular: true,
     features: [
-      "50 créditos = 75.000 tokens",
-      "Validade: 90 dias",
       "Consultas jurídicas ilimitadas",
-      "Suporte a arquivos PDF",
-      "Suporte a imagens",
-      "Suporte por email"
+      "Análise de documentos",
+      "Suporte prioritário",
+      "Válido por 12 meses"
     ]
   },
   {
-    id: "premium",
-    name: "Plano Avançado",
+    id: "100-credits",
+    name: "100 Créditos",
     credits: 100,
-    price: 97.00,
-    originalPrice: 120.00,
-    discount: "ECONOMIZE 23%",
-    popular: true,
+    price: 35.00,
+    originalPrice: 50.00,
+    discount: "30% OFF",
+    popular: false,
     features: [
-      "100 créditos = 150.000 tokens",
-      "Validade: 180 dias",
       "Consultas jurídicas ilimitadas",
-      "Suporte a arquivos PDF",
-      "Suporte a imagens",
-      "Suporte prioritário",
-      "Processamento otimizado",
-      "Relatórios detalhados"
+      "Análise de documentos",
+      "Suporte prioritário VIP",
+      "Relatórios detalhados",
+      "Válido por 12 meses"
     ]
   }
 ];

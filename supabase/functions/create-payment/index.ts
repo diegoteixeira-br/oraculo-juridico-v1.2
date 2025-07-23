@@ -8,24 +8,29 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
+// Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    console.log("🚀 Iniciando criação de pagamento...");
+    
     const { packageId } = await req.json();
+    console.log("📦 Package ID recebido:", packageId);
     
     // Validate package
     const packages = {
-      basic: { name: "Pacote Básico", credits: 50, price: 5990 },
-      premium: { name: "Pacote Premium", credits: 100, price: 9700 }
+      "50-credits": { name: "50 Créditos", credits: 50, price: 2000 },
+      "100-credits": { name: "100 Créditos", credits: 100, price: 3500 }
     };
 
     const selectedPackage = packages[packageId as keyof typeof packages];
     if (!selectedPackage) {
-      throw new Error("Pacote inválido");
+      throw new Error("Pacote de créditos inválido");
     }
+    
+    console.log("✅ Pacote selecionado:", selectedPackage);
 
     // Create Supabase client
     const supabaseClient = createClient(
@@ -39,6 +44,8 @@ serve(async (req) => {
     const { data } = await supabaseClient.auth.getUser(token);
     const user = data.user;
     if (!user?.email) throw new Error("Usuário não autenticado");
+    
+    console.log("👤 Usuário autenticado:", user.email);
 
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
@@ -50,6 +57,9 @@ serve(async (req) => {
     let customerId;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
+      console.log("🔍 Cliente existente encontrado:", customerId);
+    } else {
+      console.log("👤 Criando novo cliente...");
     }
 
     // Create a one-time payment session
@@ -78,6 +88,8 @@ serve(async (req) => {
         credits: selectedPackage.credits.toString()
       }
     });
+
+    console.log("💳 Sessão de checkout criada:", session.id);
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
