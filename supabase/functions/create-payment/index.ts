@@ -48,9 +48,16 @@ serve(async (req) => {
     console.log("👤 Usuário autenticado:", user.email);
 
     // Initialize Stripe
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeKey) {
+      console.error("❌ STRIPE_SECRET_KEY não configurada");
+      throw new Error("Chave do Stripe não configurada");
+    }
+    
+    const stripe = new Stripe(stripeKey, {
       apiVersion: "2023-10-16",
     });
+    console.log("💳 Stripe inicializado com sucesso");
 
     // Check if a Stripe customer record exists for this user
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
@@ -97,7 +104,7 @@ serve(async (req) => {
       status: 200,
     });
   } catch (error) {
-    console.error("Erro ao criar pagamento:", error);
+    console.error("❌ Erro ao criar pagamento:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,

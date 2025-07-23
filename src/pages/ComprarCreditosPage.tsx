@@ -61,19 +61,26 @@ export default function ComprarCreditosPage() {
       setIsLoading(true);
       setSelectedPackage(packageId);
 
-      const stripeUrls = {
-        basico: 'https://buy.stripe.com/4gMfZia1z1hAccD1VY5AQ00',
-        premium: 'https://buy.stripe.com/4gMfZi5Lj5xQ1xZ8km5AQ01'
-      };
+      console.log("🚀 Iniciando compra de tokens:", packageId);
+      
+      // Chamar a função create-payment
+      const { data, error } = await supabase.functions.invoke('create-payment', {
+        body: { packageId }
+      });
 
-      const url = stripeUrls[packageId as keyof typeof stripeUrls];
-      if (url) {
-        window.open(url, '_blank');
+      if (error) {
+        throw error;
+      }
+
+      if (data?.url) {
+        console.log("✅ URL de checkout recebida:", data.url);
+        // Abrir Stripe checkout em nova aba
+        window.open(data.url, '_blank');
       } else {
-        throw new Error('Plano não encontrado');
+        throw new Error('URL de pagamento não recebida');
       }
     } catch (error) {
-      console.error('Erro ao processar pagamento:', error);
+      console.error('❌ Erro ao processar pagamento:', error);
       toast({
         title: "Erro",
         description: "Erro ao processar pagamento. Tente novamente.",

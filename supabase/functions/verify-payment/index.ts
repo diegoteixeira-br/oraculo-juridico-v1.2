@@ -20,14 +20,21 @@ serve(async (req) => {
     console.log("📝 Session ID recebido:", session_id);
 
     if (!session_id) {
+      console.error("❌ Session ID não fornecido");
       throw new Error("Session ID é obrigatório");
     }
 
     // Initialize Stripe
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeKey) {
+      console.error("❌ STRIPE_SECRET_KEY não configurada");
+      throw new Error("Chave do Stripe não configurada");
+    }
+    
+    const stripe = new Stripe(stripeKey, {
       apiVersion: "2023-10-16",
     });
-    console.log("💳 Stripe inicializado");
+    console.log("💳 Stripe inicializado com sucesso");
 
     // Retrieve the checkout session
     const session = await stripe.checkout.sessions.retrieve(session_id);
