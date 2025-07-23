@@ -252,7 +252,7 @@ export default function Dashboard() {
                           <div className="absolute bottom-2 left-2 right-2">
                             <div className="bg-slate-800 text-white px-2 py-1 rounded text-[8px] flex justify-between items-center">
                               <span className="capitalize">{doc.category}</span>
-                              <span>{doc.min_credits_required} créd.</span>
+                              <span>{doc.min_tokens_required || 3000} tokens</span>
                             </div>
                           </div>
                         </div>
