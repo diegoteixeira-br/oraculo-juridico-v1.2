@@ -28,6 +28,8 @@ const tokenPackages = [
     name: "Plano Premium",
     tokens: 150000,
     price: 97.00,
+    originalPrice: 120.00,
+    discount: "20% OFF",
     planType: "premium",
     popular: false,
     features: [
@@ -144,7 +146,19 @@ export default function ComprarCreditosPage() {
 
               <CardContent className="space-y-4">
                 <div className="text-center">
+                  {pkg.discount && (
+                    <div className="mb-1">
+                      <Badge className="bg-red-600 text-white text-xs">
+                        {pkg.discount}
+                      </Badge>
+                    </div>
+                  )}
                   <div className="flex items-center justify-center gap-2 mb-2">
+                    {pkg.originalPrice && (
+                      <span className="text-sm text-muted-foreground line-through">
+                        R$ {pkg.originalPrice.toFixed(2).replace('.', ',')}
+                      </span>
+                    )}
                     <span className="text-2xl md:text-3xl font-bold text-primary">
                       R$ {pkg.price.toFixed(2).replace('.', ',')}
                     </span>
