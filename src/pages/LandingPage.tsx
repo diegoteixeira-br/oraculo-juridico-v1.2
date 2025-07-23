@@ -261,7 +261,7 @@ const LandingPage = () => {
                 </div>
                 <div className="flex items-center space-x-3 text-left">
                   <Check className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-muted-foreground">Opção de assinar planos pagos</span>
+                  <span className="text-muted-foreground">Opção de comprar tokens </span>
                 </div>
               </div>
               
