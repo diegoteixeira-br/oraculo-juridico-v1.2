@@ -48,7 +48,7 @@ export default function AdminDocuments() {
     try {
       const { data, error } = await supabase
         .from('legal_documents')
-        .select('*')
+        .select('id, title, content, category, description, min_tokens_required, template_variables, is_active, file_url, created_at, updated_at')
         .order('title');
 
       if (error) throw error;
