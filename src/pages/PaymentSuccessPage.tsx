@@ -30,10 +30,12 @@ export default function PaymentSuccessPage() {
       }
 
       try {
+        console.log("🔍 Verificando pagamento com session_id:", sessionId);
         const { data, error } = await supabase.functions.invoke('verify-payment', {
           body: { session_id: sessionId }
         });
 
+        console.log("📥 Resposta da função verify-payment:", { data, error });
         if (error) throw error;
 
         if (data?.success) {
