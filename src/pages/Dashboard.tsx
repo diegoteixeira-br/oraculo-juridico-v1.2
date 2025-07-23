@@ -305,10 +305,7 @@ export default function Dashboard() {
             <CreditCard className="w-6 h-6 text-primary" />
             <div className="text-center">
               <span className="text-2xl font-bold text-primary block">
-                {Math.floor(totalAvailableCredits)} créditos disponíveis
-              </span>
-              <span className="text-lg text-primary/80">
-                ≈ {Math.floor(totalAvailableCredits * 1500).toLocaleString()} tokens
+                {Math.floor(totalAvailableCredits * 1500).toLocaleString()} tokens disponíveis
               </span>
             </div>
           </div>
@@ -425,43 +422,42 @@ export default function Dashboard() {
               
               {/* Estatísticas detalhadas */}
               <div className="space-y-4 mt-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-4 bg-green-600/10 rounded-lg border border-green-600/20">
-                    <div className="text-2xl font-bold text-green-400">{totalAvailableCredits.toLocaleString()}</div>
-                    <div className="text-sm text-muted-foreground">Tokens Disponíveis</div>
-                  </div>
-                  <div className="text-center p-4 bg-red-600/10 rounded-lg border border-red-600/20">
-                    <div className="text-2xl font-bold text-red-400">{creditsUsed.toLocaleString()}</div>
-                    <div className="text-sm text-muted-foreground">Tokens Usados</div>
-                    <div className="text-sm text-muted-foreground">Usados</div>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 bg-emerald-600/10 rounded-lg border border-emerald-600/20">
-                    <div className="text-lg font-bold text-emerald-400">{dailyCredits}</div>
-                    <div className="text-xs text-muted-foreground">Créditos Diários</div>
-                  </div>
-                  <div className="text-center p-3 bg-blue-600/10 rounded-lg border border-blue-600/20">
-                    <div className="text-lg font-bold text-blue-400">{userCredits}</div>
-                    <div className="text-xs text-muted-foreground">Créditos Comprados</div>
-                  </div>
-                </div>
+                 <div className="grid grid-cols-2 gap-4">
+                   <div className="text-center p-4 bg-green-600/10 rounded-lg border border-green-600/20">
+                     <div className="text-2xl font-bold text-green-400">{Math.floor(totalAvailableCredits).toLocaleString()}</div>
+                     <div className="text-sm text-muted-foreground">Tokens Disponíveis</div>
+                   </div>
+                   <div className="text-center p-4 bg-red-600/10 rounded-lg border border-red-600/20">
+                     <div className="text-2xl font-bold text-red-400">{Math.floor(creditsUsed).toLocaleString()}</div>
+                     <div className="text-sm text-muted-foreground">Tokens Usados</div>
+                   </div>
+                 </div>
+                 
+                 <div className="grid grid-cols-2 gap-4">
+                   <div className="text-center p-3 bg-emerald-600/10 rounded-lg border border-emerald-600/20">
+                     <div className="text-lg font-bold text-emerald-400">{Math.floor(dailyCredits)}</div>
+                     <div className="text-xs text-muted-foreground">Créditos Diários</div>
+                   </div>
+                   <div className="text-center p-3 bg-blue-600/10 rounded-lg border border-blue-600/20">
+                     <div className="text-lg font-bold text-blue-400">{Math.floor(userCredits)}</div>
+                     <div className="text-xs text-muted-foreground">Créditos Comprados</div>
+                   </div>
+                 </div>
 
-                <div className="bg-slate-700/50 p-4 rounded-lg border border-slate-600">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-medium">Total Comprado:</span>
-                    <span className="text-primary font-bold">{totalCreditsPurchased}</span>
-                  </div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-medium">Total Usado:</span>
-                    <span className="text-red-400 font-bold">{creditsUsed}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">Restante:</span>
-                    <span className="text-green-400 font-bold">{totalAvailableCredits}</span>
-                  </div>
-                </div>
+                 <div className="bg-slate-700/50 p-4 rounded-lg border border-slate-600">
+                   <div className="flex justify-between items-center mb-2">
+                     <span className="text-sm font-medium">Total Comprado:</span>
+                     <span className="text-primary font-bold">{Math.floor(totalCreditsPurchased)}</span>
+                   </div>
+                   <div className="flex justify-between items-center mb-2">
+                     <span className="text-sm font-medium">Total Usado:</span>
+                     <span className="text-red-400 font-bold">{Math.floor(creditsUsed)}</span>
+                   </div>
+                   <div className="flex justify-between items-center">
+                     <span className="text-sm font-medium">Restante:</span>
+                     <span className="text-green-400 font-bold">{Math.floor(totalAvailableCredits)}</span>
+                   </div>
+                 </div>
               </div>
             </CardContent>
           </Card>
