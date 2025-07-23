@@ -675,7 +675,7 @@ export default function Dashboard() {
                             <Bot className="w-5 h-5 mt-0.5 text-primary flex-shrink-0" />
                           )}
                            <div className="flex-1">
-                              <p className="text-sm leading-relaxed">{message.text}</p>
+                              <div className="text-sm leading-relaxed whitespace-pre-line break-words">{message.text}</div>
                               
                               {/* Mostrar arquivos anexados na mensagem do usuário */}
                               {message.sender === 'user' && message.attachedFiles && message.attachedFiles.length > 0 && (
