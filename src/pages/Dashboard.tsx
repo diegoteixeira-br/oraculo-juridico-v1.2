@@ -36,6 +36,7 @@ export default function Dashboard() {
           .single();
 
         if (profile) {
+          // Os valores já são tokens, não precisam conversão
           setUserCredits(Number(profile.plan_tokens || 0));
           setDailyCredits(Number(profile.daily_tokens || 0));
           setTotalCreditsPurchased(Number(profile.plan_tokens || 0));
@@ -311,9 +312,9 @@ export default function Dashboard() {
           </div>
           <p className="text-center text-primary/80 mt-2">
             {dailyCredits > 0 && (
-              <span>{Math.floor(dailyCredits)} créditos diários ({Math.floor(dailyCredits * 1500).toLocaleString()} tokens) + </span>
+              <span>{Math.floor(dailyCredits)} tokens diários + </span>
             )}
-            {Math.floor(userCredits)} créditos comprados ({Math.floor(userCredits * 1500).toLocaleString()} tokens)
+            {Math.floor(userCredits)} tokens do plano
           </p>
         </div>
 
@@ -335,18 +336,18 @@ export default function Dashboard() {
                 <div className="text-center p-6 bg-primary/10 rounded-lg border border-primary/20">
                   <div className="text-3xl font-bold text-primary">{Math.floor(totalAvailableCredits)}</div>
                   <div className="text-sm text-muted-foreground">Total Disponíveis</div>
-                  <div className="text-xs text-primary/70 mt-1">≈ {Math.floor(totalAvailableCredits * 1500).toLocaleString()} tokens</div>
+                  <div className="text-xs text-primary/70 mt-1">{Math.floor(totalAvailableCredits).toLocaleString()} tokens</div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-4 bg-green-600/10 rounded-lg border border-green-600/20">
                     <div className="text-2xl font-bold text-green-400">{Math.floor(dailyCredits)}</div>
-                    <div className="text-xs text-muted-foreground">Créditos Diários</div>
-                    <div className="text-xs text-green-400/70">{Math.floor(dailyCredits * 1500).toLocaleString()} tokens</div>
+                    <div className="text-xs text-muted-foreground">Tokens Diários</div>
+                    <div className="text-xs text-green-400/70">{Math.floor(dailyCredits).toLocaleString()} tokens</div>
                   </div>
                   <div className="text-center p-4 bg-blue-600/10 rounded-lg border border-blue-600/20">
                     <div className="text-2xl font-bold text-blue-400">{Math.floor(userCredits)}</div>
-                    <div className="text-xs text-muted-foreground">Créditos Comprados</div>
-                    <div className="text-xs text-blue-400/70">{Math.floor(userCredits * 1500).toLocaleString()} tokens</div>
+                    <div className="text-xs text-muted-foreground">Tokens do Plano</div>
+                    <div className="text-xs text-blue-400/70">{Math.floor(userCredits).toLocaleString()} tokens</div>
                   </div>
                 </div>
               </div>
