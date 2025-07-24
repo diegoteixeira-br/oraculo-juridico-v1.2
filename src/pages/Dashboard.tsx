@@ -36,9 +36,14 @@ export default function Dashboard() {
           .single();
 
         if (profile) {
-          // Os valores já são tokens, não precisam conversão
-          setUserCredits(Number(profile.plan_tokens || 0));
-          setDailyCredits(Number(profile.daily_tokens || 0));
+          // Para planos pagos, mostrar plan_tokens. Para gratuito, mostrar daily_tokens
+          if (profile.plan_type === 'gratuito') {
+            setUserCredits(0);
+            setDailyCredits(Number(profile.daily_tokens || 0));
+          } else {
+            setUserCredits(Number(profile.plan_tokens || 0));
+            setDailyCredits(Number(profile.daily_tokens || 0));
+          }
           setTotalCreditsPurchased(Number(profile.plan_tokens || 0));
         }
 
