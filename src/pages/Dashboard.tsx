@@ -36,14 +36,13 @@ export default function Dashboard() {
           .single();
 
         if (profile) {
-          // Agora todos os usuários têm tokens diários + tokens do plano
+          // Tokens separados: diários e do plano
           const dailyTokens = Number(profile.daily_tokens || 0);
           const planTokens = Number(profile.plan_tokens || 0);
-          const totalAvailable = dailyTokens + planTokens;
           
-          setUserCredits(totalAvailable);
-          setDailyCredits(dailyTokens);
-          setTotalCreditsPurchased(planTokens);
+          setUserCredits(planTokens); // Apenas tokens comprados/do plano
+          setDailyCredits(dailyTokens); // Tokens diários gratuitos
+          setTotalCreditsPurchased(planTokens); // Total de tokens comprados
         }
 
         // Calcular tokens realmente usados baseado no histórico de transações
@@ -316,9 +315,14 @@ export default function Dashboard() {
           </div>
           <p className="text-center text-primary/80 mt-2">
             {dailyCredits > 0 && (
-              <span>{Math.floor(dailyCredits)} tokens diários + </span>
+              <span>{Math.floor(dailyCredits)} tokens diários</span>
             )}
-            {Math.floor(userCredits)} tokens do plano
+            {userCredits > 0 && (
+              <span>
+                {dailyCredits > 0 ? ' + ' : ''}
+                {Math.floor(userCredits)} tokens do plano
+              </span>
+            )}
           </p>
         </div>
 
