@@ -62,14 +62,13 @@ serve(async (req) => {
       console.log("🔑 Cliente Supabase criado com service role");
 
       // Check for existing transaction to prevent duplicates
-      const { data: existingTransaction } = await supabaseClient
+      const { data: existingTransactions } = await supabaseClient
         .from('credit_transactions')
         .select('id')
-        .eq('cakto_transaction_id', session.id)
-        .single();
+        .eq('cakto_transaction_id', session.id);
 
-      if (existingTransaction) {
-        console.log("⚠️ Transação já processada:", session.id);
+      if (existingTransactions && existingTransactions.length > 0) {
+        console.log("⚠️ Transação já processada:", session.id, "- Total encontradas:", existingTransactions.length);
         return new Response(JSON.stringify({
           success: true,
           message: "Pagamento já processado",
