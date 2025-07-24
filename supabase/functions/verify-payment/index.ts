@@ -80,20 +80,51 @@ serve(async (req) => {
         });
       }
 
-      // Add tokens to user
+      // Add tokens to user - usando try/catch para lidar com duplicatas
       console.log("🔄 Chamando add_tokens_to_user...");
-      const { data: addTokensResult, error: addTokensError } = await supabaseClient
-        .rpc('add_tokens_to_user', {
-          p_user_id: user_id,
-          p_tokens: parseInt(tokens),
-          p_plan_type: plan_type || 'basico',
-          p_transaction_id: session.id,
-          p_description: `Compra de ${tokens} tokens - ${package_id}`
-        });
+      try {
+        const { data: addTokensResult, error: addTokensError } = await supabaseClient
+          .rpc('add_tokens_to_user', {
+            p_user_id: user_id,
+            p_tokens: parseInt(tokens),
+            p_plan_type: plan_type || 'basico',
+            p_transaction_id: session.id,
+            p_description: `Compra de ${tokens} tokens - ${package_id}`
+          });
 
-      if (addTokensError) {
-        console.error("❌ Erro ao adicionar tokens:", addTokensError);
-        throw addTokensError;
+        if (addTokensError) {
+          // Se o erro for por duplicata da constraint, tratamos como já processado
+          if (addTokensError.message?.includes('unique_cakto_transaction_user')) {
+            console.log("⚠️ Transação já processada (constraint violation):", session.id);
+            return new Response(JSON.stringify({
+              success: true,
+              message: "Pagamento já processado",
+              tokens_added: parseInt(tokens),
+              already_processed: true
+            }), {
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+              status: 200,
+            });
+          }
+          
+          console.error("❌ Erro ao adicionar tokens:", addTokensError);
+          throw addTokensError;
+        }
+      } catch (error) {
+        // Capturar erros de constraint violation
+        if (error?.message?.includes('unique_cakto_transaction_user')) {
+          console.log("⚠️ Transação já processada (catch constraint):", session.id);
+          return new Response(JSON.stringify({
+            success: true,
+            message: "Pagamento já processado",
+            tokens_added: parseInt(tokens),
+            already_processed: true
+          }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+            status: 200,
+          });
+        }
+        throw error;
       }
 
       console.log("✅ Tokens adicionados com sucesso:", addTokensResult);
