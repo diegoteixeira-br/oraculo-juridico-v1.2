@@ -14,20 +14,27 @@ export default function PaymentSuccessPage() {
   const { refreshProfile } = useAuth();
   const [processing, setProcessing] = useState(true);
   const [creditsAdded, setCreditsAdded] = useState<number | null>(null);
+  const [hasProcessed, setHasProcessed] = useState(false);
 
   const sessionId = searchParams.get('session_id');
 
   useEffect(() => {
     const verifyPayment = async () => {
-      if (!sessionId) {
-        toast({
-          title: "Erro",
-          description: "Session ID não encontrado",
-          variant: "destructive",
-        });
-        navigate('/comprar-creditos');
+      // Evita execução múltipla
+      if (!sessionId || hasProcessed) {
+        if (!sessionId) {
+          toast({
+            title: "Erro",
+            description: "Session ID não encontrado",
+            variant: "destructive",
+            duration: 5000,
+          });
+          navigate('/comprar-creditos');
+        }
         return;
       }
+
+      setHasProcessed(true); // Marca como processado antes de fazer a chamada
 
       try {
         console.log("🔍 Verificando pagamento com session_id:", sessionId);
@@ -41,15 +48,19 @@ export default function PaymentSuccessPage() {
         if (data?.success) {
           setCreditsAdded(data.tokens_added);
           await refreshProfile(); // Atualiza o perfil para mostrar novos tokens
+          
+          // Toast com duração de 5 segundos
           toast({
             title: "Pagamento Confirmado!",
             description: `${data.tokens_added} tokens foram adicionados à sua conta.`,
+            duration: 5000,
           });
         } else {
           toast({
             title: "Pagamento Pendente",
             description: "Seu pagamento ainda está sendo processado.",
             variant: "destructive",
+            duration: 5000,
           });
         }
       } catch (error) {
@@ -58,6 +69,7 @@ export default function PaymentSuccessPage() {
           title: "Erro",
           description: "Erro ao verificar pagamento.",
           variant: "destructive",
+          duration: 5000,
         });
       } finally {
         setProcessing(false);
@@ -65,7 +77,7 @@ export default function PaymentSuccessPage() {
     };
 
     verifyPayment();
-  }, [sessionId, navigate, toast, refreshProfile]);
+  }, [sessionId]); // Removidas as dependências que causavam re-execução
 
   if (processing) {
     return (
