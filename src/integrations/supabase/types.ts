@@ -17,33 +17,33 @@ export type Database = {
       credit_transactions: {
         Row: {
           amount: number
-          cakto_transaction_id: string | null
           created_at: string
           description: string | null
           id: string
           status: string | null
+          stripe_session_id: string | null
           transaction_type: string
           updated_at: string
           user_id: string
         }
         Insert: {
           amount: number
-          cakto_transaction_id?: string | null
           created_at?: string
           description?: string | null
           id?: string
           status?: string | null
+          stripe_session_id?: string | null
           transaction_type: string
           updated_at?: string
           user_id: string
         }
         Update: {
           amount?: number
-          cakto_transaction_id?: string | null
           created_at?: string
           description?: string | null
           id?: string
           status?: string | null
+          stripe_session_id?: string | null
           transaction_type?: string
           updated_at?: string
           user_id?: string
