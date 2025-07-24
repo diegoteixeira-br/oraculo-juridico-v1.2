@@ -73,10 +73,10 @@ export default function Dashboard() {
   const userName = profile?.full_name || user?.email || "Usuário";
   const userInitials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
-  // Sistema de tokens
-  const planTokens = Number(profile?.plan_tokens || 0); // Tokens do plano
-  const dailyTokens = Number(profile?.daily_tokens || 0); // Tokens diários
-  const totalTokens = profile?.plan_type === 'gratuito' ? dailyTokens : planTokens; // Total disponível
+  // Sistema de tokens - separar diários dos do plano
+  const planTokens = Number(profile?.plan_tokens || 0); // Tokens do plano/comprados
+  const dailyTokens = Number(profile?.daily_tokens || 0); // Tokens diários gratuitos
+  const totalTokens = dailyTokens + planTokens; // Total disponível (soma dos dois)
   const userPlanType = profile?.plan_type || 'gratuito';
 
   // Função para lidar com seleção de arquivos
@@ -628,17 +628,17 @@ export default function Dashboard() {
                   <div className="w-full max-w-md bg-red-900/20 border border-red-600/30 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm text-muted-foreground">
-                        {userPlanType === 'gratuito' ? 'Tokens Diários Restantes' : 'Tokens do Plano'}
+                        Tokens Disponíveis
                       </span>
                       <Badge variant="destructive">
                         {totalTokens.toLocaleString()} tokens
                       </Badge>
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {userPlanType === 'gratuito' 
-                        ? 'Renovação diária às 00:00 (3.000 tokens gratuitos)'
-                        : 'Necessário comprar mais tokens para continuar'
-                      }
+                      {dailyTokens.toLocaleString()} tokens diários
+                      {planTokens > 0 ? ` + ${planTokens.toLocaleString()} tokens do plano` : ''}
+                      <br />
+                      Renovação diária às 00:00 (3.000 tokens gratuitos)
                     </div>
                   </div>
 
@@ -673,15 +673,14 @@ export default function Dashboard() {
                   </div>
                   
                    {/* Tokens Display - Mais compacto */}
-                  <div className="p-2 bg-primary/10 border border-primary/20 rounded-lg max-w-md mx-auto">
+                   <div className="p-2 bg-primary/10 border border-primary/20 rounded-lg max-w-md mx-auto">
                      <p className="text-xs text-primary text-center">
                        💡 Você tem {totalTokens.toLocaleString()} tokens disponíveis 
-                       {userPlanType === 'gratuito' 
-                         ? ` (${dailyTokens.toLocaleString()} tokens diários)` 
-                         : ` (Plano ${userPlanType})`}. 
+                       ({dailyTokens.toLocaleString()} tokens diários
+                       {planTokens > 0 ? ` + ${planTokens.toLocaleString()} tokens do plano` : ''}). 
                        O custo varia de acordo com o tamanho da consulta.
                      </p>
-                  </div>
+                   </div>
                   
                   {/* Exemplos de Perguntas - Mais compacto */}
                   <div className="w-full max-w-5xl">
