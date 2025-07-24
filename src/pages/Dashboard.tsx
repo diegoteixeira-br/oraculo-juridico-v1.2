@@ -36,15 +36,14 @@ export default function Dashboard() {
           .single();
 
         if (profile) {
-          // Para planos pagos, mostrar plan_tokens. Para gratuito, mostrar daily_tokens
-          if (profile.plan_type === 'gratuito') {
-            setUserCredits(0);
-            setDailyCredits(Number(profile.daily_tokens || 0));
-          } else {
-            setUserCredits(Number(profile.plan_tokens || 0));
-            setDailyCredits(Number(profile.daily_tokens || 0));
-          }
-          setTotalCreditsPurchased(Number(profile.plan_tokens || 0));
+          // Agora todos os usuários têm tokens diários + tokens do plano
+          const dailyTokens = Number(profile.daily_tokens || 0);
+          const planTokens = Number(profile.plan_tokens || 0);
+          const totalAvailable = dailyTokens + planTokens;
+          
+          setUserCredits(totalAvailable);
+          setDailyCredits(dailyTokens);
+          setTotalCreditsPurchased(planTokens);
         }
 
         // Calcular tokens realmente usados baseado no histórico de transações
