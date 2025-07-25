@@ -1035,15 +1035,17 @@ export default function Dashboard() {
                                                className="w-full max-w-xs h-auto max-h-32 object-cover rounded-t-lg"
                                              />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                                            <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
-                                              <div className="flex items-center gap-2 text-white text-xs">
-                                                <Image className="w-3 h-3" />
-                                                <span className="truncate font-medium">{file.name}</span>
-                                              </div>
-                                              <Badge variant="secondary" className="text-xs bg-black/50 text-white border-white/20">
-                                                {(file.size / 1024).toFixed(1)}KB
-                                              </Badge>
-                                            </div>
+                                             <div className="absolute bottom-2 left-2 right-2">
+                                               <div className="flex items-center justify-between bg-black/70 rounded-md px-2 py-1">
+                                                 <div className="flex items-center gap-2 text-white text-xs min-w-0 flex-1">
+                                                   <Image className="w-3 h-3 flex-shrink-0" />
+                                                   <span className="truncate font-medium">{file.name}</span>
+                                                 </div>
+                                                 <Badge variant="secondary" className="text-xs bg-white/20 text-white border-white/20 ml-2 flex-shrink-0">
+                                                   {file.type.split('/')[1]?.toUpperCase() || 'IMG'} • {(file.size / 1024).toFixed(1)}KB
+                                                 </Badge>
+                                               </div>
+                                             </div>
                                           </div>
                                         ) : (
                                           <div className="p-3 flex items-center gap-3">
@@ -1131,15 +1133,17 @@ export default function Dashboard() {
                             >
                               <X className="w-3 h-3" />
                             </Button>
-                            <div className="absolute bottom-1 left-1 right-1 flex items-center justify-between">
-                              <div className="flex items-center gap-1 text-white text-xs">
-                                <Image className="w-3 h-3" />
-                                <span className="truncate font-medium max-w-[120px]">{file.name}</span>
-                              </div>
-                              <Badge variant="secondary" className="text-xs bg-black/50 text-white border-white/20">
-                                {(file.size / 1024).toFixed(1)}KB
-                              </Badge>
-                            </div>
+                             <div className="absolute bottom-1 left-1 right-1">
+                               <div className="flex items-center justify-between bg-black/70 rounded-md px-2 py-1">
+                                 <div className="flex items-center gap-1 text-white text-xs min-w-0 flex-1">
+                                   <Image className="w-3 h-3 flex-shrink-0" />
+                                   <span className="truncate font-medium">{file.name}</span>
+                                 </div>
+                                 <Badge variant="secondary" className="text-xs bg-white/20 text-white border-white/20 ml-1 flex-shrink-0">
+                                   {file.type.split('/')[1]?.toUpperCase() || 'IMG'} • {(file.size / 1024).toFixed(1)}KB
+                                 </Badge>
+                               </div>
+                             </div>
                           </div>
                         ) : (
                           <div className="p-3 flex items-center gap-3">
