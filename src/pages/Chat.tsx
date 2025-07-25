@@ -167,7 +167,21 @@ export default function Dashboard() {
   };
 
   const handleSendMessage = async () => {
+    // Verificar se há mensagem válida ou arquivos anexados
     if (!inputMessage.trim() && attachedFiles.length === 0) return;
+    
+    // Verificar se não é apenas espaços em branco
+    const messageText = inputMessage.trim();
+    if (!messageText && attachedFiles.length === 0) {
+      toast({
+        title: "Mensagem vazia",
+        description: "Digite uma pergunta para enviar.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!user) return;
 
     // Verificar se o usuário tem tokens suficientes
     if (totalTokens < 1000) { // Aumentar o mínimo para 1000 tokens
@@ -192,7 +206,7 @@ export default function Dashboard() {
 
     const userMessage: Message = {
       id: Date.now().toString(),
-      text: inputMessage,
+      text: messageText, // Usar messageText que foi validado
       sender: 'user',
       timestamp: new Date(),
       attachedFiles: attachedFiles.length > 0 ? [...attachedFiles] : undefined
@@ -205,20 +219,22 @@ export default function Dashboard() {
     setHasUnsavedMessages(true);
 
     try {
-      // Salvar a mensagem do usuário no histórico
-      try {
-        await supabase
-          .from('query_history')
-          .insert({
-            user_id: user?.id,
-            session_id: sessionId,
-            prompt_text: userMessage.text,
-            response_text: null,
-            message_type: 'user_query',
-            credits_consumed: 0
-          });
-      } catch (historyError) {
-        console.error('Erro ao salvar mensagem do usuário no histórico:', historyError);
+      // Salvar a mensagem do usuário no histórico (apenas se não estiver vazia)
+      if (userMessage.text.trim()) {
+        try {
+          await supabase
+            .from('query_history')
+            .insert({
+              user_id: user?.id,
+              session_id: sessionId,
+              prompt_text: userMessage.text,
+              response_text: null,
+              message_type: 'user_query',
+              credits_consumed: 0
+            });
+        } catch (historyError) {
+          console.error('Erro ao salvar mensagem do usuário no histórico:', historyError);
+        }
       }
 
       // Chamar o edge function que se conecta ao seu webhook
@@ -522,8 +538,8 @@ export default function Dashboard() {
 
         const session = sessionsMap.get(sessionKey)!;
         
-        // Adicionar mensagem do usuário
-        if (query.message_type === 'user_query' && query.prompt_text) {
+        // Adicionar mensagem do usuário (apenas se não estiver vazia)
+        if (query.message_type === 'user_query' && query.prompt_text && query.prompt_text.trim()) {
           session.messages.push({
             id: `user-${query.id}`,
             text: query.prompt_text,
@@ -578,9 +594,24 @@ export default function Dashboard() {
       });
 
       // Converter para array e ordenar por timestamp (mais recente primeira)
-      // Filtrar sessões que têm título válido (não vazias)
+      // Filtrar rigorosamente: apenas sessões com mensagens válidas e título não vazio
       const sessions = Array.from(sessionsMap.values())
-        .filter(session => session.messages.length > 0 && session.title && session.title !== '') 
+        .filter(session => {
+          // Verificar se tem mensagens válidas
+          const hasValidMessages = session.messages.length > 0;
+          // Verificar se tem título válido (não vazio e não é "Nova conversa")
+          const hasValidTitle = session.title && 
+                               session.title.trim() !== '' && 
+                               session.title !== 'Nova conversa';
+          // Verificar se tem ao menos uma mensagem do usuário com texto válido
+          const hasUserMessage = session.messages.some(msg => 
+            msg.sender === 'user' && 
+            msg.text && 
+            msg.text.trim() !== ''
+          );
+          
+          return hasValidMessages && hasValidTitle && hasUserMessage;
+        })
         .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
       
       setChatSessions(sessions);
