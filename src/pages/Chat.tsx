@@ -348,8 +348,6 @@ export default function Dashboard() {
         return;
       }
 
-      setAudioLoadingStates(prev => ({ ...prev, [messageId]: true }));
-      
       // Verificar se já está tocando - pausar/retomar o áudio atual
       if (playingAudio === messageId) {
         // Pausar ou retomar áudio
@@ -364,6 +362,8 @@ export default function Dashboard() {
         }
         return;
       }
+
+      setAudioLoadingStates(prev => ({ ...prev, [messageId]: true }));
 
       // Parar qualquer outro áudio que esteja tocando
       if (currentAudioRef.current && !currentAudioRef.current.paused) {
@@ -881,13 +881,13 @@ export default function Dashboard() {
                                            >
                                              {audioLoadingStates[message.id] ? (
                                                <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                                             ) : playingAudio === message.id ? (
-                                               currentAudioRef.current?.paused ? (
-                                                 <Play className="w-4 h-4 text-primary" />
-                                               ) : (
-                                                 <Pause className="w-4 h-4 text-primary" />
-                                               )
-                                             ) : (
+                              ) : playingAudio === message.id ? (
+                                currentAudioRef.current?.paused ? (
+                                  <Play className="w-4 h-4 text-primary" />
+                                ) : (
+                                  <Pause className="w-4 h-4 text-primary" />
+                                )
+                              ) : (
                                                <Volume2 className="w-4 h-4 text-muted-foreground hover:text-primary" />
                                              )}
                                            </Button>
