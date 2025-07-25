@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { text, voice } = await req.json()
+    const { text, voice, speed } = await req.json()
 
     if (!text) {
       throw new Error('Text is required')
@@ -35,7 +35,7 @@ serve(async (req) => {
         input: text,
         voice: voice || 'alloy',
         response_format: 'mp3',
-        speed: 1.0
+        speed: speed || 1.0
       }),
     })
 

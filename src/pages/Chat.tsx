@@ -12,6 +12,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import ReactMarkdown from "react-markdown";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -66,6 +68,8 @@ export default function Dashboard() {
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
   const [audioLoadingStates, setAudioLoadingStates] = useState<Record<string, boolean>>({});
+  const [selectedVoice, setSelectedVoice] = useState('alloy');
+  const [selectedSpeed, setSelectedSpeed] = useState(1.0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -359,7 +363,8 @@ export default function Dashboard() {
       const { data, error } = await supabase.functions.invoke('text-to-speech', {
         body: {
           text: text,
-          voice: 'alloy' // Voz padrão
+          voice: selectedVoice,
+          speed: selectedSpeed
         }
       });
 
@@ -1048,6 +1053,50 @@ export default function Dashboard() {
                 >
                   {totalTokens < 1000 ? <CreditCard className="w-4 h-4" /> : <Send className="w-4 h-4" />}
                 </Button>
+              </div>
+
+              {/* Controles de Áudio */}
+              <div className="mt-2 p-3 bg-slate-700 rounded-lg space-y-3">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <Volume2 className="w-4 h-4 text-primary" />
+                    <span className="text-xs text-muted-foreground">Configurar voz:</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">Voz:</span>
+                      <Select value={selectedVoice} onValueChange={setSelectedVoice}>
+                        <SelectTrigger className="w-20 h-7 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="alloy">Alloy</SelectItem>
+                          <SelectItem value="echo">Echo</SelectItem>
+                          <SelectItem value="fable">Fable</SelectItem>
+                          <SelectItem value="onyx">Onyx</SelectItem>
+                          <SelectItem value="nova">Nova</SelectItem>
+                          <SelectItem value="shimmer">Shimmer</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">Velocidade:</span>
+                      <div className="flex items-center gap-2 w-20">
+                        <Slider
+                          value={[selectedSpeed]}
+                          onValueChange={(value) => setSelectedSpeed(value[0])}
+                          min={0.25}
+                          max={4.0}
+                          step={0.25}
+                          className="flex-1"
+                        />
+                        <span className="text-xs text-muted-foreground w-8">{selectedSpeed.toFixed(2)}x</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Tokens Display com Barra de Progresso */}
