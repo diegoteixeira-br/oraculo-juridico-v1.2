@@ -332,6 +332,19 @@ export default function Dashboard() {
   // Função para converter texto em áudio
   const handleTextToSpeech = async (messageId: string, text: string) => {
     try {
+      // Calcular tokens necessários (1 token ≈ 4 caracteres)
+      const tokensNeeded = Math.ceil(text.length / 4);
+      
+      // Verificar se tem tokens suficientes
+      if (totalTokens < tokensNeeded) {
+        toast({
+          title: "Tokens insuficientes",
+          description: `Você precisa de ${tokensNeeded} tokens para ouvir este texto. Você tem ${totalTokens} tokens disponíveis.`,
+          variant: "destructive",
+        });
+        return;
+      }
+
       setAudioLoadingStates(prev => ({ ...prev, [messageId]: true }));
       
       // Verificar se já está tocando - parar o áudio atual
@@ -367,6 +380,14 @@ export default function Dashboard() {
       if (error) {
         throw new Error(error.message || 'Erro ao gerar áudio');
       }
+
+      // Atualizar tokens do usuário e mostrar toast informativo
+      await refreshProfile();
+      
+      toast({
+        title: "Áudio gerado",
+        description: `${data.tokensUsed} tokens foram descontados para ${data.charactersProcessed} caracteres processados.`,
+      });
 
       // Converter base64 para blob e reproduzir
       const audioData = atob(data.audioContent);
