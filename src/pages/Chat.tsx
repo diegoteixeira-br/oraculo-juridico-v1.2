@@ -380,7 +380,7 @@ export default function Dashboard() {
         body: {
           text: text,
           voice: 'onyx', // Voz fixa masculina
-          speed: 1.25 // Velocidade fixa
+          speed: 1.00 // Velocidade normal
         }
       });
 
