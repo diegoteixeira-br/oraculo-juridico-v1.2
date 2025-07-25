@@ -148,6 +148,7 @@ export type Database = {
       }
       query_history: {
         Row: {
+          attached_files: Json | null
           created_at: string
           credits_consumed: number | null
           id: string
@@ -159,6 +160,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          attached_files?: Json | null
           created_at?: string
           credits_consumed?: number | null
           id?: string
@@ -170,6 +172,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          attached_files?: Json | null
           created_at?: string
           credits_consumed?: number | null
           id?: string

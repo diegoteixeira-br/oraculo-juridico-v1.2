@@ -227,7 +227,8 @@ export default function Dashboard() {
             prompt_text: userMessage.text, // Agora sempre tem texto (mesmo que seja indicação de arquivos)
             response_text: null,
             message_type: 'user_query',
-            credits_consumed: 0
+            credits_consumed: 0,
+            attached_files: userMessage.attachedFiles ? JSON.stringify(userMessage.attachedFiles) : null
           });
       } catch (historyError) {
         console.error('Erro ao salvar mensagem do usuário no histórico:', historyError);
@@ -536,11 +537,22 @@ export default function Dashboard() {
         
         // Adicionar mensagem do usuário (apenas se não estiver vazia)
         if (query.message_type === 'user_query' && query.prompt_text && query.prompt_text.trim()) {
+          // Recuperar arquivos anexados se existirem
+          let attachedFiles = undefined;
+          if (query.attached_files && typeof query.attached_files === 'string') {
+            try {
+              attachedFiles = JSON.parse(query.attached_files as string);
+            } catch (e) {
+              console.error('Erro ao parse dos arquivos anexados:', e);
+            }
+          }
+          
           session.messages.push({
             id: `user-${query.id}`,
             text: query.prompt_text,
             sender: 'user',
-            timestamp: new Date(query.created_at)
+            timestamp: new Date(query.created_at),
+            attachedFiles: attachedFiles
           });
           
           // Usar a primeira pergunta como título da sessão (se ainda não tiver título)
