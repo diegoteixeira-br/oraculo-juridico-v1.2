@@ -382,6 +382,9 @@ export default function Dashboard() {
       setPlayingAudio(null);
       setAudioCurrentTime(0);
       setAudioDuration(0);
+      
+      // Sempre resetar velocidade para 1x quando iniciar novo áudio
+      setAudioSpeed(1.0);
 
       // Chamar a edge function para converter texto em áudio
       const { data, error } = await supabase.functions.invoke('text-to-speech', {
@@ -417,8 +420,8 @@ export default function Dashboard() {
       const audio = new Audio(audioUrl);
       currentAudioRef.current = audio;
       
-      // Aplicar velocidade selecionada ao elemento de áudio
-      audio.playbackRate = audioSpeed;
+      // Aplicar velocidade inicial (sempre 1x para novos áudios)
+      audio.playbackRate = 1.0;
       
       // Eventos do áudio
       audio.onloadedmetadata = () => {
