@@ -79,6 +79,13 @@ export default function Dashboard() {
   const userName = profile?.full_name || user?.email || "Usuário";
   const userInitials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
+  // Função para formatar tempo em MM:SS
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
   // Sistema de tokens - separar diários dos do plano
   const planTokens = Number(profile?.plan_tokens || 0); // Tokens do plano/comprados
   const dailyTokens = Number(profile?.daily_tokens || 0); // Tokens diários gratuitos
@@ -916,9 +923,9 @@ export default function Dashboard() {
                                                 }}
                                               />
                                             </div>
-                                            <div className="text-xs text-muted-foreground font-mono whitespace-nowrap">
-                                              {Math.floor(audioCurrentTime)}s / {Math.floor(audioDuration)}s
-                                            </div>
+                                             <div className="text-xs text-muted-foreground font-mono whitespace-nowrap">
+                                               {formatTime(audioCurrentTime)} / {formatTime(audioDuration)}
+                                             </div>
                                             <DropdownMenu>
                                               <DropdownMenuTrigger asChild>
                                                 <Button 
