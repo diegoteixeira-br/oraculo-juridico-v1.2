@@ -14,14 +14,14 @@ function estimateTokens(text: string): number {
 }
 
 
-// Função para extrair texto de PDF usando API da OpenAI
-async function extractTextFromPdf(fileData: string, fileName: string, openAIKey: string): Promise<string> {
+// Função para fazer upload de arquivo para OpenAI (ETAPA 3)
+async function uploadFileToOpenAI(fileData: string, fileName: string, openAIKey: string): Promise<string> {
   try {
-    console.log(`Extracting text from PDF: ${fileName}`);
+    console.log(`Uploading file to OpenAI: ${fileName}`);
     
     // Validar se fileData existe
     if (!fileData || typeof fileData !== 'string') {
-      throw new Error('Dados do arquivo PDF não encontrados ou inválidos');
+      throw new Error(`Dados do arquivo ${fileName} não encontrados ou inválidos`);
     }
     
     // Converter base64 para blob
@@ -38,8 +38,36 @@ async function extractTextFromPdf(fileData: string, fileName: string, openAIKey:
       bytes[i] = binaryData.charCodeAt(i);
     }
     
+    // Determinar o tipo MIME do arquivo
+    let mimeType = 'application/octet-stream';
+    const extension = fileName.toLowerCase().split('.').pop();
+    switch (extension) {
+      case 'pdf':
+        mimeType = 'application/pdf';
+        break;
+      case 'jpg':
+      case 'jpeg':
+        mimeType = 'image/jpeg';
+        break;
+      case 'png':
+        mimeType = 'image/png';
+        break;
+      case 'webp':
+        mimeType = 'image/webp';
+        break;
+      case 'txt':
+        mimeType = 'text/plain';
+        break;
+      case 'doc':
+        mimeType = 'application/msword';
+        break;
+      case 'docx':
+        mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+        break;
+    }
+    
     const formData = new FormData();
-    formData.append('file', new Blob([bytes], { type: 'application/pdf' }), fileName);
+    formData.append('file', new Blob([bytes], { type: mimeType }), fileName);
     formData.append('purpose', 'assistants');
 
     const fileUploadResponse = await fetch('https://api.openai.com/v1/files', {
@@ -51,56 +79,16 @@ async function extractTextFromPdf(fileData: string, fileName: string, openAIKey:
     });
 
     if (!fileUploadResponse.ok) {
-      throw new Error(`Failed to upload file: ${await fileUploadResponse.text()}`);
+      const errorText = await fileUploadResponse.text();
+      throw new Error(`Falha ao fazer upload do arquivo ${fileName}: ${errorText}`);
     }
 
     const uploadedFile = await fileUploadResponse.json();
+    console.log(`File uploaded successfully: ${fileName}, ID: ${uploadedFile.id}`);
     
-    // Usar o modelo GPT-4 para extrair texto do PDF
-    const extractionResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o',
-        messages: [
-          {
-            role: 'user',
-            content: `Extraia todo o texto do documento anexado. Retorne apenas o texto extraído sem comentários ou formatação adicional. Se o documento não contiver texto legível, retorne "ERRO_TEXTO_NAO_ENCONTRADO".`
-          }
-        ],
-        max_tokens: 4000,
-      }),
-    });
-
-    if (!extractionResponse.ok) {
-      throw new Error(`Failed to extract text: ${await extractionResponse.text()}`);
-    }
-
-    const extractionData = await extractionResponse.json();
-    const extractedText = extractionData.choices[0].message.content.trim();
-    
-    // Deletar arquivo temporário
-    try {
-      await fetch(`https://api.openai.com/v1/files/${uploadedFile.id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${openAIKey}`,
-        },
-      });
-    } catch (error) {
-      console.error('Error deleting temporary file:', error);
-    }
-    
-    if (extractedText === "ERRO_TEXTO_NAO_ENCONTRADO") {
-      throw new Error('Não foi possível extrair texto do documento');
-    }
-    
-    return extractedText;
+    return uploadedFile.id; // Retorna o file_id para usar no Assistant
   } catch (error) {
-    console.error('Error extracting text from PDF:', error);
+    console.error(`Error uploading file ${fileName}:`, error);
     throw error;
   }
 }
@@ -214,10 +202,12 @@ serve(async (req) => {
       });
     }
 
-    let textoExtraido = '';
+    // ETAPA 3 - Upload de arquivos para OpenAI e obtenção dos file_ids
+    let fileIds: string[] = [];
     
-    // Processar arquivos anexados para extrair texto
     if (attachedFiles && attachedFiles.length > 0) {
+      console.log(`Processing ${attachedFiles.length} attached files...`);
+      
       for (const file of attachedFiles) {
         try {
           // Verificar se o arquivo tem dados válidos
@@ -231,97 +221,207 @@ serve(async (req) => {
             });
           }
           
-          if (file.type === 'application/pdf') {
-            const texto = await extractTextFromPdf(file.data, file.name, openAIKey);
-            textoExtraido += texto + '\n\n';
-          } else if (file.type.startsWith('image/')) {
-            const texto = await extractTextFromImage(file.data, file.name, openAIKey);
-            textoExtraido += texto + '\n\n';
-          } else if (file.type === 'text/plain' || file.type.includes('document') || file.type.includes('word')) {
-            // Processar arquivos de texto (.txt, .doc, .docx)
-            try {
-              let textContent = '';
-              if (file.data.includes(',')) {
-                const base64Data = file.data.split(',')[1];
-                textContent = atob(base64Data);
-              } else {
-                textContent = atob(file.data);
-              }
-              textoExtraido += `Conteúdo do arquivo ${file.name}:\n${textContent}\n\n`;
-            } catch (error) {
-              console.error(`Error decoding text file ${file.name}:`, error);
-              // Para arquivos mais complexos como .docx, usar OpenAI para extrair
-              const texto = await extractTextFromPdf(file.data, file.name, openAIKey);
-              textoExtraido += texto + '\n\n';
-            }
-          }
+          console.log(`Processing file: ${file.name} (${file.type})`);
+          
+          // Upload do arquivo para OpenAI e obter file_id
+          const fileId = await uploadFileToOpenAI(file.data, file.name, openAIKey);
+          fileIds.push(fileId);
+          
+          console.log(`File uploaded successfully: ${file.name}, ID: ${fileId}`);
+          
         } catch (error) {
           console.error(`Error processing file ${file.name}:`, error);
           return new Response(JSON.stringify({ 
-            error: `Erro ao processar arquivo ${file.name}: ${error.message}. Por favor, certifique-se de que o arquivo contém texto legível.` 
+            error: `Erro ao processar arquivo ${file.name}: ${error.message}. Por favor, verifique se o arquivo está válido e tente novamente.` 
           }), {
             status: 400,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           });
         }
       }
+      
+      console.log(`All files uploaded successfully. File IDs: [${fileIds.join(', ')}]`);
     }
 
-    // Preparar dados estruturados para o agente
-    const dadosEstruturados = {
-      texto_extraido_do_documento: textoExtraido.trim() || 'Nenhum documento foi anexado.',
-      pergunta_do_usuario: message || 'Analise o documento anexado.'
-    };
-
-    console.log('Sending structured data to OpenAI:', dadosEstruturados);
-
-    // Decidir qual modelo usar baseado no conteúdo
-    const hasAttachedFiles = attachedFiles && attachedFiles.length > 0;
-    const modelToUse = hasAttachedFiles ? 'gpt-4o' : 'gpt-4.1-2025-04-14'; // GPT-4o para arquivos/imagens, GPT-4.1 para texto
+    // ETAPA 4 - Usar API de Assistants da OpenAI com file_ids
+    let promptContent: string;
+    let promptTokens: number;
+    let aiMessage: string;
     
-    // Calcular tokens do prompt
-    const promptContent = `Baseado nos dados estruturados a seguir, forneça uma resposta jurídica completa:
-
-${JSON.stringify(dadosEstruturados, null, 2)}`;
-    
-    const promptTokens = estimateTokens(promptContent);
-    console.log(`Usando modelo: ${modelToUse}, Tokens do prompt: ${promptTokens}`);
-
-    // Usar o modelo apropriado para a consulta
-    const chatResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: modelToUse,
-        messages: [
-          {
-            role: 'system',
-            content: `Você é um assistente jurídico especializado em direito brasileiro. Responda de forma clara, precisa e didática, citando artigos de lei quando relevante. Estruture sua resposta de forma organizada com títulos e subtópicos quando necessário.`
-          },
-          {
-            role: 'user',
-            content: promptContent
-          }
-        ],
-        max_tokens: 4000,
-        temperature: 0.3,
-      }),
-    });
-
-    if (!chatResponse.ok) {
-      const errorText = await chatResponse.text();
-      console.error('Error with GPT-4o:', errorText);
-      return new Response(JSON.stringify({ error: 'Erro na consulta jurídica' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    if (fileIds.length > 0) {
+      console.log('Using OpenAI Assistants API with file_ids:', fileIds);
+      
+      // Criar uma thread para a conversa
+      const threadResponse = await fetch('https://api.openai.com/v1/threads', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openAIKey}`,
+          'Content-Type': 'application/json',
+          'OpenAI-Beta': 'assistants=v2'
+        },
+        body: JSON.stringify({})
       });
-    }
+      
+      if (!threadResponse.ok) {
+        throw new Error(`Failed to create thread: ${await threadResponse.text()}`);
+      }
+      
+      const thread = await threadResponse.json();
+      console.log('Thread created:', thread.id);
+      
+      // Adicionar mensagem com file_ids na thread
+      const messageContent = message || 'Segue um arquivo para análise.';
+      const messageResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/messages`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openAIKey}`,
+          'Content-Type': 'application/json',
+          'OpenAI-Beta': 'assistants=v2'
+        },
+        body: JSON.stringify({
+          role: 'user',
+          content: messageContent,
+          attachments: fileIds.map(fileId => ({
+            file_id: fileId,
+            tools: [{ type: 'file_search' }]
+          }))
+        })
+      });
+      
+      if (!messageResponse.ok) {
+        throw new Error(`Failed to add message: ${await messageResponse.text()}`);
+      }
+      
+      console.log('Message added to thread with file_ids');
+      
+      // Executar o assistant (você deve ter um assistant_id configurado)
+      const assistantId = Deno.env.get('OPENAI_ASSISTANT_ID') || 'asst_default';
+      
+      const runResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/runs`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openAIKey}`,
+          'Content-Type': 'application/json',
+          'OpenAI-Beta': 'assistants=v2'
+        },
+        body: JSON.stringify({
+          assistant_id: assistantId,
+          instructions: 'Você é um assistente jurídico especializado em direito brasileiro. Analise o(s) arquivo(s) anexado(s) e forneça uma resposta jurídica completa, citando artigos de lei quando relevante. Estruture sua resposta de forma organizada.'
+        })
+      });
+      
+      if (!runResponse.ok) {
+        // Se não conseguir usar Assistant, fallback para Chat Completions
+        console.log('Assistant API failed, falling back to Chat Completions');
+        throw new Error('Assistant not available');
+      }
+      
+      const run = await runResponse.json();
+      console.log('Run started:', run.id);
+      
+      // Aguardar conclusão da execução
+      let runStatus = run.status;
+      let attempts = 0;
+      while (runStatus === 'queued' || runStatus === 'in_progress') {
+        if (attempts > 60) { // 60 segundos de timeout
+          throw new Error('Assistant execution timeout');
+        }
+        
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        const statusResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/runs/${run.id}`, {
+          headers: {
+            'Authorization': `Bearer ${openAIKey}`,
+            'OpenAI-Beta': 'assistants=v2'
+          }
+        });
+        
+        const statusData = await statusResponse.json();
+        runStatus = statusData.status;
+        attempts++;
+      }
+      
+      if (runStatus !== 'completed') {
+        throw new Error(`Assistant execution failed: ${runStatus}`);
+      }
+      
+      // Obter mensagens da thread
+      const messagesResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/messages`, {
+        headers: {
+          'Authorization': `Bearer ${openAIKey}`,
+          'OpenAI-Beta': 'assistants=v2'
+        }
+      });
+      
+      const messagesData = await messagesResponse.json();
+      const assistantMessage = messagesData.data.find((msg: any) => msg.role === 'assistant');
+      
+      if (!assistantMessage) {
+        throw new Error('No assistant response found');
+      }
+      
+      aiMessage = assistantMessage.content[0].text.value;
+      promptContent = messageContent;
+      promptTokens = estimateTokens(messageContent);
+      
+      console.log('Assistant response received:', aiMessage.substring(0, 100) + '...');
+      
+      // Cleanup: deletar arquivos temporários
+      for (const fileId of fileIds) {
+        try {
+          await fetch(`https://api.openai.com/v1/files/${fileId}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${openAIKey}`,
+            },
+          });
+        } catch (error) {
+          console.error(`Error deleting file ${fileId}:`, error);
+        }
+      }
+      
+    } else {
+      // Fallback: usar Chat Completions para mensagens sem arquivos
+      console.log('Using Chat Completions API (no files)');
+      
+      promptContent = message || 'Como posso ajudá-lo?';
+      promptTokens = estimateTokens(promptContent);
+      
+      const chatResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openAIKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4.1-2025-04-14',
+          messages: [
+            {
+              role: 'system',
+              content: 'Você é um assistente jurídico especializado em direito brasileiro. Responda de forma clara, precisa e didática, citando artigos de lei quando relevante.'
+            },
+            {
+              role: 'user',
+              content: promptContent
+            }
+          ],
+          max_tokens: 4000,
+          temperature: 0.3,
+        }),
+      });
 
-    const chatData = await chatResponse.json();
-    const aiMessage = chatData.choices[0].message.content;
+      if (!chatResponse.ok) {
+        const errorText = await chatResponse.text();
+        console.error('Error with Chat Completions:', errorText);
+        return new Response(JSON.stringify({ error: 'Erro na consulta jurídica' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const chatData = await chatResponse.json();
+      aiMessage = chatData.choices[0].message.content;
+    }
     
     console.log('AI response received:', aiMessage.substring(0, 100) + '...');
 
@@ -348,7 +448,7 @@ ${JSON.stringify(dadosEstruturados, null, 2)}`;
       .from('query_history')
       .insert({
         user_id: userId,
-        prompt_text: JSON.stringify(dadosEstruturados),
+        prompt_text: promptContent,
         response_text: aiMessage,
         credits_consumed: Math.ceil(totalTokens / 1000), // Compatibilidade com histórico
         message_type: 'legal_consultation'
