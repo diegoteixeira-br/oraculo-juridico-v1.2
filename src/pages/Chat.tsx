@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, Settings, LogOut, Send, Bot, User, Clock, CreditCard, History, Plus, Trash2, MoreHorizontal, Paperclip, X, FileText, Image, Volume2, VolumeX } from "lucide-react";
+import { MessageCircle, Settings, LogOut, Send, Bot, User, Clock, CreditCard, History, Plus, Trash2, MoreHorizontal, Paperclip, X, FileText, Image, Volume2, VolumeX, Play, Pause } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -350,23 +350,23 @@ export default function Dashboard() {
 
       setAudioLoadingStates(prev => ({ ...prev, [messageId]: true }));
       
-      // Verificar se já está tocando - parar o áudio atual
+      // Verificar se já está tocando - pausar/retomar o áudio atual
       if (playingAudio === messageId) {
-        // Parar áudio
+        // Pausar ou retomar áudio
         if (currentAudioRef.current) {
-          currentAudioRef.current.pause();
-          currentAudioRef.current.currentTime = 0;
-          currentAudioRef.current = null;
+          if (currentAudioRef.current.paused) {
+            // Retomar reprodução
+            await currentAudioRef.current.play();
+          } else {
+            // Pausar reprodução
+            currentAudioRef.current.pause();
+          }
         }
-        setPlayingAudio(null);
-        setAudioLoadingStates(prev => ({ ...prev, [messageId]: false }));
-        setAudioCurrentTime(0);
-        setAudioDuration(0);
         return;
       }
 
       // Parar qualquer outro áudio que esteja tocando
-      if (currentAudioRef.current) {
+      if (currentAudioRef.current && !currentAudioRef.current.paused) {
         currentAudioRef.current.pause();
         currentAudioRef.current.currentTime = 0;
         currentAudioRef.current = null;
@@ -429,6 +429,10 @@ export default function Dashboard() {
         setAudioCurrentTime(0);
         setAudioDuration(0);
         URL.revokeObjectURL(audioUrl);
+      };
+      
+      audio.onpause = () => {
+        // Não limpar o estado quando pausado, apenas manter referência
       };
       
       audio.onerror = () => {
@@ -878,20 +882,39 @@ export default function Dashboard() {
                                              {audioLoadingStates[message.id] ? (
                                                <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                                              ) : playingAudio === message.id ? (
-                                               <VolumeX className="w-4 h-4 text-primary" />
+                                               currentAudioRef.current?.paused ? (
+                                                 <Play className="w-4 h-4 text-primary" />
+                                               ) : (
+                                                 <Pause className="w-4 h-4 text-primary" />
+                                               )
                                              ) : (
                                                <Volume2 className="w-4 h-4 text-muted-foreground hover:text-primary" />
                                              )}
                                            </Button>
                                          </TooltipTrigger>
                                          <TooltipContent>
-                                           <p>{playingAudio === message.id ? 'Parar áudio' : 'Ouvir resposta'}</p>
+                                           <p>
+                                             {playingAudio === message.id 
+                                               ? (currentAudioRef.current?.paused ? 'Retomar áudio' : 'Pausar áudio')
+                                               : 'Ouvir resposta'
+                                             }
+                                           </p>
                                          </TooltipContent>
                                        </Tooltip>
                                        
                                        {playingAudio === message.id && audioDuration > 0 && (
-                                         <div className="text-xs text-muted-foreground font-mono">
-                                           {Math.floor(audioCurrentTime)}s / {Math.floor(audioDuration)}s
+                                         <div className="flex items-center gap-2 min-w-[100px]">
+                                           <div className="flex-1 bg-muted h-1 rounded-full overflow-hidden">
+                                             <div 
+                                               className="h-full bg-primary transition-all duration-300 ease-out"
+                                               style={{ 
+                                                 width: `${(audioCurrentTime / audioDuration) * 100}%` 
+                                               }}
+                                             />
+                                           </div>
+                                           <div className="text-xs text-muted-foreground font-mono whitespace-nowrap">
+                                             {Math.floor(audioCurrentTime)}s / {Math.floor(audioDuration)}s
+                                           </div>
                                          </div>
                                        )}
                                      </div>
