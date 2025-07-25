@@ -286,7 +286,7 @@ export default function Dashboard() {
         console.error('Erro ao salvar resposta da IA no histórico:', historyError);
       }
 
-      // Atualizar o histórico local
+      // Atualizar o histórico local (sem afetar a sessão atual)
       await loadChatHistory();
 
       // Atualizar os créditos após resposta bem-sucedida
@@ -565,12 +565,22 @@ export default function Dashboard() {
         }
       });
 
-      // Converter para array e ordenar por timestamp (mais recente primeiro)
+      // Converter para array e ordenar por timestamp (mais recente primeira)
       const sessions = Array.from(sessionsMap.values())
         .filter(session => session.messages.length > 0) // Apenas sessões com mensagens
         .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
       
       setChatSessions(sessions);
+      
+      // Se há uma sessão atual e ela existe nas sessões carregadas, 
+      // atualizar as mensagens da sessão atual com os dados mais recentes
+      if (currentSessionId && sessionsMap.has(currentSessionId)) {
+        const currentSession = sessionsMap.get(currentSessionId)!;
+        // Só atualizar se há diferença no número de mensagens (evitar loop)
+        if (currentSession.messages.length !== messages.length) {
+          setMessages(currentSession.messages);
+        }
+      }
     } catch (error) {
       console.error('Erro ao carregar histórico:', error);
     }
