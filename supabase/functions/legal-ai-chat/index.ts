@@ -281,7 +281,10 @@ serve(async (req) => {
         body: JSON.stringify({
           role: 'user',
           content: messageContent,
-          file_ids: fileIds
+          attachments: fileIds.map(fileId => ({
+            file_id: fileId,
+            tools: [{ type: 'file_search' }]
+          }))
         })
       });
       
