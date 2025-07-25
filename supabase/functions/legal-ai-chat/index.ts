@@ -21,6 +21,7 @@ async function uploadFileToOpenAI(fileData: string, fileName: string, openAIKey:
     
     // Validar se fileData existe
     if (!fileData || typeof fileData !== 'string') {
+      console.error(`Invalid file data for ${fileName}:`, typeof fileData);
       throw new Error(`Dados do arquivo ${fileName} não encontrados ou inválidos`);
     }
     
@@ -70,6 +71,8 @@ async function uploadFileToOpenAI(fileData: string, fileName: string, openAIKey:
     formData.append('file', new Blob([bytes], { type: mimeType }), fileName);
     formData.append('purpose', 'assistants');
 
+    console.log(`Making file upload request to OpenAI for ${fileName} (${mimeType})`);
+    
     const fileUploadResponse = await fetch('https://api.openai.com/v1/files', {
       method: 'POST',
       headers: {
@@ -78,9 +81,29 @@ async function uploadFileToOpenAI(fileData: string, fileName: string, openAIKey:
       body: formData,
     });
 
+    console.log(`OpenAI file upload response status: ${fileUploadResponse.status} for ${fileName}`);
+
     if (!fileUploadResponse.ok) {
       const errorText = await fileUploadResponse.text();
-      throw new Error(`Falha ao fazer upload do arquivo ${fileName}: ${errorText}`);
+      console.error(`OpenAI file upload failed for ${fileName}:`, {
+        status: fileUploadResponse.status,
+        statusText: fileUploadResponse.statusText,
+        error: errorText,
+        headers: Object.fromEntries(fileUploadResponse.headers.entries())
+      });
+      
+      // Tratamento específico para diferentes tipos de erro
+      if (fileUploadResponse.status === 401) {
+        throw new Error(`Erro de autenticação OpenAI: Verifique a chave API`);
+      } else if (fileUploadResponse.status === 413) {
+        throw new Error(`Arquivo ${fileName} muito grande. Limite máximo excedido.`);
+      } else if (fileUploadResponse.status === 429) {
+        throw new Error(`Limite de rate da OpenAI excedido. Tente novamente em alguns minutos.`);
+      } else if (fileUploadResponse.status >= 500) {
+        throw new Error(`Erro interno da OpenAI (${fileUploadResponse.status}). Tente novamente.`);
+      } else {
+        throw new Error(`Falha ao fazer upload do arquivo ${fileName}: ${errorText}`);
+      }
     }
 
     const uploadedFile = await fileUploadResponse.json();
@@ -88,7 +111,11 @@ async function uploadFileToOpenAI(fileData: string, fileName: string, openAIKey:
     
     return uploadedFile.id; // Retorna o file_id para usar no Assistant
   } catch (error) {
-    console.error(`Error uploading file ${fileName}:`, error);
+    console.error(`Error uploading file ${fileName}:`, {
+      error: error.message,
+      stack: error.stack,
+      fileName
+    });
     throw error;
   }
 }
@@ -263,7 +290,21 @@ serve(async (req) => {
       });
       
       if (!threadResponse.ok) {
-        throw new Error(`Failed to create thread: ${await threadResponse.text()}`);
+        const errorText = await threadResponse.text();
+        console.error('Failed to create OpenAI thread:', {
+          status: threadResponse.status,
+          statusText: threadResponse.statusText,
+          error: errorText,
+          headers: Object.fromEntries(threadResponse.headers.entries())
+        });
+        
+        if (threadResponse.status === 401) {
+          throw new Error('Erro de autenticação OpenAI: Verifique a chave API');
+        } else if (threadResponse.status === 429) {
+          throw new Error('Limite de rate da OpenAI excedido. Tente novamente em alguns minutos.');
+        } else {
+          throw new Error(`Failed to create thread: ${errorText}`);
+        }
       }
       
       const thread = await threadResponse.json();
@@ -271,6 +312,8 @@ serve(async (req) => {
       
       // Adicionar mensagem com file_ids na thread
       const messageContent = message || 'Segue um arquivo para análise.';
+      console.log(`Adding message to thread ${thread.id} with ${fileIds.length} attachments`);
+      
       const messageResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/messages`, {
         method: 'POST',
         headers: {
@@ -289,13 +332,32 @@ serve(async (req) => {
       });
       
       if (!messageResponse.ok) {
-        throw new Error(`Failed to add message: ${await messageResponse.text()}`);
+        const errorText = await messageResponse.text();
+        console.error('Failed to add message to OpenAI thread:', {
+          status: messageResponse.status,
+          statusText: messageResponse.statusText,
+          error: errorText,
+          threadId: thread.id,
+          fileIds: fileIds,
+          headers: Object.fromEntries(messageResponse.headers.entries())
+        });
+        
+        if (messageResponse.status === 401) {
+          throw new Error('Erro de autenticação OpenAI: Verifique a chave API');
+        } else if (messageResponse.status === 400) {
+          throw new Error(`Erro na estrutura da mensagem: ${errorText}`);
+        } else if (messageResponse.status === 429) {
+          throw new Error('Limite de rate da OpenAI excedido. Tente novamente em alguns minutos.');
+        } else {
+          throw new Error(`Failed to add message: ${errorText}`);
+        }
       }
       
       console.log('Message added to thread with file_ids');
       
       // Executar o assistant (você deve ter um assistant_id configurado)
       const assistantId = Deno.env.get('OPENAI_ASSISTANT_ID') || 'asst_default';
+      console.log(`Starting assistant run with ID: ${assistantId}`);
       
       const runResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/runs`, {
         method: 'POST',
@@ -311,23 +373,52 @@ serve(async (req) => {
       });
       
       if (!runResponse.ok) {
-        // Se não conseguir usar Assistant, fallback para Chat Completions
-        console.log('Assistant API failed, falling back to Chat Completions');
-        throw new Error('Assistant not available');
+        const errorText = await runResponse.text();
+        console.error('Failed to start assistant run:', {
+          status: runResponse.status,
+          statusText: runResponse.statusText,
+          error: errorText,
+          assistantId: assistantId,
+          threadId: thread.id,
+          headers: Object.fromEntries(runResponse.headers.entries())
+        });
+        
+        if (runResponse.status === 401) {
+          throw new Error('Erro de autenticação OpenAI: Verifique a chave API');
+        } else if (runResponse.status === 404) {
+          throw new Error(`Assistant não encontrado (ID: ${assistantId}). Verifique a configuração.`);
+        } else if (runResponse.status === 429) {
+          throw new Error('Limite de rate da OpenAI excedido. Tente novamente em alguns minutos.');
+        } else {
+          // Se não conseguir usar Assistant, fallback para Chat Completions
+          console.log('Assistant API failed, falling back to Chat Completions');
+          throw new Error('Assistant not available');
+        }
       }
       
       const run = await runResponse.json();
       console.log('Run started:', run.id);
       
-      // Aguardar conclusão da execução
+      // Aguardar conclusão da execução com melhor logging
       let runStatus = run.status;
       let attempts = 0;
+      const maxAttempts = 60; // 60 segundos de timeout
+      
+      console.log(`Waiting for assistant execution to complete. Initial status: ${runStatus}`);
+      
       while (runStatus === 'queued' || runStatus === 'in_progress') {
-        if (attempts > 60) { // 60 segundos de timeout
-          throw new Error('Assistant execution timeout');
+        if (attempts >= maxAttempts) {
+          console.error(`Assistant execution timeout after ${maxAttempts} seconds`, {
+            runId: run.id,
+            threadId: thread.id,
+            lastStatus: runStatus,
+            attempts: attempts
+          });
+          throw new Error(`Assistant execution timeout after ${maxAttempts} seconds`);
         }
         
         await new Promise(resolve => setTimeout(resolve, 1000));
+        attempts++;
         
         const statusResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/runs/${run.id}`, {
           headers: {
@@ -336,13 +427,37 @@ serve(async (req) => {
           }
         });
         
+        if (!statusResponse.ok) {
+          console.error('Failed to check run status:', {
+            status: statusResponse.status,
+            statusText: statusResponse.statusText,
+            runId: run.id,
+            attempts: attempts
+          });
+          // Continue tentando por alguns segundos antes de falhar
+          if (attempts < 5) continue;
+          throw new Error(`Failed to check run status: ${statusResponse.status}`);
+        }
+        
         const statusData = await statusResponse.json();
         runStatus = statusData.status;
-        attempts++;
+        
+        // Log status changes
+        if (attempts % 10 === 0) { // Log a cada 10 segundos
+          console.log(`Assistant execution status after ${attempts}s: ${runStatus}`);
+        }
       }
       
+      console.log(`Assistant execution completed with status: ${runStatus} after ${attempts} seconds`);
+      
       if (runStatus !== 'completed') {
-        throw new Error(`Assistant execution failed: ${runStatus}`);
+        console.error('Assistant execution failed:', {
+          finalStatus: runStatus,
+          runId: run.id,
+          threadId: thread.id,
+          attempts: attempts
+        });
+        throw new Error(`Assistant execution failed with status: ${runStatus}`);
       }
       
       // Obter mensagens da thread
@@ -387,6 +502,8 @@ serve(async (req) => {
       promptContent = message || 'Como posso ajudá-lo?';
       promptTokens = estimateTokens(promptContent);
       
+      console.log('Making Chat Completions request to OpenAI');
+      
       const chatResponse = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -412,15 +529,40 @@ serve(async (req) => {
 
       if (!chatResponse.ok) {
         const errorText = await chatResponse.text();
-        console.error('Error with Chat Completions:', errorText);
-        return new Response(JSON.stringify({ error: 'Erro na consulta jurídica' }), {
-          status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        console.error('Error with Chat Completions:', {
+          status: chatResponse.status,
+          statusText: chatResponse.statusText,
+          error: errorText,
+          headers: Object.fromEntries(chatResponse.headers.entries()),
+          prompt: promptContent.substring(0, 100) + '...'
         });
+        
+        if (chatResponse.status === 401) {
+          return new Response(JSON.stringify({ error: 'Erro de autenticação OpenAI: Verifique a chave API' }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        } else if (chatResponse.status === 429) {
+          return new Response(JSON.stringify({ error: 'Limite de rate da OpenAI excedido. Tente novamente em alguns minutos.' }), {
+            status: 429,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        } else if (chatResponse.status >= 500) {
+          return new Response(JSON.stringify({ error: `Erro interno da OpenAI (${chatResponse.status}). Tente novamente.` }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        } else {
+          return new Response(JSON.stringify({ error: 'Erro na consulta jurídica' }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
       }
 
       const chatData = await chatResponse.json();
       aiMessage = chatData.choices[0].message.content;
+      console.log('Chat Completions response received successfully');
     }
     
     console.log('AI response received:', aiMessage.substring(0, 100) + '...');
@@ -469,12 +611,44 @@ serve(async (req) => {
     });
 
   } catch (error) {
-    console.error('Error in legal-ai-chat function:', error);
+    console.error('Error in legal-ai-chat function:', {
+      error: error.message,
+      stack: error.stack,
+      timestamp: new Date().toISOString(),
+      requestInfo: {
+        userId: req.headers.get('user-id'),
+        userAgent: req.headers.get('user-agent'),
+        origin: req.headers.get('origin')
+      }
+    });
+    
+    // Tratamento específico para diferentes tipos de erro
+    let errorMessage = 'Erro interno do servidor';
+    let statusCode = 500;
+    
+    if (error.message.includes('autenticação OpenAI')) {
+      errorMessage = 'Erro de configuração: Chave da OpenAI inválida';
+      statusCode = 503;
+    } else if (error.message.includes('rate')) {
+      errorMessage = 'Limite de uso da OpenAI excedido. Tente novamente em alguns minutos.';
+      statusCode = 429;
+    } else if (error.message.includes('timeout')) {
+      errorMessage = 'Tempo limite excedido. O processamento está demorando mais que o esperado.';
+      statusCode = 408;
+    } else if (error.message.includes('Assistant não encontrado')) {
+      errorMessage = 'Erro de configuração do assistente. Entre em contato com o suporte.';
+      statusCode = 503;
+    } else if (error.message.includes('Tokens insuficientes')) {
+      errorMessage = 'Tokens insuficientes para realizar a consulta.';
+      statusCode = 402;
+    }
+    
     return new Response(JSON.stringify({ 
-      error: 'Erro interno do servidor',
-      details: error.message 
+      error: errorMessage,
+      details: error.message,
+      timestamp: new Date().toISOString()
     }), {
-      status: 500,
+      status: statusCode,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
