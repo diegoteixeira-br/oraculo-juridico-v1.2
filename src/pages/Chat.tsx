@@ -68,8 +68,7 @@ export default function Dashboard() {
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
   const [audioLoadingStates, setAudioLoadingStates] = useState<Record<string, boolean>>({});
-  const [selectedVoice, setSelectedVoice] = useState('alloy');
-  const [selectedSpeed, setSelectedSpeed] = useState(1.0);
+  const [selectedSpeed, setSelectedSpeed] = useState(1.25);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -363,7 +362,7 @@ export default function Dashboard() {
       const { data, error } = await supabase.functions.invoke('text-to-speech', {
         body: {
           text: text,
-          voice: selectedVoice,
+          voice: 'onyx', // Voz fixa masculina
           speed: selectedSpeed
         }
       });
@@ -1060,27 +1059,10 @@ export default function Dashboard() {
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
                     <Volume2 className="w-4 h-4 text-primary" />
-                    <span className="text-xs text-muted-foreground">Configurar voz:</span>
+                    <span className="text-xs text-muted-foreground">Configurar áudio:</span>
                   </div>
                   
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground">Voz:</span>
-                      <Select value={selectedVoice} onValueChange={setSelectedVoice}>
-                        <SelectTrigger className="w-20 h-7 text-xs">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="alloy">Alloy</SelectItem>
-                          <SelectItem value="echo">Echo</SelectItem>
-                          <SelectItem value="fable">Fable</SelectItem>
-                          <SelectItem value="onyx">Onyx</SelectItem>
-                          <SelectItem value="nova">Nova</SelectItem>
-                          <SelectItem value="shimmer">Shimmer</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-muted-foreground">Velocidade:</span>
                       <div className="flex items-center gap-2 w-20">
