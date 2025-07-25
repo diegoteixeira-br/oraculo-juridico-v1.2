@@ -513,7 +513,7 @@ export default function Dashboard() {
         if (!sessionsMap.has(sessionKey)) {
           sessionsMap.set(sessionKey, {
             id: sessionKey,
-            title: 'Nova conversa',
+            title: '', // Começar com título vazio
             preview: '',
             timestamp: new Date(query.created_at),
             messages: []
@@ -531,8 +531,8 @@ export default function Dashboard() {
             timestamp: new Date(query.created_at)
           });
           
-          // Usar primeira pergunta como título da sessão
-          if (session.title === 'Nova conversa') {
+          // Usar a primeira pergunta como título da sessão (se ainda não tiver título)
+          if (!session.title) {
             session.title = query.prompt_text.length > 50 ? 
               query.prompt_text.substring(0, 50) + '...' : 
               query.prompt_text;
@@ -559,6 +559,18 @@ export default function Dashboard() {
       sessionsMap.forEach(session => {
         session.messages.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
         
+        // Garantir que toda sessão tenha um título baseado na primeira mensagem do usuário
+        if (!session.title && session.messages.length > 0) {
+          const firstUserMessage = session.messages.find(msg => msg.sender === 'user');
+          if (firstUserMessage) {
+            session.title = firstUserMessage.text.length > 50 ? 
+              firstUserMessage.text.substring(0, 50) + '...' : 
+              firstUserMessage.text;
+          } else {
+            session.title = 'Nova conversa'; // Fallback apenas se não houver mensagem do usuário
+          }
+        }
+        
         // Atualizar timestamp da sessão para a última mensagem
         if (session.messages.length > 0) {
           session.timestamp = session.messages[session.messages.length - 1].timestamp;
@@ -566,8 +578,9 @@ export default function Dashboard() {
       });
 
       // Converter para array e ordenar por timestamp (mais recente primeira)
+      // Filtrar sessões que têm título válido (não vazias)
       const sessions = Array.from(sessionsMap.values())
-        .filter(session => session.messages.length > 0) // Apenas sessões com mensagens
+        .filter(session => session.messages.length > 0 && session.title && session.title !== '') 
         .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
       
       setChatSessions(sessions);
