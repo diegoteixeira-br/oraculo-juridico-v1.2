@@ -593,7 +593,7 @@ serve(async (req) => {
         prompt_text: promptContent,
         response_text: aiMessage,
         credits_consumed: Math.ceil(totalTokens / 1000), // Compatibilidade com histórico
-        message_type: 'legal_consultation'
+        message_type: 'ai_response'
       });
 
     if (historyError) {
