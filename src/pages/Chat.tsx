@@ -68,6 +68,7 @@ export default function Dashboard() {
   const [audioLoadingStates, setAudioLoadingStates] = useState<Record<string, boolean>>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const navigate = useNavigate();
   const { user, profile, signOut, useTokens, refreshProfile } = useAuth();
   const { toast } = useToast();
@@ -350,22 +351,22 @@ export default function Dashboard() {
       // Verificar se já está tocando - parar o áudio atual
       if (playingAudio === messageId) {
         // Parar áudio
-        const audioElements = document.querySelectorAll('audio');
-        audioElements.forEach(audio => {
-          audio.pause();
-          audio.currentTime = 0;
-        });
+        if (currentAudioRef.current) {
+          currentAudioRef.current.pause();
+          currentAudioRef.current.currentTime = 0;
+          currentAudioRef.current = null;
+        }
         setPlayingAudio(null);
         setAudioLoadingStates(prev => ({ ...prev, [messageId]: false }));
         return;
       }
 
       // Parar qualquer outro áudio que esteja tocando
-      const audioElements = document.querySelectorAll('audio');
-      audioElements.forEach(audio => {
-        audio.pause();
-        audio.currentTime = 0;
-      });
+      if (currentAudioRef.current) {
+        currentAudioRef.current.pause();
+        currentAudioRef.current.currentTime = 0;
+        currentAudioRef.current = null;
+      }
       setPlayingAudio(null);
 
       // Chamar a edge function para converter texto em áudio
@@ -400,6 +401,7 @@ export default function Dashboard() {
       const audioUrl = URL.createObjectURL(audioBlob);
       
       const audio = new Audio(audioUrl);
+      currentAudioRef.current = audio;
       
       // Eventos do áudio
       audio.onplay = () => {
@@ -409,11 +411,13 @@ export default function Dashboard() {
       
       audio.onended = () => {
         setPlayingAudio(null);
+        currentAudioRef.current = null;
         URL.revokeObjectURL(audioUrl);
       };
       
       audio.onerror = () => {
         setPlayingAudio(null);
+        currentAudioRef.current = null;
         setAudioLoadingStates(prev => ({ ...prev, [messageId]: false }));
         toast({
           title: "Erro na reprodução",
