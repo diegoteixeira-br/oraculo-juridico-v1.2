@@ -172,13 +172,11 @@ export default function Dashboard() {
     
     // Verificar se não é apenas espaços em branco
     const messageText = inputMessage.trim();
-    if (!messageText && attachedFiles.length === 0) {
-      toast({
-        title: "Mensagem vazia",
-        description: "Digite uma pergunta para enviar.",
-        variant: "destructive",
-      });
-      return;
+    
+    // Se não há texto mas há arquivos, criar um texto padrão
+    let finalMessageText = messageText;
+    if (!messageText && attachedFiles.length > 0) {
+      finalMessageText = `[${attachedFiles.length} arquivo(s) anexado(s)]`;
     }
     
     if (!user) return;
@@ -206,7 +204,7 @@ export default function Dashboard() {
 
     const userMessage: Message = {
       id: Date.now().toString(),
-      text: messageText, // Usar messageText que foi validado
+      text: finalMessageText, // Usar finalMessageText que inclui indicação de arquivos
       sender: 'user',
       timestamp: new Date(),
       attachedFiles: attachedFiles.length > 0 ? [...attachedFiles] : undefined
@@ -219,22 +217,20 @@ export default function Dashboard() {
     setHasUnsavedMessages(true);
 
     try {
-      // Salvar a mensagem do usuário no histórico (apenas se não estiver vazia)
-      if (userMessage.text.trim()) {
-        try {
-          await supabase
-            .from('query_history')
-            .insert({
-              user_id: user?.id,
-              session_id: sessionId,
-              prompt_text: userMessage.text,
-              response_text: null,
-              message_type: 'user_query',
-              credits_consumed: 0
-            });
-        } catch (historyError) {
-          console.error('Erro ao salvar mensagem do usuário no histórico:', historyError);
-        }
+      // Salvar a mensagem do usuário no histórico (sempre salvar, incluindo quando só há arquivos)
+      try {
+        await supabase
+          .from('query_history')
+          .insert({
+            user_id: user?.id,
+            session_id: sessionId,
+            prompt_text: userMessage.text, // Agora sempre tem texto (mesmo que seja indicação de arquivos)
+            response_text: null,
+            message_type: 'user_query',
+            credits_consumed: 0
+          });
+      } catch (historyError) {
+        console.error('Erro ao salvar mensagem do usuário no histórico:', historyError);
       }
 
       // Chamar o edge function que se conecta ao seu webhook
