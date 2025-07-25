@@ -1029,11 +1029,11 @@ export default function Dashboard() {
                                       >
                                         {file.type.startsWith('image/') ? (
                                           <div className="relative">
-                                            <img
-                                              src={file.data}
-                                              alt={file.name}
-                                              className="w-full max-w-sm h-auto max-h-48 object-cover rounded-t-lg"
-                                            />
+                                             <img
+                                               src={file.data}
+                                               alt={file.name}
+                                               className="w-full max-w-xs h-auto max-h-32 object-cover rounded-t-lg"
+                                             />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                                             <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
                                               <div className="flex items-center gap-2 text-white text-xs">
@@ -1117,11 +1117,11 @@ export default function Dashboard() {
                       >
                         {file.type.startsWith('image/') ? (
                           <div className="relative">
-                            <img
-                              src={file.data}
-                              alt={file.name}
-                              className="w-full h-24 object-cover"
-                            />
+                             <img
+                               src={file.data}
+                               alt={file.name}
+                               className="w-full h-16 object-cover"
+                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                             <Button
                               variant="ghost"
