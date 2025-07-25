@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, Settings, LogOut, Send, Bot, User, Clock, CreditCard, History, Plus, Trash2, MoreHorizontal, Paperclip, X, FileText, Image } from "lucide-react";
+import { MessageCircle, Settings, LogOut, Send, Bot, User, Clock, CreditCard, History, Plus, Trash2, MoreHorizontal, Paperclip, X, FileText, Image, Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -64,6 +64,8 @@ export default function Dashboard() {
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [hasUnsavedMessages, setHasUnsavedMessages] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
+  const [playingAudio, setPlayingAudio] = useState<string | null>(null);
+  const [audioLoadingStates, setAudioLoadingStates] = useState<Record<string, boolean>>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -325,6 +327,91 @@ export default function Dashboard() {
 
   const handleExampleClick = (question: string) => {
     setInputMessage(question);
+  };
+
+  // Função para converter texto em áudio
+  const handleTextToSpeech = async (messageId: string, text: string) => {
+    try {
+      setAudioLoadingStates(prev => ({ ...prev, [messageId]: true }));
+      
+      // Verificar se já está tocando - parar o áudio atual
+      if (playingAudio === messageId) {
+        // Parar áudio
+        const audioElements = document.querySelectorAll('audio');
+        audioElements.forEach(audio => {
+          audio.pause();
+          audio.currentTime = 0;
+        });
+        setPlayingAudio(null);
+        setAudioLoadingStates(prev => ({ ...prev, [messageId]: false }));
+        return;
+      }
+
+      // Parar qualquer outro áudio que esteja tocando
+      const audioElements = document.querySelectorAll('audio');
+      audioElements.forEach(audio => {
+        audio.pause();
+        audio.currentTime = 0;
+      });
+      setPlayingAudio(null);
+
+      // Chamar a edge function para converter texto em áudio
+      const { data, error } = await supabase.functions.invoke('text-to-speech', {
+        body: {
+          text: text,
+          voice: 'alloy' // Voz padrão
+        }
+      });
+
+      if (error) {
+        throw new Error(error.message || 'Erro ao gerar áudio');
+      }
+
+      // Converter base64 para blob e reproduzir
+      const audioData = atob(data.audioContent);
+      const bytes = new Uint8Array(audioData.length);
+      for (let i = 0; i < audioData.length; i++) {
+        bytes[i] = audioData.charCodeAt(i);
+      }
+      
+      const audioBlob = new Blob([bytes], { type: 'audio/mpeg' });
+      const audioUrl = URL.createObjectURL(audioBlob);
+      
+      const audio = new Audio(audioUrl);
+      
+      // Eventos do áudio
+      audio.onplay = () => {
+        setPlayingAudio(messageId);
+        setAudioLoadingStates(prev => ({ ...prev, [messageId]: false }));
+      };
+      
+      audio.onended = () => {
+        setPlayingAudio(null);
+        URL.revokeObjectURL(audioUrl);
+      };
+      
+      audio.onerror = () => {
+        setPlayingAudio(null);
+        setAudioLoadingStates(prev => ({ ...prev, [messageId]: false }));
+        toast({
+          title: "Erro na reprodução",
+          description: "Não foi possível reproduzir o áudio.",
+          variant: "destructive",
+        });
+        URL.revokeObjectURL(audioUrl);
+      };
+      
+      await audio.play();
+      
+    } catch (error) {
+      console.error('Erro ao converter texto em áudio:', error);
+      setAudioLoadingStates(prev => ({ ...prev, [messageId]: false }));
+      toast({
+        title: "Erro no áudio",
+        description: error instanceof Error ? error.message : "Não foi possível gerar o áudio.",
+        variant: "destructive",
+      });
+    }
   };
 
   // Função para rolar para o final do chat
@@ -729,6 +816,36 @@ export default function Dashboard() {
                               <div className="text-sm leading-relaxed">
                                 <ReactMarkdown>{message.text}</ReactMarkdown>
                               </div>
+                              
+                              {/* Botão de Text-to-Speech para mensagens da IA */}
+                              {message.sender === 'ai' && (
+                                <div className="mt-2">
+                                  <TooltipProvider>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => handleTextToSpeech(message.id, message.text)}
+                                          disabled={audioLoadingStates[message.id]}
+                                          className="h-8 w-8 p-0 hover:bg-primary/10"
+                                        >
+                                          {audioLoadingStates[message.id] ? (
+                                            <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                                          ) : playingAudio === message.id ? (
+                                            <VolumeX className="w-4 h-4 text-primary" />
+                                          ) : (
+                                            <Volume2 className="w-4 h-4 text-muted-foreground hover:text-primary" />
+                                          )}
+                                        </Button>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <p>{playingAudio === message.id ? 'Parar áudio' : 'Ouvir resposta'}</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </TooltipProvider>
+                                </div>
+                              )}
                               
                               {/* Mostrar arquivos anexados na mensagem do usuário */}
                               {message.sender === 'user' && message.attachedFiles && message.attachedFiles.length > 0 && (
