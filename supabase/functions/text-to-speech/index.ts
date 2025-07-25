@@ -19,14 +19,6 @@ serve(async (req) => {
       throw new Error('Text is required')
     }
 
-    // Calcular tokens necessários baseado no tamanho do texto
-    // OpenAI cobra por caractere: tts-1-hd = $0.030 por 1K caracteres
-    // Vamos converter para tokens: 1 token ≈ 4 caracteres, então 1K chars ≈ 250 tokens
-    const textLength = text.length
-    const tokensNeeded = Math.ceil(textLength / 4) // 1 token por 4 caracteres aproximadamente
-    
-    console.log(`Text-to-speech request: ${textLength} characters, ${tokensNeeded} tokens needed`)
-
     // Verificar autenticação
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
@@ -47,7 +39,48 @@ serve(async (req) => {
     }
 
     const userId = userData.user.id
-    console.log(`User ${userId} requesting text-to-speech for ${tokensNeeded} tokens`)
+
+    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY')
+    if (!OPENAI_API_KEY) {
+      throw new Error('OpenAI API key not configured')
+    }
+
+    // Dividir texto em chunks se for muito longo (limite da OpenAI é 4096 caracteres)
+    const maxChunkSize = 4000 // Deixar margem de segurança
+    const chunks = []
+    
+    if (text.length <= maxChunkSize) {
+      chunks.push(text)
+    } else {
+      // Dividir por frases para manter o contexto
+      const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0)
+      let currentChunk = ''
+      
+      for (const sentence of sentences) {
+        const sentenceWithPunctuation = sentence.trim() + '.'
+        if ((currentChunk + sentenceWithPunctuation).length <= maxChunkSize) {
+          currentChunk += (currentChunk ? ' ' : '') + sentenceWithPunctuation
+        } else {
+          if (currentChunk) {
+            chunks.push(currentChunk)
+            currentChunk = sentenceWithPunctuation
+          } else {
+            // Se uma única frase for muito longa, dividir por caracteres
+            for (let i = 0; i < sentenceWithPunctuation.length; i += maxChunkSize) {
+              chunks.push(sentenceWithPunctuation.slice(i, i + maxChunkSize))
+            }
+          }
+        }
+      }
+      if (currentChunk) {
+        chunks.push(currentChunk)
+      }
+    }
+
+    console.log(`Text-to-speech request: ${text.length} characters divided into ${chunks.length} chunks`)
+
+    // Calcular tokens necessários baseado no tamanho total do texto
+    const tokensNeeded = Math.ceil(text.length / 4) // 1 token por 4 caracteres aproximadamente
 
     // Verificar se o usuário tem tokens suficientes
     const { data: profile, error: profileError } = await supabaseClient
@@ -65,37 +98,54 @@ serve(async (req) => {
       throw new Error(`Insufficient tokens. Need ${tokensNeeded}, have ${totalTokens}`)
     }
 
-    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY')
-    if (!OPENAI_API_KEY) {
-      throw new Error('OpenAI API key not configured')
+    console.log(`User ${userId} requesting text-to-speech for ${tokensNeeded} tokens`)
+
+    // Gerar áudio para cada chunk e concatenar
+    const audioChunks = []
+    
+    for (let i = 0; i < chunks.length; i++) {
+      const chunk = chunks[i]
+      console.log(`Processing chunk ${i + 1}/${chunks.length}: ${chunk.length} characters`)
+      
+      const response = await fetch('https://api.openai.com/v1/audio/speech', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'tts-1-hd',
+          input: chunk,
+          voice: voice || 'alloy',
+          response_format: 'mp3',
+          speed: speed || 1.0
+        }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error?.message || `Failed to generate speech for chunk ${i + 1}`)
+      }
+
+      const arrayBuffer = await response.arrayBuffer()
+      audioChunks.push(new Uint8Array(arrayBuffer))
     }
 
-    // Generate speech from text
-    const response = await fetch('https://api.openai.com/v1/audio/speech', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'tts-1-hd',
-        input: text,
-        voice: voice || 'alloy',
-        response_format: 'mp3',
-        speed: speed || 1.0
-      }),
-    })
-
-    if (!response.ok) {
-      const error = await response.json()
-      throw new Error(error.error?.message || 'Failed to generate speech')
+    // Concatenar todos os chunks de áudio
+    const totalLength = audioChunks.reduce((acc, chunk) => acc + chunk.length, 0)
+    const combinedAudio = new Uint8Array(totalLength)
+    let offset = 0
+    
+    for (const chunk of audioChunks) {
+      combinedAudio.set(chunk, offset)
+      offset += chunk.length
     }
 
     // Descontar tokens do usuário usando a função existente
     const { error: tokenError } = await supabaseClient.rpc('use_tokens', {
       p_user_id: userId,
       p_tokens: tokensNeeded,
-      p_description: `Text-to-speech: ${textLength} caracteres`
+      p_description: `Text-to-speech: ${text.length} caracteres em ${chunks.length} chunks`
     })
 
     if (tokenError) {
@@ -106,14 +156,10 @@ serve(async (req) => {
     console.log(`Successfully deducted ${tokensNeeded} tokens from user ${userId}`)
 
     // Convert audio buffer to base64
-    const arrayBuffer = await response.arrayBuffer()
-    const uint8Array = new Uint8Array(arrayBuffer)
-    
-    // Process in chunks to avoid stack overflow
     let binaryString = ''
     const chunkSize = 32768
-    for (let i = 0; i < uint8Array.length; i += chunkSize) {
-      const chunk = uint8Array.slice(i, i + chunkSize)
+    for (let i = 0; i < combinedAudio.length; i += chunkSize) {
+      const chunk = combinedAudio.slice(i, i + chunkSize)
       binaryString += String.fromCharCode.apply(null, Array.from(chunk))
     }
     const base64Audio = btoa(binaryString)
@@ -122,7 +168,8 @@ serve(async (req) => {
       JSON.stringify({ 
         audioContent: base64Audio,
         tokensUsed: tokensNeeded,
-        charactersProcessed: textLength
+        charactersProcessed: text.length,
+        chunksProcessed: chunks.length
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
