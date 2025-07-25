@@ -208,12 +208,13 @@ serve(async (req) => {
       });
     }
 
-    const availableTokens = profile.plan_type === 'gratuito' 
-      ? (profile.daily_tokens || 0)
-      : (profile.plan_tokens || 0);
+    const totalAvailableTokens = (profile.daily_tokens || 0) + (profile.plan_tokens || 0);
       
-    if (availableTokens < 100) {
-      return new Response(JSON.stringify({ error: 'Tokens insuficientes' }), {
+    if (totalAvailableTokens < 1000) {
+      return new Response(JSON.stringify({ 
+        error: 'Tokens insuficientes',
+        details: `Você precisa de pelo menos 1.000 tokens para usar o chat. Disponível: ${totalAvailableTokens} tokens.`
+      }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -275,211 +276,238 @@ serve(async (req) => {
     let promptTokens: number;
     let aiMessage: string;
     
+    
     if (fileIds.length > 0) {
-      console.log('Using OpenAI Assistants API with file_ids:', fileIds);
-      
-      // Criar uma thread para a conversa
-      const threadResponse = await fetch('https://api.openai.com/v1/threads', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openAIKey}`,
-          'Content-Type': 'application/json',
-          'OpenAI-Beta': 'assistants=v2'
-        },
-        body: JSON.stringify({})
-      });
-      
-      if (!threadResponse.ok) {
-        const errorText = await threadResponse.text();
-        console.error('Failed to create OpenAI thread:', {
-          status: threadResponse.status,
-          statusText: threadResponse.statusText,
-          error: errorText,
-          headers: Object.fromEntries(threadResponse.headers.entries())
+      // Tentativa 1: Usar OpenAI Assistants API
+      try {
+        console.log('Using OpenAI Assistants API with file_ids:', fileIds);
+        
+        // Criar uma thread para a conversa
+        const threadResponse = await fetch('https://api.openai.com/v1/threads', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${openAIKey}`,
+            'Content-Type': 'application/json',
+            'OpenAI-Beta': 'assistants=v2'
+          },
+          body: JSON.stringify({})
         });
         
-        if (threadResponse.status === 401) {
-          throw new Error('Erro de autenticação OpenAI: Verifique a chave API');
-        } else if (threadResponse.status === 429) {
-          throw new Error('Limite de rate da OpenAI excedido. Tente novamente em alguns minutos.');
-        } else {
-          throw new Error(`Failed to create thread: ${errorText}`);
+        if (!threadResponse.ok) {
+          throw new Error('Failed to create thread');
         }
-      }
-      
-      const thread = await threadResponse.json();
-      console.log('Thread created:', thread.id);
-      
-      // Adicionar mensagem com file_ids na thread
-      const messageContent = message || 'Segue um arquivo para análise.';
-      console.log(`Adding message to thread ${thread.id} with ${fileIds.length} attachments`);
-      
-      const messageResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/messages`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openAIKey}`,
-          'Content-Type': 'application/json',
-          'OpenAI-Beta': 'assistants=v2'
-        },
-        body: JSON.stringify({
-          role: 'user',
-          content: messageContent,
-          attachments: fileIds.map(fileId => ({
-            file_id: fileId,
-            tools: [{ type: 'file_search' }]
-          }))
-        })
-      });
-      
-      if (!messageResponse.ok) {
-        const errorText = await messageResponse.text();
-        console.error('Failed to add message to OpenAI thread:', {
-          status: messageResponse.status,
-          statusText: messageResponse.statusText,
-          error: errorText,
-          threadId: thread.id,
-          fileIds: fileIds,
-          headers: Object.fromEntries(messageResponse.headers.entries())
+        
+        const thread = await threadResponse.json();
+        console.log('Thread created:', thread.id);
+        
+        // Adicionar mensagem com file_ids na thread
+        const messageContent = message || 'Segue um arquivo para análise.';
+        console.log(`Adding message to thread ${thread.id} with ${fileIds.length} attachments`);
+        
+        const messageResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/messages`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${openAIKey}`,
+            'Content-Type': 'application/json',
+            'OpenAI-Beta': 'assistants=v2'
+          },
+          body: JSON.stringify({
+            role: 'user',
+            content: messageContent,
+            attachments: fileIds.map(fileId => ({
+              file_id: fileId,
+              tools: [{ type: 'file_search' }]
+            }))
+          })
         });
         
-        if (messageResponse.status === 401) {
-          throw new Error('Erro de autenticação OpenAI: Verifique a chave API');
-        } else if (messageResponse.status === 400) {
-          throw new Error(`Erro na estrutura da mensagem: ${errorText}`);
-        } else if (messageResponse.status === 429) {
-          throw new Error('Limite de rate da OpenAI excedido. Tente novamente em alguns minutos.');
-        } else {
-          throw new Error(`Failed to add message: ${errorText}`);
+        if (!messageResponse.ok) {
+          throw new Error('Failed to add message');
         }
-      }
-      
-      console.log('Message added to thread with file_ids');
-      
-      // Executar o assistant (você deve ter um assistant_id configurado)
-      const assistantId = Deno.env.get('OPENAI_ASSISTANT_ID') || 'asst_default';
-      console.log(`Starting assistant run with ID: ${assistantId}`);
-      
-      const runResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/runs`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openAIKey}`,
-          'Content-Type': 'application/json',
-          'OpenAI-Beta': 'assistants=v2'
-        },
-        body: JSON.stringify({
-          assistant_id: assistantId,
-          instructions: 'Você é um assistente jurídico especializado em direito brasileiro. Analise o(s) arquivo(s) anexado(s) e forneça uma resposta jurídica completa, citando artigos de lei quando relevante. Estruture sua resposta de forma organizada.'
-        })
-      });
-      
-      if (!runResponse.ok) {
-        const errorText = await runResponse.text();
-        console.error('Failed to start assistant run:', {
-          status: runResponse.status,
-          statusText: runResponse.statusText,
-          error: errorText,
-          assistantId: assistantId,
-          threadId: thread.id,
-          headers: Object.fromEntries(runResponse.headers.entries())
+        
+        console.log('Message added to thread with file_ids');
+        
+        // Executar o assistant
+        const assistantId = Deno.env.get('OPENAI_ASSISTANT_ID');
+        
+        if (!assistantId) {
+          throw new Error('Assistant not configured');
+        }
+        
+        console.log(`Starting assistant run with ID: ${assistantId}`);
+        
+        const runResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/runs`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${openAIKey}`,
+            'Content-Type': 'application/json',
+            'OpenAI-Beta': 'assistants=v2'
+          },
+          body: JSON.stringify({
+            assistant_id: assistantId,
+            instructions: `Você é um assistente jurídico especializado em direito brasileiro. 
+
+INSTRUÇÕES IMPORTANTES:
+1. Analise cuidadosamente TODOS os arquivos anexados
+2. Se for um PDF, extraia e analise todo o conteúdo textual
+3. Se for uma imagem, leia todo o texto visível na imagem
+4. Forneça uma análise jurídica completa baseada no conteúdo dos arquivos
+5. Cite artigos de lei relevantes quando aplicável
+6. Estruture sua resposta de forma organizada e didática
+7. Se houver questões ou problemas identificados no documento, aponte-os claramente
+
+Se você não conseguir acessar o conteúdo dos arquivos, explique especificamente o que está impedindo a leitura e sugira soluções.`
+          })
         });
         
-        if (runResponse.status === 401) {
-          throw new Error('Erro de autenticação OpenAI: Verifique a chave API');
-        } else if (runResponse.status === 404) {
-          throw new Error(`Assistant não encontrado (ID: ${assistantId}). Verifique a configuração.`);
-        } else if (runResponse.status === 429) {
-          throw new Error('Limite de rate da OpenAI excedido. Tente novamente em alguns minutos.');
-        } else {
-          // Se não conseguir usar Assistant, fallback para Chat Completions
-          console.log('Assistant API failed, falling back to Chat Completions');
-          throw new Error('Assistant not available');
+        if (!runResponse.ok) {
+          throw new Error('Failed to start assistant run');
         }
-      }
-      
-      const run = await runResponse.json();
-      console.log('Run started:', run.id);
-      
-      // Aguardar conclusão da execução com melhor logging
-      let runStatus = run.status;
-      let attempts = 0;
-      const maxAttempts = 60; // 60 segundos de timeout
-      
-      console.log(`Waiting for assistant execution to complete. Initial status: ${runStatus}`);
-      
-      while (runStatus === 'queued' || runStatus === 'in_progress') {
-        if (attempts >= maxAttempts) {
-          console.error(`Assistant execution timeout after ${maxAttempts} seconds`, {
-            runId: run.id,
-            threadId: thread.id,
-            lastStatus: runStatus,
-            attempts: attempts
+        
+        const run = await runResponse.json();
+        console.log('Run started:', run.id);
+        
+        // Aguardar conclusão da execução
+        let runStatus = run.status;
+        let attempts = 0;
+        const maxAttempts = 60;
+        
+        console.log(`Waiting for assistant execution to complete. Initial status: ${runStatus}`);
+        
+        while (runStatus === 'queued' || runStatus === 'in_progress') {
+          if (attempts >= maxAttempts) {
+            throw new Error(`Assistant execution timeout after ${maxAttempts} seconds`);
+          }
+          
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          attempts++;
+          
+          const statusResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/runs/${run.id}`, {
+            headers: {
+              'Authorization': `Bearer ${openAIKey}`,
+              'OpenAI-Beta': 'assistants=v2'
+            }
           });
-          throw new Error(`Assistant execution timeout after ${maxAttempts} seconds`);
+          
+          if (!statusResponse.ok) {
+            if (attempts < 5) continue;
+            throw new Error(`Failed to check run status: ${statusResponse.status}`);
+          }
+          
+          const statusData = await statusResponse.json();
+          runStatus = statusData.status;
+          
+          if (attempts % 10 === 0) {
+            console.log(`Assistant execution status after ${attempts}s: ${runStatus}`);
+          }
         }
         
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        attempts++;
+        console.log(`Assistant execution completed with status: ${runStatus} after ${attempts} seconds`);
         
-        const statusResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/runs/${run.id}`, {
+        if (runStatus !== 'completed') {
+          throw new Error(`Assistant execution failed with status: ${runStatus}`);
+        }
+        
+        // Obter mensagens da thread
+        const messagesResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/messages`, {
           headers: {
             'Authorization': `Bearer ${openAIKey}`,
             'OpenAI-Beta': 'assistants=v2'
           }
         });
         
-        if (!statusResponse.ok) {
-          console.error('Failed to check run status:', {
-            status: statusResponse.status,
-            statusText: statusResponse.statusText,
-            runId: run.id,
-            attempts: attempts
-          });
-          // Continue tentando por alguns segundos antes de falhar
-          if (attempts < 5) continue;
-          throw new Error(`Failed to check run status: ${statusResponse.status}`);
+        const messagesData = await messagesResponse.json();
+        const assistantMessage = messagesData.data.find((msg: any) => msg.role === 'assistant');
+        
+        if (!assistantMessage) {
+          throw new Error('No assistant response found');
         }
         
-        const statusData = await statusResponse.json();
-        runStatus = statusData.status;
+        aiMessage = assistantMessage.content[0].text.value;
+        promptContent = messageContent;
+        promptTokens = estimateTokens(messageContent);
         
-        // Log status changes
-        if (attempts % 10 === 0) { // Log a cada 10 segundos
-          console.log(`Assistant execution status after ${attempts}s: ${runStatus}`);
+        console.log('Assistant response received:', aiMessage.substring(0, 100) + '...');
+        
+      } catch (assistantError) {
+        console.log('Assistant API failed, trying Chat Completions with file analysis fallback:', assistantError.message);
+        
+        // FALLBACK: Usar Chat Completions com análise de arquivos
+        const allExtractedContent: string[] = [];
+        
+        // Primeiro, extrair conteúdo de todos os arquivos anexados
+        for (let i = 0; i < attachedFiles.length; i++) {
+          const file = attachedFiles[i];
+          try {
+            if (file.type.startsWith('image/')) {
+              // Para imagens, extrair texto usando Vision API
+              console.log(`Extracting text from image: ${file.name}`);
+              const extractedText = await extractTextFromImage(file.data, file.name, openAIKey);
+              allExtractedContent.push(`\n\n=== CONTEÚDO EXTRAÍDO DO ARQUIVO "${file.name}" ===\n${extractedText}\n=== FIM DO CONTEÚDO ===\n`);
+            } else {
+              // Para outros tipos, vamos tentar extrair via OCR usando Vision API (convertendo para imagem)
+              console.log(`Trying to extract content from document: ${file.name}`);
+              allExtractedContent.push(`\n\n=== ARQUIVO ANEXADO: "${file.name}" ===\nArquivo do tipo ${file.type} foi anexado mas não pôde ser lido diretamente. Por favor, forneça mais detalhes sobre o conteúdo ou questões específicas sobre este documento.\n=== FIM ===\n`);
+            }
+          } catch (extractError) {
+            console.error(`Error extracting content from ${file.name}:`, extractError);
+            allExtractedContent.push(`\n\n=== ERRO AO PROCESSAR "${file.name}" ===\nNão foi possível extrair o conteúdo deste arquivo (${file.type}). Por favor, forneça informações adicionais sobre o documento ou reformule sua pergunta.\n=== FIM ===\n`);
+          }
         }
-      }
-      
-      console.log(`Assistant execution completed with status: ${runStatus} after ${attempts} seconds`);
-      
-      if (runStatus !== 'completed') {
-        console.error('Assistant execution failed:', {
-          finalStatus: runStatus,
-          runId: run.id,
-          threadId: thread.id,
-          attempts: attempts
+        
+        // Criar prompt combinado com conteúdo extraído
+        const combinedPrompt = `${message || 'Analise o(s) arquivo(s) anexado(s) e forneça uma análise jurídica.'}\n\n${allExtractedContent.join('\n')}`;
+        
+        promptContent = combinedPrompt;
+        promptTokens = estimateTokens(combinedPrompt);
+        
+        console.log('Making Chat Completions request with extracted file content');
+        
+        const chatResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${openAIKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'gpt-4.1-2025-04-14',
+            messages: [
+              {
+                role: 'system',
+                content: `Você é um assistente jurídico especializado em direito brasileiro. 
+
+Analise o conteúdo dos arquivos fornecidos e responda de forma clara, precisa e didática, seguindo estas diretrizes:
+
+1. Se conseguir identificar o conteúdo dos arquivos, forneça uma análise jurídica completa
+2. Cite artigos de lei relevantes quando aplicável
+3. Identifique questões jurídicas importantes no documento
+4. Aponte possíveis problemas ou cláusulas que merecem atenção
+5. Estruture sua resposta de forma organizada
+6. Se não conseguir ler algum arquivo, explique isso claramente e peça mais informações específicas
+
+Seja sempre preciso e profissional em suas análises.`
+              },
+              {
+                role: 'user',
+                content: combinedPrompt
+              }
+            ],
+            max_tokens: 4000,
+            temperature: 0.3,
+          }),
         });
-        throw new Error(`Assistant execution failed with status: ${runStatus}`);
-      }
-      
-      // Obter mensagens da thread
-      const messagesResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/messages`, {
-        headers: {
-          'Authorization': `Bearer ${openAIKey}`,
-          'OpenAI-Beta': 'assistants=v2'
+
+        if (!chatResponse.ok) {
+          const errorText = await chatResponse.text();
+          console.error('Error with Chat Completions fallback:', errorText);
+          throw new Error(`Erro na análise dos arquivos: ${errorText}`);
         }
-      });
-      
-      const messagesData = await messagesResponse.json();
-      const assistantMessage = messagesData.data.find((msg: any) => msg.role === 'assistant');
-      
-      if (!assistantMessage) {
-        throw new Error('No assistant response found');
+
+        const chatData = await chatResponse.json();
+        aiMessage = chatData.choices[0].message.content;
+        
+        console.log('Chat Completions fallback successful');
       }
-      
-      aiMessage = assistantMessage.content[0].text.value;
-      promptContent = messageContent;
-      promptTokens = estimateTokens(messageContent);
-      
-      console.log('Assistant response received:', aiMessage.substring(0, 100) + '...');
       
       // Cleanup: deletar arquivos temporários
       for (const fileId of fileIds) {
