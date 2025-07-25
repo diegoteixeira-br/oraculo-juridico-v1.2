@@ -66,6 +66,8 @@ export default function Dashboard() {
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
   const [audioLoadingStates, setAudioLoadingStates] = useState<Record<string, boolean>>({});
+  const [audioCurrentTime, setAudioCurrentTime] = useState<number>(0);
+  const [audioDuration, setAudioDuration] = useState<number>(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -358,6 +360,8 @@ export default function Dashboard() {
         }
         setPlayingAudio(null);
         setAudioLoadingStates(prev => ({ ...prev, [messageId]: false }));
+        setAudioCurrentTime(0);
+        setAudioDuration(0);
         return;
       }
 
@@ -368,6 +372,8 @@ export default function Dashboard() {
         currentAudioRef.current = null;
       }
       setPlayingAudio(null);
+      setAudioCurrentTime(0);
+      setAudioDuration(0);
 
       // Chamar a edge function para converter texto em áudio
       const { data, error } = await supabase.functions.invoke('text-to-speech', {
@@ -404,6 +410,14 @@ export default function Dashboard() {
       currentAudioRef.current = audio;
       
       // Eventos do áudio
+      audio.onloadedmetadata = () => {
+        setAudioDuration(audio.duration);
+      };
+      
+      audio.ontimeupdate = () => {
+        setAudioCurrentTime(audio.currentTime);
+      };
+      
       audio.onplay = () => {
         setPlayingAudio(messageId);
         setAudioLoadingStates(prev => ({ ...prev, [messageId]: false }));
@@ -412,6 +426,8 @@ export default function Dashboard() {
       audio.onended = () => {
         setPlayingAudio(null);
         currentAudioRef.current = null;
+        setAudioCurrentTime(0);
+        setAudioDuration(0);
         URL.revokeObjectURL(audioUrl);
       };
       
@@ -419,6 +435,8 @@ export default function Dashboard() {
         setPlayingAudio(null);
         currentAudioRef.current = null;
         setAudioLoadingStates(prev => ({ ...prev, [messageId]: false }));
+        setAudioCurrentTime(0);
+        setAudioDuration(0);
         toast({
           title: "Erro na reprodução",
           description: "Não foi possível reproduzir o áudio.",
@@ -847,28 +865,36 @@ export default function Dashboard() {
                               {message.sender === 'ai' && (
                                 <div className="mt-2">
                                   <TooltipProvider>
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <Button
-                                          variant="ghost"
-                                          size="sm"
-                                          onClick={() => handleTextToSpeech(message.id, message.text)}
-                                          disabled={audioLoadingStates[message.id]}
-                                          className="h-8 w-8 p-0 hover:bg-primary/10"
-                                        >
-                                          {audioLoadingStates[message.id] ? (
-                                            <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                                          ) : playingAudio === message.id ? (
-                                            <VolumeX className="w-4 h-4 text-primary" />
-                                          ) : (
-                                            <Volume2 className="w-4 h-4 text-muted-foreground hover:text-primary" />
-                                          )}
-                                        </Button>
-                                      </TooltipTrigger>
-                                      <TooltipContent>
-                                        <p>{playingAudio === message.id ? 'Parar áudio' : 'Ouvir resposta'}</p>
-                                      </TooltipContent>
-                                    </Tooltip>
+                                     <div className="flex items-center gap-2">
+                                       <Tooltip>
+                                         <TooltipTrigger asChild>
+                                           <Button
+                                             variant="ghost"
+                                             size="sm"
+                                             onClick={() => handleTextToSpeech(message.id, message.text)}
+                                             disabled={audioLoadingStates[message.id]}
+                                             className="h-8 w-8 p-0 hover:bg-primary/10"
+                                           >
+                                             {audioLoadingStates[message.id] ? (
+                                               <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                                             ) : playingAudio === message.id ? (
+                                               <VolumeX className="w-4 h-4 text-primary" />
+                                             ) : (
+                                               <Volume2 className="w-4 h-4 text-muted-foreground hover:text-primary" />
+                                             )}
+                                           </Button>
+                                         </TooltipTrigger>
+                                         <TooltipContent>
+                                           <p>{playingAudio === message.id ? 'Parar áudio' : 'Ouvir resposta'}</p>
+                                         </TooltipContent>
+                                       </Tooltip>
+                                       
+                                       {playingAudio === message.id && audioDuration > 0 && (
+                                         <div className="text-xs text-muted-foreground font-mono">
+                                           {Math.floor(audioCurrentTime)}s / {Math.floor(audioDuration)}s
+                                         </div>
+                                       )}
+                                     </div>
                                   </TooltipProvider>
                                 </div>
                               )}
