@@ -68,7 +68,7 @@ export default function Dashboard() {
   const [audioLoadingStates, setAudioLoadingStates] = useState<Record<string, boolean>>({});
   const [audioCurrentTime, setAudioCurrentTime] = useState<number>(0);
   const [audioDuration, setAudioDuration] = useState<number>(0);
-  const [audioSpeed, setAudioSpeed] = useState<number>(1.25);
+  const [audioSpeed, setAudioSpeed] = useState<number>(1.0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -931,7 +931,7 @@ export default function Dashboard() {
                                                 </Button>
                                               </DropdownMenuTrigger>
                                               <DropdownMenuContent align="end" className="w-20">
-                                                {[1.25, 1.5, 1.75, 2.0].map((speed) => (
+                                                {[1.0, 1.25, 1.5, 1.75, 2.0].map((speed) => (
                                                   <DropdownMenuItem 
                                                     key={speed}
                                                     onClick={() => {
