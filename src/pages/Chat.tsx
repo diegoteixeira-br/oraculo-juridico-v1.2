@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, Settings, LogOut, Send, Bot, User, Clock, CreditCard, History, Plus, Trash2, MoreHorizontal, Paperclip, X, FileText, Image, Volume2, VolumeX, Play, Pause } from "lucide-react";
+import { MessageCircle, Settings, LogOut, Send, Bot, User, Clock, CreditCard, History, Plus, Trash2, MoreHorizontal, Paperclip, X, FileText, Image, Volume2, VolumeX, Play, Pause, Gauge } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -68,6 +68,7 @@ export default function Dashboard() {
   const [audioLoadingStates, setAudioLoadingStates] = useState<Record<string, boolean>>({});
   const [audioCurrentTime, setAudioCurrentTime] = useState<number>(0);
   const [audioDuration, setAudioDuration] = useState<number>(0);
+  const [audioSpeed, setAudioSpeed] = useState<number>(1.25);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -380,7 +381,7 @@ export default function Dashboard() {
         body: {
           text: text,
           voice: 'onyx', // Voz fixa masculina
-          speed: 1.00 // Velocidade normal
+          speed: audioSpeed // Usar velocidade selecionada pelo usuário
         }
       });
 
@@ -408,6 +409,9 @@ export default function Dashboard() {
       
       const audio = new Audio(audioUrl);
       currentAudioRef.current = audio;
+      
+      // Aplicar velocidade selecionada ao elemento de áudio
+      audio.playbackRate = audioSpeed;
       
       // Eventos do áudio
       audio.onloadedmetadata = () => {
@@ -902,21 +906,49 @@ export default function Dashboard() {
                                          </TooltipContent>
                                        </Tooltip>
                                        
-                                       {playingAudio === message.id && audioDuration > 0 && (
-                                         <div className="flex items-center gap-2 min-w-[100px]">
-                                           <div className="flex-1 bg-muted h-1 rounded-full overflow-hidden">
-                                             <div 
-                                               className="h-full bg-primary transition-all duration-300 ease-out"
-                                               style={{ 
-                                                 width: `${(audioCurrentTime / audioDuration) * 100}%` 
-                                               }}
-                                             />
-                                           </div>
-                                           <div className="text-xs text-muted-foreground font-mono whitespace-nowrap">
-                                             {Math.floor(audioCurrentTime)}s / {Math.floor(audioDuration)}s
-                                           </div>
-                                         </div>
-                                       )}
+                                        {playingAudio === message.id && audioDuration > 0 && (
+                                          <div className="flex items-center gap-2 min-w-[160px]">
+                                            <div className="flex-1 bg-muted h-1 rounded-full overflow-hidden">
+                                              <div 
+                                                className="h-full bg-primary transition-all duration-300 ease-out"
+                                                style={{ 
+                                                  width: `${(audioCurrentTime / audioDuration) * 100}%` 
+                                                }}
+                                              />
+                                            </div>
+                                            <div className="text-xs text-muted-foreground font-mono whitespace-nowrap">
+                                              {Math.floor(audioCurrentTime)}s / {Math.floor(audioDuration)}s
+                                            </div>
+                                            <DropdownMenu>
+                                              <DropdownMenuTrigger asChild>
+                                                <Button 
+                                                  variant="ghost" 
+                                                  size="sm" 
+                                                  className="h-6 px-2 text-xs font-mono text-muted-foreground hover:text-primary"
+                                                >
+                                                  <Gauge className="w-3 h-3 mr-1" />
+                                                  {audioSpeed}x
+                                                </Button>
+                                              </DropdownMenuTrigger>
+                                              <DropdownMenuContent align="end" className="w-20">
+                                                {[1.25, 1.5, 1.75, 2.0].map((speed) => (
+                                                  <DropdownMenuItem 
+                                                    key={speed}
+                                                    onClick={() => {
+                                                      setAudioSpeed(speed);
+                                                      if (currentAudioRef.current) {
+                                                        currentAudioRef.current.playbackRate = speed;
+                                                      }
+                                                    }}
+                                                    className="text-xs justify-center"
+                                                  >
+                                                    {speed}x
+                                                  </DropdownMenuItem>
+                                                ))}
+                                              </DropdownMenuContent>
+                                            </DropdownMenu>
+                                          </div>
+                                        )}
                                      </div>
                                   </TooltipProvider>
                                 </div>
