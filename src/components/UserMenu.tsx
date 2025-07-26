@@ -22,8 +22,14 @@ export default function UserMenu({ hideOptions = [] }: UserMenuProps) {
   const location = useLocation();
 
   const handleSignOut = async () => {
-    await signOut();
-    navigate("/");
+    try {
+      await signOut();
+      // Limpar cache e redirecionar
+      window.location.href = "/";
+    } catch (error) {
+      console.error('Erro no logout:', error);
+      navigate("/");
+    }
   };
 
   const menuItems = [
