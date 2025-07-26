@@ -40,6 +40,13 @@ const Termos = () => {
                 através de inteligência artificial avançada, proporcionando consultas jurídicas, análise 
                 de documentos e acesso a documentos jurídicos pré-formulados.
               </p>
+              <p className="mt-4">
+                <strong>Integração com Base Oficial de Jurisprudência:</strong> Nossa plataforma integra-se 
+                diretamente com a LexML (Rede de Informação Legislativa e Jurídica), que é a base oficial 
+                de jurisprudência do governo brasileiro. Isso garante que as consultas sobre precedentes 
+                judiciais acessem dados atualizados e confiáveis diretamente dos tribunais superiores (STF, STJ) 
+                e tribunais estaduais, proporcionando maior precisão e confiabilidade nas respostas.
+              </p>
             </section>
 
             <section>
@@ -121,15 +128,18 @@ const Termos = () => {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">8. Limitações de Responsabilidade</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-4">8. Confiabilidade e Limitações</h2>
               <p>
-                O Oráculo Jurídico é uma ferramenta de apoio e consulta. O usuário reconhece que:
+                O Oráculo Jurídico utiliza fontes oficiais confiáveis e é uma ferramenta de apoio profissional. 
+                O usuário reconhece que:
               </p>
               <ul className="list-disc ml-6 mt-2 space-y-2">
-                <li>As respostas fornecidas pela IA são baseadas em dados e algoritmos</li>
-                <li>Não substituem a consulta a um advogado qualificado em casos complexos</li>
+                <li><strong>Fonte Oficial de Dados:</strong> A jurisprudência é consultada diretamente na LexML, 
+                base oficial do governo brasileiro, garantindo acesso a dados atualizados e confiáveis</li>
+                <li>As respostas da IA são baseadas em algoritmos avançados e bases de dados oficiais</li>
+                <li>Embora altamente confiável, não substitui a consulta a um advogado qualificado em casos complexos</li>
                 <li>A plataforma não se responsabiliza por decisões tomadas com base nas informações fornecidas</li>
-                <li>É recomendada a verificação das informações com profissionais especializados</li>
+                <li>É recomendada a verificação das informações com profissionais especializados para casos específicos</li>
               </ul>
             </section>
 

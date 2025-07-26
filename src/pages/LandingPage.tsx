@@ -27,7 +27,7 @@ const LandingPage = () => {
     answer: "Não. Para criar sua conta no plano gratuito e usar seus 3.000 tokens diários, você não precisa fornecer nenhuma informação de pagamento. Você só precisará inserir seus dados de pagamento se decidir assinar um plano pago."
   }, {
     question: "As informações da IA são confiáveis?",
-    answer: "Nossa IA é uma ferramenta de auxílio poderosa, mas não substitui o julgamento profissional de um advogado. Sempre confira as fontes citadas."
+    answer: "Sim! Nossa IA integra-se diretamente com a LexML, base oficial de jurisprudência do governo brasileiro, garantindo acesso a dados atualizados e confiáveis dos tribunais superiores e estaduais. Mesmo assim, recomendamos sempre consultar um advogado para casos específicos e complexos."
   }, {
     question: "Como posso adquirir mais tokens?",
     answer: "Após criar sua conta gratuita e fazer login, você terá acesso à área de planos onde poderá adquirir o Plano Básico (75.000 tokens por R$ 59,90) ou Premium (150.000 tokens por R$ 97,00). Os tokens dos planos pagos não expiram."
@@ -299,9 +299,9 @@ const LandingPage = () => {
                   <Scale className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-2 text-foreground">Jurisprudência Inteligente</h3>
+                  <h3 className="text-xl font-semibold mb-2 text-foreground">Jurisprudência Oficial Integrada</h3>
                   <p className="text-muted-foreground">
-                    Nossa IA analisa milhares de decisões judiciais para encontrar os melhores precedentes para seu caso.
+                    Acesso direto à base oficial LexML do governo brasileiro com jurisprudência atualizada dos principais tribunais (STF, STJ, TJs). Informações confiáveis diretamente da fonte oficial.
                   </p>
                 </div>
               </div>
