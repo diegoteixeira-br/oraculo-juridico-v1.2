@@ -35,3 +35,9 @@ verify_jwt = false
 
 [functions.buscar-juris]
 verify_jwt = false
+
+[functions.calculo-contrato-bancario]
+verify_jwt = true
+
+[functions.calculo-pensao-alimenticia]
+verify_jwt = true
