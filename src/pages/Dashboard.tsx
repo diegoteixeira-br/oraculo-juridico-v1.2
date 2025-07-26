@@ -9,11 +9,14 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import UserMenu from "@/components/UserMenu";
 import DocumentViewer from "@/components/DocumentViewer";
+import { useScrollDirection } from "@/hooks/useScrollDirection";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { visible: menuVisible } = useScrollDirection();
+  
   const [userCredits, setUserCredits] = useState(0);
   const [dailyCredits, setDailyCredits] = useState(0);
   const [totalCreditsPurchased, setTotalCreditsPurchased] = useState(0);
@@ -105,8 +108,10 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
       <div className="max-w-6xl mx-auto space-y-6">
-        {/* Header com Menu */}
-        <div className="flex justify-end mb-6">
+        {/* Header com Menu - com animação de scroll */}
+        <div className={`fixed top-0 right-0 z-50 p-4 transition-transform duration-300 ${
+          menuVisible ? 'translate-y-0' : '-translate-y-full'
+        }`}>
           <UserMenu hideOptions={["dashboard"]} />
         </div>
 
