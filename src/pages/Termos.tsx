@@ -162,7 +162,7 @@ const Termos = () => {
               <h2 className="text-xl font-semibold text-foreground mb-4">11. Contato</h2>
               <p>
                 Para dúvidas sobre estes termos, suporte técnico ou solicitações relacionadas à sua conta, 
-                entre em contato conosco através do e-mail suporte@oraculojuridico.com.br ou utilize 
+                entre em contato conosco através do e-mail contato@oraculojuridico.com.br ou utilize 
                 nossa página de contato na plataforma.
               </p>
             </section>
