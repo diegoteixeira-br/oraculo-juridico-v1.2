@@ -192,9 +192,7 @@ const Privacidade = () => {
                   Para questões sobre privacidade e proteção de dados:
                 </p>
                 <ul className="list-disc list-inside space-y-2 ml-4">
-                  <li><strong>E-mail:</strong> privacidade@oraculojuridico.com.br</li>
-                  <li><strong>Suporte geral:</strong> suporte@oraculojuridico.com.br</li>
-                  <li><strong>Encarregado de Dados (DPO):</strong> dpo@oraculojuridico.com.br</li>
+                  <li><strong>E-mail:</strong> contato@oraculojuridico.com.br</li>
                 </ul>
               </div>
             </section>
