@@ -32,3 +32,6 @@ verify_jwt = true
 
 [functions.verify-payment]
 verify_jwt = false
+
+[functions.buscar-juris]
+verify_jwt = false
