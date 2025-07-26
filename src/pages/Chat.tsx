@@ -17,6 +17,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import UserMenu from "@/components/UserMenu";
+import { useScrollDirection } from "@/hooks/useScrollDirection";
 
 interface Message {
   id: string;
@@ -75,6 +76,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { user, profile, signOut, useTokens, refreshProfile } = useAuth();
   const { toast } = useToast();
+  const { visible: menuVisible } = useScrollDirection();
 
   const userName = profile?.full_name || user?.email || "Usuário";
   const userInitials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
@@ -797,6 +799,13 @@ export default function Dashboard() {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
+        {/* Menu flutuante com animação de scroll */}
+        <div className={`fixed top-0 right-0 z-50 p-4 transition-transform duration-300 ${
+          menuVisible ? 'translate-y-0' : '-translate-y-full'
+        }`}>
+          <UserMenu hideOptions={["chat"]} />
+        </div>
+
         <AppSidebar />
         
         <main className="flex-1 flex flex-col">
@@ -805,9 +814,6 @@ export default function Dashboard() {
             <div className="flex items-center gap-2 md:gap-4">
               <SidebarTrigger className="lg:hidden" />
               <h1 className="text-base md:text-lg font-semibold truncate">Oráculo Jurídico</h1>
-            </div>
-            <div className="flex items-center gap-2 md:gap-4">
-              <UserMenu hideOptions={["chat"]} />
             </div>
           </header>
 

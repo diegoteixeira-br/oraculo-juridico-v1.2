@@ -4,10 +4,13 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { ExternalLink, CheckCircle, Clock, CreditCard } from 'lucide-react';
 import { useEffect } from 'react';
+import UserMenu from '@/components/UserMenu';
+import { useScrollDirection } from '@/hooks/useScrollDirection';
 
 export default function PagamentoPage() {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
+  const { visible: menuVisible } = useScrollDirection();
 
   useEffect(() => {
     if (!user) {
@@ -26,6 +29,13 @@ export default function PagamentoPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center p-4">
+      {/* Menu flutuante com animação de scroll */}
+      <div className={`fixed top-0 right-0 z-50 p-4 transition-transform duration-300 ${
+        menuVisible ? 'translate-y-0' : '-translate-y-full'
+      }`}>
+        <UserMenu />
+      </div>
+      
       <div className="w-full max-w-2xl space-y-6">
         <div className="text-center space-y-2">
           <img 

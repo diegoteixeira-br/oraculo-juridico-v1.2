@@ -6,12 +6,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import UserMenu from '@/components/UserMenu';
+import { useScrollDirection } from '@/hooks/useScrollDirection';
 
 export default function PaymentSuccessPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { refreshProfile } = useAuth();
+  const { visible: menuVisible } = useScrollDirection();
   const [processing, setProcessing] = useState(true);
   const [creditsAdded, setCreditsAdded] = useState<number | null>(null);
   const [hasProcessed, setHasProcessed] = useState(false);
@@ -82,6 +85,12 @@ export default function PaymentSuccessPage() {
   if (processing) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+        {/* Menu flutuante com animação de scroll */}
+        <div className={`fixed top-0 right-0 z-50 p-4 transition-transform duration-300 ${
+          menuVisible ? 'translate-y-0' : '-translate-y-full'
+        }`}>
+          <UserMenu />
+        </div>
         <Card className="bg-slate-800 border-slate-700 max-w-md mx-auto">
           <CardContent className="pt-6 text-center">
             <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
@@ -94,6 +103,13 @@ export default function PaymentSuccessPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+      {/* Menu flutuante com animação de scroll */}
+      <div className={`fixed top-0 right-0 z-50 p-4 transition-transform duration-300 ${
+        menuVisible ? 'translate-y-0' : '-translate-y-full'
+      }`}>
+        <UserMenu />
+      </div>
+      
       <div className="max-w-md mx-auto space-y-6">
         <Card className="bg-slate-800 border-slate-700">
           <CardHeader className="text-center">
