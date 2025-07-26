@@ -758,39 +758,32 @@ export default function Dashboard() {
                 chatSessions.map((session) => (
                   <div
                     key={session.id}
-                    className={`relative group p-2 rounded-lg hover:bg-primary/10 ${
+                    className={`relative group p-2 rounded-lg hover:bg-primary/10 transition-colors cursor-pointer ${
                       currentSessionId === session.id ? 'bg-primary/10' : ''
                     }`}
+                    onClick={() => loadChatSession(session)}
                   >
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="w-full h-auto p-1 flex flex-col items-start text-left justify-start"
-                        >
-                          <div className="text-xs font-medium truncate w-full text-left">
-                            {session.title}
-                          </div>
-                          <div className="text-xs text-muted-foreground mt-1 text-left">
-                            {session.timestamp.toLocaleDateString('pt-BR')}
-                          </div>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="start" className="w-48">
-                        <DropdownMenuItem onClick={() => loadChatSession(session)}>
-                          <MessageCircle className="w-4 h-4 mr-2" />
-                          Carregar conversa
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={() => deleteConversation(session.id)}
-                          className="text-destructive focus:text-destructive"
-                        >
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Excluir conversa
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs font-medium truncate text-left">
+                          {session.title}
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1 text-left">
+                          {session.timestamp.toLocaleDateString('pt-BR')}
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteConversation(session.id);
+                        }}
+                        className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/20 hover:text-destructive"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
                   </div>
                 ))
               )}
