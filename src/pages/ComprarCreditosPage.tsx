@@ -49,6 +49,11 @@ export default function ComprarCreditosPage() {
   const [searchParams] = useSearchParams();
   const selectedPlan = searchParams.get('plano');
 
+  // Garantir que a página sempre abra no topo
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Auto-selecionar o pacote se vier da URL
   useEffect(() => {
     if (selectedPlan) {
