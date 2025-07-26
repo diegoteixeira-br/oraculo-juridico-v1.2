@@ -781,7 +781,7 @@ export default function Dashboard() {
                         }}
                         className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/20 hover:text-destructive"
                       >
-                        <Trash2 className="w-2.5 h-2.5" />
+                        <Trash2 className="w-2 h-2" />
                       </Button>
                     </div>
                   </div>
