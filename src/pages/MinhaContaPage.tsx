@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import UserMenu from "@/components/UserMenu";
+import { useScrollDirection } from "@/hooks/useScrollDirection";
 
 export default function MinhaContaPage() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -27,6 +28,12 @@ export default function MinhaContaPage() {
   const { toast } = useToast();
   const { user, profile, signOut, refreshProfile, updatePassword } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { visible: menuVisible } = useScrollDirection();
+
+  // Garantir que a página sempre abra no topo
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // Atualizar avatar quando profile mudar
   useEffect(() => {
@@ -168,8 +175,10 @@ export default function MinhaContaPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
       <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header com Menu */}
-        <div className="flex justify-end mb-6">
+        {/* Header com Menu - com animação de scroll */}
+        <div className={`fixed top-0 right-0 z-50 p-4 transition-transform duration-300 ${
+          menuVisible ? 'translate-y-0' : '-translate-y-full'
+        }`}>
           <UserMenu hideOptions={["account"]} />
         </div>
 
