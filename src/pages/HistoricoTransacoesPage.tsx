@@ -31,6 +31,11 @@ export default function HistoricoTransacoesPage() {
   const { user } = useAuth();
   const { toast } = useToast();
 
+  // Garantir que a página sempre abra no topo
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Carregar todas as transações
   useEffect(() => {
     const loadTransactions = async () => {
