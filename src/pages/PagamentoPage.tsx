@@ -76,7 +76,7 @@ export default function PagamentoPage() {
                 size="lg"
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
-                Comprar Créditos
+                Comprar Tokens
               </Button>
               
               <div className="bg-green-50 dark:bg-green-950 p-4 rounded-lg text-center">

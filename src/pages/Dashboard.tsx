@@ -372,7 +372,7 @@ export default function Dashboard() {
                   size="lg"
                 >
                   <Plus className="w-5 h-5 mr-2" />
-                  Comprar Mais Créditos
+                  Comprar Mais Tokens
                 </Button>
                 <Button 
                   onClick={() => navigate("/historico-transacoes")}
