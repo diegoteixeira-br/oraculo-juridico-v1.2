@@ -10,6 +10,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import UserMenu from "@/components/UserMenu";
+import { useScrollDirection } from "@/hooks/useScrollDirection";
 
 interface CreditTransaction {
   id: string;
@@ -30,6 +31,7 @@ export default function HistoricoTransacoesPage() {
   
   const { user } = useAuth();
   const { toast } = useToast();
+  const { visible: menuVisible } = useScrollDirection();
 
   // Garantir que a página sempre abra no topo
   useEffect(() => {
@@ -166,17 +168,21 @@ export default function HistoricoTransacoesPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
       <div className="max-w-5xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <Button
-            onClick={exportTransactions}
-            variant="outline"
-            className="border-primary text-primary hover:bg-primary/10 text-sm md:text-base"
-          >
-            <Download className="w-4 h-4 mr-2" />
-            Exportar CSV
-          </Button>
-          <UserMenu />
+        {/* Header com Menu - com animação de scroll */}
+        <div className={`fixed top-0 right-0 z-50 transition-transform duration-300 ${
+          menuVisible ? 'translate-y-0' : '-translate-y-full'
+        }`}>
+          <div className="flex items-center justify-between p-4">
+            <Button
+              onClick={exportTransactions}
+              variant="outline"
+              className="border-primary text-primary hover:bg-primary/10 text-sm md:text-base mr-4"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Exportar CSV
+            </Button>
+            <UserMenu />
+          </div>
         </div>
 
         {/* Title */}

@@ -7,6 +7,7 @@ import { useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import UserMenu from "@/components/UserMenu";
+import { useScrollDirection } from "@/hooks/useScrollDirection";
 
 const tokenPackages = [
   {
@@ -48,6 +49,7 @@ export default function ComprarCreditosPage() {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const selectedPlan = searchParams.get('plano');
+  const { visible: menuVisible } = useScrollDirection();
 
   // Garantir que a página sempre abra no topo
   useEffect(() => {
@@ -100,8 +102,10 @@ export default function ComprarCreditosPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-2 sm:p-4">
       <div className="max-w-2xl mx-auto space-y-3 sm:space-y-4">
-        {/* Header */}
-        <div className="flex justify-end pt-2">
+        {/* Header com Menu - com animação de scroll */}
+        <div className={`fixed top-0 right-0 z-50 p-2 sm:p-4 transition-transform duration-300 ${
+          menuVisible ? 'translate-y-0' : '-translate-y-full'
+        }`}>
           <UserMenu />
         </div>
 
