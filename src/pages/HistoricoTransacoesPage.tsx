@@ -112,7 +112,7 @@ export default function HistoricoTransacoesPage() {
   const getTransactionTypeLabel = (type: string) => {
     switch (type) {
       case 'purchase':
-        return 'Compra Cakto';
+        return 'Compra Stripe';
       case 'daily_usage':
         return 'Uso Diário';
       case 'usage':
@@ -183,7 +183,7 @@ export default function HistoricoTransacoesPage() {
           />
           <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2">Histórico de Transações</h1>
           <p className="text-sm md:text-base text-muted-foreground">
-            Visualize todas as suas transações de créditos
+            Visualize todas as suas transações de tokens
           </p>
         </div>
 
@@ -216,7 +216,7 @@ export default function HistoricoTransacoesPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Todos os tipos</SelectItem>
-                    <SelectItem value="purchase">Compra Cakto</SelectItem>
+                    <SelectItem value="purchase">Compra Stripe</SelectItem>
                     <SelectItem value="daily_usage">Uso Diário</SelectItem>
                     <SelectItem value="usage">Uso</SelectItem>
                     <SelectItem value="bonus">Bônus</SelectItem>
@@ -279,7 +279,7 @@ export default function HistoricoTransacoesPage() {
                           <span className={`text-base md:text-lg font-bold ${
                             transaction.amount > 0 ? 'text-green-400' : 'text-orange-400'
                           }`}>
-                            {transaction.amount > 0 ? '+' : ''}{transaction.amount} créditos
+                            {transaction.amount > 0 ? '+' : ''}{transaction.amount} tokens
                           </span>
                         </div>
                         <div className="text-xs md:text-sm text-muted-foreground">
@@ -299,7 +299,7 @@ export default function HistoricoTransacoesPage() {
                       
                       {transaction.transaction_type === 'purchase' && (
                         <p className="text-xs text-green-400 font-medium">
-                          Compra realizada via Cakto • Quantidade: {transaction.amount} créditos
+                          Compra realizada via Stripe • Quantidade: {transaction.amount} tokens
                         </p>
                       )}
                       
@@ -321,7 +321,7 @@ export default function HistoricoTransacoesPage() {
                 <p className="text-xs md:text-sm text-muted-foreground">
                   {searchTerm || typeFilter !== "all" || dateFilter !== "all" 
                     ? "Tente ajustar os filtros para encontrar suas transações"
-                    : "Você ainda não possui transações de créditos"
+                    : "Você ainda não possui transações de tokens"
                   }
                 </p>
               </div>
