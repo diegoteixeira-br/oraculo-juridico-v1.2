@@ -9,6 +9,7 @@ import { ArrowLeft, Calculator, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface CalculoResult {
   valorPensao: number;
@@ -22,6 +23,7 @@ interface CalculoResult {
 
 const CalculoPensaoAlimenticia = () => {
   const navigate = useNavigate();
+  const { useTokens } = useAuth();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<CalculoResult | null>(null);
   
@@ -60,6 +62,15 @@ const CalculoPensaoAlimenticia = () => {
 
     setLoading(true);
     try {
+      // Verificar e consumir tokens antes do cálculo
+      const tokensRequired = 15000;
+      const tokenSuccess = await useTokens(tokensRequired, 'Cálculo de Pensão Alimentícia');
+      
+      if (!tokenSuccess) {
+        toast.error("Tokens insuficientes para realizar o cálculo. Você precisa de 15.000 tokens.");
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke('calculo-pensao-alimenticia', {
         body: formData
       });
@@ -98,7 +109,7 @@ const CalculoPensaoAlimenticia = () => {
           </p>
         </div>
 
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-8">
           <Card>
             <CardHeader>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CreditCard, History, Plus, MessageSquare, FileText, Download, Eye } from "lucide-react";
+import { CreditCard, History, Plus, MessageSquare, FileText, Download, Eye, Calculator, Heart, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
@@ -160,6 +160,62 @@ export default function Dashboard() {
                 <MessageSquare className="w-5 h-5 mr-2" />
                 Iniciar Chat
               </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Calculadoras Jurídicas */}
+        <Card className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-blue-300">
+              <Calculator className="w-5 h-5" />
+              Calculadoras Jurídicas
+            </CardTitle>
+            <CardDescription className="text-blue-200/80">
+              Faça cálculos precisos para casos jurídicos
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="p-4 bg-blue-600/10 rounded-lg border border-blue-500/20">
+                <div className="flex items-center gap-3 mb-3">
+                  <DollarSign className="w-6 h-6 text-blue-400" />
+                  <h3 className="font-semibold text-blue-200">Contrato Bancário</h3>
+                </div>
+                <p className="text-sm text-blue-200/80 mb-4">
+                  Calcule juros, correção monetária e diferenças em contratos bancários
+                </p>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-blue-300">15.000 tokens</span>
+                  <Button 
+                    onClick={() => navigate("/calculo-contrato-bancario")}
+                    size="sm"
+                    className="bg-blue-600 hover:bg-blue-500"
+                  >
+                    Calcular
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="p-4 bg-purple-600/10 rounded-lg border border-purple-500/20">
+                <div className="flex items-center gap-3 mb-3">
+                  <Heart className="w-6 h-6 text-purple-400" />
+                  <h3 className="font-semibold text-purple-200">Pensão Alimentícia</h3>
+                </div>
+                <p className="text-sm text-purple-200/80 mb-4">
+                  Calcule valores de pensão alimentícia, atrasos e correções
+                </p>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-purple-300">15.000 tokens</span>
+                  <Button 
+                    onClick={() => navigate("/calculo-pensao-alimenticia")}
+                    size="sm"
+                    className="bg-purple-600 hover:bg-purple-500"
+                  >
+                    Calcular
+                  </Button>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
