@@ -93,7 +93,7 @@ const Privacidade = () => {
               <h2 className="text-xl font-semibold text-foreground mb-4">9. Contato</h2>
               <p>
                 Para dúvidas sobre esta política de privacidade, entre em contato conosco através 
-                do e-mail privacidade@oraculojuridico.com.br
+                do e-mail contato@oraculojuridico.com.br
               </p>
             </section>
 
