@@ -84,7 +84,8 @@ const CalculoContratoBancario = () => {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-8">
           <Card>
             <CardHeader>
               <CardTitle>Dados do Contrato</CardTitle>
@@ -247,6 +248,7 @@ const CalculoContratoBancario = () => {
               </CardContent>
             </Card>
           )}
+          </div>
         </div>
       </div>
     </div>

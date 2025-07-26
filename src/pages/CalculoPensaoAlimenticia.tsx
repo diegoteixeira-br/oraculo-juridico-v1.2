@@ -98,7 +98,8 @@ const CalculoPensaoAlimenticia = () => {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-8">
           <Card>
             <CardHeader>
               <CardTitle>Dados da Pensão</CardTitle>
@@ -297,6 +298,7 @@ const CalculoPensaoAlimenticia = () => {
               </CardContent>
             </Card>
           )}
+          </div>
         </div>
       </div>
     </div>
