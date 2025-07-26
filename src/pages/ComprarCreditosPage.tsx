@@ -93,8 +93,8 @@ export default function ComprarCreditosPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      <div className="max-w-2xl mx-auto space-y-3 sm:space-y-4 p-2 sm:p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-2 sm:p-4">
+      <div className="max-w-2xl mx-auto space-y-3 sm:space-y-4">
         {/* Header */}
         <div className="flex justify-end pt-2">
           <UserMenu />
