@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import UserMenu from "@/components/UserMenu";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Message {
   id: string;
@@ -70,6 +71,7 @@ export default function Dashboard() {
   const [audioCurrentTime, setAudioCurrentTime] = useState<number>(0);
   const [audioDuration, setAudioDuration] = useState<number>(0);
   const [audioSpeed, setAudioSpeed] = useState<number>(1.0);
+  const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -77,6 +79,7 @@ export default function Dashboard() {
   const { user, profile, signOut, useTokens, refreshProfile } = useAuth();
   const { toast } = useToast();
   const { visible: menuVisible } = useScrollDirection();
+  const isMobile = useIsMobile();
 
   const userName = profile?.full_name || user?.email || "Usuário";
   const userInitials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
@@ -760,10 +763,34 @@ export default function Dashboard() {
                 chatSessions.map((session) => (
                   <div
                     key={session.id}
-                    className={`relative group p-2 rounded-lg hover:bg-primary/10 transition-colors cursor-pointer ${
+                    className={`relative group p-2 rounded-lg transition-colors cursor-pointer ${
                       currentSessionId === session.id ? 'bg-primary/10' : ''
+                    } ${
+                      selectedChatId === session.id ? 'bg-primary/5' : 'hover:bg-primary/10'
                     }`}
-                    onClick={() => loadChatSession(session)}
+                    onClick={(e) => {
+                      if (isMobile) {
+                        // No mobile: um clique seleciona/deseleciona, dois cliques carregam a conversa
+                        if (selectedChatId === session.id) {
+                          // Se já está selecionado, carregar a conversa
+                          loadChatSession(session);
+                          setSelectedChatId(null);
+                        } else {
+                          // Selecionar a conversa para mostrar a lixeira
+                          setSelectedChatId(session.id);
+                        }
+                      } else {
+                        // No desktop: comportamento normal (hover + clique)
+                        loadChatSession(session);
+                      }
+                    }}
+                    onDoubleClick={() => {
+                      if (isMobile) {
+                        // Clique duplo no mobile carrega diretamente
+                        loadChatSession(session);
+                        setSelectedChatId(null);
+                      }
+                    }}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
@@ -780,8 +807,13 @@ export default function Dashboard() {
                         onClick={(e) => {
                           e.stopPropagation();
                           deleteConversation(session.id);
+                          setSelectedChatId(null);
                         }}
-                        className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/20 hover:text-destructive"
+                        className={`h-6 w-6 p-0 transition-opacity hover:bg-destructive/20 hover:text-destructive ${
+                          isMobile 
+                            ? (selectedChatId === session.id ? 'opacity-100' : 'opacity-0') 
+                            : 'opacity-0 group-hover:opacity-100'
+                        }`}
                       >
                         <Trash2 className="w-1.5 h-1.5" />
                       </Button>
