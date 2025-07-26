@@ -95,9 +95,8 @@ const CalculoContratoBancario = () => {
           </p>
         </div>
 
-        <div className="max-w-5xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-8">
-          <Card>
+        <div className="max-w-4xl mx-auto">
+          <Card className="w-full">
             <CardHeader>
               <CardTitle>Dados do Contrato</CardTitle>
               <CardDescription>
@@ -214,7 +213,7 @@ const CalculoContratoBancario = () => {
           </Card>
 
           {result && (
-            <Card>
+            <Card className="mt-8">
               <CardHeader>
                 <CardTitle>Resultado do Cálculo</CardTitle>
                 <CardDescription>
@@ -259,7 +258,6 @@ const CalculoContratoBancario = () => {
               </CardContent>
             </Card>
           )}
-          </div>
         </div>
       </div>
     </div>

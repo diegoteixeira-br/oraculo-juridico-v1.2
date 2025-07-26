@@ -109,9 +109,8 @@ const CalculoPensaoAlimenticia = () => {
           </p>
         </div>
 
-        <div className="max-w-5xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-8">
-          <Card>
+        <div className="max-w-4xl mx-auto">
+          <Card className="w-full">
             <CardHeader>
               <CardTitle>Dados da Pensão</CardTitle>
               <CardDescription>
@@ -255,7 +254,7 @@ const CalculoPensaoAlimenticia = () => {
           </Card>
 
           {result && (
-            <Card>
+            <Card className="mt-8">
               <CardHeader>
                 <CardTitle>Resultado do Cálculo</CardTitle>
                 <CardDescription>
@@ -309,7 +308,6 @@ const CalculoPensaoAlimenticia = () => {
               </CardContent>
             </Card>
           )}
-          </div>
         </div>
       </div>
     </div>
