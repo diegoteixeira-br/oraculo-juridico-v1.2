@@ -799,8 +799,8 @@ export default function Dashboard() {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
-        {/* Menu flutuante com animação de scroll */}
-        <div className={`fixed top-0 right-0 z-50 p-4 transition-transform duration-300 ${
+        {/* Menu flutuante com animação de scroll - apenas para celular */}
+        <div className={`fixed top-0 right-0 z-50 p-4 transition-transform duration-300 lg:hidden ${
           menuVisible ? 'translate-y-0' : '-translate-y-full'
         }`}>
           <UserMenu hideOptions={["chat"]} />
@@ -814,6 +814,9 @@ export default function Dashboard() {
             <div className="flex items-center gap-2 md:gap-4">
               <SidebarTrigger className="lg:hidden" />
               <h1 className="text-base md:text-lg font-semibold truncate">Oráculo Jurídico</h1>
+            </div>
+            <div className="flex items-center gap-2 md:gap-4 lg:block hidden">
+              <UserMenu hideOptions={["chat"]} />
             </div>
           </header>
 
