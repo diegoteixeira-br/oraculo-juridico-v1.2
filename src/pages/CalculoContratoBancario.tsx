@@ -221,35 +221,35 @@ const CalculoContratoBancario = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 bg-secondary/50 rounded-lg">
-                    <p className="text-sm text-muted-foreground">Valor Total Devido</p>
-                    <p className="text-2xl font-bold text-primary">
-                      R$ {result.valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                    </p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 bg-secondary/50 rounded-lg">
+                      <p className="text-sm text-muted-foreground">Valor Total Devido</p>
+                      <p className="text-lg sm:text-2xl font-bold text-primary">
+                        R$ {result.valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      </p>
+                    </div>
+                    <div className="p-4 bg-secondary/50 rounded-lg">
+                      <p className="text-sm text-muted-foreground">Juros Total</p>
+                      <p className="text-lg sm:text-2xl font-bold text-orange-600">
+                        R$ {result.jurosTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      </p>
+                    </div>
                   </div>
-                  <div className="p-4 bg-secondary/50 rounded-lg">
-                    <p className="text-sm text-muted-foreground">Juros Total</p>
-                    <p className="text-2xl font-bold text-orange-600">
-                      R$ {result.jurosTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                    </p>
-                  </div>
-                </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 bg-secondary/50 rounded-lg">
-                    <p className="text-sm text-muted-foreground">Valor Corrigido</p>
-                    <p className="text-xl font-semibold">
-                      R$ {result.valorCorrigido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                    </p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 bg-secondary/50 rounded-lg">
+                      <p className="text-sm text-muted-foreground">Valor Corrigido</p>
+                      <p className="text-base sm:text-xl font-semibold">
+                        R$ {result.valorCorrigido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      </p>
+                    </div>
+                    <div className="p-4 bg-secondary/50 rounded-lg">
+                      <p className="text-sm text-muted-foreground">Diferença</p>
+                      <p className="text-base sm:text-xl font-semibold text-red-600">
+                        R$ {result.diferenca.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      </p>
+                    </div>
                   </div>
-                  <div className="p-4 bg-secondary/50 rounded-lg">
-                    <p className="text-sm text-muted-foreground">Diferença</p>
-                    <p className="text-xl font-semibold text-red-600">
-                      R$ {result.diferenca.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                    </p>
-                  </div>
-                </div>
 
                 <div className="p-4 bg-secondary/20 rounded-lg">
                   <h4 className="font-semibold mb-2">Detalhamento do Cálculo</h4>
