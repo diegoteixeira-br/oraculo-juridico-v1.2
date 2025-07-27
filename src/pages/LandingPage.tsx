@@ -217,6 +217,92 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Calculadoras Jurídicas */}
+      <section className="py-20 px-4 bg-muted/20">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-6 text-foreground">
+              Calculadoras Jurídicas Especializadas
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+              Ferramentas avançadas para cálculos jurídicos precisos, desenvolvidas especificamente para advogados
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div className="p-8 card-signup border-2 border-primary/20 hover:border-primary/40 transition-colors">
+              <div className="flex items-center mb-6">
+                <Building className="w-12 h-12 text-primary mr-4" />
+                <div>
+                  <h3 className="text-xl font-semibold text-foreground">Cálculo de Contrato Bancário</h3>
+                  <p className="text-muted-foreground text-sm">Análise completa de contratos financeiros</p>
+                </div>
+              </div>
+              <ul className="space-y-2 text-muted-foreground mb-6">
+                <li className="flex items-center">
+                  <Check className="w-4 h-4 text-primary mr-2" />
+                  Cálculo de juros e taxas
+                </li>
+                <li className="flex items-center">
+                  <Check className="w-4 h-4 text-primary mr-2" />
+                  Análise de cláusulas abusivas
+                </li>
+                <li className="flex items-center">
+                  <Check className="w-4 h-4 text-primary mr-2" />
+                  Valor de devolução indevida
+                </li>
+              </ul>
+              <div className="bg-card p-4 rounded-lg border border-border">
+                <p className="text-sm text-muted-foreground">
+                  <strong>Custo:</strong> 15.000 tokens por cálculo
+                </p>
+              </div>
+            </div>
+
+            <div className="p-8 card-signup border-2 border-primary/20 hover:border-primary/40 transition-colors">
+              <div className="flex items-center mb-6">
+                <Scale className="w-12 h-12 text-primary mr-4" />
+                <div>
+                  <h3 className="text-xl font-semibold text-foreground">Cálculo de Pensão Alimentícia</h3>
+                  <p className="text-muted-foreground text-sm">Cálculos precisos de pensão alimentícia</p>
+                </div>
+              </div>
+              <ul className="space-y-2 text-muted-foreground mb-6">
+                <li className="flex items-center">
+                  <Check className="w-4 h-4 text-primary mr-2" />
+                  Valores em atraso com juros
+                </li>
+                <li className="flex items-center">
+                  <Check className="w-4 h-4 text-primary mr-2" />
+                  Correção monetária automática
+                </li>
+                <li className="flex items-center">
+                  <Check className="w-4 h-4 text-primary mr-2" />
+                  Relatório detalhado
+                </li>
+              </ul>
+              <div className="bg-card p-4 rounded-lg border border-border">
+                <p className="text-sm text-muted-foreground">
+                  <strong>Custo:</strong> 15.000 tokens por cálculo
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-12">
+            <div className="bg-card p-6 rounded-lg border border-border max-w-3xl mx-auto">
+              <h3 className="text-xl font-bold mb-3 text-foreground">
+                Acesso às Calculadoras
+              </h3>
+              <p className="text-muted-foreground">
+                As calculadoras jurídicas estão disponíveis em sua conta após o login. Cada cálculo consome 
+                15.000 tokens e gera um relatório completo com fundamentação legal e valores atualizados.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Conta Gratuita */}
       <section id="free-account-section" className="py-10 sm:py-16 px-4 bg-muted/20">
         <div className="max-w-4xl mx-auto">

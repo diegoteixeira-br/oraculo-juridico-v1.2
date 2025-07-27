@@ -96,7 +96,29 @@ const Termos = () => {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">6. Documentos Jurídicos</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-4">6. Calculadoras Jurídicas</h2>
+              <p>
+                A plataforma oferece calculadoras jurídicas especializadas para auxiliar em cálculos 
+                complexos do dia a dia da advocacia:
+              </p>
+              <ul className="list-disc ml-6 mt-2 space-y-2">
+                <li><strong>Cálculo de Contrato Bancário:</strong> Análise de juros, taxas, cláusulas abusivas e valores de devolução indevida</li>
+                <li><strong>Cálculo de Pensão Alimentícia:</strong> Cálculo de valores em atraso com juros, correção monetária e relatórios detalhados</li>
+              </ul>
+              <p className="mt-2">
+                <strong>Custo por Cálculo:</strong> Cada calculadora consome 15.000 tokens por execução, 
+                gerando um relatório completo com fundamentação legal e valores atualizados conforme 
+                índices oficiais.
+              </p>
+              <p className="mt-2">
+                <strong>Importante:</strong> As calculadoras são ferramentas auxiliares baseadas em 
+                parâmetros legais estabelecidos, mas não substituem a análise jurídica profissional 
+                para casos específicos e complexos.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold text-foreground mb-4">7. Documentos Jurídicos</h2>
               <p>
                 A plataforma oferece acesso a documentos jurídicos pré-formulados que podem ser 
                 personalizados conforme a necessidade:
@@ -114,7 +136,7 @@ const Termos = () => {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">7. Responsabilidades do Usuário</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-4">8. Responsabilidades do Usuário</h2>
               <p>
                 O usuário compromete-se a:
               </p>
@@ -128,7 +150,7 @@ const Termos = () => {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">8. Confiabilidade e Limitações</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-4">9. Confiabilidade e Limitações</h2>
               <p>
                 O Oráculo Jurídico utiliza fontes oficiais confiáveis e é uma ferramenta de apoio profissional. 
                 O usuário reconhece que:
@@ -144,7 +166,7 @@ const Termos = () => {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">9. Política de Reembolso</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-4">10. Política de Reembolso</h2>
               <p>
                 Os tokens adquiridos não são reembolsáveis, exceto em casos de:
               </p>
@@ -160,7 +182,7 @@ const Termos = () => {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">10. Modificações dos Termos</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-4">11. Modificações dos Termos</h2>
               <p>
                 Reservamo-nos o direito de modificar estes termos a qualquer momento. As alterações 
                 entrarão em vigor imediatamente após a publicação na plataforma. Recomendamos a 
@@ -169,7 +191,7 @@ const Termos = () => {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">11. Contato</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-4">12. Contato</h2>
               <p>
                 Para dúvidas sobre estes termos, suporte técnico ou solicitações relacionadas à sua conta, 
                 entre em contato conosco através do e-mail contato@oraculojuridico.com.br ou utilize 
