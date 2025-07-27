@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { User, LogOut, Settings, MessageSquare, CreditCard } from "lucide-react";
+import { User, LogOut, Settings, MessageSquare, CreditCard, Calculator, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -46,6 +46,20 @@ export default function UserMenu({ hideOptions = [] }: UserMenuProps) {
       icon: CreditCard,
       onClick: () => navigate("/dashboard"),
       show: !hideOptions.includes("dashboard")
+    },
+    {
+      key: "calc-contrato",
+      label: "Calc. Contrato Bancário",
+      icon: Calculator,
+      onClick: () => navigate("/calculo-contrato-bancario"),
+      show: !hideOptions.includes("calc-contrato")
+    },
+    {
+      key: "calc-pensao",
+      label: "Calc. Pensão Alimentícia",
+      icon: Heart,
+      onClick: () => navigate("/calculo-pensao-alimenticia"),
+      show: !hideOptions.includes("calc-pensao")
     },
     {
       key: "account",
