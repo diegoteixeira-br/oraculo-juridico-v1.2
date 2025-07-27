@@ -8,9 +8,9 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Mail, Send, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
+import { useGoogleReCaptcha, GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 
-const ContatoPage = () => {
+const ContatoForm = () => {
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
@@ -242,6 +242,17 @@ const ContatoPage = () => {
         </div>
       </main>
     </div>
+  );
+};
+
+const ContatoPage = () => {
+  return (
+    <GoogleReCaptchaProvider
+      reCaptchaKey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" // Site key de teste do Google
+      language="pt-BR"
+    >
+      <ContatoForm />
+    </GoogleReCaptchaProvider>
   );
 };
 
