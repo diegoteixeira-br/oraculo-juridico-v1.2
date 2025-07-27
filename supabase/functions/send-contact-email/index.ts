@@ -14,6 +14,8 @@ interface ContactEmailRequest {
   email: string;
   assunto: string;
   mensagem: string;
+  honeypot?: string;
+  recaptchaToken?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -23,7 +25,47 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { nome, email, assunto, mensagem }: ContactEmailRequest = await req.json();
+    const { nome, email, assunto, mensagem, honeypot, recaptchaToken }: ContactEmailRequest = await req.json();
+
+    // Verificação honeypot - se preenchido, é um bot
+    if (honeypot && honeypot.trim() !== '') {
+      console.log('Bot detectado via honeypot');
+      return new Response(
+        JSON.stringify({ error: 'Acesso negado' }),
+        {
+          status: 403,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    // Verificação reCAPTCHA
+    if (recaptchaToken) {
+      const recaptchaSecret = Deno.env.get("RECAPTCHA_SECRET_KEY");
+      if (recaptchaSecret) {
+        const recaptchaResponse = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: `secret=${recaptchaSecret}&response=${recaptchaToken}`,
+        });
+        
+        const recaptchaResult = await recaptchaResponse.json();
+        console.log('Resultado reCAPTCHA:', recaptchaResult);
+        
+        if (!recaptchaResult.success || recaptchaResult.score < 0.5) {
+          console.log('reCAPTCHA falhou - possível bot');
+          return new Response(
+            JSON.stringify({ error: 'Falha na verificação de segurança' }),
+            {
+              status: 403,
+              headers: { "Content-Type": "application/json", ...corsHeaders },
+            }
+          );
+        }
+      }
+    }
 
     console.log('Enviando email de contato:', { nome, email, assunto });
 

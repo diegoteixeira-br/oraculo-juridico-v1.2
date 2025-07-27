@@ -6,26 +6,58 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Mail, Send } from "lucide-react";
+import { ArrowLeft, Mail, Send, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 const ContatoPage = () => {
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
     assunto: "",
-    mensagem: ""
+    mensagem: "",
+    honeypot: "" // Campo honeypot para detectar bots
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
   const { toast } = useToast();
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
+      // Verificação honeypot - se preenchido, é um bot
+      if (formData.honeypot) {
+        toast({
+          title: "Erro de validação",
+          description: "Falha na verificação de segurança.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Verificação reCAPTCHA
+      if (!executeRecaptcha) {
+        toast({
+          title: "Erro de verificação",
+          description: "Sistema de verificação não disponível. Tente novamente.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      const recaptchaToken = await executeRecaptcha('contact_form');
+      
+      // Enviar dados incluindo o token reCAPTCHA
       const { error } = await supabase.functions.invoke('send-contact-email', {
-        body: formData
+        body: {
+          ...formData,
+          recaptchaToken
+        }
       });
 
       if (error) throw error;
@@ -39,7 +71,8 @@ const ContatoPage = () => {
         nome: "",
         email: "",
         assunto: "",
-        mensagem: ""
+        mensagem: "",
+        honeypot: ""
       });
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
@@ -159,6 +192,22 @@ const ContatoPage = () => {
                     placeholder="Escreva sua mensagem aqui..."
                     className="min-h-[120px]"
                   />
+                </div>
+
+                {/* Campo honeypot - invisível para usuários, usado para detectar bots */}
+                <input
+                  type="text"
+                  name="honeypot"
+                  value={formData.honeypot}
+                  onChange={handleInputChange}
+                  style={{ display: 'none' }}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+
+                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                  <Shield className="h-4 w-4" />
+                  <span>Protegido por verificação anti-spam</span>
                 </div>
 
                 <Button 
