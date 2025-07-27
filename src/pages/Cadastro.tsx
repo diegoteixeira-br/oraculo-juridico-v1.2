@@ -8,13 +8,15 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
-import { ArrowLeft, Eye, EyeOff, UserPlus } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, UserPlus, Shield } from 'lucide-react';
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 export default function Cadastro() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [honeypot, setHoneypot] = useState(''); // Campo honeypot para detectar bots
   const [loading, setLoading] = useState(false);
   
   const { signUp } = useAuth();
@@ -22,12 +24,30 @@ export default function Cadastro() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const selectedPlan = searchParams.get('plano');
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      // Verificação honeypot - se preenchido, é um bot
+      if (honeypot.trim() !== '') {
+        toast({
+          title: "Erro de validação",
+          description: "Falha na verificação de segurança.",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Verificação reCAPTCHA
+      if (executeRecaptcha) {
+        const recaptchaToken = await executeRecaptcha('signup');
+        console.log('Token reCAPTCHA gerado para cadastro:', recaptchaToken);
+      }
+
       const result = await signUp(email, password, fullName);
       if (result.error) {
         if (result.error.message.includes('already registered')) {
@@ -156,6 +176,23 @@ export default function Cadastro() {
                     )}
                   </Button>
                 </div>
+              </div>
+
+              {/* Campo honeypot - invisível para usuários, usado para detectar bots */}
+              <input
+                type="text"
+                name="website_url"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                style={{ display: 'none' }}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+              />
+
+              <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-4">
+                <Shield className="h-4 w-4" />
+                <span>Protegido contra criação automatizada de contas</span>
               </div>
 
               <Button 
