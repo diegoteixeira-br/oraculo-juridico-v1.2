@@ -93,11 +93,11 @@ const CalculoPensaoAlimenticia = () => {
         <div className="mb-6">
           <Button
             variant="ghost"
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate(-1)}
             className="mb-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Voltar ao Dashboard
+            Voltar
           </Button>
           
           <div className="flex items-center gap-3 mb-2">
