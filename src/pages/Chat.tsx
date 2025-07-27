@@ -845,7 +845,12 @@ export default function Dashboard() {
           <header className="h-14 flex items-center justify-between px-4 md:px-6 border-b border-slate-700 bg-slate-800">
             <div className="flex items-center gap-2 md:gap-4">
               <SidebarTrigger className="lg:hidden" />
-              <h1 className="text-base md:text-lg font-semibold truncate">Oráculo Jurídico</h1>
+              <h1 
+                className="text-base md:text-lg font-semibold truncate cursor-pointer hover:text-primary transition-colors" 
+                onClick={() => navigate('/dashboard')}
+              >
+                Oráculo Jurídico
+              </h1>
             </div>
             <div className="flex items-center gap-2 md:gap-4 lg:block hidden">
               <UserMenu hideOptions={["chat"]} />
