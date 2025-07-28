@@ -9,7 +9,8 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Eye, EyeOff, UserPlus, Shield } from 'lucide-react';
-import { useGoogleReCaptcha, GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
+import ReCaptchaProvider from "@/components/ReCaptchaProvider";
 
 function CadastroForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -243,11 +244,8 @@ function CadastroForm() {
 
 export default function Cadastro() {
   return (
-    <GoogleReCaptchaProvider
-      reCaptchaKey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" // Site key de teste do Google
-      language="pt-BR"
-    >
+    <ReCaptchaProvider>
       <CadastroForm />
-    </GoogleReCaptchaProvider>
+    </ReCaptchaProvider>
   );
 }
