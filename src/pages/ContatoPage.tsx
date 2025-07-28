@@ -8,8 +8,8 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Mail, Send, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
-import ReCaptchaProvider from "@/components/ReCaptchaProvider";
+import ReCaptcha from "react-google-recaptcha";
+import ReCaptchaProvider, { useReCaptcha } from "@/components/ReCaptchaProvider";
 
 const ContatoForm = () => {
   const [formData, setFormData] = useState({
@@ -20,9 +20,9 @@ const ContatoForm = () => {
     honeypot: "" // Campo honeypot para detectar bots
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [isVerified, setIsVerified] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState('');
   const { toast } = useToast();
-  const { executeRecaptcha } = useGoogleReCaptcha();
+  const { siteKey } = useReCaptcha();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,17 +41,15 @@ const ContatoForm = () => {
       }
 
       // Verificação reCAPTCHA
-      if (!executeRecaptcha) {
+      if (!recaptchaToken) {
         toast({
-          title: "Erro de verificação",
-          description: "Sistema de verificação não disponível. Tente novamente.",
+          title: "Verificação necessária",
+          description: "Por favor, complete a verificação reCAPTCHA.",
           variant: "destructive",
         });
         setIsLoading(false);
         return;
       }
-
-      const recaptchaToken = await executeRecaptcha('contact_form');
       
       // Enviar dados incluindo o token reCAPTCHA
       const { error } = await supabase.functions.invoke('send-contact-email', {
@@ -75,6 +73,7 @@ const ContatoForm = () => {
         mensagem: "",
         honeypot: ""
       });
+      setRecaptchaToken('');
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
       toast({
@@ -206,9 +205,20 @@ const ContatoForm = () => {
                   autoComplete="off"
                 />
 
-                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                  <Shield className="h-4 w-4" />
-                  <span>Protegido por verificação anti-spam</span>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                    <Shield className="h-4 w-4" />
+                    <span>Verificação de segurança</span>
+                  </div>
+                  
+                  <div className="flex justify-center">
+                    <ReCaptcha
+                      sitekey={siteKey}
+                      onChange={(token) => setRecaptchaToken(token || '')}
+                      onExpired={() => setRecaptchaToken('')}
+                      hl="pt-BR"
+                    />
+                  </div>
                 </div>
 
                 <Button 

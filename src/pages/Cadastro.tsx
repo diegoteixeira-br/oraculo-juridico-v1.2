@@ -9,8 +9,8 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Eye, EyeOff, UserPlus, Shield } from 'lucide-react';
-import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
-import ReCaptchaProvider from "@/components/ReCaptchaProvider";
+import ReCaptcha from "react-google-recaptcha";
+import ReCaptchaProvider, { useReCaptcha } from "@/components/ReCaptchaProvider";
 
 function CadastroForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -19,13 +19,14 @@ function CadastroForm() {
   const [fullName, setFullName] = useState('');
   const [honeypot, setHoneypot] = useState(''); // Campo honeypot para detectar bots
   const [loading, setLoading] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState('');
   
   const { signUp } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const selectedPlan = searchParams.get('plano');
-  const { executeRecaptcha } = useGoogleReCaptcha();
+  const { siteKey } = useReCaptcha();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,9 +45,14 @@ function CadastroForm() {
       }
 
       // Verificação reCAPTCHA
-      if (executeRecaptcha) {
-        const recaptchaToken = await executeRecaptcha('signup');
-        console.log('Token reCAPTCHA gerado para cadastro:', recaptchaToken);
+      if (!recaptchaToken) {
+        toast({
+          title: "Verificação necessária",
+          description: "Por favor, complete a verificação reCAPTCHA.",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
       }
 
       const result = await signUp(email, password, fullName);
@@ -191,9 +197,20 @@ function CadastroForm() {
                 aria-hidden="true"
               />
 
-              <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-4">
-                <Shield className="h-4 w-4" />
-                <span>Protegido contra criação automatizada de contas</span>
+              <div className="space-y-4">
+                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                  <Shield className="h-4 w-4" />
+                  <span>Verificação de segurança</span>
+                </div>
+                
+                <div className="flex justify-center">
+                  <ReCaptcha
+                    sitekey={siteKey}
+                    onChange={(token) => setRecaptchaToken(token || '')}
+                    onExpired={() => setRecaptchaToken('')}
+                    hl="pt-BR"
+                  />
+                </div>
               </div>
 
               <Button 

@@ -1,5 +1,10 @@
-import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
-import { ReactNode } from "react";
+import { ReactNode, createContext, useContext } from "react";
+
+interface ReCaptchaContextProps {
+  siteKey: string;
+}
+
+const ReCaptchaContext = createContext<ReCaptchaContextProps | null>(null);
 
 interface ReCaptchaProviderProps {
   children: ReactNode;
@@ -7,14 +12,19 @@ interface ReCaptchaProviderProps {
 
 export default function ReCaptchaProvider({ children }: ReCaptchaProviderProps) {
   // In production, this will be replaced by the actual site key from Supabase secrets
-  const reCaptchaKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI";
+  const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI";
   
   return (
-    <GoogleReCaptchaProvider
-      reCaptchaKey={reCaptchaKey}
-      language="pt-BR"
-    >
+    <ReCaptchaContext.Provider value={{ siteKey }}>
       {children}
-    </GoogleReCaptchaProvider>
+    </ReCaptchaContext.Provider>
   );
 }
+
+export const useReCaptcha = () => {
+  const context = useContext(ReCaptchaContext);
+  if (!context) {
+    throw new Error('useReCaptcha must be used within a ReCaptchaProvider');
+  }
+  return context;
+};
