@@ -34,18 +34,18 @@ export default function UserMenu({ hideOptions = [] }: UserMenuProps) {
 
   const menuItems = [
     {
-      key: "chat",
-      label: "Iniciar Consulta",
-      icon: MessageSquare,
-      onClick: () => navigate("/chat"),
-      show: !hideOptions.includes("chat")
-    },
-    {
       key: "dashboard", 
       label: "Dashboard",
       icon: CreditCard,
       onClick: () => navigate("/dashboard"),
       show: !hideOptions.includes("dashboard")
+    },
+    {
+      key: "chat",
+      label: "Iniciar Consulta",
+      icon: MessageSquare,
+      onClick: () => navigate("/chat"),
+      show: !hideOptions.includes("chat")
     },
     {
       key: "calc-contrato",
