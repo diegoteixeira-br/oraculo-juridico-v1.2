@@ -100,8 +100,8 @@ export default function ComprarCreditosPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-2 sm:p-4">
-      <div className="max-w-2xl mx-auto space-y-3 sm:space-y-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-2 sm:p-4 lg:p-6">
+      <div className="max-w-6xl mx-auto space-y-3 sm:space-y-4 lg:space-y-6">
         {/* Header com Menu - com animação de scroll */}
         <div className={`fixed top-0 right-0 z-50 p-2 sm:p-4 transition-transform duration-300 ${
           menuVisible ? 'translate-y-0' : '-translate-y-full'
@@ -115,8 +115,8 @@ export default function ComprarCreditosPage() {
             alt="Oráculo Jurídico" 
             className="h-12 sm:h-14 w-auto mx-auto mb-2 sm:mb-3"
           />
-          <h1 className="text-xl sm:text-2xl font-bold text-primary mb-1 sm:mb-2">Planos de Tokens</h1>
-          <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto px-2">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary mb-1 sm:mb-2">Planos de Tokens</h1>
+          <p className="text-xs sm:text-sm lg:text-base text-muted-foreground max-w-md mx-auto px-2">
             Escolha o plano ideal para suas necessidades.
           </p>
           <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-2 sm:p-3 mt-2 sm:mt-3 max-w-sm mx-auto">
@@ -131,12 +131,12 @@ export default function ComprarCreditosPage() {
           </div>
         </div>
 
-        {/* Packages Grid */}
-        <div className="grid gap-3 sm:gap-4 max-w-lg mx-auto">
+        {/* Packages Grid - Responsivo: vertical no mobile, horizontal no desktop */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 max-w-4xl mx-auto">
           {tokenPackages.map((pkg) => (
             <Card 
               key={pkg.id}
-              className={`relative bg-slate-800 border-slate-700 transition-all duration-300 ${
+              className={`relative bg-slate-800 border-slate-700 transition-all duration-300 h-fit ${
                 pkg.popular ? 'border-primary shadow-lg shadow-primary/20' : ''
               }`}
             >
@@ -150,10 +150,10 @@ export default function ComprarCreditosPage() {
               )}
               
               <CardHeader className="text-center pt-4 sm:pt-6 pb-2 sm:pb-3">
-                <CardTitle className="text-base sm:text-lg font-bold text-primary">
+                <CardTitle className="text-base sm:text-lg lg:text-xl font-bold text-primary">
                   {pkg.name}
                 </CardTitle>
-                <CardDescription className="text-lg sm:text-xl font-bold text-white">
+                <CardDescription className="text-lg sm:text-xl lg:text-2xl font-bold text-white">
                   {pkg.tokens.toLocaleString()} tokens
                 </CardDescription>
               </CardHeader>
@@ -173,7 +173,7 @@ export default function ComprarCreditosPage() {
                         R$ {pkg.originalPrice.toFixed(2).replace('.', ',')}
                       </span>
                     )}
-                    <span className="text-xl sm:text-2xl font-bold text-primary">
+                    <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary">
                       R$ {pkg.price.toFixed(2).replace('.', ',')}
                     </span>
                   </div>
@@ -184,8 +184,8 @@ export default function ComprarCreditosPage() {
 
                 <div className="space-y-1 sm:space-y-2">
                   {pkg.features.map((feature, index) => (
-                    <div key={index} className="flex items-center gap-2 text-xs">
-                      <Check className="w-3 h-3 text-primary flex-shrink-0" />
+                    <div key={index} className="flex items-center gap-2 text-xs sm:text-sm">
+                      <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0" />
                       <span>{feature}</span>
                     </div>
                   ))}
@@ -194,7 +194,7 @@ export default function ComprarCreditosPage() {
                 <Button
                   onClick={() => handlePurchase(pkg.id)}
                   disabled={isLoading}
-                  className={`w-full mt-3 h-9 sm:h-10 text-sm ${
+                  className={`w-full mt-3 h-10 sm:h-12 text-sm sm:text-base ${
                     pkg.popular 
                       ? 'bg-primary hover:bg-primary/90' 
                       : 'bg-slate-700 hover:bg-slate-600 text-white'
@@ -207,7 +207,7 @@ export default function ComprarCreditosPage() {
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
-                      <CreditCard className="w-4 h-4" />
+                      <CreditCard className="w-4 h-4 sm:w-5 sm:h-5" />
                       Comprar Tokens
                     </div>
                   )}
