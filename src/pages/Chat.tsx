@@ -763,60 +763,83 @@ export default function Dashboard() {
                 chatSessions.map((session) => (
                   <div
                     key={session.id}
-                    className={`relative group p-2 rounded-lg transition-colors cursor-pointer ${
-                      currentSessionId === session.id ? 'bg-primary/10' : ''
+                    className={`relative group p-3 rounded-lg transition-all duration-200 cursor-pointer ${
+                      currentSessionId === session.id ? 'bg-primary/10 border border-primary/20' : ''
                     } ${
-                      selectedChatId === session.id ? 'bg-primary/5' : 'hover:bg-primary/10'
+                      selectedChatId === session.id ? 'bg-primary/10 ring-2 ring-primary/30' : 'hover:bg-primary/10'
                     }`}
                     onClick={(e) => {
                       if (isMobile) {
-                        // No mobile: um clique seleciona/deseleciona, dois cliques carregam a conversa
+                        e.preventDefault();
                         if (selectedChatId === session.id) {
-                          // Se já está selecionado, carregar a conversa
+                          // Segundo clique: carregar a conversa
                           loadChatSession(session);
                           setSelectedChatId(null);
                         } else {
-                          // Selecionar a conversa para mostrar a lixeira
+                          // Primeiro clique: selecionar para mostrar opções
                           setSelectedChatId(session.id);
                         }
                       } else {
-                        // No desktop: comportamento normal (hover + clique)
+                        // Desktop: clique único carrega diretamente
                         loadChatSession(session);
-                      }
-                    }}
-                    onDoubleClick={() => {
-                      if (isMobile) {
-                        // Clique duplo no mobile carrega diretamente
-                        loadChatSession(session);
-                        setSelectedChatId(null);
                       }
                     }}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
-                        <div className="text-xs font-medium truncate text-left">
+                        <div className="text-sm font-medium truncate text-left">
                           {session.title}
                         </div>
                         <div className="text-xs text-muted-foreground mt-1 text-left">
-                          {session.timestamp.toLocaleDateString('pt-BR')}
+                          {session.timestamp.toLocaleDateString('pt-BR', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
                         </div>
+                        {isMobile && selectedChatId === session.id && (
+                          <div className="flex gap-2 mt-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                loadChatSession(session);
+                                setSelectedChatId(null);
+                              }}
+                              className="h-7 px-2 text-xs"
+                            >
+                              Abrir
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteConversation(session.id);
+                                setSelectedChatId(null);
+                              }}
+                              className="h-7 px-2 text-xs"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        )}
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteConversation(session.id);
-                          setSelectedChatId(null);
-                        }}
-                        className={`h-6 w-6 p-0 transition-opacity hover:bg-destructive/20 hover:text-destructive ${
-                          isMobile 
-                            ? (selectedChatId === session.id ? 'opacity-100' : 'opacity-0') 
-                            : 'opacity-0 group-hover:opacity-100'
-                        }`}
-                      >
-                        <Trash2 className="w-1.5 h-1.5" />
-                      </Button>
+                      {!isMobile && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteConversation(session.id);
+                          }}
+                          className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/20 hover:text-destructive"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))

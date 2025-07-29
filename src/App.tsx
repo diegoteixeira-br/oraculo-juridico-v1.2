@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { usePageTitle } from "./hooks/usePageTitle";
+import { useSmoothScrollTop } from "./hooks/useSmoothScrollTop";
 
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
@@ -67,6 +68,7 @@ function AppContent() {
 
 function PageWrapper({ children }: { children: React.ReactNode }) {
   usePageTitle();
+  useSmoothScrollTop(); // Scroll suave para o topo em mudanças de página
   return <>{children}</>;
 }
 
