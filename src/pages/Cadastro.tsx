@@ -9,7 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Eye, EyeOff, UserPlus, Shield } from 'lucide-react';
-import ReCaptcha from "react-google-recaptcha";
+import ReCAPTCHA from "react-google-recaptcha";
 import ReCaptchaProvider, { useReCaptcha } from "@/components/ReCaptchaProvider";
 
 function CadastroForm() {
@@ -204,7 +204,7 @@ function CadastroForm() {
                 </div>
                 
                 <div className="flex justify-center">
-                  <ReCaptcha
+                  <ReCAPTCHA
                     sitekey={siteKey}
                     onChange={(token) => setRecaptchaToken(token || '')}
                     onExpired={() => setRecaptchaToken('')}

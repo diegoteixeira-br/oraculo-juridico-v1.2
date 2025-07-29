@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Mail, Send, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
-import ReCaptcha from "react-google-recaptcha";
+import ReCAPTCHA from "react-google-recaptcha";
 import ReCaptchaProvider, { useReCaptcha } from "@/components/ReCaptchaProvider";
 
 const ContatoForm = () => {
@@ -212,7 +212,7 @@ const ContatoForm = () => {
                   </div>
                   
                   <div className="flex justify-center">
-                    <ReCaptcha
+                    <ReCAPTCHA
                       sitekey={siteKey}
                       onChange={(token) => setRecaptchaToken(token || '')}
                       onExpired={() => setRecaptchaToken('')}
