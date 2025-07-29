@@ -11,8 +11,8 @@ interface ReCaptchaProviderProps {
 }
 
 export default function ReCaptchaProvider({ children }: ReCaptchaProviderProps) {
-  // In production, this will be replaced by the actual site key from Supabase secrets
-  const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI";
+  // Using your reCAPTCHA v2 site key
+  const siteKey = "6Lc_M1rAAAAOQ9Z17CLgvjz_s_5nihlcuvSIx0";
   
   return (
     <ReCaptchaContext.Provider value={{ siteKey }}>
