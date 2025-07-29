@@ -11,7 +11,7 @@ interface ReCaptchaProviderProps {
 }
 
 export default function ReCaptchaProvider({ children }: ReCaptchaProviderProps) {
-  // Using your reCAPTCHA v2 site key
+  // reCAPTCHA v2 site key - é seguro estar aqui pois é uma chave pública
   const siteKey = "6Lc_MJIrAAAAAO9NzI7CLgvjz_s_5nihlcuvSIxO";
   
   return (
