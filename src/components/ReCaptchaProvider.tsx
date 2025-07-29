@@ -11,8 +11,8 @@ interface ReCaptchaProviderProps {
 }
 
 export default function ReCaptchaProvider({ children }: ReCaptchaProviderProps) {
-  // Using your reCAPTCHA v2 site key
-  const siteKey = "6Lc_M1rAAAAOQ9Z17CLgvjz_s_5nihlcuvSIx0";
+  // Using your reCAPTCHA v2 site key from the image
+  const siteKey = "6Lc_M1rqAAAAOQ9Z17CLgvjz_s_5nihlcuvSIx0";
   
   return (
     <ReCaptchaContext.Provider value={{ siteKey }}>
