@@ -74,191 +74,196 @@ const CalculoContratoBancario = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-6">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 px-4 py-6">
+      <div className="container mx-auto max-w-4xl">
+        <div className="mb-4">
           <Button
-            variant="ghost"
+            variant="outline"
             onClick={() => navigate(-1)}
-            className="mb-4"
+            className="mb-4 h-9"
+            size="sm"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Voltar
           </Button>
           
           <div className="flex items-center gap-3 mb-2">
-            <Calculator className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl font-bold">Cálculo de Contrato Bancário</h1>
+            <Calculator className="h-6 w-6 text-primary" />
+            <h1 className="text-lg md:text-2xl font-bold">Cálculo de Contrato Bancário</h1>
           </div>
-          <p className="text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             Calcule juros, correção monetária e diferenças em contratos bancários
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto">
-          <Card className="w-full">
-            <CardHeader>
-              <CardTitle>Dados do Contrato</CardTitle>
-              <CardDescription>
-                Informe os dados básicos do contrato bancário
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="valorContrato">Valor do Contrato *</Label>
-                  <Input
-                    id="valorContrato"
-                    type="number"
-                    step="0.01"
-                    placeholder="10000.00"
-                    value={formData.valorContrato}
-                    onChange={(e) => handleInputChange('valorContrato', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="valorPago">Valor Pago</Label>
-                  <Input
-                    id="valorPago"
-                    type="number"
-                    step="0.01"
-                    placeholder="5000.00"
-                    value={formData.valorPago}
-                    onChange={(e) => handleInputChange('valorPago', e.target.value)}
-                  />
-                </div>
+        <Card className="w-full border-0 shadow-lg">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg">Dados do Contrato</CardTitle>
+            <CardDescription className="text-sm">
+              Informe os dados básicos do contrato bancário
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="valorContrato" className="text-sm">Valor do Contrato *</Label>
+                <Input
+                  id="valorContrato"
+                  type="number"
+                  step="0.01"
+                  placeholder="10000.00"
+                  value={formData.valorContrato}
+                  onChange={(e) => handleInputChange('valorContrato', e.target.value)}
+                  className="h-10"
+                />
               </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="dataContrato">Data do Contrato *</Label>
-                  <Input
-                    id="dataContrato"
-                    type="date"
-                    value={formData.dataContrato}
-                    onChange={(e) => handleInputChange('dataContrato', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="dataVencimento">Data de Vencimento *</Label>
-                  <Input
-                    id="dataVencimento"
-                    type="date"
-                    value={formData.dataVencimento}
-                    onChange={(e) => handleInputChange('dataVencimento', e.target.value)}
-                  />
-                </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="valorPago" className="text-sm">Valor Pago</Label>
+                <Input
+                  id="valorPago"
+                  type="number"
+                  step="0.01"
+                  placeholder="5000.00"
+                  value={formData.valorPago}
+                  onChange={(e) => handleInputChange('valorPago', e.target.value)}
+                  className="h-10"
+                />
               </div>
+            </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="taxaJuros">Taxa de Juros (% a.m.) *</Label>
-                  <Input
-                    id="taxaJuros"
-                    type="number"
-                    step="0.01"
-                    placeholder="2.5"
-                    value={formData.taxaJuros}
-                    onChange={(e) => handleInputChange('taxaJuros', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="tipoJuros">Tipo de Juros</Label>
-                  <Select value={formData.tipoJuros} onValueChange={(value) => handleInputChange('tipoJuros', value)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="simples">Juros Simples</SelectItem>
-                      <SelectItem value="compostos">Juros Compostos</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="dataContrato" className="text-sm">Data do Contrato *</Label>
+                <Input
+                  id="dataContrato"
+                  type="date"
+                  value={formData.dataContrato}
+                  onChange={(e) => handleInputChange('dataContrato', e.target.value)}
+                  className="h-10"
+                />
               </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="dataVencimento" className="text-sm">Data de Vencimento *</Label>
+                <Input
+                  id="dataVencimento"
+                  type="date"
+                  value={formData.dataVencimento}
+                  onChange={(e) => handleInputChange('dataVencimento', e.target.value)}
+                  className="h-10"
+                />
+              </div>
+            </div>
 
-              <div>
-                <Label htmlFor="indiceCorrecao">Índice de Correção</Label>
-                <Select value={formData.indiceCorrecao} onValueChange={(value) => handleInputChange('indiceCorrecao', value)}>
-                  <SelectTrigger>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="taxaJuros" className="text-sm">Taxa de Juros (% a.m.) *</Label>
+                <Input
+                  id="taxaJuros"
+                  type="number"
+                  step="0.01"
+                  placeholder="2.5"
+                  value={formData.taxaJuros}
+                  onChange={(e) => handleInputChange('taxaJuros', e.target.value)}
+                  className="h-10"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="tipoJuros" className="text-sm">Tipo de Juros</Label>
+                <Select value={formData.tipoJuros} onValueChange={(value) => handleInputChange('tipoJuros', value)}>
+                  <SelectTrigger className="h-10">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ipca">IPCA</SelectItem>
-                    <SelectItem value="igpm">IGP-M</SelectItem>
-                    <SelectItem value="inpc">INPC</SelectItem>
-                    <SelectItem value="selic">SELIC</SelectItem>
+                    <SelectItem value="simples">Juros Simples</SelectItem>
+                    <SelectItem value="compostos">Juros Compostos</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
+            </div>
 
-              <div>
-                <Label htmlFor="observacoes">Observações</Label>
-                <Textarea
-                  id="observacoes"
-                  placeholder="Informações adicionais sobre o contrato..."
-                  value={formData.observacoes}
-                  onChange={(e) => handleInputChange('observacoes', e.target.value)}
-                />
+            <div className="space-y-1.5">
+              <Label htmlFor="indiceCorrecao" className="text-sm">Índice de Correção</Label>
+              <Select value={formData.indiceCorrecao} onValueChange={(value) => handleInputChange('indiceCorrecao', value)}>
+                <SelectTrigger className="h-10">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ipca">IPCA</SelectItem>
+                  <SelectItem value="igpm">IGP-M</SelectItem>
+                  <SelectItem value="inpc">INPC</SelectItem>
+                  <SelectItem value="selic">SELIC</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="observacoes" className="text-sm">Observações</Label>
+              <Textarea
+                id="observacoes"
+                placeholder="Informações adicionais sobre o contrato..."
+                value={formData.observacoes}
+                onChange={(e) => handleInputChange('observacoes', e.target.value)}
+                className="min-h-[80px]"
+              />
+            </div>
+
+            <Button 
+              onClick={handleCalcular} 
+              disabled={loading}
+              className="w-full h-10"
+            >
+              {loading ? "Calculando..." : "Calcular"}
+              <DollarSign className="h-4 w-4 ml-2" />
+            </Button>
+          </CardContent>
+        </Card>
+
+        {result && (
+          <Card className="mt-4 border-0 shadow-lg">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg">Resultado do Cálculo</CardTitle>
+              <CardDescription className="text-sm">
+                Valores calculados conforme os dados informados
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-3 bg-secondary/50 rounded-lg">
+                    <p className="text-xs text-muted-foreground">Valor Total Devido</p>
+                    <p className="text-lg md:text-xl font-bold text-primary">
+                      R$ {result.valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-secondary/50 rounded-lg">
+                    <p className="text-xs text-muted-foreground">Juros Total</p>
+                    <p className="text-lg md:text-xl font-bold text-orange-600">
+                      R$ {result.jurosTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-3 bg-secondary/50 rounded-lg">
+                    <p className="text-xs text-muted-foreground">Valor Corrigido</p>
+                    <p className="text-base md:text-lg font-semibold">
+                      R$ {result.valorCorrigido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-secondary/50 rounded-lg">
+                    <p className="text-xs text-muted-foreground">Diferença</p>
+                    <p className="text-base md:text-lg font-semibold text-red-600">
+                      R$ {result.diferenca.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    </p>
+                  </div>
+                </div>
+
+              <div className="p-3 bg-secondary/20 rounded-lg">
+                <h4 className="text-sm font-semibold mb-2">Detalhamento do Cálculo</h4>
+                <pre className="text-xs whitespace-pre-wrap overflow-x-auto">{result.detalhamento}</pre>
               </div>
-
-              <Button 
-                onClick={handleCalcular} 
-                disabled={loading}
-                className="w-full"
-              >
-                {loading ? "Calculando..." : "Calcular"}
-                <DollarSign className="h-4 w-4 ml-2" />
-              </Button>
             </CardContent>
           </Card>
-
-          {result && (
-            <Card className="mt-8">
-              <CardHeader>
-                <CardTitle>Resultado do Cálculo</CardTitle>
-                <CardDescription>
-                  Valores calculados conforme os dados informados
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-4 bg-secondary/50 rounded-lg">
-                      <p className="text-sm text-muted-foreground">Valor Total Devido</p>
-                      <p className="text-lg sm:text-2xl font-bold text-primary">
-                        R$ {result.valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                      </p>
-                    </div>
-                    <div className="p-4 bg-secondary/50 rounded-lg">
-                      <p className="text-sm text-muted-foreground">Juros Total</p>
-                      <p className="text-lg sm:text-2xl font-bold text-orange-600">
-                        R$ {result.jurosTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-4 bg-secondary/50 rounded-lg">
-                      <p className="text-sm text-muted-foreground">Valor Corrigido</p>
-                      <p className="text-base sm:text-xl font-semibold">
-                        R$ {result.valorCorrigido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                      </p>
-                    </div>
-                    <div className="p-4 bg-secondary/50 rounded-lg">
-                      <p className="text-sm text-muted-foreground">Diferença</p>
-                      <p className="text-base sm:text-xl font-semibold text-red-600">
-                        R$ {result.diferenca.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                      </p>
-                    </div>
-                  </div>
-
-                <div className="p-4 bg-secondary/20 rounded-lg">
-                  <h4 className="font-semibold mb-2">Detalhamento do Cálculo</h4>
-                  <pre className="text-sm whitespace-pre-wrap">{result.detalhamento}</pre>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );

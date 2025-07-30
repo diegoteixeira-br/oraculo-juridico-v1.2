@@ -101,9 +101,9 @@ function CadastroForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-6">
-        <div className="flex items-center gap-4 mb-8">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center px-4 py-6">
+      <div className="w-full max-w-md space-y-4">
+        <div className="flex items-center gap-4 mb-4">
           <Link 
             to="/" 
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
@@ -117,25 +117,25 @@ function CadastroForm() {
           <img 
             src="/lovable-uploads/8fc8748b-d056-4136-b669-07bbd1bc2327.png" 
             alt="Oráculo Jurídico" 
-            className="w-16 h-16 mx-auto mb-4 rounded-lg"
+            className="w-12 h-12 mx-auto mb-2 rounded-lg"
           />
-          <h1 className="text-2xl font-bold">Oráculo Jurídico</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-xl font-bold">Oráculo Jurídico</h1>
+          <p className="text-sm text-muted-foreground">
             Crie sua conta gratuita
           </p>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Criar Conta</CardTitle>
-            <CardDescription>
+        <Card className="border-0 shadow-lg">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg">Criar Conta</CardTitle>
+            <CardDescription className="text-sm">
               Comece agora e ganhe créditos para usar
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Nome Completo</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="fullName" className="text-sm">Nome Completo</Label>
                 <Input
                   id="fullName"
                   type="text"
@@ -143,11 +143,12 @@ function CadastroForm() {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   required
+                  className="h-10"
                 />
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="email" className="text-sm">Email</Label>
                 <Input
                   id="email"
                   type="email"
@@ -155,11 +156,12 @@ function CadastroForm() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  className="h-10"
                 />
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="password">Senha</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="password" className="text-sm">Senha</Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -168,12 +170,13 @@ function CadastroForm() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    className="h-10"
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    className="absolute right-0 top-0 h-10 px-3 py-2 hover:bg-transparent"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
@@ -197,19 +200,21 @@ function CadastroForm() {
                 aria-hidden="true"
               />
 
-              <div className="space-y-4">
-                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                  <Shield className="h-4 w-4" />
+              <div className="space-y-3">
+                <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                  <Shield className="h-3 w-3" />
                   <span>Verificação de segurança</span>
                 </div>
                 
                 <div className="flex justify-center">
-                  <ReCAPTCHA
-                    sitekey={siteKey}
-                    onChange={(token) => setRecaptchaToken(token || '')}
-                    onExpired={() => setRecaptchaToken('')}
-                    hl="pt-BR"
-                  />
+                  <div className="scale-90 transform-gpu">
+                    <ReCAPTCHA
+                      sitekey={siteKey}
+                      onChange={(token) => setRecaptchaToken(token || '')}
+                      onExpired={() => setRecaptchaToken('')}
+                      hl="pt-BR"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -249,7 +254,7 @@ function CadastroForm() {
           </CardContent>
         </Card>
 
-        <div className="text-center text-sm text-muted-foreground">
+        <div className="text-center text-xs text-muted-foreground space-y-1">
           <p>✨ Sistema de créditos flexível</p>
           <p>🔒 Sem compromisso mensal</p>
           <p>📞 Suporte completo incluído</p>

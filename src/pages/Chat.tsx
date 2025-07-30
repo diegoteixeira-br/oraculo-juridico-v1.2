@@ -771,14 +771,9 @@ export default function Dashboard() {
                     onClick={(e) => {
                       if (isMobile) {
                         e.preventDefault();
-                        if (selectedChatId === session.id) {
-                          // Segundo clique: carregar a conversa
-                          loadChatSession(session);
-                          setSelectedChatId(null);
-                        } else {
-                          // Primeiro clique: selecionar para mostrar opções
-                          setSelectedChatId(session.id);
-                        }
+                        // No mobile: sempre carregar a conversa no primeiro clique
+                        loadChatSession(session);
+                        setSelectedChatId(null);
                       } else {
                         // Desktop: clique único carrega diretamente
                         loadChatSession(session);
@@ -798,33 +793,18 @@ export default function Dashboard() {
                             minute: '2-digit'
                           })}
                         </div>
-                        {isMobile && selectedChatId === session.id && (
-                          <div className="flex gap-2 mt-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                loadChatSession(session);
-                                setSelectedChatId(null);
-                              }}
-                              className="h-7 px-2 text-xs"
-                            >
-                              Abrir
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                deleteConversation(session.id);
-                                setSelectedChatId(null);
-                              }}
-                              className="h-7 px-2 text-xs"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </Button>
-                          </div>
+                        {isMobile && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteConversation(session.id);
+                            }}
+                            className="h-6 w-6 p-0 hover:bg-destructive/20 hover:text-destructive"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
                         )}
                       </div>
                       {!isMobile && (
