@@ -837,8 +837,8 @@ export default function Dashboard() {
         <AppSidebar />
         
         <main className="flex-1 flex flex-col">
-          {/* Header Fixo */}
-          <header className="fixed top-0 left-0 right-0 h-14 flex items-center justify-between px-4 md:px-6 border-b border-slate-700 bg-slate-800 z-40">
+          {/* Header - fixo apenas no mobile */}
+          <header className="md:relative fixed top-0 left-0 right-0 h-14 flex items-center justify-between px-4 md:px-6 border-b border-slate-700 bg-slate-800 md:bg-background md:border-border z-40">
             <div className="flex items-center gap-2 md:gap-4">
               <SidebarTrigger className="lg:hidden" />
               <h1 
@@ -853,8 +853,8 @@ export default function Dashboard() {
             </div>
           </header>
 
-          {/* Chat Area com padding-top para compensar o header fixo */}
-          <div className="flex-1 flex flex-col pt-14">
+          {/* Chat Area - padding-top apenas no mobile */}
+          <div className="flex-1 flex flex-col md:pt-0 pt-14">
             {/* Messages Area */}
             <ScrollArea className="flex-1 p-2 md:p-4">
               {totalTokens < 1000 ? (
