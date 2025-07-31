@@ -841,13 +841,20 @@ export default function Dashboard() {
           <UserMenu hideOptions={["chat"]} />
         </div>
 
+        {/* Botão de Histórico Flutuante - apenas para mobile */}
+        <div className="fixed bottom-24 left-4 z-50 lg:hidden">
+          <SidebarTrigger className="w-12 h-12 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg border-0 flex items-center justify-center">
+            <History className="w-5 h-5" />
+          </SidebarTrigger>
+        </div>
+
         <AppSidebar />
         
         <main className="flex-1 flex flex-col">
           {/* Header */}
           <header className="h-14 flex items-center justify-between px-4 md:px-6 border-b border-slate-700 bg-slate-800">
             <div className="flex items-center gap-2 md:gap-4">
-              <SidebarTrigger className="lg:hidden" />
+              <SidebarTrigger className="hidden lg:block" />
               <h1 
                 className="text-base md:text-lg font-semibold truncate cursor-pointer hover:text-primary transition-colors" 
                 onClick={() => navigate('/dashboard')}
