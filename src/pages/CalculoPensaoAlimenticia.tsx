@@ -30,7 +30,7 @@ const CalculoPensaoAlimenticia = () => {
   const [formData, setFormData] = useState({
     rendaAlimentante: '',
     numeroFilhos: '1',
-    idadeFilho: '',
+    idadesFilhos: [''],
     percentualPensao: '',
     dataInicio: '',
     dataFim: '',
@@ -41,7 +41,25 @@ const CalculoPensaoAlimenticia = () => {
   });
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    if (field === 'numeroFilhos') {
+      const numFilhos = parseInt(value);
+      const novasIdades = Array.from({ length: numFilhos }, (_, i) => 
+        formData.idadesFilhos[i] || ''
+      );
+      setFormData(prev => ({ 
+        ...prev, 
+        [field]: value,
+        idadesFilhos: novasIdades
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, [field]: value }));
+    }
+  };
+
+  const handleIdadeChange = (index: number, value: string) => {
+    const novasIdades = [...formData.idadesFilhos];
+    novasIdades[index] = value;
+    setFormData(prev => ({ ...prev, idadesFilhos: novasIdades }));
   };
 
   const handleCalcular = async () => {
@@ -71,8 +89,15 @@ const CalculoPensaoAlimenticia = () => {
         return;
       }
 
+      // Preparar dados para envio - converter idades para compatibilidade
+      const dadosEnvio = {
+        ...formData,
+        idadeFilho: formData.idadesFilhos[0] || '', // Primeira idade para compatibilidade
+        idadesFilhos: formData.idadesFilhos
+      };
+
       const { data, error } = await supabase.functions.invoke('calculo-pensao-alimenticia', {
-        body: formData
+        body: dadosEnvio
       });
 
       if (error) throw error;
@@ -89,22 +114,22 @@ const CalculoPensaoAlimenticia = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-6">
+      <div className="container mx-auto px-4 py-4 md:py-8">
+        <div className="mb-4 md:mb-6">
           <Button
             variant="ghost"
             onClick={() => navigate(-1)}
-            className="mb-4"
+            className="mb-3 md:mb-4 h-8 md:h-10"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Voltar
           </Button>
           
-          <div className="flex items-center gap-3 mb-2">
-            <Heart className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl font-bold">Cálculo de Pensão Alimentícia</h1>
+          <div className="flex items-center gap-2 md:gap-3 mb-2">
+            <Heart className="h-6 w-6 md:h-8 md:w-8 text-primary" />
+            <h1 className="text-xl md:text-3xl font-bold">Cálculo de Pensão Alimentícia</h1>
           </div>
-          <p className="text-muted-foreground">
+          <p className="text-sm md:text-base text-muted-foreground">
             Calcule valores de pensão alimentícia, atrasos e correções
           </p>
         </div>
@@ -117,11 +142,11 @@ const CalculoPensaoAlimenticia = () => {
                 Informe os dados para cálculo da pensão alimentícia
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3 md:space-y-4">
               <div>
-                <Label htmlFor="tipoCalculo">Tipo de Cálculo</Label>
+                <Label htmlFor="tipoCalculo" className="text-sm">Tipo de Cálculo</Label>
                 <Select value={formData.tipoCalculo} onValueChange={(value) => handleInputChange('tipoCalculo', value)}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-9 md:h-10">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -132,9 +157,9 @@ const CalculoPensaoAlimenticia = () => {
               </div>
 
               {formData.tipoCalculo === 'percentual' && (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   <div>
-                    <Label htmlFor="rendaAlimentante">Renda do Alimentante *</Label>
+                    <Label htmlFor="rendaAlimentante" className="text-sm">Renda do Alimentante *</Label>
                     <Input
                       id="rendaAlimentante"
                       type="number"
@@ -142,10 +167,11 @@ const CalculoPensaoAlimenticia = () => {
                       placeholder="5000.00"
                       value={formData.rendaAlimentante}
                       onChange={(e) => handleInputChange('rendaAlimentante', e.target.value)}
+                      className="h-9 md:h-10"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="percentualPensao">Percentual (%)</Label>
+                    <Label htmlFor="percentualPensao" className="text-sm">Percentual (%)</Label>
                     <Input
                       id="percentualPensao"
                       type="number"
@@ -153,6 +179,7 @@ const CalculoPensaoAlimenticia = () => {
                       placeholder="30"
                       value={formData.percentualPensao}
                       onChange={(e) => handleInputChange('percentualPensao', e.target.value)}
+                      className="h-9 md:h-10"
                     />
                   </div>
                 </div>
@@ -160,7 +187,7 @@ const CalculoPensaoAlimenticia = () => {
 
               {formData.tipoCalculo === 'fixo' && (
                 <div>
-                  <Label htmlFor="valorFixo">Valor Fixo da Pensão *</Label>
+                  <Label htmlFor="valorFixo" className="text-sm">Valor Fixo da Pensão *</Label>
                   <Input
                     id="valorFixo"
                     type="number"
@@ -168,77 +195,88 @@ const CalculoPensaoAlimenticia = () => {
                     placeholder="1500.00"
                     value={formData.valorFixo}
                     onChange={(e) => handleInputChange('valorFixo', e.target.value)}
+                    className="h-9 md:h-10"
                   />
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="numeroFilhos">Número de Filhos *</Label>
-                  <Select value={formData.numeroFilhos} onValueChange={(value) => handleInputChange('numeroFilhos', value)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">1 filho</SelectItem>
-                      <SelectItem value="2">2 filhos</SelectItem>
-                      <SelectItem value="3">3 filhos</SelectItem>
-                      <SelectItem value="4">4 filhos</SelectItem>
-                      <SelectItem value="5">5+ filhos</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="idadeFilho">Idade do Filho (anos)</Label>
-                  <Input
-                    id="idadeFilho"
-                    type="number"
-                    placeholder="10"
-                    value={formData.idadeFilho}
-                    onChange={(e) => handleInputChange('idadeFilho', e.target.value)}
-                  />
+              <div>
+                <Label htmlFor="numeroFilhos" className="text-sm">Número de Filhos *</Label>
+                <Select value={formData.numeroFilhos} onValueChange={(value) => handleInputChange('numeroFilhos', value)}>
+                  <SelectTrigger className="h-9 md:h-10">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1 filho</SelectItem>
+                    <SelectItem value="2">2 filhos</SelectItem>
+                    <SelectItem value="3">3 filhos</SelectItem>
+                    <SelectItem value="4">4 filhos</SelectItem>
+                    <SelectItem value="5">5+ filhos</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Campos dinâmicos para idades dos filhos */}
+              <div>
+                <Label>Idades dos Filhos (anos)</Label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-2">
+                  {formData.idadesFilhos.map((idade, index) => (
+                    <div key={index}>
+                      <Input
+                        type="number"
+                        placeholder={`Idade do ${index + 1}º filho`}
+                        value={idade}
+                        onChange={(e) => handleIdadeChange(index, e.target.value)}
+                        className="h-9"
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                 <div>
-                  <Label htmlFor="dataInicio">Data de Início *</Label>
+                  <Label htmlFor="dataInicio" className="text-sm">Data de Início *</Label>
                   <Input
                     id="dataInicio"
                     type="date"
                     value={formData.dataInicio}
                     onChange={(e) => handleInputChange('dataInicio', e.target.value)}
+                    className="h-9 md:h-10"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="dataFim">Data de Fim</Label>
+                  <Label htmlFor="dataFim" className="text-sm">Data de Fim</Label>
                   <Input
                     id="dataFim"
                     type="date"
                     value={formData.dataFim}
                     onChange={(e) => handleInputChange('dataFim', e.target.value)}
+                    className="h-9 md:h-10"
                   />
                 </div>
               </div>
 
               <div>
-                <Label htmlFor="mesesAtraso">Meses em Atraso</Label>
+                <Label htmlFor="mesesAtraso" className="text-sm">Meses em Atraso</Label>
                 <Input
                   id="mesesAtraso"
                   type="number"
                   placeholder="3"
                   value={formData.mesesAtraso}
                   onChange={(e) => handleInputChange('mesesAtraso', e.target.value)}
+                  className="h-9 md:h-10"
                 />
               </div>
 
               <div>
-                <Label htmlFor="observacoes">Observações</Label>
+                <Label htmlFor="observacoes" className="text-sm">Observações</Label>
                 <Textarea
                   id="observacoes"
                   placeholder="Informações adicionais sobre a pensão..."
                   value={formData.observacoes}
                   onChange={(e) => handleInputChange('observacoes', e.target.value)}
+                  className="min-h-[70px] md:min-h-[80px] text-sm"
                 />
               </div>
 
@@ -261,33 +299,33 @@ const CalculoPensaoAlimenticia = () => {
                   Valores calculados conforme os dados informados
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 bg-secondary/50 rounded-lg">
-                    <p className="text-sm text-muted-foreground">Valor da Pensão</p>
-                    <p className="text-2xl font-bold text-primary">
+              <CardContent className="space-y-3 md:space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                  <div className="p-3 md:p-4 bg-secondary/50 rounded-lg">
+                    <p className="text-xs md:text-sm text-muted-foreground">Valor da Pensão</p>
+                    <p className="text-lg md:text-2xl font-bold text-primary">
                       R$ {result.valorPensao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </p>
                   </div>
-                  <div className="p-4 bg-secondary/50 rounded-lg">
-                    <p className="text-sm text-muted-foreground">Percentual da Renda</p>
-                    <p className="text-2xl font-bold text-blue-600">
+                  <div className="p-3 md:p-4 bg-secondary/50 rounded-lg">
+                    <p className="text-xs md:text-sm text-muted-foreground">Percentual da Renda</p>
+                    <p className="text-lg md:text-2xl font-bold text-blue-600">
                       {result.percentualRenda.toFixed(1)}%
                     </p>
                   </div>
                 </div>
 
                 {result.valorTotalAtrasado > 0 && (
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-4 bg-red-50 rounded-lg">
-                      <p className="text-sm text-muted-foreground">Total em Atraso</p>
-                      <p className="text-xl font-semibold text-red-600">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                    <div className="p-3 md:p-4 bg-red-50 rounded-lg">
+                      <p className="text-xs md:text-sm text-muted-foreground">Total em Atraso</p>
+                      <p className="text-lg md:text-xl font-semibold text-red-600">
                         R$ {result.valorTotalAtrasado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </p>
                     </div>
-                    <div className="p-4 bg-orange-50 rounded-lg">
-                      <p className="text-sm text-muted-foreground">Multa + Juros</p>
-                      <p className="text-xl font-semibold text-orange-600">
+                    <div className="p-3 md:p-4 bg-orange-50 rounded-lg">
+                      <p className="text-xs md:text-sm text-muted-foreground">Multa + Juros</p>
+                      <p className="text-lg md:text-xl font-semibold text-orange-600">
                         R$ {(result.multa + result.juros).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </p>
                     </div>
