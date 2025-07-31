@@ -834,27 +834,13 @@ export default function Dashboard() {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
-        {/* Menu flutuante com animação de scroll - apenas para celular */}
-        <div className={`fixed top-0 right-0 z-50 p-4 transition-transform duration-300 lg:hidden ${
-          menuVisible ? 'translate-y-0' : '-translate-y-full'
-        }`}>
-          <UserMenu hideOptions={["chat"]} />
-        </div>
-
-        {/* Botão de Histórico Flutuante - apenas para mobile */}
-        <div className="fixed bottom-24 left-4 z-50 lg:hidden">
-          <SidebarTrigger className="w-12 h-12 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg border-0 flex items-center justify-center">
-            <History className="w-5 h-5" />
-          </SidebarTrigger>
-        </div>
-
         <AppSidebar />
         
         <main className="flex-1 flex flex-col">
-          {/* Header */}
-          <header className="h-14 flex items-center justify-between px-4 md:px-6 border-b border-slate-700 bg-slate-800">
+          {/* Header Fixo */}
+          <header className="fixed top-0 left-0 right-0 h-14 flex items-center justify-between px-4 md:px-6 border-b border-slate-700 bg-slate-800 z-40">
             <div className="flex items-center gap-2 md:gap-4">
-              <SidebarTrigger className="hidden lg:block" />
+              <SidebarTrigger className="lg:hidden" />
               <h1 
                 className="text-base md:text-lg font-semibold truncate cursor-pointer hover:text-primary transition-colors" 
                 onClick={() => navigate('/dashboard')}
@@ -862,13 +848,13 @@ export default function Dashboard() {
                 Oráculo Jurídico
               </h1>
             </div>
-            <div className="flex items-center gap-2 md:gap-4 lg:block hidden">
+            <div className="flex items-center gap-2 md:gap-4">
               <UserMenu hideOptions={["chat"]} />
             </div>
           </header>
 
-          {/* Chat Area */}
-          <div className="flex-1 flex flex-col">
+          {/* Chat Area com padding-top para compensar o header fixo */}
+          <div className="flex-1 flex flex-col pt-14">
             {/* Messages Area */}
             <ScrollArea className="flex-1 p-2 md:p-4">
               {totalTokens < 1000 ? (
