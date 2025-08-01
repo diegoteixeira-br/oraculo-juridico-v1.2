@@ -853,10 +853,10 @@ export default function Dashboard() {
             </div>
           </header>
 
-          {/* Chat Area - padding-top apenas no mobile */}
-          <div className="flex-1 flex flex-col md:pt-0 pt-14">
-            {/* Messages Area */}
-            <ScrollArea className="flex-1 p-2 md:p-4">
+          {/* Chat Area - padding para header e input mobile */}
+          <div className="flex-1 flex flex-col md:pt-0 pt-14 md:pb-0 pb-32">
+            {/* Messages Area - padding-bottom no mobile para o input fixo */}
+            <ScrollArea className="flex-1 p-2 md:p-4 md:pb-4 pb-20">
               {totalTokens < 1000 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center space-y-4 max-w-2xl mx-auto px-4">
                   <div className="flex flex-col items-center space-y-2">
@@ -1149,8 +1149,8 @@ export default function Dashboard() {
               )}
             </ScrollArea>
 
-            {/* Input Area - Mais compacto */}
-            <div className="p-2 md:p-4 border-t border-slate-700 bg-slate-800">
+            {/* Input Area - fixo apenas no mobile */}
+            <div className="md:relative fixed bottom-0 left-0 right-0 p-2 md:p-4 border-t border-slate-700 bg-slate-800 md:bg-background md:border-border z-30">
               {/* Arquivos Anexados */}
               {attachedFiles.length > 0 && (
                 <div className="mb-3 space-y-2">

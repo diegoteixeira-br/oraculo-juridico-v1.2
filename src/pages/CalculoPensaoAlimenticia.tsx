@@ -115,21 +115,24 @@ const CalculoPensaoAlimenticia = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-4 md:py-8">
-        <div className="mb-4 md:mb-6">
+        <div className="mb-4">
           <Button
-            variant="ghost"
+            variant="outline"
             onClick={() => navigate(-1)}
-            className="mb-3 md:mb-4 h-8 md:h-10"
+            className="mb-4 h-9"
+            size="sm"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Voltar
           </Button>
           
-          <div className="flex items-center gap-2 md:gap-3 mb-2">
-            <Heart className="h-6 w-6 md:h-8 md:w-8 text-primary" />
-            <h1 className="text-xl md:text-3xl font-bold">Cálculo de Pensão Alimentícia</h1>
+          <div className="flex items-center gap-3 mb-2">
+            <Heart className="h-8 w-8 text-primary" />
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+              Cálculo de Pensão Alimentícia
+            </h1>
           </div>
-          <p className="text-sm md:text-base text-muted-foreground">
+          <p className="text-muted-foreground mb-6">
             Calcule valores de pensão alimentícia, atrasos e correções
           </p>
         </div>
