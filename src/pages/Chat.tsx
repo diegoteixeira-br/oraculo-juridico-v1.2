@@ -928,12 +928,12 @@ export default function Dashboard() {
                      </p>
                    </div>
                   
-                  {/* Exemplos de Perguntas - Mais compacto */}
-                  <div className="w-full max-w-5xl">
-                    <h3 className="text-sm font-medium mb-2 text-center">Exemplos de perguntas:</h3>
-                    <TooltipProvider>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
-                        {exampleQuestions.map((question, index) => (
+                   {/* Exemplos de Perguntas - Mais compacto */}
+                   <div className="w-full max-w-5xl">
+                     <h3 className="text-sm font-medium mb-2 text-center">Exemplos de perguntas:</h3>
+                     <TooltipProvider>
+                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
+                         {exampleQuestions.slice(0, window.innerWidth < 768 ? 6 : exampleQuestions.length).map((question, index) => (
                           <Tooltip key={index}>
                             <TooltipTrigger asChild>
                               <Button
