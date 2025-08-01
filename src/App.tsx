@@ -31,6 +31,7 @@ import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import AdminDocuments from "./pages/AdminDocuments";
 import AdminLogin from "./pages/AdminLogin";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
+import AgendaJuridica from "./pages/AgendaJuridica";
 
 
 const queryClient = new QueryClient();
@@ -57,6 +58,7 @@ function AppContent() {
       <Route path="/historico-transacoes" element={<PageWrapper><ProtectedRoute><HistoricoTransacoesPage /></ProtectedRoute></PageWrapper>} />
       <Route path="/comprar-creditos" element={<PageWrapper><ProtectedRoute><ComprarCreditosPage /></ProtectedRoute></PageWrapper>} />
       <Route path="/payment-success" element={<PageWrapper><ProtectedRoute><PaymentSuccessPage /></ProtectedRoute></PageWrapper>} />
+      <Route path="/agenda-juridica" element={<PageWrapper><ProtectedRoute><AgendaJuridica /></ProtectedRoute></PageWrapper>} />
       <Route path="/admin/login" element={<PageWrapper><AdminLogin /></PageWrapper>} />
       <Route path="/admin/documentos" element={<PageWrapper><AdminProtectedRoute><AdminDocuments /></AdminProtectedRoute></PageWrapper>} />
       
