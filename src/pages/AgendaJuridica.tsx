@@ -17,6 +17,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format, parseISO, startOfMonth, endOfMonth, isSameDay, addMonths, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface LegalCommitment {
   id: string;
@@ -40,6 +41,7 @@ const AgendaJuridica = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   
   const [commitments, setCommitments] = useState<LegalCommitment[]>([]);
   const [filteredCommitments, setFilteredCommitments] = useState<LegalCommitment[]>([]);
@@ -239,17 +241,6 @@ const AgendaJuridica = () => {
     );
   };
 
-  // Obter compromissos do mês
-  const getCommitmentsForMonth = (date: Date) => {
-    const start = startOfMonth(date);
-    const end = endOfMonth(date);
-    
-    return filteredCommitments.filter(c => {
-      const commitmentDate = parseISO(c.commitment_date);
-      return commitmentDate >= start && commitmentDate <= end;
-    });
-  };
-
   const typeLabels = {
     'prazo_processual': 'Prazo Processual',
     'audiencia': 'Audiência',
@@ -271,210 +262,213 @@ const AgendaJuridica = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      <div className="container max-w-7xl mx-auto px-4 py-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate('/dashboard')}
-              className="h-10 w-10"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </Button>
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">
-                Agenda Jurídica Inteligente
-              </h1>
-              <p className="text-muted-foreground">
-                Organize seus prazos processuais, audiências e compromissos jurídicos
-              </p>
+    <div className="h-screen bg-gradient-to-br from-background via-background to-muted/20 flex flex-col overflow-hidden">
+      {/* Header fixo */}
+      <div className="flex-shrink-0 border-b border-border bg-background/95 backdrop-blur-sm">
+        <div className="container max-w-7xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate('/dashboard')}
+                className="h-8 w-8"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold text-foreground">
+                  Agenda Jurídica
+                </h1>
+                <p className="text-xs md:text-sm text-muted-foreground hidden md:block">
+                  Organize seus prazos processuais e compromissos
+                </p>
+              </div>
             </div>
-          </div>
 
-          <div className="flex gap-2">
-            <Dialog open={showExtractDialog} onOpenChange={setShowExtractDialog}>
-              <DialogTrigger asChild>
-                <Button variant="outline" className="gap-2">
-                  <FileText className="h-4 w-4" />
-                  Extrair Prazos
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle>Extrair Prazos Automaticamente</DialogTitle>
-                  <DialogDescription>
-                    Cole o texto de uma decisão, despacho ou intimação para extrair prazos automaticamente.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <Textarea
-                    placeholder="Cole aqui o texto da decisão, despacho ou intimação..."
-                    value={extractText}
-                    onChange={(e) => setExtractText(e.target.value)}
-                    className="min-h-[200px]"
-                  />
-                  <div className="flex justify-end gap-2">
-                    <Button variant="outline" onClick={() => setShowExtractDialog(false)}>
-                      Cancelar
-                    </Button>
-                    <Button onClick={handleExtractDeadlines} disabled={isExtracting}>
-                      {isExtracting ? "Analisando..." : "Extrair Prazos"}
-                    </Button>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-
-            <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-              <DialogTrigger asChild>
-                <Button className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  Novo Compromisso
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle>Criar Novo Compromisso</DialogTitle>
-                  <DialogDescription>
-                    Adicione um novo prazo processual, audiência ou compromisso jurídico.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="title">Título *</Label>
-                    <Input
-                      id="title"
-                      value={newCommitment.title}
-                      onChange={(e) => setNewCommitment({...newCommitment, title: e.target.value})}
-                      placeholder="Ex: Prazo para contestação - Processo 123456"
+            <div className="flex gap-2">
+              <Dialog open={showExtractDialog} onOpenChange={setShowExtractDialog}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size={isMobile ? "sm" : "default"} className="gap-2">
+                    <FileText className="h-4 w-4" />
+                    {!isMobile && "Extrair"}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Extrair Prazos Automaticamente</DialogTitle>
+                    <DialogDescription>
+                      Cole o texto de uma decisão, despacho ou intimação para extrair prazos automaticamente.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <Textarea
+                      placeholder="Cole aqui o texto da decisão, despacho ou intimação..."
+                      value={extractText}
+                      onChange={(e) => setExtractText(e.target.value)}
+                      className="min-h-[200px]"
                     />
-                  </div>
-
-                  <div className="grid gap-2">
-                    <Label htmlFor="type">Tipo *</Label>
-                    <Select 
-                      value={newCommitment.commitment_type} 
-                      onValueChange={(value: any) => setNewCommitment({...newCommitment, commitment_type: value})}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.entries(typeLabels).map(([value, label]) => (
-                          <SelectItem key={value} value={value}>{label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {newCommitment.commitment_type === 'prazo_processual' && (
-                    <div className="grid gap-2">
-                      <Label htmlFor="deadline_type">Tipo de Prazo</Label>
-                      <Select 
-                        value={newCommitment.deadline_type} 
-                        onValueChange={(value) => setNewCommitment({...newCommitment, deadline_type: value})}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione o tipo de prazo" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="recursal">Recursal</SelectItem>
-                          <SelectItem value="contestacao">Contestação</SelectItem>
-                          <SelectItem value="replicas">Tréplica</SelectItem>
-                          <SelectItem value="outras">Outras</SelectItem>
-                        </SelectContent>
-                      </Select>
+                    <div className="flex justify-end gap-2">
+                      <Button variant="outline" onClick={() => setShowExtractDialog(false)}>
+                        Cancelar
+                      </Button>
+                      <Button onClick={handleExtractDeadlines} disabled={isExtracting}>
+                        {isExtracting ? "Analisando..." : "Extrair Prazos"}
+                      </Button>
                     </div>
-                  )}
+                  </div>
+                </DialogContent>
+              </Dialog>
 
-                  <div className="grid grid-cols-2 gap-4">
+              <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+                <DialogTrigger asChild>
+                  <Button size={isMobile ? "sm" : "default"} className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    {!isMobile && "Novo"}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Criar Novo Compromisso</DialogTitle>
+                    <DialogDescription>
+                      Adicione um novo prazo processual, audiência ou compromisso jurídico.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 max-h-[60vh] overflow-y-auto">
                     <div className="grid gap-2">
-                      <Label htmlFor="date">Data/Hora *</Label>
+                      <Label htmlFor="title">Título *</Label>
                       <Input
-                        id="date"
-                        type="datetime-local"
-                        value={newCommitment.commitment_date}
-                        onChange={(e) => setNewCommitment({...newCommitment, commitment_date: e.target.value})}
+                        id="title"
+                        value={newCommitment.title}
+                        onChange={(e) => setNewCommitment({...newCommitment, title: e.target.value})}
+                        placeholder="Ex: Prazo para contestação - Processo 123456"
                       />
                     </div>
 
                     <div className="grid gap-2">
-                      <Label htmlFor="priority">Prioridade</Label>
+                      <Label htmlFor="type">Tipo *</Label>
                       <Select 
-                        value={newCommitment.priority} 
-                        onValueChange={(value: any) => setNewCommitment({...newCommitment, priority: value})}
+                        value={newCommitment.commitment_type} 
+                        onValueChange={(value: any) => setNewCommitment({...newCommitment, commitment_type: value})}
                       >
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {Object.entries(priorityLabels).map(([value, label]) => (
+                          {Object.entries(typeLabels).map(([value, label]) => (
                             <SelectItem key={value} value={value}>{label}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
-                  </div>
 
-                  {(['audiencia', 'reuniao'].includes(newCommitment.commitment_type)) && (
-                    <>
+                    {newCommitment.commitment_type === 'prazo_processual' && (
                       <div className="grid gap-2">
-                        <Label htmlFor="location">Local</Label>
+                        <Label htmlFor="deadline_type">Tipo de Prazo</Label>
+                        <Select 
+                          value={newCommitment.deadline_type} 
+                          onValueChange={(value) => setNewCommitment({...newCommitment, deadline_type: value})}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o tipo de prazo" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="recursal">Recursal</SelectItem>
+                            <SelectItem value="contestacao">Contestação</SelectItem>
+                            <SelectItem value="replicas">Tréplica</SelectItem>
+                            <SelectItem value="outras">Outras</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="date">Data/Hora *</Label>
                         <Input
-                          id="location"
-                          value={newCommitment.location}
-                          onChange={(e) => setNewCommitment({...newCommitment, location: e.target.value})}
-                          placeholder="Ex: Fórum da Comarca de São Paulo"
+                          id="date"
+                          type="datetime-local"
+                          value={newCommitment.commitment_date}
+                          onChange={(e) => setNewCommitment({...newCommitment, commitment_date: e.target.value})}
                         />
                       </div>
 
-                      <div className="flex items-center space-x-2">
-                        <Switch
-                          id="virtual"
-                          checked={newCommitment.is_virtual}
-                          onCheckedChange={(checked) => setNewCommitment({...newCommitment, is_virtual: checked})}
-                        />
-                        <Label htmlFor="virtual">Evento virtual</Label>
+                      <div className="grid gap-2">
+                        <Label htmlFor="priority">Prioridade</Label>
+                        <Select 
+                          value={newCommitment.priority} 
+                          onValueChange={(value: any) => setNewCommitment({...newCommitment, priority: value})}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Object.entries(priorityLabels).map(([value, label]) => (
+                              <SelectItem key={value} value={value}>{label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
-                    </>
-                  )}
+                    </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="process">Número do Processo</Label>
-                      <Input
-                        id="process"
-                        value={newCommitment.process_number}
-                        onChange={(e) => setNewCommitment({...newCommitment, process_number: e.target.value})}
-                        placeholder="Ex: 0001234-56.2024.8.26.0001"
-                      />
+                    {(['audiencia', 'reuniao'].includes(newCommitment.commitment_type)) && (
+                      <>
+                        <div className="grid gap-2">
+                          <Label htmlFor="location">Local</Label>
+                          <Input
+                            id="location"
+                            value={newCommitment.location}
+                            onChange={(e) => setNewCommitment({...newCommitment, location: e.target.value})}
+                            placeholder="Ex: Fórum da Comarca de São Paulo"
+                          />
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <Switch
+                            id="virtual"
+                            checked={newCommitment.is_virtual}
+                            onCheckedChange={(checked) => setNewCommitment({...newCommitment, is_virtual: checked})}
+                          />
+                          <Label htmlFor="virtual">Evento virtual</Label>
+                        </div>
+                      </>
+                    )}
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="process">Número do Processo</Label>
+                        <Input
+                          id="process"
+                          value={newCommitment.process_number}
+                          onChange={(e) => setNewCommitment({...newCommitment, process_number: e.target.value})}
+                          placeholder="Ex: 0001234-56.2024.8.26.0001"
+                        />
+                      </div>
+
+                      <div className="grid gap-2">
+                        <Label htmlFor="client">Cliente</Label>
+                        <Input
+                          id="client"
+                          value={newCommitment.client_name}
+                          onChange={(e) => setNewCommitment({...newCommitment, client_name: e.target.value})}
+                          placeholder="Nome do cliente"
+                        />
+                      </div>
                     </div>
 
                     <div className="grid gap-2">
-                      <Label htmlFor="client">Cliente</Label>
-                      <Input
-                        id="client"
-                        value={newCommitment.client_name}
-                        onChange={(e) => setNewCommitment({...newCommitment, client_name: e.target.value})}
-                        placeholder="Nome do cliente"
+                      <Label htmlFor="description">Descrição</Label>
+                      <Textarea
+                        id="description"
+                        value={newCommitment.description}
+                        onChange={(e) => setNewCommitment({...newCommitment, description: e.target.value})}
+                        placeholder="Detalhes adicionais sobre o compromisso"
+                        className="min-h-[80px]"
                       />
                     </div>
                   </div>
 
-                  <div className="grid gap-2">
-                    <Label htmlFor="description">Descrição</Label>
-                    <Textarea
-                      id="description"
-                      value={newCommitment.description}
-                      onChange={(e) => setNewCommitment({...newCommitment, description: e.target.value})}
-                      placeholder="Detalhes adicionais sobre o compromisso"
-                    />
-                  </div>
-
-                  <div className="flex justify-end gap-2">
+                  <div className="flex justify-end gap-2 mt-4">
                     <Button variant="outline" onClick={() => setShowAddDialog(false)}>
                       Cancelar
                     </Button>
@@ -482,264 +476,271 @@ const AgendaJuridica = () => {
                       Criar Compromisso
                     </Button>
                   </div>
-                </div>
-              </DialogContent>
-            </Dialog>
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Filtros */}
-        <Card className="mb-6">
-          <CardContent className="pt-6">
-            <div className="flex flex-wrap gap-4 items-center">
-              <div className="flex-1 min-w-[200px]">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Buscar por processo, cliente, título..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
+      {/* Conteúdo principal com scroll interno */}
+      <div className="flex-1 overflow-hidden">
+        <div className="container max-w-7xl mx-auto px-4 py-4 h-full">
+          {/* Filtros compactos */}
+          <Card className="mb-4 flex-shrink-0">
+            <CardContent className="pt-4">
+              <div className="flex flex-col md:flex-row gap-3 items-center">
+                <div className="flex-1 min-w-0">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Buscar por processo, cliente, título..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex gap-2 w-full md:w-auto">
+                  <Select value={filterType} onValueChange={setFilterType}>
+                    <SelectTrigger className="w-full md:w-[140px]">
+                      <SelectValue placeholder="Tipo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos</SelectItem>
+                      {Object.entries(typeLabels).map(([value, label]) => (
+                        <SelectItem key={value} value={value}>{label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select value={filterStatus} onValueChange={setFilterStatus}>
+                    <SelectTrigger className="w-full md:w-[120px]">
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos</SelectItem>
+                      {Object.entries(statusLabels).map(([value, label]) => (
+                        <SelectItem key={value} value={value}>{label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
-              
-              <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Tipo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos os tipos</SelectItem>
-                  {Object.entries(typeLabels).map(([value, label]) => (
-                    <SelectItem key={value} value={value}>{label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            </CardContent>
+          </Card>
 
-              <Select value={filterStatus} onValueChange={setFilterStatus}>
-                <SelectTrigger className="w-[150px]">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos</SelectItem>
-                  {Object.entries(statusLabels).map(([value, label]) => (
-                    <SelectItem key={value} value={value}>{label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
+          {/* Conteúdo Principal com Tabs */}
+          <div className="flex-1 overflow-hidden">
+            <Tabs defaultValue="list" className="h-full flex flex-col">
+              <TabsList className="grid w-full grid-cols-3 flex-shrink-0">
+                <TabsTrigger value="calendar" className="gap-2 text-xs md:text-sm">
+                  <CalendarIcon className="h-4 w-4" />
+                  <span className="hidden sm:inline">Calendário</span>
+                </TabsTrigger>
+                <TabsTrigger value="list" className="gap-2 text-xs md:text-sm">
+                  <Clock className="h-4 w-4" />
+                  <span className="hidden sm:inline">Lista</span>
+                </TabsTrigger>
+                <TabsTrigger value="timeline" className="gap-2 text-xs md:text-sm">
+                  <AlertCircle className="h-4 w-4" />
+                  <span className="hidden sm:inline">Próximos</span>
+                </TabsTrigger>
+              </TabsList>
 
-        {/* Conteúdo Principal */}
-        <Tabs defaultValue="calendar" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="calendar" className="gap-2">
-              <CalendarIcon className="h-4 w-4" />
-              Calendário
-            </TabsTrigger>
-            <TabsTrigger value="list" className="gap-2">
-              <Clock className="h-4 w-4" />
-              Lista
-            </TabsTrigger>
-            <TabsTrigger value="timeline" className="gap-2">
-              <AlertCircle className="h-4 w-4" />
-              Próximos Prazos
-            </TabsTrigger>
-          </TabsList>
+              <div className="flex-1 overflow-hidden mt-4">
+                <TabsContent value="calendar" className="h-full m-0">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-full">
+                    {/* Calendário */}
+                    <Card className="flex flex-col">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-lg">
+                            {format(currentMonth, 'MMMM yyyy', { locale: ptBR })}
+                          </CardTitle>
+                          <div className="flex gap-1">
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+                            >
+                              <ChevronLeft className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+                            >
+                              <ChevronLeft className="h-4 w-4 rotate-180" />
+                            </Button>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="flex-1 overflow-hidden">
+                        <CalendarComponent
+                          mode="single"
+                          selected={selectedDate}
+                          onSelect={(date) => date && setSelectedDate(date)}
+                          month={currentMonth}
+                          onMonthChange={setCurrentMonth}
+                          className="rounded-md border-0 w-full"
+                          locale={ptBR}
+                        />
+                      </CardContent>
+                    </Card>
 
-          <TabsContent value="calendar" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              {/* Calendário */}
-              <Card className="lg:col-span-2">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>
-                      {format(currentMonth, 'MMMM yyyy', { locale: ptBR })}
-                    </CardTitle>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-                      >
-                        <ChevronLeft className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-                      >
-                        <ChevronLeft className="h-4 w-4 rotate-180" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <CalendarComponent
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={(date) => date && setSelectedDate(date)}
-                    month={currentMonth}
-                    onMonthChange={setCurrentMonth}
-                    className="rounded-md border-0"
-                    locale={ptBR}
-                  />
-                </CardContent>
-              </Card>
-
-              {/* Compromissos do Dia */}
-              <Card className="lg:col-span-2">
-                <CardHeader>
-                  <CardTitle>
-                    Compromissos de {format(selectedDate, 'dd/MM/yyyy', { locale: ptBR })}
-                  </CardTitle>
-                  <CardDescription>
-                    {getCommitmentsForDate(selectedDate).length} compromisso(s) agendado(s)
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {getCommitmentsForDate(selectedDate).length === 0 ? (
-                      <p className="text-muted-foreground text-center py-8">
-                        Nenhum compromisso agendado para este dia.
-                      </p>
-                    ) : (
-                      getCommitmentsForDate(selectedDate).map((commitment) => (
-                        <div key={commitment.id} className="flex items-start space-x-3 p-3 rounded-lg border">
-                          <div className={`w-3 h-3 rounded-full mt-1 ${getCommitmentColor(commitment.commitment_type, commitment.priority)}`} />
-                          <div className="flex-1">
-                            <h4 className="font-medium">{commitment.title}</h4>
-                            <p className="text-sm text-muted-foreground">
-                              {format(parseISO(commitment.commitment_date), 'HH:mm')} - {typeLabels[commitment.commitment_type]}
+                    {/* Compromissos do Dia */}
+                    <Card className="flex flex-col">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-lg">
+                          {format(selectedDate, 'dd/MM/yyyy', { locale: ptBR })}
+                        </CardTitle>
+                        <CardDescription>
+                          {getCommitmentsForDate(selectedDate).length} compromisso(s)
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="flex-1 overflow-y-auto">
+                        <div className="space-y-3">
+                          {getCommitmentsForDate(selectedDate).length === 0 ? (
+                            <p className="text-muted-foreground text-center py-8 text-sm">
+                              Nenhum compromisso para este dia.
                             </p>
-                            {commitment.location && (
-                              <p className="text-sm text-muted-foreground flex items-center gap-1">
-                                <MapPin className="h-3 w-3" />
-                                {commitment.location}
-                              </p>
-                            )}
-                            {commitment.process_number && (
-                              <p className="text-sm text-muted-foreground">
-                                Processo: {commitment.process_number}
-                              </p>
-                            )}
-                          </div>
-                          <Badge variant={commitment.status === 'pendente' ? 'default' : 'secondary'}>
-                            {statusLabels[commitment.status]}
-                          </Badge>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="list" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Todos os Compromissos</CardTitle>
-                <CardDescription>
-                  {filteredCommitments.length} compromisso(s) encontrado(s)
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {filteredCommitments.length === 0 ? (
-                    <p className="text-muted-foreground text-center py-8">
-                      Nenhum compromisso encontrado.
-                    </p>
-                  ) : (
-                    filteredCommitments.map((commitment) => (
-                      <div key={commitment.id} className="flex items-start space-x-4 p-4 rounded-lg border">
-                        <div className={`w-4 h-4 rounded-full mt-1 ${getCommitmentColor(commitment.commitment_type, commitment.priority)}`} />
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <h4 className="font-medium">{commitment.title}</h4>
-                              <p className="text-sm text-muted-foreground">
-                                {format(parseISO(commitment.commitment_date), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
-                              </p>
-                            </div>
-                            <div className="flex gap-2">
-                              <Badge variant="outline">{typeLabels[commitment.commitment_type]}</Badge>
-                              <Badge variant={commitment.priority === 'urgente' ? 'destructive' : 'default'}>
-                                {priorityLabels[commitment.priority]}
-                              </Badge>
-                              <Badge variant={commitment.status === 'pendente' ? 'default' : 'secondary'}>
-                                {statusLabels[commitment.status]}
-                              </Badge>
-                            </div>
-                          </div>
-                          {commitment.description && (
-                            <p className="text-sm text-muted-foreground mt-2">{commitment.description}</p>
+                          ) : (
+                            getCommitmentsForDate(selectedDate).map((commitment) => (
+                              <div key={commitment.id} className="flex items-start space-x-3 p-3 rounded-lg border">
+                                <div className={`w-3 h-3 rounded-full mt-1 flex-shrink-0 ${getCommitmentColor(commitment.commitment_type, commitment.priority)}`} />
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-medium text-sm truncate">{commitment.title}</h4>
+                                  <p className="text-xs text-muted-foreground">
+                                    {format(parseISO(commitment.commitment_date), 'HH:mm')} - {typeLabels[commitment.commitment_type]}
+                                  </p>
+                                  {commitment.location && (
+                                    <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                                      <MapPin className="h-3 w-3 flex-shrink-0" />
+                                      <span className="truncate">{commitment.location}</span>
+                                    </p>
+                                  )}
+                                  {commitment.process_number && (
+                                    <p className="text-xs text-muted-foreground mt-1 truncate">
+                                      Processo: {commitment.process_number}
+                                    </p>
+                                  )}
+                                </div>
+                                <Badge variant={commitment.status === 'pendente' ? 'default' : 'secondary'} className="text-xs flex-shrink-0">
+                                  {statusLabels[commitment.status]}
+                                </Badge>
+                              </div>
+                            ))
                           )}
-                          <div className="flex flex-wrap gap-4 mt-2 text-sm text-muted-foreground">
-                            {commitment.process_number && (
-                              <span>Processo: {commitment.process_number}</span>
-                            )}
-                            {commitment.client_name && (
-                              <span>Cliente: {commitment.client_name}</span>
-                            )}
-                            {commitment.location && (
-                              <span className="flex items-center gap-1">
-                                <MapPin className="h-3 w-3" />
-                                {commitment.location}
-                              </span>
-                            )}
-                            {commitment.auto_detected && (
-                              <Badge variant="secondary" className="text-xs">Auto-detectado</Badge>
-                            )}
-                          </div>
                         </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </TabsContent>
 
-          <TabsContent value="timeline" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Próximos Prazos</CardTitle>
-                <CardDescription>
-                  Prazos e compromissos ordenados por urgência
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {filteredCommitments
-                    .filter(c => c.status === 'pendente')
-                    .sort((a, b) => new Date(a.commitment_date).getTime() - new Date(b.commitment_date).getTime())
-                    .slice(0, 10)
-                    .map((commitment, index) => (
-                      <div key={commitment.id} className="flex items-center space-x-4 p-4 rounded-lg border">
-                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-medium">
-                          {index + 1}
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-medium">{commitment.title}</h4>
-                          <p className="text-sm text-muted-foreground">
-                            {format(parseISO(commitment.commitment_date), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                <TabsContent value="list" className="h-full m-0">
+                  <Card className="h-full flex flex-col">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg">Todos os Compromissos</CardTitle>
+                      <CardDescription>
+                        {filteredCommitments.length} compromisso(s) encontrado(s)
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-1 overflow-y-auto">
+                      <div className="space-y-3">
+                        {filteredCommitments.length === 0 ? (
+                          <p className="text-muted-foreground text-center py-8">
+                            Nenhum compromisso encontrado.
                           </p>
-                        </div>
-                        <div className="flex gap-2">
-                          <Badge variant="outline">{typeLabels[commitment.commitment_type]}</Badge>
-                          <Badge variant={commitment.priority === 'urgente' ? 'destructive' : 'default'}>
-                            {priorityLabels[commitment.priority]}
-                          </Badge>
-                        </div>
+                        ) : (
+                          filteredCommitments.map((commitment) => (
+                            <div key={commitment.id} className="flex items-start space-x-4 p-4 rounded-lg border">
+                              <div className={`w-4 h-4 rounded-full mt-1 flex-shrink-0 ${getCommitmentColor(commitment.commitment_type, commitment.priority)}`} />
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-start justify-between gap-2">
+                                  <div className="min-w-0 flex-1">
+                                    <h4 className="font-medium text-sm">{commitment.title}</h4>
+                                    <p className="text-xs text-muted-foreground">
+                                      {format(parseISO(commitment.commitment_date), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                                    </p>
+                                  </div>
+                                  <div className="flex flex-wrap gap-1 flex-shrink-0">
+                                    <Badge variant="outline" className="text-xs">{typeLabels[commitment.commitment_type]}</Badge>
+                                    <Badge variant={commitment.priority === 'urgente' ? 'destructive' : 'default'} className="text-xs">
+                                      {priorityLabels[commitment.priority]}
+                                    </Badge>
+                                  </div>
+                                </div>
+                                {commitment.description && (
+                                  <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{commitment.description}</p>
+                                )}
+                                <div className="flex flex-wrap gap-3 mt-2 text-xs text-muted-foreground">
+                                  {commitment.process_number && (
+                                    <span className="truncate">Processo: {commitment.process_number}</span>
+                                  )}
+                                  {commitment.client_name && (
+                                    <span className="truncate">Cliente: {commitment.client_name}</span>
+                                  )}
+                                  {commitment.location && (
+                                    <span className="flex items-center gap-1 truncate">
+                                      <MapPin className="h-3 w-3 flex-shrink-0" />
+                                      {commitment.location}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        )}
                       </div>
-                    ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="timeline" className="h-full m-0">
+                  <Card className="h-full flex flex-col">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg">Próximos Prazos</CardTitle>
+                      <CardDescription>
+                        Prazos e compromissos ordenados por urgência
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-1 overflow-y-auto">
+                      <div className="space-y-3">
+                        {filteredCommitments
+                          .filter(c => c.status === 'pendente')
+                          .sort((a, b) => new Date(a.commitment_date).getTime() - new Date(b.commitment_date).getTime())
+                          .slice(0, 10)
+                          .map((commitment, index) => (
+                            <div key={commitment.id} className="flex items-center space-x-4 p-3 rounded-lg border">
+                              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-medium flex-shrink-0">
+                                {index + 1}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-medium text-sm truncate">{commitment.title}</h4>
+                                <p className="text-xs text-muted-foreground">
+                                  {format(parseISO(commitment.commitment_date), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                                </p>
+                              </div>
+                              <div className="flex gap-1 flex-shrink-0">
+                                <Badge variant="outline" className="text-xs">{typeLabels[commitment.commitment_type]}</Badge>
+                                <Badge variant={commitment.priority === 'urgente' ? 'destructive' : 'default'} className="text-xs">
+                                  {priorityLabels[commitment.priority]}
+                                </Badge>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </div>
+            </Tabs>
+          </div>
+        </div>
       </div>
     </div>
   );

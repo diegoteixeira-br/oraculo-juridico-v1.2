@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import UserMenu from "@/components/UserMenu";
 import DocumentViewer from "@/components/DocumentViewer";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
+import AgendaWidget from "@/components/AgendaWidget";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -159,6 +160,32 @@ export default function Dashboard() {
               >
                 <MessageSquare className="w-5 h-5 mr-2" />
                 Iniciar Chat
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Agenda Jurídica - Compromissos da Semana */}
+        <Card className="bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border border-blue-500/30">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-blue-300">
+              <Calendar className="w-5 h-5" />
+              Agenda da Semana
+            </CardTitle>
+            <CardDescription className="text-blue-200/80">
+              Seus próximos compromissos e prazos processuais
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <AgendaWidget />
+            <div className="flex justify-center mt-4">
+              <Button 
+                onClick={() => navigate("/agenda-juridica")}
+                variant="outline"
+                className="border-blue-500/30 text-blue-300 hover:bg-blue-600/10"
+              >
+                <Calendar className="w-4 h-4 mr-2" />
+                Ver Agenda Completa
               </Button>
             </div>
           </CardContent>
