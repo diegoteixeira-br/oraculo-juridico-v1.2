@@ -1,13 +1,16 @@
 import { Link } from "react-router-dom";
-import { Clock, DollarSign, AlertTriangle, Shield, Globe, Smartphone, History, Lock, Check, ChevronDown, ChevronRight, Brain, Zap, Users, Award, Scale, Gavel, FileText, Building } from "lucide-react";
+import { Clock, DollarSign, AlertTriangle, Shield, Globe, Smartphone, History, Lock, Check, ChevronDown, ChevronRight, Brain, Zap, Users, Award, Scale, Gavel, FileText, Building, Calendar, Heart, MessageCircle, Calculator, Target, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import heroBrain from "../assets/hero-brain-legal.jpg";
 import legalOffice from "../assets/legal-office.jpg";
+
 const LandingPage = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
   };
+  
   const scrollToFreeAccount = () => {
     const freeAccountSection = document.getElementById('free-account-section');
     if (freeAccountSection) {
@@ -16,32 +19,51 @@ const LandingPage = () => {
       });
     }
   };
-  const faqData = [{
-    question: "Como funcionam os tokens?",
-    answer: "É muito simples. Cada pergunta completa que você faz à nossa Inteligência Artificial consome tokens de acordo com o tamanho da consulta. Ao se cadastrar, você entra no nosso plano gratuito e ganha 3.000 tokens que se renovam a cada 24 horas."
-  }, {
-    question: "Meus tokens gratuitos se acumulam se eu não usar?",
-    answer: "Não. Os 3.000 tokens gratuitos são renovados diariamente, ou seja, você tem direito a novas consultas grátis a cada dia. Eles não são cumulativos. Para ter tokens ilimitados para usar quando quiser, você pode adquirir planos pagos dentro da sua conta."
-  }, {
-    question: "Preciso cadastrar um cartão de crédito para usar o plano gratuito?",
-    answer: "Não. Para criar sua conta no plano gratuito e usar seus 3.000 tokens diários, você não precisa fornecer nenhuma informação de pagamento. Você só precisará inserir seus dados de pagamento se decidir assinar um plano pago."
-  }, {
-    question: "As informações da IA são confiáveis?",
-    answer: "Sim! Nossa IA integra-se diretamente com a LexML, base oficial de jurisprudência do governo brasileiro, garantindo acesso a dados atualizados e confiáveis dos tribunais superiores e estaduais. Mesmo assim, recomendamos sempre consultar um advogado para casos específicos e complexos."
-  }, {
-    question: "Como posso adquirir mais tokens?",
-    answer: "Após criar sua conta gratuita e fazer login, você terá acesso à área de planos onde poderá adquirir o Plano Básico (75.000 tokens por R$ 59,90) ou Premium (150.000 tokens por R$ 97,00). Os tokens dos planos pagos não expiram."
-  }];
-  return <div className="min-h-screen bg-background text-foreground">
+  
+  const faqData = [
+    {
+      question: "Como funcionam os tokens?",
+      answer: "É muito simples. Cada pergunta completa que você faz à nossa Inteligência Artificial consome tokens de acordo com o tamanho da consulta. Ao se cadastrar, você entra no nosso plano gratuito e ganha 3.000 tokens que se renovam a cada 24 horas."
+    },
+    {
+      question: "Meus tokens gratuitos se acumulam se eu não usar?",
+      answer: "Não. Os 3.000 tokens gratuitos são renovados diariamente, ou seja, você tem direito a novas consultas grátis a cada dia. Eles não são cumulativos. Para ter tokens ilimitados para usar quando quiser, você pode adquirir planos pagos dentro da sua conta."
+    },
+    {
+      question: "Preciso cadastrar um cartão de crédito para usar o plano gratuito?",
+      answer: "Não. Para criar sua conta no plano gratuito e usar seus 3.000 tokens diários, você não precisa fornecer nenhuma informação de pagamento. Você só precisará inserir seus dados de pagamento se decidir assinar um plano pago."
+    },
+    {
+      question: "As informações da IA são confiáveis?",
+      answer: "Sim! Nossa IA integra-se diretamente com a LexML, base oficial de jurisprudência do governo brasileiro, garantindo acesso a dados atualizados e confiáveis dos tribunais superiores e estaduais. Mesmo assim, recomendamos sempre consultar um advogado para casos específicos e complexos."
+    },
+    {
+      question: "Como posso adquirir mais tokens?",
+      answer: "Após criar sua conta gratuita e fazer login, você terá acesso à área de planos onde poderá adquirir o Plano Básico (75.000 tokens por R$ 59,90) ou Premium (150.000 tokens por R$ 97,00). Os tokens dos planos pagos não expiram."
+    },
+    {
+      question: "O que é a Agenda Jurídica?",
+      answer: "É uma ferramenta completa para organizar seus prazos processuais, audiências e compromissos jurídicos. Inclui extração automática de prazos usando IA e calendário integrado para nunca perder um prazo importante."
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="py-6 px-4 border-b border-border">
+      <header className="py-6 px-4 border-b border-border bg-slate-800/50 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-foreground">
-            Oráculo Jurídico
-          </h1>
+          <div className="flex items-center gap-3">
+            <img 
+              src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
+              alt="Oráculo Jurídico" 
+              className="h-8 w-auto"
+            />
+            <h1 className="text-2xl font-bold text-foreground">
+              Oráculo Jurídico
+            </h1>
+          </div>
           
-          <div className="flex items-center">
-            {/* Login button */}
+          <div className="flex items-center gap-3">
             <Link to="/login" className="text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-1 sm:space-x-2 border border-border rounded-lg px-2 py-1.5 sm:px-4 sm:py-2 hover:bg-muted/10">
               <Smartphone className="w-3 h-3 sm:w-4 sm:h-4" />
               <span className="text-xs sm:text-sm">Login</span>
@@ -175,6 +197,22 @@ const LandingPage = () => {
             </div>
             
             <div className="p-6 card-signup">
+              <Calendar className="w-12 h-12 text-primary mb-4" />
+              <h3 className="text-xl font-semibold mb-4 text-foreground">Agenda Jurídica</h3>
+              <p className="text-muted-foreground">
+                Organize prazos processuais com extração automática de IA.
+              </p>
+            </div>
+            
+            <div className="p-6 card-signup">
+              <Calculator className="w-12 h-12 text-primary mb-4" />
+              <h3 className="text-xl font-semibold mb-4 text-foreground">Calculadoras Especializadas</h3>
+              <p className="text-muted-foreground">
+                Contratos bancários e pensão alimentícia com precisão jurídica.
+              </p>
+            </div>
+            
+            <div className="p-6 card-signup">
               <Globe className="w-12 h-12 text-primary mb-4" />
               <h3 className="text-xl font-semibold mb-4 text-foreground">Acesso 24/7</h3>
               <p className="text-muted-foreground">
@@ -192,33 +230,109 @@ const LandingPage = () => {
             
             <div className="p-6 card-signup">
               <History className="w-12 h-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-4 text-foreground">Histórico de Conversas</h3>
+              <h3 className="text-xl font-semibold mb-4 text-foreground">Histórico Completo</h3>
               <p className="text-muted-foreground">
-                Mantenha registro de todas suas consultas e respostas.
-              </p>
-            </div>
-            
-            <div className="p-6 card-signup">
-              <Zap className="w-12 h-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-4 text-foreground">Respostas Instantâneas</h3>
-              <p className="text-muted-foreground">
-                Obtenha informações jurídicas em segundos, não em horas.
-              </p>
-            </div>
-            
-            <div className="p-6 card-signup">
-              <Shield className="w-12 h-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-4 text-foreground">Segurança Total</h3>
-              <p className="text-muted-foreground">
-                Suas consultas e dados são protegidos com criptografia.
+                Mantenha registro de todas suas consultas e documentos.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Calculadoras Jurídicas */}
+      {/* Nova Seção - Agenda Jurídica */}
       <section className="py-20 px-4 bg-muted/20">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-6 text-foreground">
+              Agenda Jurídica Inteligente
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+              Nunca mais perca um prazo processual com nossa agenda inteligente que extrai prazos automaticamente
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <div className="flex items-start space-x-4">
+                <div className="w-12 h-12 bg-blue-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Target className="w-6 h-6 text-blue-400" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2 text-foreground">Extração Automática de Prazos</h3>
+                  <p className="text-muted-foreground">
+                    Cole o texto de uma decisão ou intimação e nossa IA extrai automaticamente todos os prazos processuais, identificando tipo, data e prioridade.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-4">
+                <div className="w-12 h-12 bg-green-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Calendar className="w-6 h-6 text-green-400" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2 text-foreground">Calendário Integrado</h3>
+                  <p className="text-muted-foreground">
+                    Visualize todos seus compromissos em um calendário organizado, com filtros por tipo, status e prioridade.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-4">
+                <div className="w-12 h-12 bg-purple-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <MessageCircle className="w-6 h-6 text-purple-400" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2 text-foreground">Organização Completa</h3>
+                  <p className="text-muted-foreground">
+                    Gerencie prazos processuais, audiências, reuniões com clientes e compromissos personalizados em um só lugar.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="relative">
+              <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
+                <div className="flex items-center gap-3 mb-4">
+                  <Calendar className="w-8 h-8 text-primary" />
+                  <div>
+                    <h4 className="font-semibold text-foreground">Agenda Jurídica</h4>
+                    <p className="text-sm text-muted-foreground">Seus próximos compromissos</p>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 p-3 bg-blue-600/10 rounded-lg border border-blue-500/20">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-blue-200">Prazo para Contestação</p>
+                      <p className="text-xs text-blue-300/80">15/01 - 14:00 • Processo 123456</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 p-3 bg-red-600/10 rounded-lg border border-red-500/20">
+                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-red-200">Audiência de Instrução</p>
+                      <p className="text-xs text-red-300/80">18/01 - 09:30 • Fórum Central</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 p-3 bg-green-600/10 rounded-lg border border-green-500/20">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-green-200">Reunião com Cliente</p>
+                      <p className="text-xs text-green-300/80">20/01 - 16:00 • Escritório</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Calculadoras Jurídicas Melhoradas */}
+      <section className="py-20 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-6 text-foreground">
@@ -241,15 +355,23 @@ const LandingPage = () => {
               <ul className="space-y-2 text-muted-foreground mb-6">
                 <li className="flex items-center">
                   <Check className="w-4 h-4 text-primary mr-2" />
-                  Cálculo de juros e taxas
+                  Juros simples e compostos
                 </li>
                 <li className="flex items-center">
                   <Check className="w-4 h-4 text-primary mr-2" />
-                  Análise de cláusulas abusivas
+                  Correção monetária (IPCA, IGP-M, SELIC)
                 </li>
                 <li className="flex items-center">
                   <Check className="w-4 h-4 text-primary mr-2" />
-                  Valor de devolução indevida
+                  Multa e juros de mora personalizáveis
+                </li>
+                <li className="flex items-center">
+                  <Check className="w-4 h-4 text-primary mr-2" />
+                  Pagamentos parciais com datas
+                </li>
+                <li className="flex items-center">
+                  <Check className="w-4 h-4 text-primary mr-2" />
+                  Relatório detalhado com fundamentação
                 </li>
               </ul>
               <div className="bg-card p-4 rounded-lg border border-border">
@@ -261,7 +383,7 @@ const LandingPage = () => {
 
             <div className="p-8 card-signup border-2 border-primary/20 hover:border-primary/40 transition-colors">
               <div className="flex items-center mb-6">
-                <Scale className="w-12 h-12 text-primary mr-4" />
+                <Heart className="w-12 h-12 text-primary mr-4" />
                 <div>
                   <h3 className="text-xl font-semibold text-foreground">Cálculo de Pensão Alimentícia</h3>
                   <p className="text-muted-foreground text-sm">Cálculos precisos de pensão alimentícia</p>
@@ -270,7 +392,15 @@ const LandingPage = () => {
               <ul className="space-y-2 text-muted-foreground mb-6">
                 <li className="flex items-center">
                   <Check className="w-4 h-4 text-primary mr-2" />
-                  Valores em atraso com juros
+                  Cálculo por percentual ou valor fixo
+                </li>
+                <li className="flex items-center">
+                  <Check className="w-4 h-4 text-primary mr-2" />
+                  Múltiplos filhos com idades diferentes
+                </li>
+                <li className="flex items-center">
+                  <Check className="w-4 h-4 text-primary mr-2" />
+                  Valores em atraso com juros e multa
                 </li>
                 <li className="flex items-center">
                   <Check className="w-4 h-4 text-primary mr-2" />
@@ -278,7 +408,7 @@ const LandingPage = () => {
                 </li>
                 <li className="flex items-center">
                   <Check className="w-4 h-4 text-primary mr-2" />
-                  Relatório detalhado
+                  Relatório completo para petições
                 </li>
               </ul>
               <div className="bg-card p-4 rounded-lg border border-border">
@@ -316,7 +446,7 @@ const LandingPage = () => {
           </div>
           
           <div className="max-w-md mx-auto">
-            <div className="card-signup p-8 text-center transform scale-105 border-2 border-primary">
+            <div className="card-signup p-8 text-center transform scale-105 border-2 border-primary relative">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-bold">
                 100% GRATUITO
               </div>
@@ -339,15 +469,19 @@ const LandingPage = () => {
                 </div>
                 <div className="flex items-center space-x-3 text-left">
                   <Check className="w-5 h-5 text-primary flex-shrink-0" />
+                  <span className="text-muted-foreground">Agenda jurídica com IA</span>
+                </div>
+                <div className="flex items-center space-x-3 text-left">
+                  <Check className="w-5 h-5 text-primary flex-shrink-0" />
+                  <span className="text-muted-foreground">Calculadoras especializadas</span>
+                </div>
+                <div className="flex items-center space-x-3 text-left">
+                  <Check className="w-5 h-5 text-primary flex-shrink-0" />
                   <span className="text-muted-foreground">Histórico de conversas</span>
                 </div>
                 <div className="flex items-center space-x-3 text-left">
                   <Check className="w-5 h-5 text-primary flex-shrink-0" />
                   <span className="text-muted-foreground">Sem cartão de crédito necessário</span>
-                </div>
-                <div className="flex items-center space-x-3 text-left">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-muted-foreground">Opção de comprar tokens </span>
                 </div>
               </div>
               
@@ -397,9 +531,9 @@ const LandingPage = () => {
                   <Gavel className="w-6 h-6 text-secondary" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-2 text-foreground">Análise Processual</h3>
+                  <h3 className="text-xl font-semibold mb-2 text-foreground">Análise Processual Avançada</h3>
                   <p className="text-muted-foreground">
-                    Identifica estratégias processuais e fundamentação legal baseada em casos similares.
+                    Identifica estratégias processuais, extrai prazos automaticamente e sugere fundamentação legal baseada em casos similares.
                   </p>
                 </div>
               </div>
@@ -409,9 +543,9 @@ const LandingPage = () => {
                   <FileText className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-2 text-foreground">Redação Jurídica</h3>
+                  <h3 className="text-xl font-semibold mb-2 text-foreground">Redação Jurídica Inteligente</h3>
                   <p className="text-muted-foreground">
-                    Auxilia na elaboração de peças processuais com linguagem técnica precisa e fundamentação sólida.
+                    Auxilia na elaboração de peças processuais com linguagem técnica precisa, fundamentação sólida e modelos personalizáveis.
                   </p>
                 </div>
               </div>
@@ -434,6 +568,62 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Seção de Funcionalidades Completas */}
+      <section className="py-20 px-4 bg-muted/20">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-6 text-foreground">
+              Plataforma Jurídica Completa
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+              Tudo que você precisa para modernizar sua prática jurídica em uma única plataforma
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="p-6 card-signup text-center">
+              <div className="w-16 h-16 bg-blue-600/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <MessageSquare className="w-8 h-8 text-blue-400" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2 text-foreground">Chat IA Jurídica</h3>
+              <p className="text-sm text-muted-foreground">
+                Consultas ilimitadas com IA especializada em direito brasileiro
+              </p>
+            </div>
+            
+            <div className="p-6 card-signup text-center">
+              <div className="w-16 h-16 bg-green-600/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Calendar className="w-8 h-8 text-green-400" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2 text-foreground">Agenda Inteligente</h3>
+              <p className="text-sm text-muted-foreground">
+                Extração automática de prazos e organização de compromissos
+              </p>
+            </div>
+            
+            <div className="p-6 card-signup text-center">
+              <div className="w-16 h-16 bg-purple-600/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Calculator className="w-8 h-8 text-purple-400" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2 text-foreground">Calculadoras</h3>
+              <p className="text-sm text-muted-foreground">
+                Contratos bancários e pensão alimentícia com precisão jurídica
+              </p>
+            </div>
+            
+            <div className="p-6 card-signup text-center">
+              <div className="w-16 h-16 bg-orange-600/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <FileText className="w-8 h-8 text-orange-400" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2 text-foreground">Documentos</h3>
+              <p className="text-sm text-muted-foreground">
+                Modelos jurídicos personalizáveis para download
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto">
@@ -444,17 +634,28 @@ const LandingPage = () => {
           </div>
           
           <div className="space-y-4">
-            {faqData.map((faq, index) => <div key={index} className="card-signup">
-                <button onClick={() => toggleFaq(index)} className="w-full p-6 text-left flex items-center justify-between hover:bg-muted/10 transition-colors">
+            {faqData.map((faq, index) => (
+              <div key={index} className="card-signup">
+                <button 
+                  onClick={() => toggleFaq(index)} 
+                  className="w-full p-6 text-left flex items-center justify-between hover:bg-muted/10 transition-colors"
+                >
                   <h3 className="text-lg font-semibold text-foreground">
                     {faq.question}
                   </h3>
-                  {openFaq === index ? <ChevronDown className="w-5 h-5 text-muted-foreground" /> : <ChevronRight className="w-5 h-5 text-muted-foreground" />}
+                  {openFaq === index ? (
+                    <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                  ) : (
+                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                  )}
                 </button>
-                {openFaq === index && <div className="px-6 pb-6">
+                {openFaq === index && (
+                  <div className="px-6 pb-6">
                     <p className="text-muted-foreground">{faq.answer}</p>
-                  </div>}
-              </div>)}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -489,6 +690,8 @@ const LandingPage = () => {
           </div>
         </div>
       </footer>
-    </div>;
+    </div>
+  );
 };
+
 export default LandingPage;
