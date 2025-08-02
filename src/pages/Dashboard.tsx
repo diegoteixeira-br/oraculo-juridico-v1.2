@@ -567,7 +567,7 @@ export default function Dashboard() {
                       ))}
                       
                       <Button 
-                        onClick={() => navigate("/chat")}
+                        onClick={() => navigate("/chat?show-history=true")}
                         variant="outline"
                         className="w-full border-slate-600 hover:bg-slate-700 text-xs"
                       >
