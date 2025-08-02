@@ -594,7 +594,7 @@ export default function Dashboard() {
                       Minha Conta
                     </Button>
                     <Button 
-                      onClick={() => navigate("/contato")}
+                      onClick={() => navigate("/suporte")}
                       variant="outline"
                       className="justify-start border-slate-600 hover:bg-slate-700"
                     >

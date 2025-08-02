@@ -32,6 +32,7 @@ import AdminDocuments from "./pages/AdminDocuments";
 import AdminLogin from "./pages/AdminLogin";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import AgendaJuridica from "./pages/AgendaJuridica";
+import SuportePage from "./pages/SuportePage";
 
 
 const queryClient = new QueryClient();
@@ -61,6 +62,7 @@ function AppContent() {
       <Route path="/agenda-juridica" element={<PageWrapper><ProtectedRoute><AgendaJuridica /></ProtectedRoute></PageWrapper>} />
       <Route path="/admin/login" element={<PageWrapper><AdminLogin /></PageWrapper>} />
       <Route path="/admin/documentos" element={<PageWrapper><AdminProtectedRoute><AdminDocuments /></AdminProtectedRoute></PageWrapper>} />
+      <Route path="/suporte" element={<PageWrapper><ProtectedRoute><SuportePage /></ProtectedRoute></PageWrapper>} />
       
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
