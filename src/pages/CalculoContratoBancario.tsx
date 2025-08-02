@@ -37,6 +37,9 @@ const CalculoContratoBancario = () => {
     tipoJuros: 'simples',
     indiceCorrecao: 'ipca',
     valorPago: '',
+    dataPagamentoParcial: '',
+    multaAtraso: '2',
+    jurosMora: '1',
     observacoes: ''
   });
 
@@ -208,6 +211,16 @@ const CalculoContratoBancario = () => {
                       placeholder="5000.00"
                       value={formData.valorPago}
                       onChange={(e) => handleInputChange('valorPago', e.target.value)}
+                      className="bg-slate-700 border-slate-600 focus:border-primary text-white"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="dataPagamentoParcial" className="text-sm text-slate-300">Data do Pagamento</Label>
+                    <Input
+                      id="dataPagamentoParcial"
+                      type="date"
+                      value={formData.dataPagamentoParcial}
+                      onChange={(e) => handleInputChange('dataPagamentoParcial', e.target.value)}
                       className="bg-slate-700 border-slate-600 focus:border-primary text-white"
                     />
                   </div>
