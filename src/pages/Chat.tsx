@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Paperclip, Trash2, MessageSquare, Plus, X, Download, Volume2, VolumeX } from "lucide-react";
+import { Send, Paperclip, Trash2, MessageSquare, Plus, X, Download, Volume2, VolumeX, Menu, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import UserMenu from "@/components/UserMenu";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 import ReactMarkdown from "react-markdown";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Message {
   id: string;
@@ -43,12 +44,14 @@ export default function Chat() {
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   
   const { user, profile, refreshProfile } = useAuth();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { visible: menuVisible } = useScrollDirection();
+  const isMobile = useIsMobile();
 
   const currentSession = sessions.find(s => s.id === currentSessionId);
   const messages = currentSession?.messages || [];
@@ -81,7 +84,7 @@ export default function Chat() {
 
       if (error) throw error;
 
-      // Agrupar mensagens por session_id
+      // Agrupar mensagens por session_id e evitar duplicação
       const sessionMap = new Map<string, ChatSession>();
       
       data?.forEach((query) => {
@@ -90,7 +93,7 @@ export default function Chat() {
         if (!sessionMap.has(sessionId)) {
           sessionMap.set(sessionId, {
             id: sessionId,
-            title: query.prompt_text.substring(0, 50) + "...",
+            title: query.prompt_text.substring(0, 50) + (query.prompt_text.length > 50 ? "..." : ""),
             lastMessage: query.response_text || query.prompt_text,
             timestamp: new Date(query.created_at),
             messages: []
@@ -99,24 +102,31 @@ export default function Chat() {
 
         const session = sessionMap.get(sessionId)!;
         
-        // Adicionar mensagem do usuário
-        session.messages.push({
-          id: `${query.id}-user`,
-          type: 'user',
-          content: query.prompt_text,
-          timestamp: new Date(query.created_at),
-          attachedFiles: query.attached_files || undefined
-        });
-
-        // Adicionar resposta da IA se existir
-        if (query.response_text) {
+        // Verificar se já existe uma mensagem do usuário para evitar duplicação
+        const userMessageExists = session.messages.some(msg => 
+          msg.type === 'user' && msg.content === query.prompt_text
+        );
+        
+        if (!userMessageExists) {
+          // Adicionar mensagem do usuário
           session.messages.push({
-            id: `${query.id}-assistant`,
-            type: 'assistant',
-            content: query.response_text,
+            id: `${query.id}-user`,
+            type: 'user',
+            content: query.prompt_text,
             timestamp: new Date(query.created_at),
-            tokensConsumed: query.credits_consumed ? query.credits_consumed * 1000 : undefined
+            attachedFiles: query.attached_files || undefined
           });
+
+          // Adicionar resposta da IA se existir
+          if (query.response_text) {
+            session.messages.push({
+              id: `${query.id}-assistant`,
+              type: 'assistant',
+              content: query.response_text,
+              timestamp: new Date(query.created_at),
+              tokensConsumed: query.credits_consumed ? query.credits_consumed * 1000 : undefined
+            });
+          }
         }
       });
 
@@ -146,6 +156,11 @@ export default function Chat() {
     
     setSessions(prev => [newSession, ...prev]);
     setCurrentSessionId(newSessionId);
+    
+    // Fechar sidebar no mobile após criar nova sessão
+    if (isMobile) {
+      setSidebarOpen(false);
+    }
   };
 
   const deleteSession = async (sessionId: string) => {
@@ -274,6 +289,10 @@ export default function Chat() {
           updatedSessions[existingSessionIndex].messages.push(userMessage);
           updatedSessions[existingSessionIndex].lastMessage = message;
           updatedSessions[existingSessionIndex].timestamp = new Date();
+          // Atualizar título se for a primeira mensagem
+          if (updatedSessions[existingSessionIndex].title === "Nova Conversa") {
+            updatedSessions[existingSessionIndex].title = message.substring(0, 50) + (message.length > 50 ? "..." : "");
+          }
           return updatedSessions;
         } else {
           const newSession: ChatSession = {
@@ -430,25 +449,47 @@ export default function Chat() {
   const totalTokens = (profile?.daily_tokens || 0) + (profile?.plan_tokens || 0);
 
   return (
-    <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex overflow-hidden">
-      {/* Menu flutuante */}
-      <div className={`fixed top-0 right-0 z-50 p-4 transition-transform duration-300 ${
-        menuVisible ? 'translate-y-0' : '-translate-y-full'
-      }`}>
-        <UserMenu hideOptions={["chat"]} />
-      </div>
+    <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex overflow-hidden relative">
+      {/* Menu flutuante - apenas desktop */}
+      {!isMobile && (
+        <div className={`fixed top-0 right-0 z-50 p-4 transition-transform duration-300 ${
+          menuVisible ? 'translate-y-0' : '-translate-y-full'
+        }`}>
+          <UserMenu hideOptions={["chat"]} />
+        </div>
+      )}
+
+      {/* Overlay para mobile quando sidebar está aberta */}
+      {isMobile && sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
       {/* Sidebar - Histórico de Conversas */}
-      <div className="w-80 bg-slate-800/50 border-r border-slate-700 flex flex-col">
+      <div className={`${
+        isMobile 
+          ? `fixed left-0 top-0 h-full w-80 bg-slate-800 border-r border-slate-700 z-50 transform transition-transform duration-300 ${
+              sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            }`
+          : 'w-80 bg-slate-800/50 border-r border-slate-700'
+      } flex flex-col`}>
         {/* Header da Sidebar */}
         <div className="p-4 border-b border-slate-700">
-          <div className="flex items-center justify-between mb-4">
-            <img 
-              src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
-              alt="Oráculo Jurídico" 
-              className="h-8 w-auto"
-            />
-          </div>
+          {isMobile && (
+            <div className="flex items-center justify-between mb-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSidebarOpen(false)}
+                className="text-white"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              <UserMenu hideOptions={["chat"]} />
+            </div>
+          )}
           
           <Button 
             onClick={createNewSession}
@@ -500,7 +541,10 @@ export default function Chat() {
                         ? 'bg-primary/20 border border-primary/30'
                         : 'bg-slate-700/30 hover:bg-slate-700/50'
                     }`}
-                    onClick={() => setCurrentSessionId(session.id)}
+                    onClick={() => {
+                      setCurrentSessionId(session.id);
+                      if (isMobile) setSidebarOpen(false);
+                    }}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
@@ -540,137 +584,158 @@ export default function Chat() {
         {/* Header do Chat */}
         <div className="bg-slate-800/50 border-b border-slate-700 p-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-bold text-white">
-                {currentSession?.title || "Oráculo Jurídico"}
-              </h1>
-              <p className="text-sm text-slate-400">
-                IA Jurídica Especializada em Direito Brasileiro
-              </p>
+            <div className="flex items-center gap-3">
+              {isMobile && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setSidebarOpen(true)}
+                  className="text-white"
+                >
+                  <Menu className="w-5 h-5" />
+                </Button>
+              )}
+              
+              {/* Logo centralizada */}
+              <div className="flex-1 flex justify-center">
+                <img 
+                  src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
+                  alt="Oráculo Jurídico" 
+                  className="h-8 w-auto"
+                />
+              </div>
             </div>
             
-            {currentSession && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={exportChat}
-                className="border-slate-600 hover:bg-slate-700"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Exportar
-              </Button>
-            )}
+            <div className="flex items-center gap-2">
+              {currentSession && !isMobile && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={exportChat}
+                  className="border-slate-600 hover:bg-slate-700"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Exportar
+                </Button>
+              )}
+              
+              {isMobile && <UserMenu hideOptions={["chat"]} />}
+            </div>
           </div>
         </div>
 
         {/* Área de Mensagens */}
-        <div className="flex-1 overflow-y-auto bg-slate-900/30 p-4">
-          <div className="max-w-4xl mx-auto space-y-6">
-            {messages.length === 0 ? (
-              <div className="text-center py-12">
-                <MessageSquare className="w-16 h-16 text-slate-500 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-white mb-2">
-                  Bem-vindo ao Oráculo Jurídico
-                </h3>
-                <p className="text-slate-400 max-w-md mx-auto">
-                  Faça suas perguntas jurídicas e receba respostas fundamentadas 
-                  na legislação brasileira. Você pode anexar documentos para análise.
-                </p>
-              </div>
-            ) : (
-              messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div
-                    className={`max-w-[80%] rounded-lg p-4 ${
-                      msg.type === 'user'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-slate-800 text-white border border-slate-700'
-                    }`}
-                  >
-                    {/* Arquivos anexados */}
-                    {msg.attachedFiles && msg.attachedFiles.length > 0 && (
-                      <div className="mb-3 space-y-2">
-                        {msg.attachedFiles.map((file, index) => (
-                          <div key={index} className="flex items-center gap-2 text-xs bg-black/20 rounded p-2">
-                            <Paperclip className="w-3 h-3" />
-                            <span className="truncate">{file.name}</span>
-                            <span className="text-xs opacity-70">
-                              ({(file.size / 1024).toFixed(1)}KB)
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Conteúdo da mensagem */}
-                    <div className="prose prose-invert max-w-none">
-                      {msg.type === 'assistant' ? (
-                        <ReactMarkdown
-                          components={{
-                            p: ({ children }) => <p className="mb-3 last:mb-0">{children}</p>,
-                            ul: ({ children }) => <ul className="list-disc ml-4 mb-3">{children}</ul>,
-                            ol: ({ children }) => <ol className="list-decimal ml-4 mb-3">{children}</ol>,
-                            li: ({ children }) => <li className="mb-1">{children}</li>,
-                            h1: ({ children }) => <h1 className="text-lg font-bold mb-3">{children}</h1>,
-                            h2: ({ children }) => <h2 className="text-base font-bold mb-2">{children}</h2>,
-                            h3: ({ children }) => <h3 className="text-sm font-bold mb-2">{children}</h3>,
-                            strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
-                            code: ({ children }) => <code className="bg-slate-700 px-1 py-0.5 rounded text-sm">{children}</code>,
-                            pre: ({ children }) => <pre className="bg-slate-700 p-3 rounded overflow-x-auto text-sm">{children}</pre>
-                          }}
-                        >
-                          {msg.content}
-                        </ReactMarkdown>
-                      ) : (
-                        <p className="whitespace-pre-wrap">{msg.content}</p>
-                      )}
-                    </div>
-
-                    {/* Footer da mensagem */}
-                    <div className="flex items-center justify-between mt-3 pt-2 border-t border-current/20">
-                      <span className="text-xs opacity-70">
-                        {msg.timestamp.toLocaleTimeString('pt-BR', { 
-                          hour: '2-digit', 
-                          minute: '2-digit' 
-                        })}
-                      </span>
-                      
-                      <div className="flex items-center gap-2">
-                        {msg.tokensConsumed && (
-                          <Badge variant="secondary" className="text-xs">
-                            {msg.tokensConsumed.toLocaleString()} tokens
-                          </Badge>
-                        )}
-                        
-                        {msg.type === 'assistant' && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-6 w-6 p-0 opacity-70 hover:opacity-100"
-                            onClick={() => playTextToSpeech(msg.content)}
-                          >
-                            {isPlayingAudio ? (
-                              <VolumeX className="w-3 h-3" />
-                            ) : (
-                              <Volume2 className="w-3 h-3" />
-                            )}
-                          </Button>
-                        )}
-                      </div>
-                    </div>
+        <div className="flex-1 overflow-y-auto bg-slate-900/30">
+          <div className="h-full flex flex-col">
+            <div className="flex-1 p-4">
+              <div className="max-w-4xl mx-auto space-y-6">
+                {messages.length === 0 ? (
+                  <div className="text-center py-12">
+                    <MessageSquare className="w-16 h-16 text-slate-500 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-white mb-2">
+                      Bem-vindo ao Oráculo Jurídico
+                    </h3>
+                    <p className="text-slate-400 max-w-md mx-auto text-sm">
+                      Faça suas perguntas jurídicas e receba respostas fundamentadas 
+                      na legislação brasileira. Você pode anexar documentos para análise.
+                    </p>
                   </div>
-                </div>
-              ))
-            )}
-            <div ref={messagesEndRef} />
+                ) : (
+                  messages.map((msg) => (
+                    <div
+                      key={msg.id}
+                      className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div
+                        className={`max-w-[85%] rounded-lg p-4 ${
+                          msg.type === 'user'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-slate-800 text-white border border-slate-700'
+                        }`}
+                      >
+                        {/* Arquivos anexados */}
+                        {msg.attachedFiles && msg.attachedFiles.length > 0 && (
+                          <div className="mb-3 space-y-2">
+                            {msg.attachedFiles.map((file, index) => (
+                              <div key={index} className="flex items-center gap-2 text-xs bg-black/20 rounded p-2">
+                                <Paperclip className="w-3 h-3" />
+                                <span className="truncate">{file.name}</span>
+                                <span className="text-xs opacity-70">
+                                  ({(file.size / 1024).toFixed(1)}KB)
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Conteúdo da mensagem */}
+                        <div className="prose prose-invert max-w-none text-sm">
+                          {msg.type === 'assistant' ? (
+                            <ReactMarkdown
+                              components={{
+                                p: ({ children }) => <p className="mb-3 last:mb-0 break-words">{children}</p>,
+                                ul: ({ children }) => <ul className="list-disc ml-4 mb-3">{children}</ul>,
+                                ol: ({ children }) => <ol className="list-decimal ml-4 mb-3">{children}</ol>,
+                                li: ({ children }) => <li className="mb-1">{children}</li>,
+                                h1: ({ children }) => <h1 className="text-base font-bold mb-3">{children}</h1>,
+                                h2: ({ children }) => <h2 className="text-sm font-bold mb-2">{children}</h2>,
+                                h3: ({ children }) => <h3 className="text-sm font-bold mb-2">{children}</h3>,
+                                strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                                code: ({ children }) => <code className="bg-slate-700 px-1 py-0.5 rounded text-xs break-all">{children}</code>,
+                                pre: ({ children }) => <pre className="bg-slate-700 p-3 rounded overflow-x-auto text-xs">{children}</pre>
+                              }}
+                            >
+                              {msg.content}
+                            </ReactMarkdown>
+                          ) : (
+                            <p className="whitespace-pre-wrap break-words">{msg.content}</p>
+                          )}
+                        </div>
+
+                        {/* Footer da mensagem */}
+                        <div className="flex items-center justify-between mt-3 pt-2 border-t border-current/20">
+                          <span className="text-xs opacity-70">
+                            {msg.timestamp.toLocaleTimeString('pt-BR', { 
+                              hour: '2-digit', 
+                              minute: '2-digit' 
+                            })}
+                          </span>
+                          
+                          <div className="flex items-center gap-2">
+                            {msg.tokensConsumed && (
+                              <Badge variant="secondary" className="text-xs">
+                                {msg.tokensConsumed.toLocaleString()} tokens
+                              </Badge>
+                            )}
+                            
+                            {msg.type === 'assistant' && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 w-6 p-0 opacity-70 hover:opacity-100"
+                                onClick={() => playTextToSpeech(msg.content)}
+                              >
+                                {isPlayingAudio ? (
+                                  <VolumeX className="w-3 h-3" />
+                                ) : (
+                                  <Volume2 className="w-3 h-3" />
+                                )}
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Área de Input - Fixada na parte inferior */}
-        <div className="bg-slate-800/50 border-t border-slate-700 p-4">
+        <div className="bg-slate-800/50 border-t border-slate-700 p-4 flex-shrink-0">
           <div className="max-w-4xl mx-auto">
             {/* Arquivos anexados */}
             {attachedFiles.length > 0 && (
@@ -705,7 +770,9 @@ export default function Chat() {
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Digite sua pergunta aqui e pressione Enter..."
-                    className="min-h-[60px] max-h-32 bg-slate-700 border-slate-600 focus:border-primary resize-none"
+                    className={`${
+                      isMobile ? 'min-h-[50px] max-h-24' : 'min-h-[60px] max-h-32'
+                    } bg-slate-700 border-slate-600 focus:border-primary resize-none`}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
@@ -741,12 +808,14 @@ export default function Chat() {
               </div>
 
               {/* Informações de tokens */}
-              <div className="flex items-center justify-between text-xs text-slate-400">
+              <div className={`flex items-center justify-between text-xs text-slate-400 ${
+                isMobile ? 'flex-col gap-1' : ''
+              }`}>
                 <div className="flex items-center gap-4">
                   <span>💰 {Math.floor(totalTokens).toLocaleString()} tokens</span>
                   <span>(custo variável por consulta)</span>
                 </div>
-                <span>Shift + Enter para nova linha</span>
+                {!isMobile && <span>Shift + Enter para nova linha</span>}
               </div>
             </form>
 
