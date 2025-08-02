@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
-import { ArrowLeft, Eye, EyeOff, UserPlus, Shield } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, UserPlus, Shield, Gift, Zap, Users, Award, CheckCircle } from 'lucide-react';
 import ReCAPTCHA from "react-google-recaptcha";
 import ReCaptchaProvider, { useReCaptcha } from "@/components/ReCaptchaProvider";
 
@@ -101,163 +100,333 @@ function CadastroForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center px-4 py-6">
-      <div className="w-full max-w-md space-y-4">
-        <div className="flex items-center gap-4 mb-4">
-          <Link 
-            to="/" 
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Voltar</span>
-          </Link>
-        </div>
-
-        <div className="text-center space-y-2">
-          <img 
-            src="/lovable-uploads/8fc8748b-d056-4136-b669-07bbd1bc2327.png" 
-            alt="Oráculo Jurídico" 
-            className="w-12 h-12 mx-auto mb-2 rounded-lg"
-          />
-          <h1 className="text-xl font-bold">Oráculo Jurídico</h1>
-          <p className="text-sm text-muted-foreground">
-            Crie sua conta gratuita
-          </p>
-        </div>
-
-        <Card className="border-0 shadow-lg">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-lg">Criar Conta</CardTitle>
-            <CardDescription className="text-sm">
-              Comece agora e ganhe créditos para usar
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="fullName" className="text-sm">Nome Completo</Label>
-                <Input
-                  id="fullName"
-                  type="text"
-                  placeholder="Seu nome completo"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  required
-                  className="h-10"
-                />
-              </div>
-              
-              <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-sm">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="seu@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="h-10"
-                />
-              </div>
-              
-              <div className="space-y-1.5">
-                <Label htmlFor="password" className="text-sm">Senha</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Sua senha"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="h-10"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-10 px-3 py-2 hover:bg-transparent"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </Button>
-                </div>
-              </div>
-
-              {/* Campo honeypot - invisível para usuários, usado para detectar bots */}
-              <input
-                type="text"
-                name="website_url"
-                value={honeypot}
-                onChange={(e) => setHoneypot(e.target.value)}
-                style={{ display: 'none' }}
-                tabIndex={-1}
-                autoComplete="off"
-                aria-hidden="true"
+    <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col overflow-hidden">
+      {/* Header fixo */}
+      <div className="flex-shrink-0 bg-slate-800/50 border-b border-slate-700 backdrop-blur-sm">
+        <div className="container max-w-6xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Link to="/">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white hover:bg-slate-700"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+              </Link>
+              <img 
+                src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
+                alt="Oráculo Jurídico" 
+                className="h-8 w-auto"
               />
+              <div>
+                <h1 className="text-xl font-bold text-white flex items-center gap-2">
+                  <UserPlus className="h-5 w-5 text-primary" />
+                  Criar Conta Gratuita
+                </h1>
+                <p className="text-xs text-slate-300 hidden md:block">
+                  Comece agora e ganhe 3.000 tokens diários
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-              <div className="space-y-3">
-                <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                  <Shield className="h-3 w-3" />
-                  <span>Verificação de segurança</span>
-                </div>
-                
-                <div className="flex justify-center">
-                  <div className="scale-90 transform-gpu">
-                    <ReCAPTCHA
-                      sitekey={siteKey}
-                      onChange={(token) => setRecaptchaToken(token || '')}
-                      onExpired={() => setRecaptchaToken('')}
-                      hl="pt-BR"
-                    />
+      {/* Conteúdo principal com scroll interno */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="container max-w-6xl mx-auto px-4 py-6 space-y-6">
+          
+          {/* Card de oferta gratuita */}
+          <Card className="bg-gradient-to-r from-green-600/20 to-emerald-600/20 border-green-500/30">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-green-600/20 rounded-xl">
+                    <Gift className="w-8 h-8 text-green-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white">100% Gratuito para Começar!</h3>
+                    <p className="text-sm text-slate-300">
+                      Crie sua conta e comece a usar imediatamente
+                    </p>
                   </div>
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
-                className="w-full" 
-                disabled={loading}
-              >
-                {loading ? (
-                  "Criando conta..."
-                ) : (
-                  <>
-                    <UserPlus className="w-4 h-4 mr-2" />
-                    Criar Conta
-                  </>
-                )}
-              </Button>
-            </form>
-
-            <div className="mt-6">
-              <Separator />
-              <div className="mt-4 text-center">
-                <p className="text-sm text-muted-foreground">
-                  Já tem uma conta?
-                </p>
-                <Button
-                  asChild
-                  variant="link"
-                  className="mt-1"
-                >
-                  <Link to="/login">
-                    Fazer login
-                  </Link>
-                </Button>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="text-center p-3 bg-white/5 rounded-lg">
+                  <div className="text-lg font-bold text-green-400">3.000</div>
+                  <div className="text-xs text-slate-400">Tokens Diários</div>
+                </div>
+                <div className="text-center p-3 bg-white/5 rounded-lg">
+                  <div className="text-lg font-bold text-blue-400">Sem</div>
+                  <div className="text-xs text-slate-400">Cartão de Crédito</div>
+                </div>
+                <div className="text-center p-3 bg-white/5 rounded-lg">
+                  <div className="text-lg font-bold text-purple-400">IA</div>
+                  <div className="text-xs text-slate-400">Jurídica Completa</div>
+                </div>
+                <div className="text-center p-3 bg-white/5 rounded-lg">
+                  <div className="text-lg font-bold text-orange-400">Suporte</div>
+                  <div className="text-xs text-slate-400">Incluído</div>
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        <div className="text-center text-xs text-muted-foreground space-y-1">
-          <p>✨ Sistema de créditos flexível</p>
-          <p>🔒 Sem compromisso mensal</p>
-          <p>📞 Suporte completo incluído</p>
+          {/* Grid principal - Formulário e Informações */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            
+            {/* Formulário de Cadastro */}
+            <Card className="bg-slate-800/50 border-slate-700">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <UserPlus className="w-5 h-5 text-primary" />
+                  Criar Sua Conta
+                </CardTitle>
+                <CardDescription>
+                  Preencha os dados abaixo para começar gratuitamente
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName" className="text-sm text-slate-300">Nome Completo *</Label>
+                    <Input
+                      id="fullName"
+                      type="text"
+                      placeholder="Seu nome completo"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      required
+                      className="bg-slate-700 border-slate-600 focus:border-primary text-white"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-sm text-slate-300">Email *</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="seu@email.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="bg-slate-700 border-slate-600 focus:border-primary text-white"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="password" className="text-sm text-slate-300">Senha *</Label>
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Sua senha"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        className="bg-slate-700 border-slate-600 focus:border-primary text-white pr-10"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 text-slate-400 hover:text-white"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Campo honeypot - invisível para usuários, usado para detectar bots */}
+                  <input
+                    type="text"
+                    name="website_url"
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                    style={{ display: 'none' }}
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                  />
+
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-center gap-2 text-xs text-slate-400">
+                      <Shield className="h-3 w-3" />
+                      <span>Verificação de segurança</span>
+                    </div>
+                    
+                    <div className="flex justify-center">
+                      <div className="scale-90 transform-gpu">
+                        <ReCAPTCHA
+                          sitekey={siteKey}
+                          onChange={(token) => setRecaptchaToken(token || '')}
+                          onExpired={() => setRecaptchaToken('')}
+                          hl="pt-BR"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-primary hover:bg-primary/90 py-3" 
+                    disabled={loading}
+                    size="lg"
+                  >
+                    {loading ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Criando conta...
+                      </div>
+                    ) : (
+                      <>
+                        <UserPlus className="w-4 h-4 mr-2" />
+                        Criar Conta Gratuita
+                      </>
+                    )}
+                  </Button>
+                </form>
+
+                <div className="mt-6">
+                  <Separator className="bg-slate-600" />
+                  <div className="mt-4 text-center">
+                    <p className="text-sm text-slate-400 mb-3">
+                      Já tem uma conta?
+                    </p>
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="w-full border-primary/30 text-primary hover:bg-primary/10"
+                    >
+                      <Link to="/login">
+                        Fazer Login
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Informações e Benefícios */}
+            <div className="space-y-6">
+              
+              {/* O que você ganha */}
+              <Card className="bg-slate-800/50 border-slate-700">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-white">
+                    <Gift className="w-5 h-5 text-primary" />
+                    O Que Você Ganha Gratuitamente
+                  </CardTitle>
+                  <CardDescription>
+                    Acesso completo sem compromisso
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 p-3 bg-green-600/10 rounded-lg border border-green-500/20">
+                      <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-green-200">3.000 Tokens Diários</p>
+                        <p className="text-xs text-green-300/80">Renovados automaticamente todo dia</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 p-3 bg-blue-600/10 rounded-lg border border-blue-500/20">
+                      <CheckCircle className="w-5 h-5 text-blue-400 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-blue-200">IA Jurídica Completa</p>
+                        <p className="text-xs text-blue-300/80">Acesso total à inteligência artificial</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 p-3 bg-purple-600/10 rounded-lg border border-purple-500/20">
+                      <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-purple-200">Calculadoras Jurídicas</p>
+                        <p className="text-xs text-purple-300/80">Contratos bancários e pensão alimentícia</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 p-3 bg-orange-600/10 rounded-lg border border-orange-500/20">
+                      <CheckCircle className="w-5 h-5 text-orange-400 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-orange-200">Histórico Completo</p>
+                        <p className="text-xs text-orange-300/80">Todas suas consultas salvas</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Planos Disponíveis */}
+              <Card className="bg-slate-800/50 border-slate-700">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-white">
+                    <Award className="w-5 h-5 text-primary" />
+                    Precisa de Mais Tokens?
+                  </CardTitle>
+                  <CardDescription>
+                    Planos disponíveis após criar sua conta
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="p-3 bg-blue-600/10 rounded-lg border border-blue-500/20">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold text-blue-200">Plano Básico</h4>
+                      <span className="text-lg font-bold text-blue-400">R$ 59,90</span>
+                    </div>
+                    <p className="text-xs text-blue-300/80 mb-2">75.000 tokens • Sem expiração</p>
+                    <div className="text-xs text-slate-400">
+                      Ideal para uso regular da IA jurídica
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-purple-600/10 rounded-lg border border-purple-500/20">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold text-purple-200">Plano Premium</h4>
+                      <div className="text-right">
+                        <span className="text-lg font-bold text-purple-400">R$ 97,00</span>
+                        <div className="text-xs text-green-400">20% OFF</div>
+                      </div>
+                    </div>
+                    <p className="text-xs text-purple-300/80 mb-2">150.000 tokens • Sem expiração</p>
+                    <div className="text-xs text-slate-400">
+                      Melhor custo-benefício para uso intensivo
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Segurança */}
+              <Card className="bg-amber-900/20 border-amber-500/30">
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 bg-amber-500/20 rounded-lg flex-shrink-0">
+                      <Shield className="w-5 h-5 text-amber-400" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-amber-200 mb-2">Segurança Garantida</h4>
+                      <div className="space-y-1 text-sm text-amber-300/80">
+                        <p>• Sem cartão de crédito necessário</p>
+                        <p>• Dados protegidos com SSL</p>
+                        <p>• Conformidade total com LGPD</p>
+                        <p>• Verificação anti-spam reCAPTCHA</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>
