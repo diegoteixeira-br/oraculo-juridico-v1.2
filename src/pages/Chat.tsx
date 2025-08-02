@@ -607,18 +607,6 @@ export default function Chat() {
             </div>
             
             <div className="flex items-center gap-2">
-              {currentSession && !isMobile && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={exportChat}
-                  className="border-slate-600 hover:bg-slate-700"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Exportar
-                </Button>
-              )}
-              
               {isMobile && <UserMenu hideOptions={["chat"]} />}
             </div>
           </div>
