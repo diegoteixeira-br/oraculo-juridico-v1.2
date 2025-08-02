@@ -286,23 +286,20 @@ export default function Dashboard() {
               {/* Agenda da Semana */}
               <Card className="bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border-blue-500/30">
                 <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-5 h-5 text-blue-400" />
-                      <CardTitle className="text-lg text-blue-200">Agenda da Semana</CardTitle>
-                    </div>
+                  <CardTitle className="text-lg text-blue-200">Seus Próximos Compromissos</CardTitle>
+                  <CardDescription className="text-blue-200/80">
+                    Prazos processuais e compromissos da semana
+                  </CardDescription>
+                  <div className="flex justify-end pt-2">
                     <Button 
                       onClick={() => navigate("/agenda-juridica")}
                       variant="outline"
                       size="sm"
                       className="border-blue-500/30 text-blue-300 hover:bg-blue-600/10"
                     >
-                      Ver Completa
+                      Ver Agenda Completa
                     </Button>
                   </div>
-                  <CardDescription className="text-blue-200/80">
-                    Seus próximos compromissos e prazos processuais
-                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <AgendaWidget />

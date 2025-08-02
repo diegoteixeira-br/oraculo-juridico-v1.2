@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { Calendar, Clock, MapPin, AlertTriangle } from "lucide-react";
+import { Calendar, Clock, MapPin, AlertTriangle, RefreshCw } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { format, parseISO, startOfWeek, endOfWeek, isWithinInterval } from "date-fns";
@@ -23,6 +24,7 @@ const AgendaWidget = () => {
   const { user } = useAuth();
   const [weekCommitments, setWeekCommitments] = useState<LegalCommitment[]>([]);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     if (user?.id) {
@@ -33,7 +35,9 @@ const AgendaWidget = () => {
   const loadWeekCommitments = async () => {
     if (!user) return;
     
-    setLoading(true);
+    const isRefresh = refreshing;
+    if (!isRefresh) setLoading(true);
+    
     try {
       const now = new Date();
       const weekStart = startOfWeek(now, { weekStartsOn: 1 }); // Segunda-feira
@@ -54,8 +58,14 @@ const AgendaWidget = () => {
     } catch (error) {
       console.error('Erro ao carregar compromissos da semana:', error);
     } finally {
-      setLoading(false);
+      if (!isRefresh) setLoading(false);
+      setRefreshing(false);
     }
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await loadWeekCommitments();
   };
 
   const getCommitmentColor = (type: string, priority: string) => {
@@ -77,6 +87,25 @@ const AgendaWidget = () => {
     'personalizado': 'Personalizado'
   };
 
+  // Componente de header com botão de refresh
+  const AgendaHeader = () => (
+    <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center gap-2">
+        <Calendar className="w-5 h-5 text-blue-400" />
+        <h4 className="font-semibold text-blue-200">Agenda da Semana</h4>
+      </div>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={handleRefresh}
+        disabled={refreshing}
+        className="h-6 w-6 p-0 text-blue-400 hover:text-blue-300 hover:bg-blue-600/10"
+      >
+        <RefreshCw className={`w-3 h-3 ${refreshing ? 'animate-spin' : ''}`} />
+      </Button>
+    </div>
+  );
+
   const priorityLabels = {
     'baixa': 'Baixa',
     'normal': 'Normal',
@@ -86,29 +115,37 @@ const AgendaWidget = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <div className="w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
-        <span className="ml-2 text-sm text-blue-300">Carregando compromissos...</span>
+      <div>
+        <AgendaHeader />
+        <div className="flex items-center justify-center py-8">
+          <div className="w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+          <span className="ml-2 text-sm text-blue-300">Carregando compromissos...</span>
+        </div>
       </div>
     );
   }
 
   if (weekCommitments.length === 0) {
     return (
-      <div className="text-center py-6">
-        <Calendar className="w-12 h-12 text-blue-400/50 mx-auto mb-3" />
-        <p className="text-sm text-blue-300/80">
-          Nenhum compromisso para esta semana
-        </p>
-        <p className="text-xs text-blue-300/60 mt-1">
-          Sua agenda está livre!
-        </p>
+      <div>
+        <AgendaHeader />
+        <div className="text-center py-6">
+          <Calendar className="w-12 h-12 text-blue-400/50 mx-auto mb-3" />
+          <p className="text-sm text-blue-300/80">
+            Nenhum compromisso para esta semana
+          </p>
+          <p className="text-xs text-blue-300/60 mt-1">
+            Sua agenda está livre!
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-3">
+    <div>
+      <AgendaHeader />
+      <div className="space-y-3">
       {weekCommitments.map((commitment) => (
         <div key={commitment.id} className="flex items-start space-x-3 p-3 rounded-lg bg-blue-600/10 border border-blue-500/20">
           <div className={`w-3 h-3 rounded-full mt-1 flex-shrink-0 ${getCommitmentColor(commitment.commitment_type, commitment.priority)}`} />
@@ -161,6 +198,7 @@ const AgendaWidget = () => {
           </p>
         </div>
       )}
+      </div>
     </div>
   );
 };
