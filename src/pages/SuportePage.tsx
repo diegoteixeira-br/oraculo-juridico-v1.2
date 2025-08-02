@@ -270,7 +270,7 @@ const SuportePage = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3 sm:space-y-4">
-                <div className="max-h-[300px] sm:max-h-[350px] overflow-y-auto space-y-3 sm:space-y-4">
+                <div className="max-h-[450px] sm:max-h-[500px] overflow-y-auto space-y-3 sm:space-y-4">
                 {faqItems.map((item, index) => (
                   <div key={index} className="p-3 sm:p-4 bg-slate-700/30 rounded-lg border border-slate-600/50">
                     <div className="flex items-start gap-3">
@@ -305,7 +305,7 @@ const SuportePage = () => {
                 </div>
                 
                 {/* Botão de suporte fixo fora da área de scroll */}
-                <div className="pt-4 border-t border-slate-600">
+                <div className="pt-6 border-t border-slate-600">
                   <Button
                     onClick={() => openWhatsApp("Olá! Preciso de ajuda com o Oráculo Jurídico.")}
                     className="w-full bg-green-600 hover:bg-green-500 text-white py-3 text-sm sm:text-base font-semibold"
