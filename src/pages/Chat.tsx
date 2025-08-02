@@ -609,11 +609,17 @@ export default function Chat() {
               
               {/* Logo centralizada */}
               <div className="flex-1 flex justify-center">
-                <img 
-                  src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
-                  alt="Oráculo Jurídico" 
-                  className="h-8 w-auto"
-                />
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                  title="Voltar ao Dashboard"
+                >
+                  <img 
+                    src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
+                    alt="Oráculo Jurídico" 
+                    className="h-8 w-auto"
+                  />
+                </button>
               </div>
             </div>
             
