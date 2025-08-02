@@ -116,14 +116,15 @@ const SuportePage = () => {
               <img 
                 src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
                 alt="Oráculo Jurídico" 
-                className="h-8 w-auto"
+                className="h-6 sm:h-8 w-auto"
               />
               <div>
-                <h1 className="text-xl font-bold text-white flex items-center gap-2">
+                <h1 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
                   <MessageCircle className="h-5 w-5 text-primary" />
-                  Central de Suporte
+                  <span className="hidden sm:inline">Central de Suporte</span>
+                  <span className="sm:hidden">Suporte</span>
                 </h1>
-                <p className="text-xs text-slate-300 hidden md:block">
+                <p className="text-xs text-slate-300 hidden lg:block">
                   Estamos aqui para ajudar você
                 </p>
               </div>
@@ -131,7 +132,7 @@ const SuportePage = () => {
 
             <div className="flex items-center gap-3">
               {/* Contador de tokens */}
-              <div className="hidden md:flex items-center gap-2 bg-slate-700/50 rounded-lg px-3 py-2">
+              <div className="hidden lg:flex items-center gap-2 bg-slate-700/50 rounded-lg px-3 py-2">
                 <Zap className="w-4 h-4 text-primary" />
                 <span className="text-sm font-medium text-white">
                   {Math.floor(totalTokens).toLocaleString()}
@@ -147,40 +148,40 @@ const SuportePage = () => {
 
       {/* Conteúdo principal com scroll interno */}
       <div className="flex-1 overflow-y-auto">
-        <div className="container max-w-6xl mx-auto px-4 py-6 space-y-6">
+        <div className="container max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
           
           {/* Card de informações sobre suporte */}
           <Card className="bg-gradient-to-r from-green-600/20 to-emerald-600/20 border-green-500/30">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-3 bg-green-600/20 rounded-xl">
-                    <Phone className="w-8 h-8 text-green-400" />
+                  <div className="p-2 sm:p-3 bg-green-600/20 rounded-xl">
+                    <Phone className="w-6 h-6 sm:w-8 sm:h-8 text-green-400" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">Suporte Especializado</h3>
-                    <p className="text-sm text-slate-300">
+                    <h3 className="text-lg sm:text-xl font-bold text-white">Suporte Especializado</h3>
+                    <p className="text-xs sm:text-sm text-slate-300">
                       Nossa equipe está pronta para resolver suas dúvidas
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="text-center p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-green-400">WhatsApp</div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                <div className="text-center p-2 sm:p-3 bg-white/5 rounded-lg">
+                  <div className="text-sm sm:text-lg font-bold text-green-400">WhatsApp</div>
                   <div className="text-xs text-slate-400">Resposta Rápida</div>
                 </div>
-                <div className="text-center p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-blue-400">24h</div>
+                <div className="text-center p-2 sm:p-3 bg-white/5 rounded-lg">
+                  <div className="text-sm sm:text-lg font-bold text-blue-400">24h</div>
                   <div className="text-xs text-slate-400">Tempo Resposta</div>
                 </div>
-                <div className="text-center p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-purple-400">FAQ</div>
+                <div className="text-center p-2 sm:p-3 bg-white/5 rounded-lg">
+                  <div className="text-sm sm:text-lg font-bold text-purple-400">FAQ</div>
                   <div className="text-xs text-slate-400">Respostas Imediatas</div>
                 </div>
-                <div className="text-center p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-orange-400">Email</div>
+                <div className="text-center p-2 sm:p-3 bg-white/5 rounded-lg">
+                  <div className="text-sm sm:text-lg font-bold text-orange-400">Email</div>
                   <div className="text-xs text-slate-400">Suporte Completo</div>
                 </div>
               </div>
@@ -188,40 +189,38 @@ const SuportePage = () => {
           </Card>
 
           {/* Grid principal - Categorias e FAQ */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             
             {/* Categorias de Suporte */}
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <Card className="bg-slate-800/50 border-slate-700">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-white">
                     <MessageCircle className="w-5 h-5 text-primary" />
-                    Escolha o Tipo de Suporte
+                    <span className="text-base sm:text-lg">Escolha o Tipo de Suporte</span>
                   </CardTitle>
                   <CardDescription>
-                    Selecione a categoria que melhor descreve sua dúvida
+                    <span className="text-xs sm:text-sm">Selecione a categoria que melhor descreve sua dúvida</span>
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-3 sm:space-y-4">
                   {supportCategories.map((category) => (
                     <div
                       key={category.id}
-                      className={`group cursor-pointer p-4 bg-gradient-to-br ${category.color} rounded-xl hover:scale-[1.02] transition-all duration-200`}
+                      className={`group cursor-pointer p-3 sm:p-4 bg-gradient-to-br ${category.color} rounded-xl hover:scale-[1.02] transition-all duration-200`}
                       onClick={() => openWhatsApp(category.message)}
                     >
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
                         <div className="flex items-center gap-3">
                           <div className="p-2 bg-white/10 rounded-lg group-hover:bg-white/20 transition-colors">
-                            <category.icon className={`w-6 h-6 ${category.iconColor}`} />
+                            <category.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${category.iconColor}`} />
                           </div>
-                          <div>
-                            <h3 className="font-semibold text-white">{category.title}</h3>
-                            <p className="text-sm text-slate-300">{category.description}</p>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-sm sm:text-base text-white">{category.title}</h3>
+                            <p className="text-xs sm:text-sm text-slate-300 line-clamp-2">{category.description}</p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" />
-                        </div>
+                        <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors flex-shrink-0" />
                       </div>
                     </div>
                   ))}
@@ -233,13 +232,13 @@ const SuportePage = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-white">
                     <Phone className="w-5 h-5 text-primary" />
-                    Contato Direto
+                    <span className="text-base sm:text-lg">Contato Direto</span>
                   </CardTitle>
                   <CardDescription>
-                    Outras formas de entrar em contato
+                    <span className="text-xs sm:text-sm">Outras formas de entrar em contato</span>
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-3 sm:space-y-4">
                   <div className="flex items-center gap-3 p-3 bg-green-600/10 rounded-lg border border-green-500/20">
                     <div className="p-2 bg-green-600/20 rounded-lg">
                       <MessageCircle className="w-5 h-5 text-green-400" />
@@ -250,10 +249,10 @@ const SuportePage = () => {
                     </div>
                     <Button
                       onClick={() => openWhatsApp("Olá! Preciso de ajuda com o Oráculo Jurídico.")}
-                      className="bg-green-600 hover:bg-green-500 text-white"
+                      className="bg-green-600 hover:bg-green-500 text-white text-xs sm:text-sm px-3 sm:px-4"
                     >
-                      <MessageCircle className="w-4 h-4 mr-2" />
-                      Abrir
+                      <MessageCircle className="w-4 h-4 sm:mr-2" />
+                      <span className="hidden sm:inline">Abrir</span>
                     </Button>
                   </div>
 
@@ -268,10 +267,10 @@ const SuportePage = () => {
                     <Button
                       onClick={() => navigate("/contato")}
                       variant="outline"
-                      className="border-blue-500/30 text-blue-300 hover:bg-blue-600/10"
+                      className="border-blue-500/30 text-blue-300 hover:bg-blue-600/10 text-xs sm:text-sm px-3 sm:px-4"
                     >
-                      <MessageCircle className="w-4 h-4 mr-2" />
-                      Enviar
+                      <MessageCircle className="w-4 h-4 sm:mr-2" />
+                      <span className="hidden sm:inline">Enviar</span>
                     </Button>
                   </div>
                 </CardContent>
@@ -283,21 +282,21 @@ const SuportePage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-white">
                   <HelpCircle className="w-5 h-5 text-primary" />
-                  Perguntas Frequentes
+                  <span className="text-base sm:text-lg">Perguntas Frequentes</span>
                 </CardTitle>
                 <CardDescription>
-                  Respostas para as dúvidas mais comuns
+                  <span className="text-xs sm:text-sm">Respostas para as dúvidas mais comuns</span>
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4 max-h-[500px] overflow-y-auto">
+              <CardContent className="space-y-3 sm:space-y-4 max-h-[400px] sm:max-h-[500px] overflow-y-auto">
                 {faqItems.map((item, index) => (
-                  <div key={index} className="p-4 bg-slate-700/30 rounded-lg border border-slate-600/50">
+                  <div key={index} className="p-3 sm:p-4 bg-slate-700/30 rounded-lg border border-slate-600/50">
                     <div className="flex items-start gap-3">
                       <div className="p-1 bg-primary/20 rounded-full flex-shrink-0 mt-1">
                         <Info className="w-3 h-3 text-primary" />
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-medium text-white mb-2 text-sm">
+                        <h4 className="font-medium text-white mb-2 text-xs sm:text-sm">
                           {item.question}
                         </h4>
                         <p className="text-xs text-slate-300 leading-relaxed">
@@ -314,12 +313,12 @@ const SuportePage = () => {
                 ))}
 
                 <div className="text-center pt-4 border-t border-slate-600">
-                  <p className="text-sm text-slate-400 mb-3">
+                  <p className="text-xs sm:text-sm text-slate-400 mb-3">
                     Não encontrou sua resposta?
                   </p>
                   <Button
                     onClick={() => openWhatsApp("Olá! Não encontrei a resposta para minha dúvida no FAQ.")}
-                    className="bg-primary hover:bg-primary/90"
+                    className="bg-primary hover:bg-primary/90 text-sm px-4 py-2"
                   >
                     <MessageCircle className="w-4 h-4 mr-2" />
                     Falar com Suporte
@@ -331,14 +330,14 @@ const SuportePage = () => {
 
           {/* Informações de Atendimento */}
           <Card className="bg-blue-900/20 border-blue-500/30">
-            <CardContent className="p-4">
+            <CardContent className="p-3 sm:p-4">
               <div className="flex items-start gap-3">
                 <div className="p-2 bg-blue-500/20 rounded-lg flex-shrink-0">
                   <Clock className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-blue-200 mb-2">Horário de Atendimento</h4>
-                  <div className="space-y-1 text-sm text-blue-300/80">
+                  <h4 className="font-semibold text-blue-200 mb-2 text-sm sm:text-base">Horário de Atendimento</h4>
+                  <div className="space-y-1 text-xs sm:text-sm text-blue-300/80">
                     <p>• <strong>WhatsApp:</strong> Segunda a Sexta, 9h às 18h</p>
                     <p>• <strong>Email:</strong> 24/7 (resposta em até 24h úteis)</p>
                     <p>• <strong>FAQ:</strong> Disponível 24/7 para consulta imediata</p>
@@ -351,14 +350,14 @@ const SuportePage = () => {
 
           {/* Informações de Segurança */}
           <Card className="bg-amber-900/20 border-amber-500/30">
-            <CardContent className="p-4">
+            <CardContent className="p-3 sm:p-4">
               <div className="flex items-start gap-3">
                 <div className="p-2 bg-amber-500/20 rounded-lg flex-shrink-0">
                   <Shield className="w-5 h-5 text-amber-400" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-amber-200 mb-2">Segurança e Privacidade</h4>
-                  <div className="space-y-1 text-sm text-amber-300/80">
+                  <h4 className="font-semibold text-amber-200 mb-2 text-sm sm:text-base">Segurança e Privacidade</h4>
+                  <div className="space-y-1 text-xs sm:text-sm text-amber-300/80">
                     <p>• Suas informações pessoais são tratadas com total confidencialidade</p>
                     <p>• Não compartilhamos dados com terceiros</p>
                     <p>• Comunicação criptografada em todos os canais</p>
