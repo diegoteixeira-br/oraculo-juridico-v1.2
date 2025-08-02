@@ -207,20 +207,16 @@ const SuportePage = () => {
                   {supportCategories.map((category) => (
                     <div
                       key={category.id}
-                      className={`group cursor-pointer p-3 sm:p-4 bg-gradient-to-br ${category.color} rounded-xl hover:scale-[1.02] transition-all duration-200`}
-                      onClick={() => openWhatsApp(category.message)}
+                      className={`p-3 sm:p-4 bg-gradient-to-br ${category.color} rounded-xl`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 bg-white/10 rounded-lg group-hover:bg-white/20 transition-colors">
-                            <category.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${category.iconColor}`} />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-sm sm:text-base text-white">{category.title}</h3>
-                            <p className="text-xs sm:text-sm text-slate-300 line-clamp-2">{category.description}</p>
-                          </div>
+                        <div className="p-2 bg-white/10 rounded-lg">
+                          <category.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${category.iconColor}`} />
                         </div>
-                        <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-sm sm:text-base text-white">{category.title}</h3>
+                          <p className="text-xs sm:text-sm text-slate-300 line-clamp-2">{category.description}</p>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -247,13 +243,6 @@ const SuportePage = () => {
                       <p className="text-sm font-medium text-white">WhatsApp</p>
                       <p className="text-xs text-slate-300">Resposta mais rápida</p>
                     </div>
-                    <Button
-                      onClick={() => openWhatsApp("Olá! Preciso de ajuda com o Oráculo Jurídico.")}
-                      className="bg-green-600 hover:bg-green-500 text-white text-xs sm:text-sm px-3 sm:px-4"
-                    >
-                      <MessageCircle className="w-4 h-4 sm:mr-2" />
-                      <span className="hidden sm:inline">Abrir</span>
-                    </Button>
                   </div>
 
                   <div className="flex items-center gap-3 p-3 bg-blue-600/10 rounded-lg border border-blue-500/20">
@@ -264,14 +253,6 @@ const SuportePage = () => {
                       <p className="text-sm font-medium text-white">Email</p>
                       <p className="text-xs text-slate-300">contato@oraculojuridico.com.br</p>
                     </div>
-                    <Button
-                      onClick={() => navigate("/contato")}
-                      variant="outline"
-                      className="border-blue-500/30 text-blue-300 hover:bg-blue-600/10 text-xs sm:text-sm px-3 sm:px-4"
-                    >
-                      <MessageCircle className="w-4 h-4 sm:mr-2" />
-                      <span className="hidden sm:inline">Enviar</span>
-                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -316,13 +297,9 @@ const SuportePage = () => {
                   <p className="text-xs sm:text-sm text-slate-400 mb-3">
                     Não encontrou sua resposta?
                   </p>
-                  <Button
-                    onClick={() => openWhatsApp("Olá! Não encontrei a resposta para minha dúvida no FAQ.")}
-                    className="bg-primary hover:bg-primary/90 text-sm px-4 py-2"
-                  >
-                    <MessageCircle className="w-4 h-4 mr-2" />
-                    Falar com Suporte
-                  </Button>
+                  <p className="text-xs text-slate-500">
+                    Use o botão "Falar com Suporte" abaixo para entrar em contato
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -367,6 +344,20 @@ const SuportePage = () => {
               </div>
             </CardContent>
           </Card>
+        </div>
+      </div>
+
+      {/* Botão fixo no rodapé */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-slate-900 via-slate-900/95 to-transparent pointer-events-none">
+        <div className="max-w-md mx-auto pointer-events-auto">
+          <Button
+            onClick={() => openWhatsApp("Olá! Preciso de ajuda com o Oráculo Jurídico.")}
+            className="w-full bg-green-600 hover:bg-green-500 text-white py-4 text-base font-semibold shadow-lg"
+            size="lg"
+          >
+            <MessageCircle className="w-5 h-5 mr-2" />
+            Falar com Suporte
+          </Button>
         </div>
       </div>
     </div>
