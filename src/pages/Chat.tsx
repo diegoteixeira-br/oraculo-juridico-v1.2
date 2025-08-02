@@ -836,9 +836,9 @@ export default function Dashboard() {
       <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
         
-        <main className="flex-1 flex flex-col">
-          {/* Header - fixo apenas no mobile */}
-          <header className="md:relative fixed top-0 left-0 right-0 h-14 flex items-center justify-between px-4 md:px-6 border-b border-slate-700 bg-slate-800 md:bg-background md:border-border z-40">
+        <main className="flex-1 flex flex-col h-screen">
+          {/* Header - fixo em ambos desktop e mobile */}
+          <header className="fixed top-0 right-0 h-14 flex items-center justify-between px-4 md:px-6 border-b border-slate-700 bg-slate-800 md:bg-background md:border-border z-40" style={{ left: isMobile ? '0' : '280px' }}>
             <div className="flex items-center gap-2 md:gap-4">
               <SidebarTrigger className="lg:hidden" />
               <h1 
@@ -853,10 +853,10 @@ export default function Dashboard() {
             </div>
           </header>
 
-          {/* Chat Area - padding para header e input mobile */}
-          <div className="flex-1 flex flex-col md:pt-0 pt-14 md:pb-0 pb-32">
-            {/* Messages Area - padding-bottom no mobile para o input fixo */}
-            <ScrollArea className="flex-1 p-2 md:p-4 md:pb-4 pb-20">
+          {/* Chat Area - com padding para header e input fixos */}
+          <div className="flex-1 flex flex-col pt-14 pb-32">
+            {/* Messages Area - área rolável entre header e input fixos */}
+            <ScrollArea className="flex-1 p-2 md:p-4">
               {totalTokens < 1000 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center space-y-4 max-w-2xl mx-auto px-4">
                   <div className="flex flex-col items-center space-y-2">
@@ -1149,8 +1149,8 @@ export default function Dashboard() {
               )}
             </ScrollArea>
 
-            {/* Input Area - fixo apenas no mobile */}
-            <div className="md:relative fixed bottom-0 left-0 right-0 p-2 md:p-4 border-t border-slate-700 bg-slate-800 md:bg-background md:border-border z-30">
+            {/* Input Area - fixo em ambos desktop e mobile */}
+            <div className="fixed bottom-0 right-0 p-2 md:p-4 border-t border-slate-700 bg-slate-800 md:bg-background md:border-border z-30" style={{ left: isMobile ? '0' : '280px' }}>
               {/* Arquivos Anexados */}
               {attachedFiles.length > 0 && (
                 <div className="mb-3 space-y-2">
