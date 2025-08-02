@@ -278,23 +278,23 @@ const ContatoForm = () => {
                     </div>
                   </div>
 
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleGoBack}
-                  className="text-white hover:bg-slate-700"
-                >
-                  <ArrowLeft className="h-5 w-5" />
-                </Button>
-                        Enviando...
-                      </div>
-                    ) : (
-                      <>
-                        <Send className="h-5 w-5 mr-2" />
-                        Enviar Mensagem
-                      </>
-                    )}
-                  </Button>
+                 <Button
+                   type="submit"
+                   disabled={isLoading || !recaptchaToken}
+                   className="w-full bg-primary hover:bg-primary/90 text-white"
+                 >
+                   {isLoading ? (
+                     <div className="flex items-center">
+                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                       Enviando...
+                     </div>
+                   ) : (
+                     <>
+                       <Send className="h-5 w-5 mr-2" />
+                       Enviar Mensagem
+                     </>
+                   )}
+                 </Button>
                 </form>
               </CardContent>
             </Card>
