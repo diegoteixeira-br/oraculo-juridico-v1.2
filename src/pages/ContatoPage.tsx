@@ -7,11 +7,12 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Mail, Send, Shield, MessageCircle, Phone, MapPin, Clock } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import ReCaptchaProvider, { useReCaptcha } from "@/components/ReCaptchaProvider";
 
 const ContatoForm = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
@@ -24,6 +25,14 @@ const ContatoForm = () => {
   const { toast } = useToast();
   const { siteKey } = useReCaptcha();
 
+  const handleGoBack = () => {
+    // Verificar se há histórico de navegação
+    if (window.history.length > 1) {
+      navigate(-1); // Volta para a página anterior
+    } else {
+      navigate('/'); // Se não há histórico, vai para a home
+    }
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -269,15 +278,14 @@ const ContatoForm = () => {
                     </div>
                   </div>
 
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-primary hover:bg-primary/90 py-3 text-lg font-semibold"
-                    size="lg"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleGoBack}
+                  className="text-white hover:bg-slate-700"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
                         Enviando...
                       </div>
                     ) : (
