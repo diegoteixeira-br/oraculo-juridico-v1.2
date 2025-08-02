@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Clock, DollarSign, AlertTriangle, Shield, Globe, Smartphone, History, Lock, Check, ChevronDown, ChevronRight, Brain, Zap, Users, Award, Scale, Gavel, FileText, Building, Calendar, Heart, MessageCircle, Calculator, Target, TrendingUp } from "lucide-react";
+import { Clock, DollarSign, AlertTriangle, Shield, Globe, Smartphone, History, Lock, Check, ChevronDown, ChevronRight, Brain, Zap, Users, Award, Scale, Gavel, FileText, Building, Calendar, Heart, MessageCircle, Calculator, Target, TrendingUp, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import heroBrain from "../assets/hero-brain-legal.jpg";
 import legalOffice from "../assets/legal-office.jpg";
