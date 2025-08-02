@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { CreditCard, History, Plus, MessageSquare, FileText, Download, Eye, Calculator, Heart, DollarSign, Calendar } from "lucide-react";
+import { CreditCard, History, Plus, MessageSquare, FileText, Calculator, Heart, DollarSign, Calendar, TrendingUp, Zap, Clock, Users, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -11,12 +12,14 @@ import UserMenu from "@/components/UserMenu";
 import DocumentViewer from "@/components/DocumentViewer";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 import AgendaWidget from "@/components/AgendaWidget";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { toast } = useToast();
   const { visible: menuVisible } = useScrollDirection();
+  const isMobile = useIsMobile();
   
   const [userCredits, setUserCredits] = useState(0);
   const [dailyCredits, setDailyCredits] = useState(0);
@@ -25,6 +28,7 @@ export default function Dashboard() {
   const [legalDocuments, setLegalDocuments] = useState<any[]>([]);
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
   const [isDocumentViewerOpen, setIsDocumentViewerOpen] = useState(false);
+  const [recentQueries, setRecentQueries] = useState<any[]>([]);
 
   const totalAvailableCredits = userCredits + dailyCredits;
 
@@ -33,23 +37,23 @@ export default function Dashboard() {
       if (!user?.id) return;
 
       try {
-        const { data: profile } = await supabase
+        // Carregar dados do perfil
+        const { data: profileData } = await supabase
           .from('profiles')
           .select('tokens, daily_tokens, plan_tokens, plan_type')
           .eq('user_id', user.id)
           .single();
 
-        if (profile) {
-          // Tokens separados: diários e do plano
-          const dailyTokens = Number(profile.daily_tokens || 0);
-          const planTokens = Number(profile.plan_tokens || 0);
+        if (profileData) {
+          const dailyTokens = Number(profileData.daily_tokens || 0);
+          const planTokens = Number(profileData.plan_tokens || 0);
           
-          setUserCredits(planTokens); // Apenas tokens comprados/do plano
-          setDailyCredits(dailyTokens); // Tokens diários gratuitos
-          setTotalCreditsPurchased(planTokens); // Total de tokens comprados
+          setUserCredits(planTokens);
+          setDailyCredits(dailyTokens);
+          setTotalCreditsPurchased(planTokens);
         }
 
-        // Calcular tokens realmente usados baseado no histórico de transações
+        // Calcular tokens usados
         const { data: transactions } = await supabase
           .from('credit_transactions')
           .select('amount, transaction_type')
@@ -60,13 +64,22 @@ export default function Dashboard() {
           transactions.forEach(transaction => {
             if (transaction.transaction_type === 'usage' || 
                 transaction.transaction_type === 'daily_usage') {
-              totalUsed += Math.abs(transaction.amount); // Usar valor absoluto pois são negativos
+              totalUsed += Math.abs(transaction.amount);
             }
           });
           setCreditsUsed(totalUsed);
-        } else {
-          setCreditsUsed(0);
         }
+
+        // Carregar consultas recentes
+        const { data: queries } = await supabase
+          .from('query_history')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(3);
+
+        setRecentQueries(queries || []);
+
       } catch (error) {
         console.error('Erro ao carregar dados do usuário:', error);
       }
@@ -82,7 +95,8 @@ export default function Dashboard() {
         .from('legal_documents')
         .select('*')
         .eq('is_active', true)
-        .order('title');
+        .order('title')
+        .limit(6);
 
       if (error) throw error;
       setLegalDocuments(data || []);
@@ -96,480 +110,514 @@ export default function Dashboard() {
     setIsDocumentViewerOpen(true);
   };
 
-  const handleDownloadDocument = (documentId: string) => {
-    // Abrir o visualizador em modo download
-    handleViewDocument(documentId);
+  const getUsagePercentage = () => {
+    const total = totalAvailableCredits + creditsUsed;
+    return total > 0 ? (creditsUsed / total) * 100 : 0;
   };
 
-  const chartData = [
-    { name: 'Tokens Disponíveis', value: Math.floor(totalAvailableCredits), color: '#10b981' },
-    { name: 'Tokens Usados', value: Math.floor(creditsUsed), color: '#ef4444' }
-  ];
+  const getPlanBadgeColor = (planType: string) => {
+    switch (planType) {
+      case 'premium': return 'bg-purple-600 text-white';
+      case 'basico': return 'bg-blue-600 text-white';
+      default: return 'bg-green-600 text-white';
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
-      <div className="max-w-6xl mx-auto space-y-6">
-        {/* Header com Menu - com animação de scroll */}
-        <div className={`fixed top-0 right-0 z-50 p-4 transition-transform duration-300 ${
-          menuVisible ? 'translate-y-0' : '-translate-y-full'
-        }`}>
-          <UserMenu hideOptions={["dashboard"]} />
-        </div>
-
-        <div className="text-center">
-          <img 
-            src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
-            alt="Oráculo Jurídico" 
-            className="h-16 w-auto mx-auto mb-4"
-          />
-          
-          <h1 className="text-3xl font-bold text-primary mb-2">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Controle seus créditos e informações
-          </p>
-        </div>
-
-        {/* Como usar o Chat */}
-        <Card className="bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/30">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-primary">
-              <MessageSquare className="w-5 h-5" />
-              Como usar o Chat Jurídico
-            </CardTitle>
-            <CardDescription className="text-primary/80">
-              Tire suas dúvidas jurídicas com nossa IA especializada
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-              <div className="flex-1 space-y-2">
-                <p className="text-primary/90">
-                  • O custo varia de acordo com o tamanho da consulta
-                </p>
-                <p className="text-primary/90">
-                  • Respostas baseadas na legislação brasileira
-                </p>
-                <p className="text-primary/90">
-                  • Análise de contratos, petições e documentos jurídicos
+    <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col overflow-hidden">
+      {/* Header fixo */}
+      <div className="flex-shrink-0 bg-slate-800/50 border-b border-slate-700 backdrop-blur-sm">
+        <div className="container max-w-7xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <img 
+                src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
+                alt="Oráculo Jurídico" 
+                className="h-8 w-auto"
+              />
+              <div>
+                <h1 className="text-xl font-bold text-white">Dashboard</h1>
+                <p className="text-xs text-slate-300 hidden md:block">
+                  Bem-vindo, {profile?.full_name?.split(" ")[0] || user?.email?.split("@")[0]}
                 </p>
               </div>
-              <Button 
-                onClick={() => navigate("/chat")}
-                className="bg-primary hover:bg-primary/90 px-8 py-3"
-                size="lg"
-              >
-                <MessageSquare className="w-5 h-5 mr-2" />
-                Iniciar Chat
-              </Button>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Agenda Jurídica - Compromissos da Semana */}
-        <Card className="bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border border-blue-500/30">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-blue-300">
-              <Calendar className="w-5 h-5" />
-              Agenda da Semana
-            </CardTitle>
-            <CardDescription className="text-blue-200/80">
-              Seus próximos compromissos e prazos processuais
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <AgendaWidget />
-            <div className="flex justify-center mt-4">
-              <Button 
-                onClick={() => navigate("/agenda-juridica")}
-                variant="outline"
-                className="border-blue-500/30 text-blue-300 hover:bg-blue-600/10"
-              >
-                <Calendar className="w-4 h-4 mr-2" />
-                Ver Agenda Completa
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Calculadoras Jurídicas */}
-        <Card className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-blue-300">
-              <Calculator className="w-5 h-5" />
-              Calculadoras Jurídicas
-            </CardTitle>
-            <CardDescription className="text-blue-200/80">
-              Faça cálculos precisos para casos jurídicos
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="p-4 bg-blue-600/10 rounded-lg border border-blue-500/20">
-                <div className="flex items-center gap-3 mb-3">
-                  <DollarSign className="w-6 h-6 text-blue-400" />
-                  <h3 className="font-semibold text-blue-200">Contrato Bancário</h3>
-                </div>
-                <p className="text-sm text-blue-200/80 mb-4">
-                  Calcule juros, correção monetária e diferenças em contratos bancários
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-blue-300">15.000 tokens</span>
-                  <Button 
-                    onClick={() => navigate("/calculo-contrato-bancario")}
-                    size="sm"
-                    className="bg-blue-600 hover:bg-blue-500"
-                  >
-                    Calcular
-                  </Button>
-                </div>
+            <div className="flex items-center gap-3">
+              {/* Contador de tokens compacto */}
+              <div className="hidden md:flex items-center gap-2 bg-slate-700/50 rounded-lg px-3 py-2">
+                <Zap className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium text-white">
+                  {Math.floor(totalAvailableCredits).toLocaleString()}
+                </span>
+                <span className="text-xs text-slate-300">tokens</span>
               </div>
               
-              <div className="p-4 bg-purple-600/10 rounded-lg border border-purple-500/20">
-                <div className="flex items-center gap-3 mb-3">
-                  <Heart className="w-6 h-6 text-purple-400" />
-                  <h3 className="font-semibold text-purple-200">Pensão Alimentícia</h3>
-                </div>
-                <p className="text-sm text-purple-200/80 mb-4">
-                  Calcule valores de pensão alimentícia, atrasos e correções
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-purple-300">15.000 tokens</span>
-                  <Button 
-                    onClick={() => navigate("/calculo-pensao-alimenticia")}
-                    size="sm"
-                    className="bg-purple-600 hover:bg-purple-500"
-                  >
-                    Calcular
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Documentos Pré-feitos - só aparece se tem mais de 3.000 tokens */}
-        {totalAvailableCredits > 3000 && (
-          <Card className="bg-slate-800 border-slate-700">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="w-5 h-5" />
-                Documentos Jurídicos Pré-feitos
-              </CardTitle>
-              <CardDescription>
-                Documentos prontos para usar - clique para editar e baixar
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="relative">
-                {/* Scroll horizontal container */}
-                <div className="overflow-x-auto pb-4">
-                  <div className="flex gap-4 w-max">
-                    {legalDocuments.filter(doc => {
-                      const requiredTokens = doc.min_tokens_required || 3000;
-                      return totalAvailableCredits >= requiredTokens;
-                    }).map((doc) => (
-                      <div 
-                        key={doc.id} 
-                        className="cursor-pointer hover:scale-105 transition-all flex-shrink-0"
-                        onClick={() => handleViewDocument(doc.id)}
-                      >
-                        {/* Documento em formato A4 miniatura */}
-                        <div className="bg-white rounded-lg shadow-lg border border-gray-300 p-3 w-40 h-52 relative overflow-hidden">
-                          {/* Cabeçalho do documento */}
-                          <div className="text-center border-b-2 border-gray-300 pb-2 mb-3">
-                            <h1 className="font-bold text-xs text-gray-800 uppercase tracking-wide">
-                              {doc.title}
-                            </h1>
-                          </div>
-                          
-                          {/* Conteúdo do documento simulado */}
-                          <div className="text-[6px] leading-tight text-gray-700 space-y-1">
-                            {doc.category === 'contrato' && (
-                              <>
-                                <div className="font-semibold">CONTRATANTE:</div>
-                                <div className="border-b border-gray-200 h-2"></div>
-                                <div className="font-semibold mt-2">CONTRATADO:</div>
-                                <div className="border-b border-gray-200 h-2"></div>
-                                <div className="font-semibold mt-2">CLÁUSULA 1ª - DO OBJETO</div>
-                                <div className="text-gray-500">O presente contrato tem por objeto...</div>
-                                <div className="border-b border-gray-200 h-1 mt-1"></div>
-                                <div className="font-semibold mt-2">CLÁUSULA 2ª - OBRIGAÇÕES</div>
-                                <div className="text-gray-500">O CONTRATADO se obriga a...</div>
-                                <div className="border-b border-gray-200 h-1 mt-1"></div>
-                                <div className="font-semibold mt-2">CLÁUSULA 3ª - PAGAMENTO</div>
-                                <div className="text-gray-500">Pelos serviços prestados...</div>
-                              </>
-                            )}
-                            {doc.category === 'peticao' && (
-                              <>
-                                <div className="text-right font-semibold">Exmo. Sr. Juiz de Direito</div>
-                                <div className="text-center font-semibold mt-2">{doc.title}</div>
-                                <div className="mt-2">
-                                  <div className="font-semibold">Requerente:</div>
-                                  <div className="border-b border-gray-200 h-2"></div>
-                                </div>
-                                <div className="mt-2">
-                                  <div className="font-semibold">DOS FATOS:</div>
-                                  <div className="text-gray-500">Vem o requerente...</div>
-                                  <div className="border-b border-gray-200 h-1 mt-1"></div>
-                                </div>
-                                <div className="mt-2">
-                                  <div className="font-semibold">DOS PEDIDOS:</div>
-                                  <div className="text-gray-500">Requer...</div>
-                                </div>
-                              </>
-                            )}
-                            {doc.category === 'procuracao' && (
-                              <>
-                                <div className="text-center font-bold">PROCURAÇÃO</div>
-                                <div className="mt-2">
-                                  <div className="font-semibold">OUTORGANTE:</div>
-                                  <div className="border-b border-gray-200 h-2"></div>
-                                </div>
-                                <div className="mt-2">
-                                  <div className="font-semibold">OUTORGADO:</div>
-                                  <div className="border-b border-gray-200 h-2"></div>
-                                </div>
-                                <div className="mt-2">
-                                  <div className="font-semibold">PODERES:</div>
-                                  <div className="text-gray-500">☐ Representar em juízo</div>
-                                  <div className="text-gray-500">☐ Assinar documentos</div>
-                                  <div className="text-gray-500">☐ Receber valores</div>
-                                </div>
-                              </>
-                            )}
-                            {doc.category === 'documento' && (
-                              <>
-                                <div className="text-center font-bold">DECLARAÇÃO</div>
-                                <div className="mt-3 text-gray-600">
-                                  <div>Eu, _________________,</div>
-                                  <div className="mt-1">declaro para os devidos fins que</div>
-                                  <div className="border-b border-gray-200 h-2 mt-1"></div>
-                                  <div className="border-b border-gray-200 h-2 mt-1"></div>
-                                  <div className="border-b border-gray-200 h-2 mt-1"></div>
-                                </div>
-                                <div className="mt-4 text-right">
-                                  <div>________________, __ de _______ de ____</div>
-                                  <div className="mt-2">_________________________</div>
-                                  <div className="text-center">Assinatura</div>
-                                </div>
-                              </>
-                            )}
-                          </div>
-                          
-                          {/* Rodapé com informações */}
-                          <div className="absolute bottom-2 left-2 right-2">
-                            <div className="bg-slate-800 text-white px-2 py-1 rounded text-[8px] flex justify-between items-center">
-                              <span className="capitalize">{doc.category}</span>
-                              <span>{doc.min_tokens_required || 3000} tokens</span>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        {/* Título abaixo do documento */}
-                        <div className="mt-2 text-center">
-                          <h3 className="font-semibold text-xs text-white truncate w-40">
-                            {doc.title}
-                          </h3>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                
-                {/* Indicador de scroll */}
-                <div className="absolute right-0 top-0 bottom-4 w-8 bg-gradient-to-l from-slate-800 to-transparent pointer-events-none"></div>
-              </div>
-              
-              {/* Instruções */}
-              <div className="mt-4 p-3 bg-slate-900/50 rounded border border-slate-600">
-                <p className="text-xs text-muted-foreground text-center">
-                  💡 <strong>Dica:</strong> Clique em qualquer documento para editar os campos e baixar personalizado
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Credit Overview Banner */}
-        <div className="mt-4 p-6 bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/30 rounded-xl">
-          <div className="flex items-center gap-3 justify-center">
-            <CreditCard className="w-6 h-6 text-primary" />
-            <div className="text-center">
-              <span className="text-2xl font-bold text-primary block">
-                {Math.floor(totalAvailableCredits).toLocaleString()} tokens disponíveis
-              </span>
+              <UserMenu hideOptions={["dashboard"]} />
             </div>
           </div>
-          <p className="text-center text-primary/80 mt-2">
-            {dailyCredits > 0 && (
-              <span>{Math.floor(dailyCredits)} tokens diários</span>
-            )}
-            {userCredits > 0 && (
-              <span>
-                {dailyCredits > 0 ? ' + ' : ''}
-                {Math.floor(userCredits)} tokens do plano
-              </span>
-            )}
-          </p>
         </div>
+      </div>
 
-        {/* Credits Details Cards */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          {/* Credits Stats */}
-          <Card className="bg-slate-800 border-slate-700">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CreditCard className="w-5 h-5" />
-                Seus Créditos
-              </CardTitle>
-              <CardDescription>
-                Informações sobre seus créditos
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 gap-4">
-                <div className="text-center p-6 bg-primary/10 rounded-lg border border-primary/20">
-                  <div className="text-3xl font-bold text-primary">{Math.floor(totalAvailableCredits)}</div>
-                  <div className="text-sm text-muted-foreground">Total Disponíveis</div>
-                  <div className="text-xs text-primary/70 mt-1">{Math.floor(totalAvailableCredits).toLocaleString()} tokens</div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-4 bg-green-600/10 rounded-lg border border-green-600/20">
-                    <div className="text-2xl font-bold text-green-400">{Math.floor(dailyCredits)}</div>
-                    <div className="text-xs text-muted-foreground">Tokens Diários</div>
-                    <div className="text-xs text-green-400/70">{Math.floor(dailyCredits).toLocaleString()} tokens</div>
+      {/* Conteúdo principal com scroll interno */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="container max-w-7xl mx-auto px-4 py-6 space-y-6">
+          
+          {/* Cards de estatísticas principais */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card className="bg-gradient-to-br from-primary/20 to-primary/10 border-primary/30">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-primary/80 font-medium">Tokens Disponíveis</p>
+                    <p className="text-2xl font-bold text-primary">
+                      {Math.floor(totalAvailableCredits).toLocaleString()}
+                    </p>
                   </div>
-                  <div className="text-center p-4 bg-blue-600/10 rounded-lg border border-blue-600/20">
-                    <div className="text-2xl font-bold text-blue-400">{Math.floor(userCredits)}</div>
-                    <div className="text-xs text-muted-foreground">Tokens do Plano</div>
-                    <div className="text-xs text-blue-400/70">{Math.floor(userCredits).toLocaleString()} tokens</div>
+                  <div className="p-2 bg-primary/20 rounded-lg">
+                    <Zap className="w-6 h-6 text-primary" />
                   </div>
                 </div>
-              </div>
-              
-              <div className="flex items-center justify-between py-4 border-t border-slate-600">
-                <span className="font-medium">Custo por pesquisa:</span>
-                <span className="text-primary font-bold">Variável por consulta</span>
-              </div>
-              
-              <div className="flex flex-col gap-4">
-                <Button 
-                  onClick={() => navigate("/comprar-creditos")}
-                  className="w-full bg-primary hover:bg-primary/90 py-3"
-                  size="lg"
-                >
-                  <Plus className="w-5 h-5 mr-2" />
-                  Comprar Mais Tokens
-                </Button>
-                <Button 
-                  onClick={() => navigate("/historico-transacoes")}
-                  variant="outline"
-                  className="w-full border-primary/20 hover:bg-primary/10 py-3"
-                  size="lg"
-                >
-                  <History className="w-5 h-5 mr-2" />
-                  Ver Histórico
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          {/* Credits Chart */}
-          <Card className="bg-slate-800 border-slate-700">
-            <CardHeader>
-              <CardTitle>Distribuição de Tokens</CardTitle>
-              <CardDescription>
-                Análise completa do uso dos seus tokens
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={chartData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={100}
-                      paddingAngle={5}
-                      dataKey="value"
+            <Card className="bg-gradient-to-br from-green-600/20 to-green-600/10 border-green-600/30">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-green-300 font-medium">Tokens Diários</p>
+                    <p className="text-2xl font-bold text-green-400">
+                      {Math.floor(dailyCredits).toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="p-2 bg-green-600/20 rounded-lg">
+                    <Clock className="w-6 h-6 text-green-400" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-blue-600/20 to-blue-600/10 border-blue-600/30">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-blue-300 font-medium">Tokens do Plano</p>
+                    <p className="text-2xl font-bold text-blue-400">
+                      {Math.floor(userCredits).toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="p-2 bg-blue-600/20 rounded-lg">
+                    <Award className="w-6 h-6 text-blue-400" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-orange-600/20 to-orange-600/10 border-orange-600/30">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-orange-300 font-medium">Tokens Usados</p>
+                    <p className="text-2xl font-bold text-orange-400">
+                      {Math.floor(creditsUsed).toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="p-2 bg-orange-600/20 rounded-lg">
+                    <TrendingUp className="w-6 h-6 text-orange-400" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Seção principal - Grid responsivo */}
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            
+            {/* Coluna esquerda - Ações principais */}
+            <div className="xl:col-span-2 space-y-6">
+              
+              {/* Chat Jurídico - Destaque principal */}
+              <Card className="bg-gradient-to-r from-primary/20 to-secondary/20 border-primary/30 overflow-hidden">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 bg-primary/20 rounded-xl">
+                        <MessageSquare className="w-8 h-8 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-white">Chat Jurídico IA</h3>
+                        <p className="text-sm text-slate-300">
+                          Consulte nossa IA especializada em direito brasileiro
+                        </p>
+                      </div>
+                    </div>
+                    <Badge className={getPlanBadgeColor(profile?.plan_type || 'gratuito')}>
+                      {profile?.plan_type === 'premium' ? 'Premium' : 
+                       profile?.plan_type === 'basico' ? 'Básico' : 'Gratuito'}
+                    </Badge>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div className="text-center p-3 bg-white/5 rounded-lg">
+                      <div className="text-lg font-bold text-primary">{Math.floor(totalAvailableCredits).toLocaleString()}</div>
+                      <div className="text-xs text-slate-400">Tokens Disponíveis</div>
+                    </div>
+                    <div className="text-center p-3 bg-white/5 rounded-lg">
+                      <div className="text-lg font-bold text-green-400">Variável</div>
+                      <div className="text-xs text-slate-400">Custo por Consulta</div>
+                    </div>
+                    <div className="text-center p-3 bg-white/5 rounded-lg">
+                      <div className="text-lg font-bold text-blue-400">24/7</div>
+                      <div className="text-xs text-slate-400">Disponibilidade</div>
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => navigate("/chat")}
+                    className="w-full bg-primary hover:bg-primary/90 py-3 text-lg font-semibold"
+                    size="lg"
+                  >
+                    <MessageSquare className="w-5 h-5 mr-2" />
+                    Iniciar Consulta Jurídica
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Agenda da Semana */}
+              <Card className="bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border-blue-500/30">
+                <CardHeader className="pb-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-5 h-5 text-blue-400" />
+                      <CardTitle className="text-lg text-blue-200">Agenda da Semana</CardTitle>
+                    </div>
+                    <Button 
+                      onClick={() => navigate("/agenda-juridica")}
+                      variant="outline"
+                      size="sm"
+                      className="border-blue-500/30 text-blue-300 hover:bg-blue-600/10"
                     >
-                      {chartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip 
-                      formatter={(value, name) => [
-                        `${Number(value).toLocaleString()} token${value !== 1 ? 's' : ''}`, 
-                        name
-                      ]}
-                      contentStyle={{
-                        backgroundColor: '#1e293b',
-                        border: '1px solid #334155',
-                        borderRadius: '8px',
-                        color: '#f1f5f9'
-                      }}
-                    />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              
-              {/* Estatísticas detalhadas */}
-              <div className="space-y-4 mt-6">
-                 <div className="grid grid-cols-2 gap-4">
-                   <div className="text-center p-4 bg-green-600/10 rounded-lg border border-green-600/20">
-                     <div className="text-2xl font-bold text-green-400">{Math.floor(totalAvailableCredits).toLocaleString()}</div>
-                     <div className="text-sm text-muted-foreground">Tokens Disponíveis</div>
-                   </div>
-                   <div className="text-center p-4 bg-red-600/10 rounded-lg border border-red-600/20">
-                     <div className="text-2xl font-bold text-red-400">{Math.floor(creditsUsed).toLocaleString()}</div>
-                     <div className="text-sm text-muted-foreground">Tokens Usados</div>
-                   </div>
-                 </div>
-                 
-                 <div className="grid grid-cols-2 gap-4">
-                   <div className="text-center p-3 bg-emerald-600/10 rounded-lg border border-emerald-600/20">
-                     <div className="text-lg font-bold text-emerald-400">{Math.floor(dailyCredits)}</div>
-                     <div className="text-xs text-muted-foreground">Créditos Diários</div>
-                   </div>
-                   <div className="text-center p-3 bg-blue-600/10 rounded-lg border border-blue-600/20">
-                     <div className="text-lg font-bold text-blue-400">{Math.floor(userCredits)}</div>
-                     <div className="text-xs text-muted-foreground">Créditos Comprados</div>
-                   </div>
-                 </div>
+                      Ver Completa
+                    </Button>
+                  </div>
+                  <CardDescription className="text-blue-200/80">
+                    Seus próximos compromissos e prazos processuais
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <AgendaWidget />
+                </CardContent>
+              </Card>
 
-                 <div className="bg-slate-700/50 p-4 rounded-lg border border-slate-600">
-                   <div className="flex justify-between items-center mb-2">
-                     <span className="text-sm font-medium">Total Comprado:</span>
-                     <span className="text-primary font-bold">{Math.floor(totalCreditsPurchased)}</span>
-                   </div>
-                   <div className="flex justify-between items-center mb-2">
-                     <span className="text-sm font-medium">Total Usado:</span>
-                     <span className="text-red-400 font-bold">{Math.floor(creditsUsed)}</span>
-                   </div>
-                   <div className="flex justify-between items-center">
-                     <span className="text-sm font-medium">Restante:</span>
-                     <span className="text-green-400 font-bold">{Math.floor(totalAvailableCredits)}</span>
-                   </div>
-                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              {/* Calculadoras Jurídicas */}
+              <Card className="bg-slate-800/50 border-slate-700">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-2 text-white">
+                    <Calculator className="w-5 h-5 text-primary" />
+                    Calculadoras Jurídicas
+                  </CardTitle>
+                  <CardDescription>
+                    Ferramentas especializadas para cálculos jurídicos precisos
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="group p-4 bg-gradient-to-br from-blue-600/10 to-blue-600/5 rounded-xl border border-blue-500/20 hover:border-blue-500/40 transition-all cursor-pointer"
+                         onClick={() => navigate("/calculo-contrato-bancario")}>
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="p-2 bg-blue-600/20 rounded-lg group-hover:bg-blue-600/30 transition-colors">
+                          <DollarSign className="w-6 h-6 text-blue-400" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-blue-200">Contrato Bancário</h3>
+                          <p className="text-xs text-blue-300/80">Juros e correção monetária</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <Badge variant="outline" className="text-xs border-blue-400/30 text-blue-300">
+                          15.000 tokens
+                        </Badge>
+                        <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-xs">
+                          Calcular
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div className="group p-4 bg-gradient-to-br from-purple-600/10 to-purple-600/5 rounded-xl border border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer"
+                         onClick={() => navigate("/calculo-pensao-alimenticia")}>
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="p-2 bg-purple-600/20 rounded-lg group-hover:bg-purple-600/30 transition-colors">
+                          <Heart className="w-6 h-6 text-purple-400" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-purple-200">Pensão Alimentícia</h3>
+                          <p className="text-xs text-purple-300/80">Valores e correções</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <Badge variant="outline" className="text-xs border-purple-400/30 text-purple-300">
+                          15.000 tokens
+                        </Badge>
+                        <Button size="sm" className="bg-purple-600 hover:bg-purple-500 text-xs">
+                          Calcular
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Documentos Jurídicos */}
+              {totalAvailableCredits > 3000 && (
+                <Card className="bg-slate-800/50 border-slate-700">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-5 h-5 text-primary" />
+                        <CardTitle className="text-lg text-white">Documentos Jurídicos</CardTitle>
+                      </div>
+                      <Badge variant="outline" className="text-xs">
+                        {legalDocuments.length} disponíveis
+                      </Badge>
+                    </div>
+                    <CardDescription>
+                      Modelos prontos para personalizar e usar
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                      {legalDocuments.slice(0, 8).map((doc) => (
+                        <div 
+                          key={doc.id}
+                          className="group cursor-pointer"
+                          onClick={() => handleViewDocument(doc.id)}
+                        >
+                          <div className="bg-white rounded-lg p-3 h-32 relative overflow-hidden shadow-lg group-hover:shadow-xl transition-all group-hover:scale-105">
+                            <div className="text-center border-b border-gray-300 pb-1 mb-2">
+                              <h1 className="font-bold text-[8px] text-gray-800 uppercase tracking-wide leading-tight">
+                                {doc.title}
+                              </h1>
+                            </div>
+                            
+                            <div className="text-[6px] leading-tight text-gray-700 space-y-1">
+                              {doc.category === 'contrato' && (
+                                <>
+                                  <div className="font-semibold">CONTRATANTE:</div>
+                                  <div className="border-b border-gray-200 h-1"></div>
+                                  <div className="font-semibold">CONTRATADO:</div>
+                                  <div className="border-b border-gray-200 h-1"></div>
+                                  <div className="font-semibold">OBJETO:</div>
+                                  <div className="text-gray-500">O presente contrato...</div>
+                                </>
+                              )}
+                              {doc.category === 'peticao' && (
+                                <>
+                                  <div className="text-center font-semibold">PETIÇÃO INICIAL</div>
+                                  <div className="font-semibold">Requerente:</div>
+                                  <div className="border-b border-gray-200 h-1"></div>
+                                  <div className="font-semibold">DOS FATOS:</div>
+                                  <div className="text-gray-500">Vem o requerente...</div>
+                                </>
+                              )}
+                              {doc.category === 'procuracao' && (
+                                <>
+                                  <div className="text-center font-bold">PROCURAÇÃO</div>
+                                  <div className="font-semibold">OUTORGANTE:</div>
+                                  <div className="border-b border-gray-200 h-1"></div>
+                                  <div className="font-semibold">PODERES:</div>
+                                  <div className="text-gray-500">☐ Representar</div>
+                                </>
+                              )}
+                              {doc.category === 'documento' && (
+                                <>
+                                  <div className="text-center font-bold">DECLARAÇÃO</div>
+                                  <div className="mt-2 text-gray-600">
+                                    <div>Eu, _____________,</div>
+                                    <div>declaro que</div>
+                                    <div className="border-b border-gray-200 h-1"></div>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                            
+                            <div className="absolute bottom-1 left-1 right-1">
+                              <div className="bg-slate-800 text-white px-1 py-0.5 rounded text-[6px] flex justify-between items-center">
+                                <span className="capitalize">{doc.category}</span>
+                                <span>{(doc.min_tokens_required || 3000).toLocaleString()}</span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="mt-2 text-center">
+                            <h3 className="font-medium text-xs text-white truncate">
+                              {doc.title}
+                            </h3>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className="mt-4 p-3 bg-slate-900/50 rounded-lg border border-slate-600">
+                      <p className="text-xs text-slate-400 text-center">
+                        💡 <strong>Dica:</strong> Clique em qualquer documento para personalizar e baixar
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+
+            {/* Coluna direita - Informações e ações */}
+            <div className="space-y-6">
+              
+              {/* Resumo de Tokens */}
+              <Card className="bg-slate-800/50 border-slate-700">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-2 text-white">
+                    <CreditCard className="w-5 h-5 text-primary" />
+                    Resumo de Tokens
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-slate-300">Total Disponível</span>
+                      <span className="font-bold text-primary">
+                        {Math.floor(totalAvailableCredits).toLocaleString()}
+                      </span>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-slate-400">Uso</span>
+                        <span className="text-slate-400">{getUsagePercentage().toFixed(1)}%</span>
+                      </div>
+                      <Progress value={getUsagePercentage()} className="h-2" />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 pt-2">
+                      <div className="text-center p-2 bg-green-600/10 rounded-lg">
+                        <div className="text-sm font-bold text-green-400">{Math.floor(dailyCredits)}</div>
+                        <div className="text-xs text-slate-400">Diários</div>
+                      </div>
+                      <div className="text-center p-2 bg-blue-600/10 rounded-lg">
+                        <div className="text-sm font-bold text-blue-400">{Math.floor(userCredits)}</div>
+                        <div className="text-xs text-slate-400">Plano</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2 pt-4 border-t border-slate-600">
+                    <Button 
+                      onClick={() => navigate("/comprar-creditos")}
+                      className="w-full bg-primary hover:bg-primary/90"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Comprar Tokens
+                    </Button>
+                    <Button 
+                      onClick={() => navigate("/historico-transacoes")}
+                      variant="outline"
+                      className="w-full border-slate-600 hover:bg-slate-700"
+                    >
+                      <History className="w-4 h-4 mr-2" />
+                      Histórico
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Consultas Recentes */}
+              <Card className="bg-slate-800/50 border-slate-700">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-2 text-white">
+                    <Clock className="w-5 h-5 text-primary" />
+                    Consultas Recentes
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {recentQueries.length === 0 ? (
+                    <div className="text-center py-6">
+                      <MessageSquare className="w-8 h-8 text-slate-500 mx-auto mb-2" />
+                      <p className="text-sm text-slate-400">
+                        Nenhuma consulta ainda
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        Comece uma conversa no chat
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {recentQueries.slice(0, 3).map((query) => (
+                        <div key={query.id} className="p-3 bg-slate-700/30 rounded-lg border border-slate-600/50">
+                          <p className="text-sm text-white line-clamp-2 mb-2">
+                            {query.prompt_text}
+                          </p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-slate-400">
+                              {new Date(query.created_at).toLocaleDateString('pt-BR')}
+                            </span>
+                            {query.credits_consumed && (
+                              <Badge variant="outline" className="text-xs">
+                                {(query.credits_consumed * 1000).toLocaleString()} tokens
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                      
+                      <Button 
+                        onClick={() => navigate("/chat")}
+                        variant="outline"
+                        className="w-full border-slate-600 hover:bg-slate-700 text-xs"
+                      >
+                        Ver Todas as Conversas
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Ações Rápidas */}
+              <Card className="bg-slate-800/50 border-slate-700">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-white">Ações Rápidas</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 gap-3">
+                    <Button 
+                      onClick={() => navigate("/minha-conta")}
+                      variant="outline"
+                      className="justify-start border-slate-600 hover:bg-slate-700"
+                    >
+                      <Users className="w-4 h-4 mr-2" />
+                      Minha Conta
+                    </Button>
+                    <Button 
+                      onClick={() => navigate("/contato")}
+                      variant="outline"
+                      className="justify-start border-slate-600 hover:bg-slate-700"
+                    >
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Suporte
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </div>
       </div>
 
-        {/* Document Viewer Modal */}
-        <DocumentViewer
-          documentId={selectedDocumentId}
-          isOpen={isDocumentViewerOpen}
-          onClose={() => {
-            setIsDocumentViewerOpen(false);
-            setSelectedDocumentId(null);
-          }}
-        />
-      </div>
-    );
-  }
+      {/* Document Viewer Modal */}
+      <DocumentViewer
+        documentId={selectedDocumentId}
+        isOpen={isDocumentViewerOpen}
+        onClose={() => {
+          setIsDocumentViewerOpen(false);
+          setSelectedDocumentId(null);
+        }}
+      />
+    </div>
+  );
+}
