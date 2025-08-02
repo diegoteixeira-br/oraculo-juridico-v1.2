@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { format, parseISO, startOfWeek, endOfWeek, isWithinInterval } from "date-fns";
+import { format, parseISO, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 interface LegalCommitment {
@@ -40,16 +40,15 @@ const AgendaWidget = () => {
     
     try {
       const now = new Date();
-      const weekStart = startOfWeek(now, { weekStartsOn: 1 }); // Segunda-feira
-      const weekEnd = endOfWeek(now, { weekStartsOn: 1 }); // Domingo
+      const nextWeek = addDays(now, 7); // Próximos 7 dias
 
       const { data, error } = await supabase
         .from('legal_commitments' as any)
         .select('*')
         .eq('user_id', user.id)
         .eq('status', 'pendente')
-        .gte('commitment_date', weekStart.toISOString())
-        .lte('commitment_date', weekEnd.toISOString())
+        .gte('commitment_date', now.toISOString())
+        .lte('commitment_date', nextWeek.toISOString())
         .order('commitment_date', { ascending: true })
         .limit(5);
 
@@ -92,7 +91,7 @@ const AgendaWidget = () => {
     <div className="flex items-center justify-between mb-4">
       <div className="flex items-center gap-2">
         <Calendar className="w-5 h-5 text-blue-400" />
-        <h4 className="font-semibold text-blue-200">Agenda da Semana</h4>
+        <h4 className="font-semibold text-blue-200">Próximos 7 Dias</h4>
       </div>
       <Button
         variant="ghost"
@@ -132,7 +131,7 @@ const AgendaWidget = () => {
         <div className="text-center py-6">
           <Calendar className="w-12 h-12 text-blue-400/50 mx-auto mb-3" />
           <p className="text-sm text-blue-300/80">
-            Nenhum compromisso para esta semana
+            Nenhum compromisso nos próximos 7 dias
           </p>
           <p className="text-xs text-blue-300/60 mt-1">
             Sua agenda está livre!
