@@ -269,7 +269,8 @@ const SuportePage = () => {
                   <span className="text-xs sm:text-sm">Respostas para as dúvidas mais comuns</span>
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3 sm:space-y-4 max-h-[400px] sm:max-h-[500px] overflow-y-auto">
+              <CardContent className="space-y-3 sm:space-y-4">
+                <div className="max-h-[300px] sm:max-h-[350px] overflow-y-auto space-y-3 sm:space-y-4">
                 {faqItems.map((item, index) => (
                   <div key={index} className="p-3 sm:p-4 bg-slate-700/30 rounded-lg border border-slate-600/50">
                     <div className="flex items-start gap-3">
@@ -300,6 +301,19 @@ const SuportePage = () => {
                   <p className="text-xs text-slate-500">
                     Use o botão "Falar com Suporte" abaixo para entrar em contato
                   </p>
+                </div>
+                </div>
+                
+                {/* Botão de suporte fixo fora da área de scroll */}
+                <div className="pt-4 border-t border-slate-600">
+                  <Button
+                    onClick={() => openWhatsApp("Olá! Preciso de ajuda com o Oráculo Jurídico.")}
+                    className="w-full bg-green-600 hover:bg-green-500 text-white py-3 text-sm sm:text-base font-semibold"
+                    size="lg"
+                  >
+                    <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                    Falar com Suporte
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -344,20 +358,6 @@ const SuportePage = () => {
               </div>
             </CardContent>
           </Card>
-        </div>
-      </div>
-
-      {/* Botão fixo no rodapé */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-slate-900 via-slate-900/95 to-transparent pointer-events-none">
-        <div className="max-w-md mx-auto pointer-events-auto">
-          <Button
-            onClick={() => openWhatsApp("Olá! Preciso de ajuda com o Oráculo Jurídico.")}
-            className="w-full bg-green-600 hover:bg-green-500 text-white py-4 text-base font-semibold shadow-lg"
-            size="lg"
-          >
-            <MessageCircle className="w-5 h-5 mr-2" />
-            Falar com Suporte
-          </Button>
         </div>
       </div>
     </div>
