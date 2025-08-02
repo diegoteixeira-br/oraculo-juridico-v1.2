@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { History, CreditCard, Download, Filter, Calendar } from "lucide-react";
+import { History, CreditCard, Download, Filter, Calendar, ArrowLeft, TrendingUp, Zap, FileText, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,8 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 import UserMenu from "@/components/UserMenu";
-import { useScrollDirection } from "@/hooks/useScrollDirection";
 
 interface CreditTransaction {
   id: string;
@@ -29,14 +29,9 @@ export default function HistoricoTransacoesPage() {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [dateFilter, setDateFilter] = useState<string>("all");
   
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { toast } = useToast();
-  const { visible: menuVisible } = useScrollDirection();
-
-  // Garantir que a página sempre abra no topo
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  const navigate = useNavigate();
 
   // Carregar todas as transações
   useEffect(() => {
@@ -165,180 +160,323 @@ export default function HistoricoTransacoesPage() {
     link.click();
   };
 
+  const totalTokens = (profile?.daily_tokens || 0) + (profile?.plan_tokens || 0);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
-      <div className="max-w-5xl mx-auto space-y-6">
-        {/* Header com Menu - com animação de scroll */}
-        <div className={`fixed top-0 right-0 z-50 transition-transform duration-300 ${
-          menuVisible ? 'translate-y-0' : '-translate-y-full'
-        }`}>
-          <div className="flex items-center justify-between p-4">
-            <Button
-              onClick={exportTransactions}
-              variant="outline"
-              className="border-primary text-primary hover:bg-primary/10 text-sm md:text-base mr-4"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Exportar CSV
-            </Button>
-            <UserMenu />
-          </div>
-        </div>
-
-        {/* Title */}
-        <div className="text-center">
-          <img 
-            src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
-            alt="Oráculo Jurídico" 
-            className="h-12 md:h-16 w-auto mx-auto mb-4"
-          />
-          <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2">Histórico de Transações</h1>
-          <p className="text-sm md:text-base text-muted-foreground">
-            Visualize todas as suas transações de tokens
-          </p>
-        </div>
-
-        {/* Filters */}
-        <Card className="bg-slate-800 border-slate-700">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
-              <Filter className="w-4 h-4 md:w-5 md:h-5" />
-              Filtros
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="search" className="text-sm">Buscar por descrição</Label>
-                <Input
-                  id="search"
-                  placeholder="Digite para buscar..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="bg-slate-700 border-slate-600 focus:border-primary text-sm"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="type" className="text-sm">Tipo de transação</Label>
-                <Select value={typeFilter} onValueChange={setTypeFilter}>
-                  <SelectTrigger id="type" className="bg-slate-700 border-slate-600 text-sm">
-                    <SelectValue placeholder="Selecione o tipo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos os tipos</SelectItem>
-                    <SelectItem value="purchase">Compra Stripe</SelectItem>
-                    <SelectItem value="daily_usage">Uso Diário</SelectItem>
-                    <SelectItem value="usage">Uso</SelectItem>
-                    <SelectItem value="bonus">Bônus</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="date" className="text-sm">Período</Label>
-                <Select value={dateFilter} onValueChange={setDateFilter}>
-                  <SelectTrigger id="date" className="bg-slate-700 border-slate-600 text-sm">
-                    <SelectValue placeholder="Selecione o período" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos os períodos</SelectItem>
-                    <SelectItem value="today">Hoje</SelectItem>
-                    <SelectItem value="week">Última semana</SelectItem>
-                    <SelectItem value="month">Último mês</SelectItem>
-                    <SelectItem value="3months">Últimos 3 meses</SelectItem>
-                  </SelectContent>
-                </Select>
+    <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col overflow-hidden">
+      {/* Header fixo */}
+      <div className="flex-shrink-0 bg-slate-800/50 border-b border-slate-700 backdrop-blur-sm">
+        <div className="container max-w-6xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate(-1)}
+                className="text-white hover:bg-slate-700"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <img 
+                src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
+                alt="Oráculo Jurídico" 
+                className="h-8 w-auto"
+              />
+              <div>
+                <h1 className="text-xl font-bold text-white flex items-center gap-2">
+                  <History className="h-5 w-5 text-primary" />
+                  Histórico de Transações
+                </h1>
+                <p className="text-xs text-slate-300 hidden md:block">
+                  Visualize todas as suas transações de tokens
+                </p>
               </div>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Transactions List */}
-        <Card className="bg-slate-800 border-slate-700">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
-              <History className="w-4 h-4 md:w-5 md:h-5" />
-              Transações ({filteredTransactions.length})
-            </CardTitle>
-            <CardDescription className="text-sm">
-              {filteredTransactions.length === transactions.length 
-                ? "Todas as transações" 
-                : `${filteredTransactions.length} de ${transactions.length} transações`
-              }
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {loadingTransactions ? (
-              <div className="text-center py-8">
-                <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-                <p className="text-sm text-muted-foreground mt-2">Carregando transações...</p>
+            <div className="flex items-center gap-3">
+              {/* Contador de tokens */}
+              <div className="hidden md:flex items-center gap-2 bg-slate-700/50 rounded-lg px-3 py-2">
+                <Zap className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium text-white">
+                  {Math.floor(totalTokens).toLocaleString()}
+                </span>
+                <span className="text-xs text-slate-300">tokens</span>
               </div>
-            ) : filteredTransactions.length > 0 ? (
-              <div className="space-y-3 md:space-y-4">
-                {filteredTransactions.map((transaction) => (
-                  <div key={transaction.id} className="p-3 md:p-4 bg-secondary/10 rounded-lg border border-secondary/20 hover:bg-secondary/20 transition-colors">
-                    <div className="flex-1">
-                      <div className="flex flex-col md:flex-row md:items-center justify-between mb-3 gap-2">
+              
+              <Button
+                onClick={exportTransactions}
+                variant="outline"
+                className="border-primary/30 text-primary hover:bg-primary/10"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Exportar CSV
+              </Button>
+              
+              <UserMenu />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Conteúdo principal com scroll interno */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="container max-w-6xl mx-auto px-4 py-6 space-y-6">
+          
+          {/* Card de informações sobre transações */}
+          <Card className="bg-gradient-to-r from-green-600/20 to-emerald-600/20 border-green-500/30">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-green-600/20 rounded-xl">
+                    <TrendingUp className="w-8 h-8 text-green-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white">Histórico Completo</h3>
+                    <p className="text-sm text-slate-300">
+                      Todas as suas transações de tokens organizadas
+                    </p>
+                  </div>
+                </div>
+                <Badge className="bg-green-600 text-white">
+                  {filteredTransactions.length} transações
+                </Badge>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="text-center p-3 bg-white/5 rounded-lg">
+                  <div className="text-lg font-bold text-green-400">Compras</div>
+                  <div className="text-xs text-slate-400">Via Stripe</div>
+                </div>
+                <div className="text-center p-3 bg-white/5 rounded-lg">
+                  <div className="text-lg font-bold text-blue-400">Uso Diário</div>
+                  <div className="text-xs text-slate-400">Tokens Gratuitos</div>
+                </div>
+                <div className="text-center p-3 bg-white/5 rounded-lg">
+                  <div className="text-lg font-bold text-orange-400">Uso Plano</div>
+                  <div className="text-xs text-slate-400">Tokens Comprados</div>
+                </div>
+                <div className="text-center p-3 bg-white/5 rounded-lg">
+                  <div className="text-lg font-bold text-purple-400">Bônus</div>
+                  <div className="text-xs text-slate-400">Tokens Extras</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Filtros */}
+          <Card className="bg-slate-800/50 border-slate-700">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2 text-white">
+                <Filter className="w-5 h-5 text-primary" />
+                Filtros
+              </CardTitle>
+              <CardDescription>
+                Filtre suas transações por tipo, período ou descrição
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="search" className="text-sm text-slate-300">Buscar por descrição</Label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Input
+                      id="search"
+                      placeholder="Digite para buscar..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 bg-slate-700 border-slate-600 focus:border-primary text-white"
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="type" className="text-sm text-slate-300">Tipo de transação</Label>
+                  <Select value={typeFilter} onValueChange={setTypeFilter}>
+                    <SelectTrigger id="type" className="bg-slate-700 border-slate-600 text-white">
+                      <SelectValue placeholder="Selecione o tipo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos os tipos</SelectItem>
+                      <SelectItem value="purchase">Compra Stripe</SelectItem>
+                      <SelectItem value="daily_usage">Uso Diário</SelectItem>
+                      <SelectItem value="usage">Uso</SelectItem>
+                      <SelectItem value="bonus">Bônus</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="date" className="text-sm text-slate-300">Período</Label>
+                  <Select value={dateFilter} onValueChange={setDateFilter}>
+                    <SelectTrigger id="date" className="bg-slate-700 border-slate-600 text-white">
+                      <SelectValue placeholder="Selecione o período" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos os períodos</SelectItem>
+                      <SelectItem value="today">Hoje</SelectItem>
+                      <SelectItem value="week">Última semana</SelectItem>
+                      <SelectItem value="month">Último mês</SelectItem>
+                      <SelectItem value="3months">Últimos 3 meses</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Lista de Transações */}
+          <Card className="bg-slate-800/50 border-slate-700">
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-primary" />
+                  <CardTitle className="text-lg text-white">
+                    Transações ({filteredTransactions.length})
+                  </CardTitle>
+                </div>
+                <CardDescription className="text-sm">
+                  {filteredTransactions.length === transactions.length 
+                    ? "Todas as transações" 
+                    : `${filteredTransactions.length} de ${transactions.length} transações`
+                  }
+                </CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {loadingTransactions ? (
+                <div className="text-center py-12">
+                  <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                  <p className="text-sm text-slate-400">Carregando transações...</p>
+                </div>
+              ) : filteredTransactions.length > 0 ? (
+                <div className="space-y-4">
+                  {filteredTransactions.map((transaction) => (
+                    <div key={transaction.id} className="group p-4 bg-slate-700/30 rounded-xl border border-slate-600/50 hover:border-slate-500/50 hover:bg-slate-700/50 transition-all">
+                      <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-3">
-                          <Badge 
-                            variant="secondary"
-                            className={`${getTransactionTypeBadgeColor(transaction.transaction_type)} text-xs`}
-                          >
-                            {getTransactionTypeLabel(transaction.transaction_type)}
-                          </Badge>
-                          <span className={`text-base md:text-lg font-bold ${
-                            transaction.amount > 0 ? 'text-green-400' : 'text-orange-400'
-                          }`}>
-                            {transaction.amount > 0 ? '+' : ''}{transaction.amount} tokens
-                          </span>
+                          <div className="p-2 bg-slate-600/50 rounded-lg">
+                            {transaction.transaction_type === 'purchase' && <CreditCard className="w-5 h-5 text-green-400" />}
+                            {transaction.transaction_type === 'daily_usage' && <Calendar className="w-5 h-5 text-blue-400" />}
+                            {transaction.transaction_type === 'usage' && <Zap className="w-5 h-5 text-orange-400" />}
+                            {transaction.transaction_type === 'bonus' && <TrendingUp className="w-5 h-5 text-purple-400" />}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <Badge 
+                                variant="secondary"
+                                className={`${getTransactionTypeBadgeColor(transaction.transaction_type)} text-white text-xs`}
+                              >
+                                {getTransactionTypeLabel(transaction.transaction_type)}
+                              </Badge>
+                              <span className={`text-lg font-bold ${
+                                transaction.amount > 0 ? 'text-green-400' : 'text-orange-400'
+                              }`}>
+                                {transaction.amount > 0 ? '+' : ''}{transaction.amount.toLocaleString()} tokens
+                              </span>
+                            </div>
+                            <p className="text-sm text-slate-300">
+                              {transaction.description}
+                            </p>
+                          </div>
                         </div>
-                        <div className="text-xs md:text-sm text-muted-foreground">
-                          {new Date(transaction.created_at).toLocaleDateString('pt-BR', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
+                        <div className="text-right">
+                          <div className="text-sm text-slate-400 mb-1">
+                            {new Date(transaction.created_at).toLocaleDateString('pt-BR', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric'
+                            })}
+                          </div>
+                          <div className="text-xs text-slate-500">
+                            {new Date(transaction.created_at).toLocaleTimeString('pt-BR', {
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </div>
                         </div>
                       </div>
                       
-                      <p className="text-xs md:text-sm text-foreground mb-2">
-                        {transaction.description}
-                      </p>
-                      
-                      {transaction.transaction_type === 'purchase' && (
-                        <p className="text-xs text-green-400 font-medium">
-                          Compra realizada via Stripe • Quantidade: {transaction.amount} tokens
-                        </p>
-                      )}
-                      
-                      <div className="flex items-center gap-2 mt-2">
-                        <Badge variant="outline" className="text-xs">
-                          Status: {transaction.status}
-                        </Badge>
+                      <div className="flex items-center justify-between pt-3 border-t border-slate-600/30">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="text-xs border-slate-500/30 text-slate-400">
+                            Status: {transaction.status}
+                          </Badge>
+                          {transaction.transaction_type === 'purchase' && (
+                            <Badge variant="outline" className="text-xs border-green-500/30 text-green-400">
+                              Stripe
+                            </Badge>
+                          )}
+                        </div>
+                        
+                        {transaction.transaction_type === 'purchase' && (
+                          <div className="text-xs text-green-400 font-medium">
+                            Compra confirmada • {Math.abs(transaction.amount).toLocaleString()} tokens
+                          </div>
+                        )}
                       </div>
                     </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-16">
+                  <div className="p-4 bg-slate-700/30 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                    <CreditCard className="w-10 h-10 text-slate-500" />
                   </div>
-                ))}
+                  <h3 className="text-lg font-medium text-white mb-2">
+                    Nenhuma transação encontrada
+                  </h3>
+                  <p className="text-sm text-slate-400 max-w-md mx-auto">
+                    {searchTerm || typeFilter !== "all" || dateFilter !== "all" 
+                      ? "Tente ajustar os filtros para encontrar suas transações"
+                      : "Você ainda não possui transações de tokens. Comece fazendo uma consulta ou comprando tokens!"
+                    }
+                  </p>
+                  
+                  {!searchTerm && typeFilter === "all" && dateFilter === "all" && (
+                    <div className="mt-6 space-y-3">
+                      <Button 
+                        onClick={() => navigate("/chat")}
+                        className="bg-primary hover:bg-primary/90"
+                      >
+                        <MessageSquare className="w-4 h-4 mr-2" />
+                        Fazer Primeira Consulta
+                      </Button>
+                      <Button 
+                        onClick={() => navigate("/comprar-creditos")}
+                        variant="outline"
+                        className="border-slate-600 hover:bg-slate-700"
+                      >
+                        <CreditCard className="w-4 h-4 mr-2" />
+                        Comprar Tokens
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Informações sobre tokens */}
+          <Card className="bg-blue-900/20 border-blue-500/30">
+            <CardContent className="p-4">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-blue-500/20 rounded-lg flex-shrink-0">
+                  <Zap className="w-5 h-5 text-blue-400" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-blue-200 mb-2">Como Funcionam os Tokens</h4>
+                  <div className="space-y-1 text-sm text-blue-300/80">
+                    <p>• <strong>Tokens Diários:</strong> 3.000 tokens renovados a cada 24 horas (gratuito)</p>
+                    <p>• <strong>Tokens do Plano:</strong> Tokens comprados que nunca expiram</p>
+                    <p>• <strong>Ordem de Uso:</strong> Tokens diários são usados primeiro, depois os do plano</p>
+                    <p>• <strong>Custo Variável:</strong> Cada consulta consome tokens baseado no tamanho</p>
+                  </div>
+                </div>
               </div>
-            ) : (
-              <div className="text-center py-12">
-                <CreditCard className="w-12 h-12 md:w-16 md:h-16 text-muted-foreground mx-auto mb-4" />
-                <p className="text-base md:text-lg font-medium text-muted-foreground mb-2">
-                  Nenhuma transação encontrada
-                </p>
-                <p className="text-xs md:text-sm text-muted-foreground">
-                  {searchTerm || typeFilter !== "all" || dateFilter !== "all" 
-                    ? "Tente ajustar os filtros para encontrar suas transações"
-                    : "Você ainda não possui transações de tokens"
-                  }
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
