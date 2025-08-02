@@ -145,6 +145,7 @@ const AgendaJuridica = () => {
         .insert({
           user_id: user.id,
           ...newCommitment,
+          end_date: newCommitment.end_date || null,
           status: 'pendente',
           auto_detected: false,
         });
