@@ -276,6 +276,33 @@ const CalculoContratoBancario = () => {
                   </div>
                 </div>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="multaAtraso" className="text-sm text-slate-300">Multa por Atraso (%)</Label>
+                    <Input
+                      id="multaAtraso"
+                      type="number"
+                      step="0.01"
+                      placeholder="2.0"
+                      value={formData.multaAtraso}
+                      onChange={(e) => handleInputChange('multaAtraso', e.target.value)}
+                      className="bg-slate-700 border-slate-600 focus:border-primary text-white"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="jurosMora" className="text-sm text-slate-300">Juros de Mora (% a.m.)</Label>
+                    <Input
+                      id="jurosMora"
+                      type="number"
+                      step="0.01"
+                      placeholder="1.0"
+                      value={formData.jurosMora}
+                      onChange={(e) => handleInputChange('jurosMora', e.target.value)}
+                      className="bg-slate-700 border-slate-600 focus:border-primary text-white"
+                    />
+                  </div>
+                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="indiceCorrecao" className="text-sm text-slate-300">Índice de Correção</Label>
                   <Select value={formData.indiceCorrecao} onValueChange={(value) => handleInputChange('indiceCorrecao', value)}>
