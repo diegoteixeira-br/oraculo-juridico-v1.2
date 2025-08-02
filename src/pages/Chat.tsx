@@ -837,8 +837,8 @@ export default function Dashboard() {
         <AppSidebar />
         
         <main className="flex-1 flex flex-col">
-          {/* Header - fixo apenas no mobile */}
-          <header className="md:relative fixed top-0 left-0 right-0 h-14 flex items-center justify-between px-4 md:px-6 border-b border-slate-700 bg-slate-800 md:bg-background md:border-border z-40">
+          {/* Header */}
+          <header className="h-14 flex items-center justify-between px-4 md:px-6 border-b bg-background border-border">
             <div className="flex items-center gap-2 md:gap-4">
               <SidebarTrigger className="lg:hidden" />
               <h1 
@@ -854,9 +854,9 @@ export default function Dashboard() {
           </header>
 
           {/* Chat Area - padding para header e input mobile */}
-          <div className="flex-1 flex flex-col md:pt-0 pt-14 md:pb-0 pb-32">
-            {/* Messages Area - padding-bottom no mobile para o input fixo */}
-            <ScrollArea className="flex-1 p-2 md:p-4 md:pb-4 pb-20">
+          <div className="flex-1 flex flex-col pt-0 pb-0">
+            {/* Messages Area */}
+            <ScrollArea className="flex-1 p-4">
               {totalTokens < 1000 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center space-y-4 max-w-2xl mx-auto px-4">
                   <div className="flex flex-col items-center space-y-2">
@@ -936,11 +936,11 @@ export default function Dashboard() {
                          {exampleQuestions.slice(0, window.innerWidth < 768 ? 6 : exampleQuestions.length).map((question, index) => (
                           <Tooltip key={index}>
                             <TooltipTrigger asChild>
-                              <Button
-                                variant="outline"
-                                className="text-left justify-start h-auto p-2 text-xs bg-slate-800 border-slate-600 hover:bg-slate-700 hover:border-primary/50 transition-colors min-h-[50px]"
-                                onClick={() => handleExampleClick(question)}
-                              >
+                      <Button
+                        variant="outline"
+                        className="text-left justify-start h-auto p-2 text-xs hover:border-primary/50 transition-colors min-h-[50px]"
+                        onClick={() => handleExampleClick(question)}
+                      >
                                 <span className="line-clamp-2 leading-tight">{question}</span>
                               </Button>
                             </TooltipTrigger>
@@ -963,8 +963,8 @@ export default function Dashboard() {
                       <div
                         className={`max-w-[85%] md:max-w-[70%] p-3 md:p-4 rounded-lg text-sm md:text-base ${
                           message.sender === 'user'
-                            ? 'bg-secondary text-secondary-foreground'
-                            : 'bg-slate-800 text-foreground'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-muted-foreground'
                         }`}
                       >
                         <div className="flex items-start gap-2">
@@ -972,9 +972,9 @@ export default function Dashboard() {
                             <Bot className="w-5 h-5 mt-0.5 text-primary flex-shrink-0" />
                           )}
                            <div className="flex-1">
-                              <div className="text-sm leading-relaxed">
-                                <ReactMarkdown>{message.text}</ReactMarkdown>
-                              </div>
+                               <div className="prose prose-sm dark:prose-invert max-w-none leading-relaxed">
+                                 <ReactMarkdown>{message.text}</ReactMarkdown>
+                               </div>
                               
                               {/* Botão de Text-to-Speech para mensagens da IA */}
                               {message.sender === 'ai' && (
@@ -1130,7 +1130,7 @@ export default function Dashboard() {
                   
                   {isTyping && (
                     <div className="flex justify-start">
-                      <div className="max-w-[70%] p-4 rounded-lg bg-slate-800 text-foreground">
+                      <div className="max-w-[70%] p-4 rounded-lg bg-muted text-muted-foreground">
                         <div className="flex items-start gap-2">
                           <Bot className="w-5 h-5 mt-0.5 text-primary flex-shrink-0" />
                           <div className="flex space-x-1">
@@ -1149,8 +1149,8 @@ export default function Dashboard() {
               )}
             </ScrollArea>
 
-            {/* Input Area - fixo apenas no mobile */}
-            <div className="md:relative fixed bottom-0 left-0 right-0 p-2 md:p-4 border-t border-slate-700 bg-slate-800 md:bg-background md:border-border z-30">
+            {/* Input Area */}
+            <div className="p-4 border-t bg-background border-border">
               {/* Arquivos Anexados */}
               {attachedFiles.length > 0 && (
                 <div className="mb-3 space-y-2">
@@ -1222,12 +1222,12 @@ export default function Dashboard() {
               <div className="flex gap-2">
                 <div className="flex gap-1">
                    {/* Botão de Anexar Arquivo */}
-                  <Button
+                   <Button
                     variant="outline"
                     size="sm"
                     onClick={openFileSelector}
                     disabled={isTyping || attachedFiles.length >= 3 || totalTokens < 1000}
-                    className="p-2 md:p-3 w-10 h-10 md:w-12 md:h-12 rounded-lg border-slate-600 hover:bg-slate-700"
+                    className="p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
                     title={totalTokens < 1000 ? "Tokens insuficientes" : "Anexar arquivo (PDF, imagem, documento)"}
                   >
                     <Paperclip className="w-4 h-4" />
@@ -1252,24 +1252,26 @@ export default function Dashboard() {
                     ? "Tokens insuficientes para usar o chat..." 
                     : "Digite sua pergunta aqui e pressione Enter..."
                   }
-                  className="flex-1 min-h-[40px] md:min-h-[50px] text-sm resize-none bg-background border-slate-600 focus:border-primary"
+                  className="flex-1 min-h-[40px] md:min-h-[50px] text-sm resize-none"
                   disabled={isTyping || totalTokens < 1000}
                 />
                 
                 <Button
                   onClick={totalTokens < 1000 ? () => navigate('/comprar-creditos') : handleSendMessage}
                   disabled={totalTokens >= 1000 && ((!inputMessage.trim() && attachedFiles.length === 0) || isTyping)}
-                  className={totalTokens < 1000 
-                    ? "bg-green-600 hover:bg-green-700 p-2 md:p-3 w-10 h-10 md:w-12 md:h-12 rounded-lg" 
-                    : "btn-primary p-2 md:p-3 w-10 h-10 md:w-12 md:h-12 rounded-lg"
-                  }
+                  className={`p-2 md:p-3 w-10 h-10 md:w-12 md:h-12 ${
+                    totalTokens < 1000 
+                      ? "bg-green-600 hover:bg-green-700" 
+                      : ""
+                  }`}
+                  variant={totalTokens < 1000 ? "default" : "default"}
                 >
                   {totalTokens < 1000 ? <CreditCard className="w-4 h-4" /> : <Send className="w-4 h-4" />}
                 </Button>
               </div>
 
               {/* Tokens Display com Barra de Progresso */}
-              <div className="mt-2 p-3 bg-slate-700 rounded-lg space-y-2">
+              <div className="mt-2 p-3 bg-muted rounded-lg space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <CreditCard className="w-4 h-4 text-primary" />
@@ -1296,7 +1298,7 @@ export default function Dashboard() {
                     <span>Tokens Disponíveis</span>
                     <span>{totalTokens.toLocaleString()}</span>
                   </div>
-                  <div className="w-full bg-slate-600 rounded-full h-2">
+                  <div className="w-full bg-muted-foreground/20 rounded-full h-2">
                     <div 
                       className={`h-2 rounded-full transition-all duration-300 ${
                         totalTokens > 50000 ? 'bg-green-500' : 
