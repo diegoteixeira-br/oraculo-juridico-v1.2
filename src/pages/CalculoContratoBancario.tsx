@@ -5,11 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Calculator, DollarSign } from "lucide-react";
+import { ArrowLeft, Calculator, DollarSign, Building, TrendingUp, FileText, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { Badge } from "@/components/ui/badge";
+import UserMenu from "@/components/UserMenu";
+import { useScrollDirection } from "@/hooks/useScrollDirection";
 
 interface CalculoResult {
   valorTotal: number;
@@ -21,9 +24,10 @@ interface CalculoResult {
 
 const CalculoContratoBancario = () => {
   const navigate = useNavigate();
-  const { useTokens } = useAuth();
+  const { useTokens, profile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<CalculoResult | null>(null);
+  const { visible: menuVisible } = useScrollDirection();
   
   const [formData, setFormData] = useState({
     valorContrato: '',
@@ -73,197 +77,356 @@ const CalculoContratoBancario = () => {
     }
   };
 
+  const totalTokens = (profile?.daily_tokens || 0) + (profile?.plan_tokens || 0);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 px-4 py-6">
-      <div className="container mx-auto max-w-4xl">
-        <div className="mb-4">
-          <Button
-            variant="outline"
-            onClick={() => navigate(-1)}
-            className="mb-4 h-9"
-            size="sm"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Voltar
-          </Button>
-          
-          <div className="flex items-center gap-3 mb-2">
-            <Calculator className="h-6 w-6 text-primary" />
-            <h1 className="text-lg md:text-2xl font-bold">Cálculo de Contrato Bancário</h1>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Calcule juros, correção monetária e diferenças em contratos bancários
-          </p>
-        </div>
-
-        <Card className="w-full border-0 shadow-lg">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-lg">Dados do Contrato</CardTitle>
-            <CardDescription className="text-sm">
-              Informe os dados básicos do contrato bancário
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="valorContrato" className="text-sm">Valor do Contrato *</Label>
-                <Input
-                  id="valorContrato"
-                  type="number"
-                  step="0.01"
-                  placeholder="10000.00"
-                  value={formData.valorContrato}
-                  onChange={(e) => handleInputChange('valorContrato', e.target.value)}
-                  className="h-10"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="valorPago" className="text-sm">Valor Pago</Label>
-                <Input
-                  id="valorPago"
-                  type="number"
-                  step="0.01"
-                  placeholder="5000.00"
-                  value={formData.valorPago}
-                  onChange={(e) => handleInputChange('valorPago', e.target.value)}
-                  className="h-10"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="dataContrato" className="text-sm">Data do Contrato *</Label>
-                <Input
-                  id="dataContrato"
-                  type="date"
-                  value={formData.dataContrato}
-                  onChange={(e) => handleInputChange('dataContrato', e.target.value)}
-                  className="h-10"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="dataVencimento" className="text-sm">Data de Vencimento *</Label>
-                <Input
-                  id="dataVencimento"
-                  type="date"
-                  value={formData.dataVencimento}
-                  onChange={(e) => handleInputChange('dataVencimento', e.target.value)}
-                  className="h-10"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="taxaJuros" className="text-sm">Taxa de Juros (% a.m.) *</Label>
-                <Input
-                  id="taxaJuros"
-                  type="number"
-                  step="0.01"
-                  placeholder="2.5"
-                  value={formData.taxaJuros}
-                  onChange={(e) => handleInputChange('taxaJuros', e.target.value)}
-                  className="h-10"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="tipoJuros" className="text-sm">Tipo de Juros</Label>
-                <Select value={formData.tipoJuros} onValueChange={(value) => handleInputChange('tipoJuros', value)}>
-                  <SelectTrigger className="h-10">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="simples">Juros Simples</SelectItem>
-                    <SelectItem value="compostos">Juros Compostos</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="indiceCorrecao" className="text-sm">Índice de Correção</Label>
-              <Select value={formData.indiceCorrecao} onValueChange={(value) => handleInputChange('indiceCorrecao', value)}>
-                <SelectTrigger className="h-10">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ipca">IPCA</SelectItem>
-                  <SelectItem value="igpm">IGP-M</SelectItem>
-                  <SelectItem value="inpc">INPC</SelectItem>
-                  <SelectItem value="selic">SELIC</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="observacoes" className="text-sm">Observações</Label>
-              <Textarea
-                id="observacoes"
-                placeholder="Informações adicionais sobre o contrato..."
-                value={formData.observacoes}
-                onChange={(e) => handleInputChange('observacoes', e.target.value)}
-                className="min-h-[80px]"
+    <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col overflow-hidden">
+      {/* Header fixo */}
+      <div className="flex-shrink-0 bg-slate-800/50 border-b border-slate-700 backdrop-blur-sm">
+        <div className="container max-w-6xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate('/dashboard')}
+                className="text-white hover:bg-slate-700"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <img 
+                src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
+                alt="Oráculo Jurídico" 
+                className="h-8 w-auto"
               />
+              <div>
+                <h1 className="text-xl font-bold text-white flex items-center gap-2">
+                  <Building className="h-5 w-5 text-primary" />
+                  Cálculo de Contrato Bancário
+                </h1>
+                <p className="text-xs text-slate-300 hidden md:block">
+                  Análise de juros, taxas e correção monetária
+                </p>
+              </div>
             </div>
 
-            <Button 
-              onClick={handleCalcular} 
-              disabled={loading}
-              className="w-full h-10"
-            >
-              {loading ? "Calculando..." : "Calcular"}
-              <DollarSign className="h-4 w-4 ml-2" />
-            </Button>
-          </CardContent>
-        </Card>
+            <div className="flex items-center gap-3">
+              {/* Contador de tokens */}
+              <div className="hidden md:flex items-center gap-2 bg-slate-700/50 rounded-lg px-3 py-2">
+                <Zap className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium text-white">
+                  {Math.floor(totalTokens).toLocaleString()}
+                </span>
+                <span className="text-xs text-slate-300">tokens</span>
+              </div>
+              
+              <UserMenu />
+            </div>
+          </div>
+        </div>
+      </div>
 
-        {result && (
-          <Card className="mt-4 border-0 shadow-lg">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg">Resultado do Cálculo</CardTitle>
-              <CardDescription className="text-sm">
-                Valores calculados conforme os dados informados
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-3 bg-secondary/50 rounded-lg">
-                    <p className="text-xs text-muted-foreground">Valor Total Devido</p>
-                    <p className="text-lg md:text-xl font-bold text-primary">
-                      R$ {result.valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                    </p>
+      {/* Conteúdo principal com scroll interno */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="container max-w-6xl mx-auto px-4 py-6 space-y-6">
+          
+          {/* Card de informações sobre o cálculo */}
+          <Card className="bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border-blue-500/30">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-blue-600/20 rounded-xl">
+                    <Calculator className="w-8 h-8 text-blue-400" />
                   </div>
-                  <div className="p-3 bg-secondary/50 rounded-lg">
-                    <p className="text-xs text-muted-foreground">Juros Total</p>
-                    <p className="text-lg md:text-xl font-bold text-orange-600">
-                      R$ {result.jurosTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  <div>
+                    <h3 className="text-xl font-bold text-white">Calculadora Bancária</h3>
+                    <p className="text-sm text-slate-300">
+                      Análise completa de contratos financeiros
                     </p>
                   </div>
                 </div>
+                <Badge className="bg-blue-600 text-white">
+                  15.000 tokens
+                </Badge>
+              </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-3 bg-secondary/50 rounded-lg">
-                    <p className="text-xs text-muted-foreground">Valor Corrigido</p>
-                    <p className="text-base md:text-lg font-semibold">
-                      R$ {result.valorCorrigido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                    </p>
-                  </div>
-                  <div className="p-3 bg-secondary/50 rounded-lg">
-                    <p className="text-xs text-muted-foreground">Diferença</p>
-                    <p className="text-base md:text-lg font-semibold text-red-600">
-                      R$ {result.diferenca.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                    </p>
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="text-center p-3 bg-white/5 rounded-lg">
+                  <div className="text-lg font-bold text-blue-400">Juros</div>
+                  <div className="text-xs text-slate-400">Simples/Compostos</div>
                 </div>
-
-              <div className="p-3 bg-secondary/20 rounded-lg">
-                <h4 className="text-sm font-semibold mb-2">Detalhamento do Cálculo</h4>
-                <pre className="text-xs whitespace-pre-wrap overflow-x-auto">{result.detalhamento}</pre>
+                <div className="text-center p-3 bg-white/5 rounded-lg">
+                  <div className="text-lg font-bold text-green-400">Correção</div>
+                  <div className="text-xs text-slate-400">IPCA/IGP-M/SELIC</div>
+                </div>
+                <div className="text-center p-3 bg-white/5 rounded-lg">
+                  <div className="text-lg font-bold text-orange-400">Análise</div>
+                  <div className="text-xs text-slate-400">Cláusulas Abusivas</div>
+                </div>
+                <div className="text-center p-3 bg-white/5 rounded-lg">
+                  <div className="text-lg font-bold text-purple-400">Relatório</div>
+                  <div className="text-xs text-slate-400">Completo</div>
+                </div>
               </div>
             </CardContent>
           </Card>
-        )}
+
+          {/* Grid principal - Formulário e Resultado */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            
+            {/* Formulário */}
+            <Card className="bg-slate-800/50 border-slate-700">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <FileText className="w-5 h-5 text-primary" />
+                  Dados do Contrato
+                </CardTitle>
+                <CardDescription>
+                  Informe os dados básicos do contrato bancário
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="valorContrato" className="text-sm text-slate-300">Valor do Contrato *</Label>
+                    <Input
+                      id="valorContrato"
+                      type="number"
+                      step="0.01"
+                      placeholder="10000.00"
+                      value={formData.valorContrato}
+                      onChange={(e) => handleInputChange('valorContrato', e.target.value)}
+                      className="bg-slate-700 border-slate-600 focus:border-primary text-white"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="valorPago" className="text-sm text-slate-300">Valor Pago</Label>
+                    <Input
+                      id="valorPago"
+                      type="number"
+                      step="0.01"
+                      placeholder="5000.00"
+                      value={formData.valorPago}
+                      onChange={(e) => handleInputChange('valorPago', e.target.value)}
+                      className="bg-slate-700 border-slate-600 focus:border-primary text-white"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="dataContrato" className="text-sm text-slate-300">Data do Contrato *</Label>
+                    <Input
+                      id="dataContrato"
+                      type="date"
+                      value={formData.dataContrato}
+                      onChange={(e) => handleInputChange('dataContrato', e.target.value)}
+                      className="bg-slate-700 border-slate-600 focus:border-primary text-white"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="dataVencimento" className="text-sm text-slate-300">Data de Vencimento *</Label>
+                    <Input
+                      id="dataVencimento"
+                      type="date"
+                      value={formData.dataVencimento}
+                      onChange={(e) => handleInputChange('dataVencimento', e.target.value)}
+                      className="bg-slate-700 border-slate-600 focus:border-primary text-white"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="taxaJuros" className="text-sm text-slate-300">Taxa de Juros (% a.m.) *</Label>
+                    <Input
+                      id="taxaJuros"
+                      type="number"
+                      step="0.01"
+                      placeholder="2.5"
+                      value={formData.taxaJuros}
+                      onChange={(e) => handleInputChange('taxaJuros', e.target.value)}
+                      className="bg-slate-700 border-slate-600 focus:border-primary text-white"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="tipoJuros" className="text-sm text-slate-300">Tipo de Juros</Label>
+                    <Select value={formData.tipoJuros} onValueChange={(value) => handleInputChange('tipoJuros', value)}>
+                      <SelectTrigger className="bg-slate-700 border-slate-600 focus:border-primary text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="simples">Juros Simples</SelectItem>
+                        <SelectItem value="compostos">Juros Compostos</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="indiceCorrecao" className="text-sm text-slate-300">Índice de Correção</Label>
+                  <Select value={formData.indiceCorrecao} onValueChange={(value) => handleInputChange('indiceCorrecao', value)}>
+                    <SelectTrigger className="bg-slate-700 border-slate-600 focus:border-primary text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ipca">IPCA</SelectItem>
+                      <SelectItem value="igpm">IGP-M</SelectItem>
+                      <SelectItem value="inpc">INPC</SelectItem>
+                      <SelectItem value="selic">SELIC</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="observacoes" className="text-sm text-slate-300">Observações</Label>
+                  <Textarea
+                    id="observacoes"
+                    placeholder="Informações adicionais sobre o contrato..."
+                    value={formData.observacoes}
+                    onChange={(e) => handleInputChange('observacoes', e.target.value)}
+                    className="min-h-[80px] bg-slate-700 border-slate-600 focus:border-primary text-white"
+                  />
+                </div>
+
+                <Button 
+                  onClick={handleCalcular} 
+                  disabled={loading}
+                  className="w-full bg-primary hover:bg-primary/90 py-3 text-lg font-semibold"
+                  size="lg"
+                >
+                  {loading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Calculando...
+                    </div>
+                  ) : (
+                    <>
+                      <Calculator className="h-5 w-5 mr-2" />
+                      Calcular (15.000 tokens)
+                    </>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Resultado */}
+            {result ? (
+              <Card className="bg-slate-800/50 border-slate-700">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-white">
+                    <TrendingUp className="w-5 h-5 text-green-400" />
+                    Resultado do Cálculo
+                  </CardTitle>
+                  <CardDescription>
+                    Valores calculados conforme os dados informados
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Cards de resultados principais */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-4 bg-gradient-to-br from-green-600/20 to-green-600/10 border border-green-500/30 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xs text-green-300 font-medium">Valor Total Devido</p>
+                          <p className="text-2xl font-bold text-green-400">
+                            R$ {result.valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          </p>
+                        </div>
+                        <DollarSign className="w-8 h-8 text-green-400" />
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-gradient-to-br from-orange-600/20 to-orange-600/10 border border-orange-500/30 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xs text-orange-300 font-medium">Juros Total</p>
+                          <p className="text-2xl font-bold text-orange-400">
+                            R$ {result.jurosTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          </p>
+                        </div>
+                        <TrendingUp className="w-8 h-8 text-orange-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-3 bg-slate-700/30 rounded-lg border border-slate-600">
+                      <p className="text-xs text-slate-400">Valor Corrigido</p>
+                      <p className="text-lg font-semibold text-blue-400">
+                        R$ {result.valorCorrigido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-slate-700/30 rounded-lg border border-slate-600">
+                      <p className="text-xs text-slate-400">Diferença</p>
+                      <p className="text-lg font-semibold text-red-400">
+                        R$ {result.diferenca.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Detalhamento */}
+                  <div className="bg-slate-900/50 rounded-lg border border-slate-600 p-4">
+                    <h4 className="text-sm font-semibold mb-3 text-white flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-primary" />
+                      Detalhamento do Cálculo
+                    </h4>
+                    <div className="max-h-64 overflow-y-auto">
+                      <pre className="text-xs whitespace-pre-wrap text-slate-300 leading-relaxed">
+                        {result.detalhamento}
+                      </pre>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="bg-slate-800/50 border-slate-700">
+                <CardContent className="p-8 text-center">
+                  <Calculator className="w-16 h-16 text-slate-500 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-white mb-2">
+                    Aguardando Dados
+                  </h3>
+                  <p className="text-sm text-slate-400 max-w-md mx-auto">
+                    Preencha os dados do contrato ao lado para realizar o cálculo 
+                    de juros, correção monetária e análise de cláusulas.
+                  </p>
+                  
+                  <div className="mt-6 space-y-2">
+                    <div className="flex items-center justify-center gap-2 text-xs text-slate-500">
+                      <span>✓ Juros simples e compostos</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-2 text-xs text-slate-500">
+                      <span>✓ Correção por IPCA, IGP-M, SELIC</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-2 text-xs text-slate-500">
+                      <span>✓ Relatório detalhado</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+
+          {/* Informações importantes */}
+          <Card className="bg-amber-900/20 border-amber-500/30">
+            <CardContent className="p-4">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-amber-500/20 rounded-lg flex-shrink-0">
+                  <FileText className="w-5 h-5 text-amber-400" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-amber-200 mb-2">Informações Importantes</h4>
+                  <div className="space-y-1 text-sm text-amber-300/80">
+                    <p>• Este cálculo é uma ferramenta auxiliar baseada em parâmetros legais</p>
+                    <p>• Para casos complexos, consulte sempre um advogado especializado</p>
+                    <p>• Os índices de correção são atualizados conforme fontes oficiais</p>
+                    <p>• O relatório pode ser usado como base para análise jurídica</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
