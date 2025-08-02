@@ -40,7 +40,7 @@ const AgendaWidget = () => {
     
     try {
       const now = new Date();
-      const nextWeek = addDays(now, 7); // Próximos 7 dias
+      const nextWeek = addDays(now, 30); // Próximos 30 dias para garantir que apareça
 
       const { data, error } = await supabase
         .from('legal_commitments' as any)
@@ -50,10 +50,13 @@ const AgendaWidget = () => {
         .gte('commitment_date', now.toISOString())
         .lte('commitment_date', nextWeek.toISOString())
         .order('commitment_date', { ascending: true })
-        .limit(5);
+        .limit(10);
 
       if (error) throw error;
       setWeekCommitments((data as unknown as LegalCommitment[]) || []);
+      
+      console.log('Compromissos carregados:', data?.length || 0);
+      console.log('Período:', now.toISOString(), 'até', nextWeek.toISOString());
     } catch (error) {
       console.error('Erro ao carregar compromissos da semana:', error);
     } finally {
@@ -88,19 +91,20 @@ const AgendaWidget = () => {
 
   // Componente de header com botão de refresh
   const AgendaHeader = () => (
-    <div className="flex items-center justify-between mb-4">
+    <div className="flex items-center justify-between mb-3">
       <div className="flex items-center gap-2">
-        <Calendar className="w-5 h-5 text-blue-400" />
-        <h4 className="font-semibold text-blue-200">Próximos 7 Dias</h4>
+        <Calendar className="w-4 h-4 text-blue-400" />
+        <h4 className="font-medium text-sm text-blue-200">Próximos 30 Dias</h4>
       </div>
       <Button
         variant="ghost"
         size="sm"
         onClick={handleRefresh}
         disabled={refreshing}
-        className="h-6 w-6 p-0 text-blue-400 hover:text-blue-300 hover:bg-blue-600/10"
+        className="h-7 w-7 p-0 text-blue-400 hover:text-blue-300 hover:bg-blue-600/10"
+        title="Atualizar compromissos"
       >
-        <RefreshCw className={`w-3 h-3 ${refreshing ? 'animate-spin' : ''}`} />
+        <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
       </Button>
     </div>
   );
@@ -131,7 +135,7 @@ const AgendaWidget = () => {
         <div className="text-center py-6">
           <Calendar className="w-12 h-12 text-blue-400/50 mx-auto mb-3" />
           <p className="text-sm text-blue-300/80">
-            Nenhum compromisso nos próximos 7 dias
+            Nenhum compromisso nos próximos 30 dias
           </p>
           <p className="text-xs text-blue-300/60 mt-1">
             Sua agenda está livre!
@@ -190,10 +194,10 @@ const AgendaWidget = () => {
         </div>
       ))}
       
-      {weekCommitments.length === 5 && (
+      {weekCommitments.length === 10 && (
         <div className="text-center pt-2">
           <p className="text-xs text-blue-300/60">
-            Mostrando os próximos 5 compromissos
+            Mostrando os próximos 10 compromissos
           </p>
         </div>
       )}

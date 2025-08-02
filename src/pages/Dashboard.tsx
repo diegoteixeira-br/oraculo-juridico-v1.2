@@ -286,11 +286,13 @@ export default function Dashboard() {
               {/* Agenda da Semana */}
               <Card className="bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border-blue-500/30">
                 <CardHeader className="pb-4">
-                  <CardTitle className="text-lg text-blue-200">Seus Próximos Compromissos</CardTitle>
-                  <CardDescription className="text-blue-200/80">
-                    Prazos processuais e compromissos da semana
-                  </CardDescription>
-                  <div className="flex justify-end pt-2">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-lg text-blue-200">Seus Próximos Compromissos</CardTitle>
+                      <CardDescription className="text-blue-200/80">
+                        Prazos processuais e compromissos jurídicos
+                      </CardDescription>
+                    </div>
                     <Button 
                       onClick={() => navigate("/agenda-juridica")}
                       variant="outline"
