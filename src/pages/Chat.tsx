@@ -56,6 +56,17 @@ export default function Chat() {
   const currentSession = sessions.find(s => s.id === currentSessionId);
   const messages = currentSession?.messages || [];
 
+  // Verificar se veio do Dashboard para mostrar histórico no mobile
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const showHistory = urlParams.get('show-history');
+    
+    if (showHistory === 'true' && isMobile) {
+      setSidebarOpen(true);
+      // Limpar o parâmetro da URL
+      window.history.replaceState({}, '', '/chat');
+    }
+  }, [isMobile]);
   // Scroll automático para a última mensagem
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
