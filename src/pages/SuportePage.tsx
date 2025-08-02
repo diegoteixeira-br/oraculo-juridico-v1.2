@@ -14,7 +14,7 @@ const SuportePage = () => {
   
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const whatsappNumber = "5511999999999"; // Substitua pelo número real do WhatsApp
+  const whatsappNumber = "5511987654321"; // Substitua pelo número real do WhatsApp
   
   const supportCategories = [
     {
