@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Send, Paperclip, Trash2, MessageSquare, Plus, X, Download, Volume2, VolumeX, Menu, ArrowLeft } from "lucide-react";
+import { AudioPlayer } from '@/components/AudioPlayer';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,6 +21,7 @@ interface Message {
   timestamp: Date;
   attachedFiles?: AttachedFile[];
   tokensConsumed?: number;
+  audioUrl?: string;
 }
 
 interface AttachedFile {
@@ -127,7 +129,7 @@ export default function Chat() {
             type: 'user',
             content: query.prompt_text,
             timestamp: new Date(query.created_at),
-            attachedFiles: query.attached_files || undefined
+            attachedFiles: Array.isArray(query.attached_files) ? (query.attached_files as unknown as AttachedFile[]) : []
           });
 
           // Adicionar resposta da IA se existir
@@ -398,34 +400,32 @@ export default function Chat() {
 
       if (error) throw error;
 
-      // Converter base64 para blob e reproduzir
+      // Converter base64 para blob e criar URL
       const audioBlob = new Blob([
         Uint8Array.from(atob(data.audioContent), c => c.charCodeAt(0))
       ], { type: 'audio/mpeg' });
       
       const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
       
-      setCurrentAudio(audio);
-      
-      audio.onended = () => {
-        setIsPlayingAudio(false);
-        setCurrentAudio(null);
-        URL.revokeObjectURL(audioUrl);
-      };
-      
-      audio.onerror = () => {
-        setIsPlayingAudio(false);
-        setCurrentAudio(null);
-        URL.revokeObjectURL(audioUrl);
-        toast({
-          title: "Erro no áudio",
-          description: "Não foi possível reproduzir o áudio.",
-          variant: "destructive"
+      // Adicionar o áudio à última mensagem do assistente na sessão atual
+      if (currentSession && messages.length > 0 && messages[messages.length - 1].type === 'assistant') {
+        setSessions(prev => {
+          const updatedSessions = [...prev];
+          const sessionIndex = updatedSessions.findIndex(s => s.id === currentSessionId);
+          if (sessionIndex >= 0) {
+            const updatedMessages = [...updatedSessions[sessionIndex].messages];
+            const lastMessageIndex = updatedMessages.length - 1;
+            if (lastMessageIndex >= 0 && updatedMessages[lastMessageIndex].type === 'assistant') {
+              updatedMessages[lastMessageIndex] = {
+                ...updatedMessages[lastMessageIndex],
+                audioUrl: audioUrl
+              };
+              updatedSessions[sessionIndex].messages = updatedMessages;
+            }
+          }
+          return updatedSessions;
         });
-      };
-      
-      await audio.play();
+      }
       
       toast({
         title: "Áudio gerado!",
@@ -698,6 +698,13 @@ export default function Chat() {
                             <p className="whitespace-pre-wrap break-words">{msg.content}</p>
                           )}
                         </div>
+
+                        {/* Player de áudio se houver audioUrl */}
+                        {msg.audioUrl && (
+                          <div className="mt-3">
+                            <AudioPlayer audioSrc={msg.audioUrl} />
+                          </div>
+                        )}
 
                         {/* Footer da mensagem */}
                         <div className="flex items-center justify-between mt-3 pt-2 border-t border-current/20">

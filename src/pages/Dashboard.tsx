@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import UserMenu from "@/components/UserMenu";
 import DocumentViewer from "@/components/DocumentViewer";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
-import AgendaWidget from "@/components/AgendaWidget";
+import CalendarAgendaWidget from "@/components/CalendarAgendaWidget";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function Dashboard() {
@@ -283,30 +283,8 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
 
-              {/* Agenda da Semana */}
-              <Card className="bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border-blue-500/30">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="text-lg text-blue-200">Seus Próximos Compromissos</CardTitle>
-                      <CardDescription className="text-blue-200/80">
-                        Prazos processuais e compromissos jurídicos
-                      </CardDescription>
-                    </div>
-                    <Button 
-                      onClick={() => navigate("/agenda-juridica")}
-                      variant="outline"
-                      size="sm"
-                      className="border-blue-500/30 text-blue-300 hover:bg-blue-600/10"
-                    >
-                      Ver Agenda Completa
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <AgendaWidget />
-                </CardContent>
-              </Card>
+              {/* Agenda com Calendário */}
+              <CalendarAgendaWidget />
 
               {/* Calculadoras Jurídicas */}
               <Card className="bg-slate-800/50 border-slate-700">

@@ -296,7 +296,7 @@ export default function MinhaContaPage() {
                 </div>
                 <div className="text-center p-3 bg-white/5 rounded-lg">
                   <div className="text-lg font-bold text-purple-400">
-                    {profile?.created_at ? new Date(profile.created_at).toLocaleDateString('pt-BR') : 'N/A'}
+                    {user?.created_at ? new Date(user.created_at).toLocaleDateString('pt-BR') : 'N/A'}
                   </div>
                   <div className="text-xs text-slate-400">Membro desde</div>
                 </div>
