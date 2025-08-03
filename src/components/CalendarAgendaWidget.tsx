@@ -167,7 +167,7 @@ const CalendarAgendaWidget = () => {
             <Badge className="bg-blue-600 text-white">
               {commitments.length} este mês
             </Badge>
-            <Button onClick={() => navigate('/agenda-juridica')} size="sm" className="text-white bg-stone-900 hover:bg-stone-800">
+            <Button onClick={() => navigate('/agenda-juridica')} size="sm" className="text-white bg-zinc-950 hover:bg-zinc-800">
               <Plus className="w-4 h-4 mr-1" />
               Novo
             </Button>
