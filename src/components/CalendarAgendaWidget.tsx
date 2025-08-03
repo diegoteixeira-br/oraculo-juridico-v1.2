@@ -215,22 +215,7 @@ const CalendarAgendaWidget = () => {
   return (
     <Card className="bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border-blue-500/30">
       <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg text-blue-200">Seus Próximos Compromissos</CardTitle>
-          <div className="flex items-center gap-2">
-            <Badge className="bg-blue-600 text-white">
-              {commitments.length} este mês
-            </Badge>
-            <Button
-              onClick={() => navigate('/agenda-juridica')}
-              size="sm"
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              Novo
-            </Button>
-          </div>
-        </div>
+        <CardTitle className="text-lg text-blue-200">Seus Próximos Compromissos</CardTitle>
       </CardHeader>
       <CardContent className="p-6">
         <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-3'}`}>
