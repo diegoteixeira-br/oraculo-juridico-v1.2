@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { Calendar as CalendarIcon, Clock, MapPin, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import { Calendar as CalendarIcon, Clock, MapPin, ChevronLeft, ChevronRight, RefreshCw, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { format, parseISO, startOfMonth, endOfMonth, isSameDay, addMonths, subMonths, getDate, getDaysInMonth, startOfWeek, endOfWeek, addDays } from "date-fns";
@@ -25,6 +26,7 @@ interface LegalCommitment {
 const CalendarAgendaWidget = () => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
   const [commitments, setCommitments] = useState<LegalCommitment[]>([]);
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -215,9 +217,19 @@ const CalendarAgendaWidget = () => {
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg text-blue-200">Seus Próximos Compromissos</CardTitle>
-          <Badge className="bg-blue-600 text-white">
-            {commitments.length} este mês
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge className="bg-blue-600 text-white">
+              {commitments.length} este mês
+            </Badge>
+            <Button
+              onClick={() => navigate('/agenda-juridica')}
+              size="sm"
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              Novo
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="p-6">
