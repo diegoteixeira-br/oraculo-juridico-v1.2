@@ -169,7 +169,7 @@ const CalendarAgendaWidget = () => {
             </Badge>
             <Button onClick={() => navigate('/agenda-juridica')} size="sm" className="text-white bg-stone-900 hover:bg-stone-800">
               <Plus className="w-4 h-4 mr-1" />
-              Novo
+              Ver Agenda Completa
             </Button>
           </div>
         </div>
