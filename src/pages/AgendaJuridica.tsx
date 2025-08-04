@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Calendar, ChevronLeft, Clock, MapPin, Plus, Search, Filter, AlertCircle, FileText, Users, Calendar as CalendarIcon, Zap, Target, CheckCircle } from "lucide-react";
+import { Calendar, ChevronLeft, Clock, MapPin, Plus, Search, Filter, AlertCircle, FileText, Users, Calendar as CalendarIcon, Zap, Target, CheckCircle, Edit, Trash2, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import CalendarView from "@/components/CalendarView";
 import { format, parseISO, startOfMonth, endOfMonth, isSameDay, addMonths, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -58,6 +58,8 @@ const AgendaJuridica = () => {
   const [showExtractDialog, setShowExtractDialog] = useState(false);
   const [extractText, setExtractText] = useState("");
   const [isExtracting, setIsExtracting] = useState(false);
+  const [selectedCommitment, setSelectedCommitment] = useState<LegalCommitment | null>(null);
+  const [showEditDialog, setShowEditDialog] = useState(false);
 
   // Estados para formulário de novo compromisso
   const [newCommitment, setNewCommitment] = useState({
@@ -72,6 +74,33 @@ const AgendaJuridica = () => {
     process_number: "",
     client_name: "",
     priority: "normal" as const,
+  });
+
+  // Estados para editar compromisso
+  const [editCommitment, setEditCommitment] = useState<{
+    title: string;
+    description: string;
+    commitment_type: 'prazo_processual' | 'audiencia' | 'reuniao' | 'personalizado';
+    deadline_type: string;
+    commitment_date: string;
+    end_date: string;
+    location: string;
+    is_virtual: boolean;
+    process_number: string;
+    client_name: string;
+    priority: 'baixa' | 'normal' | 'alta' | 'urgente';
+  }>({
+    title: "",
+    description: "",
+    commitment_type: "prazo_processual",
+    deadline_type: "",
+    commitment_date: "",
+    end_date: "",
+    location: "",
+    is_virtual: false,
+    process_number: "",
+    client_name: "",
+    priority: "normal",
   });
 
   // Carregar compromissos
@@ -176,6 +205,114 @@ const AgendaJuridica = () => {
       toast({
         title: "Erro",
         description: "Não foi possível criar o compromisso.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Abrir modal de edição
+  const handleEditCommitment = (commitment: LegalCommitment) => {
+    setSelectedCommitment(commitment);
+    setEditCommitment({
+      title: commitment.title,
+      description: commitment.description || "",
+      commitment_type: commitment.commitment_type,
+      deadline_type: commitment.deadline_type || "",
+      commitment_date: commitment.commitment_date.slice(0, 16), // Format for datetime-local
+      end_date: commitment.end_date?.slice(0, 16) || "",
+      location: commitment.location || "",
+      is_virtual: commitment.is_virtual || false,
+      process_number: commitment.process_number || "",
+      client_name: commitment.client_name || "",
+      priority: commitment.priority,
+    });
+    setShowEditDialog(true);
+  };
+
+  // Salvar edição do compromisso
+  const handleSaveEdit = async () => {
+    if (!selectedCommitment || !editCommitment.title || !editCommitment.commitment_date) {
+      toast({
+        title: "Erro",
+        description: "Preencha os campos obrigatórios.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('legal_commitments' as any)
+        .update({
+          ...editCommitment,
+          end_date: editCommitment.end_date || null,
+        })
+        .eq('id', selectedCommitment.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Sucesso",
+        description: "Compromisso atualizado com sucesso!",
+      });
+
+      setShowEditDialog(false);
+      setSelectedCommitment(null);
+      loadCommitments();
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível atualizar o compromisso.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Cancelar compromisso
+  const handleCancelCommitment = async (commitment: LegalCommitment) => {
+    try {
+      const { error } = await supabase
+        .from('legal_commitments' as any)
+        .update({ status: 'cancelado' })
+        .eq('id', commitment.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Sucesso",
+        description: "Compromisso cancelado com sucesso!",
+      });
+
+      loadCommitments();
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível cancelar o compromisso.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Concluir compromisso
+  const handleCompleteCommitment = async (commitment: LegalCommitment) => {
+    try {
+      const { error } = await supabase
+        .from('legal_commitments' as any)
+        .update({ status: 'concluido' })
+        .eq('id', commitment.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Sucesso",
+        description: "Compromisso marcado como concluído!",
+      });
+
+      loadCommitments();
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível concluir o compromisso.",
         variant: "destructive",
       });
     }
@@ -596,6 +733,129 @@ const AgendaJuridica = () => {
                       </div>
                     </DialogContent>
                   </Dialog>
+
+                  {/* Dialog de Edição */}
+                  <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+                    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle>Editar Compromisso</DialogTitle>
+                        <DialogDescription>
+                          Faça as alterações necessárias no compromisso.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="grid gap-4 max-h-[60vh] overflow-y-auto">
+                        <div className="grid gap-2">
+                          <Label htmlFor="edit-title">Título *</Label>
+                          <Input
+                            id="edit-title"
+                            value={editCommitment.title}
+                            onChange={(e) => setEditCommitment({...editCommitment, title: e.target.value})}
+                            placeholder="Ex: Prazo para contestação - Processo 123456"
+                          />
+                        </div>
+
+                        <div className="grid gap-2">
+                          <Label htmlFor="edit-type">Tipo *</Label>
+                          <Select 
+                            value={editCommitment.commitment_type} 
+                            onValueChange={(value: any) => setEditCommitment({...editCommitment, commitment_type: value})}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {Object.entries(typeLabels).map(([value, label]) => (
+                                <SelectItem key={value} value={value}>{label}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="grid gap-2">
+                            <Label htmlFor="edit-date">Data/Hora *</Label>
+                            <Input
+                              id="edit-date"
+                              type="datetime-local"
+                              value={editCommitment.commitment_date}
+                              onChange={(e) => setEditCommitment({...editCommitment, commitment_date: e.target.value})}
+                            />
+                          </div>
+
+                          <div className="grid gap-2">
+                            <Label htmlFor="edit-priority">Prioridade</Label>
+                            <Select 
+                              value={editCommitment.priority} 
+                              onValueChange={(value: any) => setEditCommitment({...editCommitment, priority: value})}
+                            >
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {Object.entries(priorityLabels).map(([value, label]) => (
+                                  <SelectItem key={value} value={value}>{label}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="grid gap-2">
+                            <Label htmlFor="edit-process">Número do Processo</Label>
+                            <Input
+                              id="edit-process"
+                              value={editCommitment.process_number}
+                              onChange={(e) => setEditCommitment({...editCommitment, process_number: e.target.value})}
+                              placeholder="Ex: 0001234-56.2024.8.26.0001"
+                            />
+                          </div>
+
+                          <div className="grid gap-2">
+                            <Label htmlFor="edit-client">Cliente</Label>
+                            <Input
+                              id="edit-client"
+                              value={editCommitment.client_name}
+                              onChange={(e) => setEditCommitment({...editCommitment, client_name: e.target.value})}
+                              placeholder="Nome do cliente"
+                            />
+                          </div>
+                        </div>
+
+                        {(['audiencia', 'reuniao'].includes(editCommitment.commitment_type)) && (
+                          <div className="grid gap-2">
+                            <Label htmlFor="edit-location">Local</Label>
+                            <Input
+                              id="edit-location"
+                              value={editCommitment.location}
+                              onChange={(e) => setEditCommitment({...editCommitment, location: e.target.value})}
+                              placeholder="Ex: Fórum da Comarca de São Paulo"
+                            />
+                          </div>
+                        )}
+
+                        <div className="grid gap-2">
+                          <Label htmlFor="edit-description">Descrição</Label>
+                          <Textarea
+                            id="edit-description"
+                            value={editCommitment.description}
+                            onChange={(e) => setEditCommitment({...editCommitment, description: e.target.value})}
+                            placeholder="Detalhes adicionais sobre o compromisso"
+                            className="min-h-[80px]"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end gap-2 mt-4">
+                        <Button variant="outline" onClick={() => setShowEditDialog(false)}>
+                          Cancelar
+                        </Button>
+                        <Button onClick={handleSaveEdit}>
+                          Salvar Alterações
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
             </CardContent>
@@ -621,101 +881,14 @@ const AgendaJuridica = () => {
 
               <div className="flex-1 overflow-hidden mt-4">
                 <TabsContent value="calendar" className="h-full m-0">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-full">
-                    {/* Calendário */}
-                    <Card className="flex flex-col bg-slate-800/50 border-slate-700">
-                      <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="text-lg text-white">
-                            {format(currentMonth, 'MMMM yyyy', { locale: ptBR })}
-                          </CardTitle>
-                          <div className="flex gap-1">
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-8 w-8 border-slate-600 hover:bg-slate-700"
-                              onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-                            >
-                              <ChevronLeft className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-8 w-8 border-slate-600 hover:bg-slate-700"
-                              onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-                            >
-                              <ChevronLeft className="h-4 w-4 rotate-180" />
-                            </Button>
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="flex-1 overflow-hidden">
-                        <CalendarComponent
-                          mode="single"
-                          selected={selectedDate}
-                          onSelect={(date) => date && setSelectedDate(date)}
-                          month={currentMonth}
-                          onMonthChange={setCurrentMonth}
-                          className="rounded-md border-0 w-full"
-                          locale={ptBR}
-                        />
-                      </CardContent>
-                    </Card>
-
-                    {/* Compromissos do Dia */}
-                    <Card className="flex flex-col bg-slate-800/50 border-slate-700">
-                      <CardHeader className="pb-3">
-                        <CardTitle className="text-lg text-white">
-                          {format(selectedDate, 'dd/MM/yyyy', { locale: ptBR })}
-                        </CardTitle>
-                        <CardDescription>
-                          {getCommitmentsForDate(selectedDate).length} compromisso(s)
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="flex-1 overflow-y-auto">
-                        <div className="space-y-3">
-                          {getCommitmentsForDate(selectedDate).length === 0 ? (
-                            <div className="text-center py-8">
-                              <CalendarIcon className="w-12 h-12 text-slate-500 mx-auto mb-3" />
-                              <p className="text-sm text-slate-400">
-                                Nenhum compromisso para este dia.
-                              </p>
-                              <p className="text-xs text-slate-500 mt-1">
-                                Sua agenda está livre!
-                              </p>
-                            </div>
-                          ) : (
-                            getCommitmentsForDate(selectedDate).map((commitment) => (
-                              <div key={commitment.id} className="flex items-start space-x-3 p-3 rounded-lg border border-slate-600 bg-slate-700/30 hover:bg-slate-700/50 transition-colors">
-                                <div className={`w-3 h-3 rounded-full mt-1 flex-shrink-0 ${getCommitmentColor(commitment.commitment_type, commitment.priority)}`} />
-                                <div className="flex-1 min-w-0">
-                                  <h4 className="font-medium text-sm truncate text-white">{commitment.title}</h4>
-                                  <p className="text-xs text-slate-400 flex items-center gap-1 mt-1">
-                                    <Clock className="h-3 w-3 flex-shrink-0" />
-                                    {format(parseISO(commitment.commitment_date), 'HH:mm')} - {typeLabels[commitment.commitment_type]}
-                                  </p>
-                                  {commitment.location && (
-                                    <p className="text-xs text-slate-400 flex items-center gap-1 mt-1">
-                                      <MapPin className="h-3 w-3 flex-shrink-0" />
-                                      <span className="truncate">{commitment.location}</span>
-                                    </p>
-                                  )}
-                                  {commitment.process_number && (
-                                    <p className="text-xs text-slate-400 mt-1 truncate">
-                                      Processo: {commitment.process_number}
-                                    </p>
-                                  )}
-                                </div>
-                                <Badge variant={commitment.status === 'pendente' ? 'default' : 'secondary'} className="text-xs flex-shrink-0">
-                                  {statusLabels[commitment.status]}
-                                </Badge>
-                              </div>
-                            ))
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
+                  <Card className="h-full flex flex-col bg-slate-800/50 border-slate-700">
+                    <CardContent className="p-6 h-full">
+                      <CalendarView 
+                        filteredCommitments={filteredCommitments}
+                        onCommitmentSelect={handleEditCommitment}
+                      />
+                    </CardContent>
+                  </Card>
                 </TabsContent>
 
                 <TabsContent value="list" className="h-full m-0">
@@ -780,6 +953,9 @@ const AgendaJuridica = () => {
                                     <Badge variant={commitment.priority === 'urgente' ? 'destructive' : 'default'} className="text-xs">
                                       {priorityLabels[commitment.priority]}
                                     </Badge>
+                                    <Badge variant={commitment.status === 'pendente' ? 'default' : commitment.status === 'concluido' ? 'secondary' : 'destructive'} className="text-xs">
+                                      {statusLabels[commitment.status]}
+                                    </Badge>
                                   </div>
                                 </div>
                                 {commitment.description && (
@@ -797,6 +973,41 @@ const AgendaJuridica = () => {
                                       <MapPin className="h-3 w-3 flex-shrink-0" />
                                       {commitment.location}
                                     </span>
+                                  )}
+                                </div>
+                                
+                                {/* Ações do compromisso */}
+                                <div className="flex gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  {commitment.status === 'pendente' && (
+                                    <>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleEditCommitment(commitment)}
+                                        className="h-7 px-2 text-xs border-slate-600 hover:bg-slate-600"
+                                      >
+                                        <Edit className="w-3 h-3 mr-1" />
+                                        Editar
+                                      </Button>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleCompleteCommitment(commitment)}
+                                        className="h-7 px-2 text-xs border-green-600 text-green-400 hover:bg-green-600/10"
+                                      >
+                                        <Check className="w-3 h-3 mr-1" />
+                                        Concluir
+                                      </Button>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleCancelCommitment(commitment)}
+                                        className="h-7 px-2 text-xs border-red-600 text-red-400 hover:bg-red-600/10"
+                                      >
+                                        <X className="w-3 h-3 mr-1" />
+                                        Cancelar
+                                      </Button>
+                                    </>
                                   )}
                                 </div>
                               </div>

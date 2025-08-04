@@ -163,22 +163,16 @@ const CalendarAgendaWidget = () => {
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg text-blue-200">Seus Próximos Compromissos</CardTitle>
-          <div className="flex items-center gap-2">
-            <Badge className="bg-blue-600 text-white">
-              {commitments.length} este mês
-            </Badge>
-            <Button onClick={() => navigate('/agenda-juridica')} size="sm" className="text-white bg-stone-900 hover:bg-stone-800">
-              <Plus className="w-4 h-4 mr-1" />
-              Ver Agenda Completa
-            </Button>
-          </div>
+          <Button onClick={() => navigate('/agenda-juridica')} size="sm" className="text-white bg-black hover:bg-stone-800">
+            Ver Agenda Completa
+          </Button>
         </div>
       </CardHeader>
       <CardContent className="p-6">
-        <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-3'}`}>
+        <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
           
           {/* Calendário */}
-          <div className={isMobile ? 'order-2' : 'lg:col-span-2'}>
+          <div className={isMobile ? 'order-1' : ''}>
             <CalendarHeader />
             
             {/* Dias da semana */}
@@ -199,7 +193,7 @@ const CalendarAgendaWidget = () => {
           </div>
 
           {/* Lista de compromissos do dia selecionado */}
-          <div className={`space-y-3 ${isMobile ? 'order-1' : ''}`}>
+          <div className={`space-y-3 ${isMobile ? 'order-2' : ''}`}>
             <div className="flex items-center gap-2 mb-3">
               <h4 className="font-medium text-blue-200">
                 {format(selectedDate, 'dd/MM/yyyy', {
