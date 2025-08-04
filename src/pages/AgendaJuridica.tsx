@@ -953,84 +953,91 @@ const AgendaJuridica = () => {
                             )}
                           </div>
                         ) : (
-                          filteredCommitments.map((commitment) => (
-                            <div key={commitment.id} className="group flex items-start space-x-4 p-4 rounded-lg border border-slate-600 bg-slate-700/30 hover:border-slate-500/50 hover:bg-slate-700/50 transition-all">
-                              <div className={`w-4 h-4 rounded-full mt-1 flex-shrink-0 ${getCommitmentColor(commitment.commitment_type, commitment.priority)}`} />
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-start justify-between gap-2 mb-2">
-                                  <div className="min-w-0 flex-1">
-                                    <h4 className="font-medium text-sm text-white">{commitment.title}</h4>
-                                    <p className="text-xs text-slate-400 flex items-center gap-1 mt-1">
-                                      <Clock className="h-3 w-3 flex-shrink-0" />
-                                      {format(parseISO(commitment.commitment_date), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
-                                    </p>
-                                  </div>
-                                  <div className="flex flex-wrap gap-1 flex-shrink-0">
-                                    <Badge variant="outline" className="text-xs border-slate-500/30 text-slate-300">
-                                      {typeLabels[commitment.commitment_type]}
-                                    </Badge>
-                                    <Badge variant={commitment.priority === 'urgente' ? 'destructive' : 'default'} className="text-xs">
-                                      {priorityLabels[commitment.priority]}
-                                    </Badge>
-                                    <Badge variant={commitment.status === 'pendente' ? 'default' : commitment.status === 'concluido' ? 'secondary' : 'destructive'} className="text-xs">
-                                      {statusLabels[commitment.status]}
-                                    </Badge>
-                                  </div>
-                                </div>
-                                {commitment.description && (
-                                  <p className="text-xs text-slate-400 mt-2 line-clamp-2">{commitment.description}</p>
-                                )}
-                                <div className="flex flex-wrap gap-3 mt-2 text-xs text-slate-400">
-                                  {commitment.process_number && (
-                                    <span className="truncate">Processo: {commitment.process_number}</span>
-                                  )}
-                                  {commitment.client_name && (
-                                    <span className="truncate">Cliente: {commitment.client_name}</span>
-                                  )}
-                                  {commitment.location && (
-                                    <span className="flex items-center gap-1 truncate">
-                                      <MapPin className="h-3 w-3 flex-shrink-0" />
-                                      {commitment.location}
-                                    </span>
-                                  )}
-                                </div>
-                                
-                                {/* Ações do compromisso */}
-                                <div className="flex gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  {commitment.status === 'pendente' && (
-                                    <>
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => handleEditCommitment(commitment)}
-                                        className="h-7 px-2 text-xs border-slate-600 hover:bg-slate-600"
-                                      >
-                                        <Edit className="w-3 h-3 mr-1" />
-                                        Editar
-                                      </Button>
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => handleCompleteCommitment(commitment)}
-                                        className="h-7 px-2 text-xs border-green-600 text-green-400 hover:bg-green-600/10"
-                                      >
-                                        <Check className="w-3 h-3 mr-1" />
-                                        Concluir
-                                      </Button>
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => handleCancelCommitment(commitment)}
-                                        className="h-7 px-2 text-xs border-red-600 text-red-400 hover:bg-red-600/10"
-                                      >
-                                        <X className="w-3 h-3 mr-1" />
-                                        Cancelar
-                                      </Button>
-                                    </>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
+                           filteredCommitments.map((commitment) => (
+                             <div key={commitment.id} className="group p-3 md:p-4 rounded-lg border border-slate-600 bg-slate-700/30 hover:border-slate-500/50 hover:bg-slate-700/50 transition-all space-y-3">
+                               <div className="flex items-start gap-3">
+                                 <div className={`w-4 h-4 rounded-full mt-0.5 flex-shrink-0 ${getCommitmentColor(commitment.commitment_type, commitment.priority)}`} />
+                                 <div className="flex-1 min-w-0">
+                                   <h4 className="font-medium text-sm text-white leading-tight mb-1">{commitment.title}</h4>
+                                   <p className="text-xs text-slate-400 flex items-center gap-1">
+                                     <Clock className="h-3 w-3 flex-shrink-0" />
+                                     {format(parseISO(commitment.commitment_date), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                                   </p>
+                                 </div>
+                               </div>
+
+                               {/* Badges em linha separada para mobile */}
+                               <div className="flex flex-wrap gap-1">
+                                 <Badge variant="outline" className="text-xs border-slate-500/30 text-slate-300">
+                                   {typeLabels[commitment.commitment_type]}
+                                 </Badge>
+                                 <Badge variant={commitment.priority === 'urgente' ? 'destructive' : 'default'} className="text-xs">
+                                   {priorityLabels[commitment.priority]}
+                                 </Badge>
+                                 <Badge variant={commitment.status === 'pendente' ? 'default' : commitment.status === 'concluido' ? 'secondary' : 'destructive'} className="text-xs">
+                                   {statusLabels[commitment.status]}
+                                 </Badge>
+                               </div>
+
+                               {commitment.description && (
+                                 <p className="text-xs text-slate-400 line-clamp-2">{commitment.description}</p>
+                               )}
+
+                               {/* Informações adicionais */}
+                               {(commitment.process_number || commitment.client_name || commitment.location) && (
+                                 <div className="space-y-1 text-xs text-slate-400">
+                                   {commitment.process_number && (
+                                     <div className="truncate">
+                                       <span className="font-medium">Processo:</span> {commitment.process_number}
+                                     </div>
+                                   )}
+                                   {commitment.client_name && (
+                                     <div className="truncate">
+                                       <span className="font-medium">Cliente:</span> {commitment.client_name}
+                                     </div>
+                                   )}
+                                   {commitment.location && (
+                                     <div className="flex items-center gap-1 truncate">
+                                       <MapPin className="h-3 w-3 flex-shrink-0" />
+                                       {commitment.location}
+                                     </div>
+                                   )}
+                                 </div>
+                               )}
+                                 
+                               {/* Ações do compromisso - sempre visível no mobile para pendentes */}
+                               {commitment.status === 'pendente' && (
+                                  <div className={`flex flex-wrap gap-2 ${isMobile ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity`}>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => handleEditCommitment(commitment)}
+                                      className="h-8 px-3 text-xs border-slate-600 hover:bg-slate-600 flex-1 min-w-0"
+                                    >
+                                      <Edit className="w-3 h-3 mr-1 flex-shrink-0" />
+                                      <span className="truncate">Editar</span>
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => handleCompleteCommitment(commitment)}
+                                      className="h-8 px-3 text-xs border-green-600 text-green-400 hover:bg-green-600/10 flex-1 min-w-0"
+                                    >
+                                      <Check className="w-3 h-3 mr-1 flex-shrink-0" />
+                                      <span className="truncate">Concluir</span>
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => handleCancelCommitment(commitment)}
+                                      className="h-8 px-3 text-xs border-red-600 text-red-400 hover:bg-red-600/10 flex-1 min-w-0"
+                                    >
+                                      <X className="w-3 h-3 mr-1 flex-shrink-0" />
+                                      <span className="truncate">Cancelar</span>
+                                     </Button>
+                                   </div>
+                                 )}
+                               </div>
                           ))
                         )}
                       </div>
