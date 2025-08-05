@@ -67,18 +67,23 @@ export default function Chat() {
     const newChat = urlParams.get('new');
     
     if (newChat === 'true') {
-      // Criar nova conversa
-      const newSessionId = crypto.randomUUID();
-      const newSession: ChatSession = {
-        id: newSessionId,
-        title: "Nova Conversa",
-        lastMessage: "",
-        timestamp: new Date(),
-        messages: []
-      };
+      // Forçar criação de nova conversa e limpar sessão atual
+      setCurrentSessionId(null);
       
-      setSessions(prev => [newSession, ...prev]);
-      setCurrentSessionId(newSessionId);
+      // Criar nova conversa após um pequeno delay para garantir que o estado seja limpo
+      setTimeout(() => {
+        const newSessionId = crypto.randomUUID();
+        const newSession: ChatSession = {
+          id: newSessionId,
+          title: "Nova Conversa",
+          lastMessage: "",
+          timestamp: new Date(),
+          messages: []
+        };
+        
+        setSessions(prev => [newSession, ...prev]);
+        setCurrentSessionId(newSessionId);
+      }, 100);
       
       // Limpar o parâmetro da URL
       window.history.replaceState({}, '', '/chat');
@@ -167,8 +172,11 @@ export default function Chat() {
       
       setSessions(sessionsArray);
       
-      // Se não há sessão atual, selecionar a primeira
-      if (!currentSessionId && sessionsArray.length > 0) {
+      // Se não há sessão atual e há parâmetro 'new', não selecionar automaticamente a primeira
+      const urlParams = new URLSearchParams(window.location.search);
+      const newChat = urlParams.get('new');
+      
+      if (!currentSessionId && sessionsArray.length > 0 && newChat !== 'true') {
         setCurrentSessionId(sessionsArray[0].id);
       }
     } catch (error) {
