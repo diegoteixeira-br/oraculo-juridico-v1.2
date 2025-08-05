@@ -44,7 +44,7 @@ export default function UserMenu({ hideOptions = [] }: UserMenuProps) {
       key: "chat",
       label: "Iniciar Consulta",
       icon: MessageSquare,
-      onClick: () => navigate("/chat"),
+      onClick: () => navigate("/chat?new=true"),
       show: !hideOptions.includes("chat")
     },
     {

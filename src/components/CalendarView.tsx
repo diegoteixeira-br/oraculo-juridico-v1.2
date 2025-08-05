@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { format, parseISO, startOfMonth, endOfMonth, isSameDay, addMonths, subMonths, getDate, startOfWeek, endOfWeek, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface LegalCommitment {
   id: string;
@@ -28,6 +29,7 @@ interface CalendarViewProps {
 
 const CalendarView = ({ filteredCommitments, onCommitmentSelect, showActions = false }: CalendarViewProps) => {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const [commitments, setCommitments] = useState<LegalCommitment[]>([]);
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -210,9 +212,9 @@ const CalendarView = ({ filteredCommitments, onCommitmentSelect, showActions = f
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className={`${isMobile ? 'space-y-4' : 'grid grid-cols-2 gap-6'}`}>
       {/* Calendário */}
-      <div className="lg:col-span-2">
+      <div className={isMobile ? '' : 'space-y-4'}>
         <CalendarHeader />
         
         {/* Dias da semana */}
@@ -255,7 +257,7 @@ const CalendarView = ({ filteredCommitments, onCommitmentSelect, showActions = f
             </p>
           </div>
         ) : (
-          <div className="space-y-2 max-h-80 overflow-y-auto">
+          <div className={`space-y-2 ${isMobile ? 'max-h-60' : 'max-h-80'} overflow-y-auto`}>
             {selectedDateCommitments.map(commitment => (
               <div
                 key={commitment.id}
@@ -273,7 +275,7 @@ const CalendarView = ({ filteredCommitments, onCommitmentSelect, showActions = f
                       {format(parseISO(commitment.commitment_date), 'HH:mm', { locale: ptBR })}
                     </p>
                     
-                    <div className="flex gap-1 mt-2">
+                    <div className="flex gap-1 mt-2 flex-wrap">
                       <Badge variant="outline" className="text-xs border-blue-400/30 text-blue-300">
                         {typeLabels[commitment.commitment_type]}
                       </Badge>

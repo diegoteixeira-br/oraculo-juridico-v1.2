@@ -60,12 +60,29 @@ export default function Chat() {
   const currentSession = sessions.find(s => s.id === currentSessionId);
   const messages = currentSession?.messages || [];
 
-  // Verificar se veio do Dashboard para mostrar histórico no mobile
+  // Verificar se deve criar nova conversa ou mostrar histórico
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const showHistory = urlParams.get('show-history');
+    const newChat = urlParams.get('new');
     
-    if (showHistory === 'true' && isMobile) {
+    if (newChat === 'true') {
+      // Criar nova conversa
+      const newSessionId = crypto.randomUUID();
+      const newSession: ChatSession = {
+        id: newSessionId,
+        title: "Nova Conversa",
+        lastMessage: "",
+        timestamp: new Date(),
+        messages: []
+      };
+      
+      setSessions(prev => [newSession, ...prev]);
+      setCurrentSessionId(newSessionId);
+      
+      // Limpar o parâmetro da URL
+      window.history.replaceState({}, '', '/chat');
+    } else if (showHistory === 'true' && isMobile) {
       setSidebarOpen(true);
       // Limpar o parâmetro da URL
       window.history.replaceState({}, '', '/chat');

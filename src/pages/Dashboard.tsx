@@ -273,7 +273,7 @@ export default function Dashboard() {
                   </div>
 
                   <Button 
-                    onClick={() => navigate("/chat")}
+                    onClick={() => navigate("/chat?new=true")}
                     className="w-full bg-primary hover:bg-primary/90 py-3 text-lg font-semibold"
                     size="lg"
                   >

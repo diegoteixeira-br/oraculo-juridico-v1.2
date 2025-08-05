@@ -1060,37 +1060,42 @@ const AgendaJuridica = () => {
                     </CardHeader>
                     <CardContent className="flex-1 overflow-y-auto">
                       <div className="space-y-3">
-                        {filteredCommitments
-                          .filter(c => c.status === 'pendente')
-                          .sort((a, b) => new Date(a.commitment_date).getTime() - new Date(b.commitment_date).getTime())
-                          .slice(0, 10)
-                          .map((commitment, index) => (
-                            <div key={commitment.id} className="flex items-center space-x-4 p-3 rounded-lg border border-slate-600 bg-slate-700/30 hover:bg-slate-700/50 transition-colors">
-                              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-medium flex-shrink-0">
-                                {index + 1}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h4 className="font-medium text-sm truncate text-white">{commitment.title}</h4>
-                                <p className="text-xs text-slate-400 flex items-center gap-1 mt-1">
-                                  <Clock className="h-3 w-3 flex-shrink-0" />
-                                  {format(parseISO(commitment.commitment_date), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
-                                </p>
-                                {commitment.process_number && (
-                                  <p className="text-xs text-slate-500 mt-1 truncate">
-                                    Processo: {commitment.process_number}
-                                  </p>
-                                )}
-                              </div>
-                              <div className="flex gap-1 flex-shrink-0">
-                                <Badge variant="outline" className="text-xs border-slate-500/30 text-slate-300">
-                                  {typeLabels[commitment.commitment_type]}
-                                </Badge>
-                                <Badge variant={commitment.priority === 'urgente' ? 'destructive' : 'default'} className="text-xs">
-                                  {priorityLabels[commitment.priority]}
-                                </Badge>
-                              </div>
-                            </div>
-                          ))}
+                         {filteredCommitments
+                           .filter(c => c.status === 'pendente')
+                           .sort((a, b) => new Date(a.commitment_date).getTime() - new Date(b.commitment_date).getTime())
+                           .slice(0, 10)
+                           .map((commitment, index) => (
+                             <div key={commitment.id} className={`${isMobile ? 'flex flex-col space-y-3' : 'flex items-center space-x-4'} p-3 rounded-lg border border-slate-600 bg-slate-700/30 hover:bg-slate-700/50 transition-colors`}>
+                               {/* Número da ordem */}
+                               <div className={`flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-medium flex-shrink-0 ${isMobile ? 'self-start' : ''}`}>
+                                 {index + 1}
+                               </div>
+                               
+                               {/* Conteúdo principal */}
+                               <div className="flex-1 min-w-0 space-y-2">
+                                 <h4 className="font-medium text-sm text-white">{commitment.title}</h4>
+                                 <p className="text-xs text-slate-400 flex items-center gap-1">
+                                   <Clock className="h-3 w-3 flex-shrink-0" />
+                                   {format(parseISO(commitment.commitment_date), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                                 </p>
+                                 {commitment.process_number && (
+                                   <p className="text-xs text-slate-500">
+                                     Processo: {commitment.process_number}
+                                   </p>
+                                 )}
+                                 
+                                 {/* Badges - organizadas para mobile */}
+                                 <div className={`flex gap-1 ${isMobile ? 'flex-wrap' : 'flex-shrink-0'}`}>
+                                   <Badge variant="outline" className="text-xs border-slate-500/30 text-slate-300">
+                                     {typeLabels[commitment.commitment_type]}
+                                   </Badge>
+                                   <Badge variant={commitment.priority === 'urgente' ? 'destructive' : 'default'} className="text-xs">
+                                     {priorityLabels[commitment.priority]}
+                                   </Badge>
+                                 </div>
+                               </div>
+                             </div>
+                           ))}
                         
                         {filteredCommitments.filter(c => c.status === 'pendente').length === 0 && (
                           <div className="text-center py-12">
