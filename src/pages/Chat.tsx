@@ -488,6 +488,36 @@ export default function Chat() {
 
   return (
     <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex overflow-hidden relative">
+      {/* Menu fixo no topo para mobile */}
+      {isMobile && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-slate-800/95 backdrop-blur-sm border-b border-slate-700 p-3">
+          <div className="flex items-center justify-between">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSidebarOpen(true)}
+              className="text-white"
+            >
+              <Menu className="w-5 h-5" />
+            </Button>
+            
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+              title="Voltar ao Dashboard"
+            >
+              <img 
+                src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
+                alt="Oráculo Jurídico" 
+                className="h-6 w-auto"
+              />
+            </button>
+            
+            <UserMenu hideOptions={["chat"]} />
+          </div>
+        </div>
+      )}
+
       {/* Menu flutuante - apenas desktop */}
       {!isMobile && (
         <div className={`fixed top-0 right-0 z-50 p-4 transition-transform duration-300 ${
@@ -618,43 +648,25 @@ export default function Chat() {
       </div>
 
       {/* Área Principal do Chat */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Header do Chat */}
-        <div className="bg-slate-800/50 border-b border-slate-700 p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {isMobile && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setSidebarOpen(true)}
-                  className="text-white"
-                >
-                  <Menu className="w-5 h-5" />
-                </Button>
-              )}
-              
-              {/* Logo centralizada */}
-              <div className="flex-1 flex justify-center">
-                <button
-                  onClick={() => navigate('/dashboard')}
-                  className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-                  title="Voltar ao Dashboard"
-                >
-                  <img 
-                    src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
-                    alt="Oráculo Jurídico" 
-                    className="h-8 w-auto"
-                  />
-                </button>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              {isMobile && <UserMenu hideOptions={["chat"]} />}
+      <div className={`flex-1 flex flex-col min-w-0 ${isMobile ? 'pt-16' : ''}`}>
+        {/* Header do Chat - apenas desktop */}
+        {!isMobile && (
+          <div className="bg-slate-800/50 border-b border-slate-700 p-4">
+            <div className="flex items-center justify-center">
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                title="Voltar ao Dashboard"
+              >
+                <img 
+                  src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
+                  alt="Oráculo Jurídico" 
+                  className="h-8 w-auto"
+                />
+              </button>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Área de Mensagens */}
         <div className="flex-1 overflow-y-auto bg-slate-900/30">
@@ -662,15 +674,28 @@ export default function Chat() {
             <div className="flex-1 p-4">
               <div className="max-w-4xl mx-auto space-y-6">
                 {messages.length === 0 ? (
-                  <div className="text-center py-12">
-                    <MessageSquare className="w-16 h-16 text-slate-500 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-white mb-2">
+                  <div className={`text-center ${isMobile ? 'py-8 px-4' : 'py-12'}`}>
+                    <MessageSquare className={`${isMobile ? 'w-12 h-12' : 'w-16 h-16'} text-slate-500 mx-auto mb-4`} />
+                    <h3 className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold text-white mb-2`}>
                       Bem-vindo ao Oráculo Jurídico
                     </h3>
-                    <p className="text-slate-400 max-w-md mx-auto text-sm">
+                    <p className={`text-slate-400 mx-auto ${isMobile ? 'text-xs max-w-xs' : 'text-sm max-w-md'}`}>
                       Faça suas perguntas jurídicas e receba respostas fundamentadas 
                       na legislação brasileira. Você pode anexar documentos para análise.
                     </p>
+                    
+                    {/* Botão para iniciar consulta - mobile */}
+                    {isMobile && (
+                      <Button
+                        onClick={() => {
+                          document.querySelector('textarea')?.focus();
+                        }}
+                        className="mt-6 bg-primary hover:bg-primary/90 px-8 py-3"
+                      >
+                        <MessageSquare className="w-4 h-4 mr-2" />
+                        Iniciar Consulta
+                      </Button>
+                    )}
                   </div>
                 ) : (
                   messages.map((msg) => (
@@ -774,7 +799,7 @@ export default function Chat() {
         </div>
 
         {/* Área de Input - Fixada na parte inferior */}
-        <div className="bg-slate-800/50 border-t border-slate-700 p-4 flex-shrink-0">
+        <div className={`bg-slate-800/50 border-t border-slate-700 p-4 flex-shrink-0 ${isMobile ? 'pb-safe' : ''}`}>
           <div className="max-w-4xl mx-auto">
             {/* Arquivos anexados */}
             {attachedFiles.length > 0 && (
