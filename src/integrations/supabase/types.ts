@@ -50,6 +50,72 @@ export type Database = {
         }
         Relationships: []
       }
+      legal_commitments: {
+        Row: {
+          alert_sent: boolean | null
+          auto_detected: boolean | null
+          client_name: string | null
+          commitment_date: string
+          commitment_type: string
+          created_at: string
+          deadline_type: string | null
+          description: string | null
+          end_date: string | null
+          extracted_text: string | null
+          id: string
+          is_virtual: boolean | null
+          location: string | null
+          priority: string | null
+          process_number: string | null
+          status: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alert_sent?: boolean | null
+          auto_detected?: boolean | null
+          client_name?: string | null
+          commitment_date: string
+          commitment_type: string
+          created_at?: string
+          deadline_type?: string | null
+          description?: string | null
+          end_date?: string | null
+          extracted_text?: string | null
+          id?: string
+          is_virtual?: boolean | null
+          location?: string | null
+          priority?: string | null
+          process_number?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alert_sent?: boolean | null
+          auto_detected?: boolean | null
+          client_name?: string | null
+          commitment_date?: string
+          commitment_type?: string
+          created_at?: string
+          deadline_type?: string | null
+          description?: string | null
+          end_date?: string | null
+          extracted_text?: string | null
+          id?: string
+          is_virtual?: boolean | null
+          location?: string | null
+          priority?: string | null
+          process_number?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       legal_documents: {
         Row: {
           category: string
@@ -89,6 +155,45 @@ export type Database = {
           template_variables?: Json | null
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      notification_settings: {
+        Row: {
+          created_at: string
+          days_before_deadline: number | null
+          email_enabled: boolean | null
+          hours_before_commitment: number | null
+          id: string
+          push_enabled: boolean | null
+          updated_at: string
+          user_id: string
+          whatsapp_enabled: boolean | null
+          whatsapp_number: string | null
+        }
+        Insert: {
+          created_at?: string
+          days_before_deadline?: number | null
+          email_enabled?: boolean | null
+          hours_before_commitment?: number | null
+          id?: string
+          push_enabled?: boolean | null
+          updated_at?: string
+          user_id: string
+          whatsapp_enabled?: boolean | null
+          whatsapp_number?: string | null
+        }
+        Update: {
+          created_at?: string
+          days_before_deadline?: number | null
+          email_enabled?: boolean | null
+          hours_before_commitment?: number | null
+          id?: string
+          push_enabled?: boolean | null
+          updated_at?: string
+          user_id?: string
+          whatsapp_enabled?: boolean | null
+          whatsapp_number?: string | null
         }
         Relationships: []
       }
