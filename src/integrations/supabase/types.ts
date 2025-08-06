@@ -50,6 +50,33 @@ export type Database = {
         }
         Relationships: []
       }
+      feature_usage: {
+        Row: {
+          created_at: string
+          feature_data: Json | null
+          feature_name: string
+          id: string
+          tokens_consumed: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feature_data?: Json | null
+          feature_name: string
+          id?: string
+          tokens_consumed?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          feature_data?: Json | null
+          feature_name?: string
+          id?: string
+          tokens_consumed?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       legal_commitments: {
         Row: {
           alert_sent: boolean | null
@@ -408,6 +435,15 @@ export type Database = {
       l2_normalize: {
         Args: { "": string } | { "": unknown } | { "": unknown }
         Returns: unknown
+      }
+      log_feature_usage: {
+        Args: {
+          p_user_id: string
+          p_feature_name: string
+          p_feature_data?: Json
+          p_tokens_consumed?: number
+        }
+        Returns: boolean
       }
       match_documents: {
         Args: { query_embedding: string; match_count?: number; filter?: Json }

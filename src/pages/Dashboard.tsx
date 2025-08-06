@@ -13,6 +13,8 @@ import DocumentViewer from "@/components/DocumentViewer";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 import CalendarAgendaWidget from "@/components/CalendarAgendaWidget";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useDocumentCache } from "@/hooks/useDocumentCache";
+import { useFeatureUsage } from "@/hooks/useFeatureUsage";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -20,12 +22,13 @@ export default function Dashboard() {
   const { toast } = useToast();
   const { visible: menuVisible } = useScrollDirection();
   const isMobile = useIsMobile();
+  const { documents: legalDocuments, loading: documentsLoading } = useDocumentCache();
+  const { logFeatureUsage } = useFeatureUsage();
   
   const [userCredits, setUserCredits] = useState(0);
   const [dailyCredits, setDailyCredits] = useState(0);
   const [totalCreditsPurchased, setTotalCreditsPurchased] = useState(0);
   const [creditsUsed, setCreditsUsed] = useState(0);
-  const [legalDocuments, setLegalDocuments] = useState<any[]>([]);
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
   const [isDocumentViewerOpen, setIsDocumentViewerOpen] = useState(false);
   const [recentQueries, setRecentQueries] = useState<any[]>([]);
@@ -86,28 +89,21 @@ export default function Dashboard() {
     };
 
     loadUserData();
-    loadLegalDocuments();
   }, [user?.id]);
-
-  const loadLegalDocuments = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('legal_documents')
-        .select('*')
-        .eq('is_active', true)
-        .order('title')
-        .limit(6);
-
-      if (error) throw error;
-      setLegalDocuments(data || []);
-    } catch (error) {
-      console.error('Erro ao carregar documentos:', error);
-    }
-  };
 
   const handleViewDocument = (documentId: string) => {
     setSelectedDocumentId(documentId);
     setIsDocumentViewerOpen(true);
+    
+    // Log document viewing
+    const document = legalDocuments.find(doc => doc.id === documentId);
+    if (document) {
+      logFeatureUsage('document_view', {
+        document_id: documentId,
+        document_title: document.title,
+        document_category: document.category
+      });
+    }
   };
 
   const getUsagePercentage = () => {
@@ -273,7 +269,10 @@ export default function Dashboard() {
                   </div>
 
                   <Button 
-                    onClick={() => navigate("/chat?new=true")}
+                    onClick={() => {
+                      logFeatureUsage('chat_started_from_dashboard');
+                      navigate("/chat?new=true");
+                    }}
                     className="w-full bg-primary hover:bg-primary/90 py-3 text-lg font-semibold"
                     size="lg"
                   >
@@ -300,7 +299,10 @@ export default function Dashboard() {
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="group p-4 bg-gradient-to-br from-blue-600/10 to-blue-600/5 rounded-xl border border-blue-500/20 hover:border-blue-500/40 transition-all cursor-pointer"
-                         onClick={() => navigate("/calculo-contrato-bancario")}>
+                         onClick={() => {
+                           logFeatureUsage('calculator_accessed', { type: 'contrato_bancario' });
+                           navigate("/calculo-contrato-bancario");
+                         }}>
                       <div className="flex items-center gap-3 mb-3">
                         <div className="p-2 bg-blue-600/20 rounded-lg group-hover:bg-blue-600/30 transition-colors">
                           <DollarSign className="w-6 h-6 text-blue-400" />
@@ -319,9 +321,12 @@ export default function Dashboard() {
                         </Button>
                       </div>
                     </div>
-                    
+                     
                     <div className="group p-4 bg-gradient-to-br from-purple-600/10 to-purple-600/5 rounded-xl border border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer"
-                         onClick={() => navigate("/calculo-pensao-alimenticia")}>
+                         onClick={() => {
+                           logFeatureUsage('calculator_accessed', { type: 'pensao_alimenticia' });
+                           navigate("/calculo-pensao-alimenticia");
+                         }}>
                       <div className="flex items-center gap-3 mb-3">
                         <div className="p-2 bg-purple-600/20 rounded-lg group-hover:bg-purple-600/30 transition-colors">
                           <Heart className="w-6 h-6 text-purple-400" />

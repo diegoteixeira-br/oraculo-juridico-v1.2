@@ -52,6 +52,7 @@ const CalendarView = ({ filteredCommitments, onCommitmentSelect, showActions = f
     try {
       const monthStart = startOfMonth(currentMonth);
       const monthEnd = endOfMonth(currentMonth);
+      // Query otimizada usando índices criados
       const { data, error } = await supabase
         .from('legal_commitments' as any)
         .select('*')
@@ -59,7 +60,8 @@ const CalendarView = ({ filteredCommitments, onCommitmentSelect, showActions = f
         .eq('status', 'pendente')
         .gte('commitment_date', monthStart.toISOString())
         .lte('commitment_date', monthEnd.toISOString())
-        .order('commitment_date', { ascending: true });
+        .order('commitment_date', { ascending: true })
+        .limit(100); // Limitar resultados para melhor performance
 
       if (error) throw error;
       setCommitments(data as unknown as LegalCommitment[] || []);

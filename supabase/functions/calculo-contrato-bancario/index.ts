@@ -76,6 +76,8 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  console.log('Iniciando cálculo de contrato bancário');
+  
   try {
     const data: ContratoBancarioData = await req.json();
     

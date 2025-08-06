@@ -64,6 +64,8 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  console.log('Iniciando cálculo de pensão alimentícia');
+  
   try {
     const data: PensaoAlimenticiaData = await req.json();
     
@@ -157,6 +159,12 @@ Cálculo realizado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date()
       detalhamento
     };
 
+    console.log('Cálculo concluído com sucesso:', { 
+      valorPensao, 
+      percentualRenda: percentualRenda.toFixed(1) + '%',
+      valorCorrigido 
+    });
+
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
@@ -164,7 +172,10 @@ Cálculo realizado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date()
   } catch (error) {
     console.error('Erro no cálculo da pensão alimentícia:', error);
     return new Response(
-      JSON.stringify({ error: 'Erro interno do servidor' }),
+      JSON.stringify({ 
+        error: 'Erro interno do servidor',
+        details: error instanceof Error ? error.message : 'Erro desconhecido'
+      }),
       { 
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

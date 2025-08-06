@@ -39,6 +39,7 @@ import { ptBR } from "date-fns/locale";
 import { useIsMobile } from "@/hooks/use-mobile";
 import UserMenu from "@/components/UserMenu";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
+import { useFeatureUsage } from "@/hooks/useFeatureUsage";
 
 interface LegalCommitment {
   id: string;
@@ -64,6 +65,7 @@ const AgendaJuridica = () => {
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const { visible: menuVisible } = useScrollDirection();
+  const { logFeatureUsage } = useFeatureUsage();
   
   const [commitments, setCommitments] = useState<LegalCommitment[]>([]);
   const [filteredCommitments, setFilteredCommitments] = useState<LegalCommitment[]>([]);
@@ -122,17 +124,22 @@ const AgendaJuridica = () => {
     priority: "normal",
   });
 
-  // Carregar compromissos
+  // Carregar compromissos de forma otimizada
   const loadCommitments = async () => {
     if (!user) return;
     
     setIsLoading(true);
     try {
-      // Usando a query raw para acessar a tabela que ainda não está nos types
+      // Query otimizada com filtros e índices
+      const monthStart = startOfMonth(currentMonth);
+      const monthEnd = endOfMonth(currentMonth);
+      
       const { data, error } = await supabase
         .from('legal_commitments' as any)
         .select('*')
         .eq('user_id', user.id)
+        .gte('commitment_date', monthStart.toISOString())
+        .lte('commitment_date', monthEnd.toISOString())
         .order('commitment_date', { ascending: true });
 
       if (error) throw error;
@@ -174,7 +181,7 @@ const AgendaJuridica = () => {
 
   useEffect(() => {
     loadCommitments();
-  }, [user]);
+  }, [user, currentMonth]);
 
   // Criar novo compromisso
   const handleCreateCommitment = async () => {
@@ -203,6 +210,12 @@ const AgendaJuridica = () => {
       toast({
         title: "Sucesso",
         description: "Compromisso criado com sucesso!",
+      });
+
+      // Log feature usage
+      logFeatureUsage('commitment_created', {
+        type: newCommitment.commitment_type,
+        priority: newCommitment.priority
       });
 
       setShowAddDialog(false);
@@ -360,12 +373,19 @@ const AgendaJuridica = () => {
       if (error) throw error;
 
       if (data.success) {
-        toast({
-          title: "Sucesso",
-          description: `${data.deadlinesSaved} prazos detectados e salvos automaticamente!`,
-        });
-        setShowExtractDialog(false);
-        setExtractText("");
+      toast({
+        title: "Sucesso",
+        description: `${data.deadlinesSaved} prazos detectados e salvos automaticamente!`,
+      });
+      
+      // Log feature usage
+      logFeatureUsage('deadline_extraction_used', {
+        deadlines_found: data.deadlinesSaved,
+        text_length: extractText.length
+      });
+      
+      setShowExtractDialog(false);
+      setExtractText("");
         loadCommitments();
       } else {
         throw new Error(data.error);
