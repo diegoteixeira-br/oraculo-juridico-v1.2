@@ -705,99 +705,117 @@ export default function Chat() {
                     )}
                   </div>
                 ) : (
-                  messages.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
-                    >
+                  <>
+                    {messages.map((msg) => (
                       <div
-                        className={`max-w-[85%] rounded-lg p-4 ${
-                          msg.type === 'user'
-                            ? 'bg-primary text-primary-foreground'
-                            : 'bg-slate-800 text-white border border-slate-700'
-                        }`}
+                        key={msg.id}
+                        className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
                       >
-                        {/* Arquivos anexados */}
-                        {msg.attachedFiles && msg.attachedFiles.length > 0 && (
-                          <div className="mb-3 space-y-2">
-                            {msg.attachedFiles.map((file, index) => (
-                              <div key={index} className="flex items-center gap-2 text-xs bg-black/20 rounded p-2">
-                                <Paperclip className="w-3 h-3" />
-                                <span className="truncate">{file.name}</span>
-                                <span className="text-xs opacity-70">
-                                  ({(file.size / 1024).toFixed(1)}KB)
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* Conteúdo da mensagem */}
-                        <div className="prose prose-invert max-w-none text-sm">
-                          {msg.type === 'assistant' ? (
-                            <ReactMarkdown
-                              components={{
-                                p: ({ children }) => <p className="mb-3 last:mb-0 break-words">{children}</p>,
-                                ul: ({ children }) => <ul className="list-disc ml-4 mb-3">{children}</ul>,
-                                ol: ({ children }) => <ol className="list-decimal ml-4 mb-3">{children}</ol>,
-                                li: ({ children }) => <li className="mb-1">{children}</li>,
-                                h1: ({ children }) => <h1 className="text-base font-bold mb-3">{children}</h1>,
-                                h2: ({ children }) => <h2 className="text-sm font-bold mb-2">{children}</h2>,
-                                h3: ({ children }) => <h3 className="text-sm font-bold mb-2">{children}</h3>,
-                                strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
-                                code: ({ children }) => <code className="bg-slate-700 px-1 py-0.5 rounded text-xs break-all">{children}</code>,
-                                pre: ({ children }) => <pre className="bg-slate-700 p-3 rounded overflow-x-auto text-xs">{children}</pre>
-                              }}
-                            >
-                              {msg.content}
-                            </ReactMarkdown>
-                          ) : (
-                            <p className="whitespace-pre-wrap break-words">{msg.content}</p>
+                        <div
+                          className={`max-w-[85%] rounded-lg p-4 ${
+                            msg.type === 'user'
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-slate-800 text-white border border-slate-700'
+                          }`}
+                        >
+                          {/* Arquivos anexados */}
+                          {msg.attachedFiles && msg.attachedFiles.length > 0 && (
+                            <div className="mb-3 space-y-2">
+                              {msg.attachedFiles.map((file, index) => (
+                                <div key={index} className="flex items-center gap-2 text-xs bg-black/20 rounded p-2">
+                                  <Paperclip className="w-3 h-3" />
+                                  <span className="truncate">{file.name}</span>
+                                  <span className="text-xs opacity-70">
+                                    ({(file.size / 1024).toFixed(1)}KB)
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
                           )}
-                        </div>
 
-                        {/* Player de áudio se houver audioUrl */}
-                        {msg.audioUrl && (
-                          <div className="mt-3">
-                            <AudioPlayer audioSrc={msg.audioUrl} />
-                          </div>
-                        )}
-
-                        {/* Footer da mensagem */}
-                        <div className="flex items-center justify-between mt-3 pt-2 border-t border-current/20">
-                          <span className="text-xs opacity-70">
-                            {msg.timestamp.toLocaleTimeString('pt-BR', { 
-                              hour: '2-digit', 
-                              minute: '2-digit' 
-                            })}
-                          </span>
-                          
-                          <div className="flex items-center gap-2">
-                            {msg.tokensConsumed && (
-                              <Badge variant="secondary" className="text-xs">
-                                {msg.tokensConsumed.toLocaleString()} tokens
-                              </Badge>
-                            )}
-                            
-                            {msg.type === 'assistant' && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-6 w-6 p-0 opacity-70 hover:opacity-100"
-                                onClick={() => playTextToSpeech(msg.content)}
+                          {/* Conteúdo da mensagem */}
+                          <div className="prose prose-invert max-w-none text-sm">
+                            {msg.type === 'assistant' ? (
+                              <ReactMarkdown
+                                components={{
+                                  p: ({ children }) => <p className="mb-3 last:mb-0 break-words">{children}</p>,
+                                  ul: ({ children }) => <ul className="list-disc ml-4 mb-3">{children}</ul>,
+                                  ol: ({ children }) => <ol className="list-decimal ml-4 mb-3">{children}</ol>,
+                                  li: ({ children }) => <li className="mb-1">{children}</li>,
+                                  h1: ({ children }) => <h1 className="text-base font-bold mb-3">{children}</h1>,
+                                  h2: ({ children }) => <h2 className="text-sm font-bold mb-2">{children}</h2>,
+                                  h3: ({ children }) => <h3 className="text-sm font-bold mb-2">{children}</h3>,
+                                  strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                                  code: ({ children }) => <code className="bg-slate-700 px-1 py-0.5 rounded text-xs break-all">{children}</code>,
+                                  pre: ({ children }) => <pre className="bg-slate-700 p-3 rounded overflow-x-auto text-xs">{children}</pre>
+                                }}
                               >
-                                {isPlayingAudio ? (
-                                  <VolumeX className="w-3 h-3" />
-                                ) : (
-                                  <Volume2 className="w-3 h-3" />
-                                )}
-                              </Button>
+                                {msg.content}
+                              </ReactMarkdown>
+                            ) : (
+                              <p className="whitespace-pre-wrap break-words">{msg.content}</p>
                             )}
+                          </div>
+
+                          {/* Player de áudio se houver audioUrl */}
+                          {msg.audioUrl && (
+                            <div className="mt-3">
+                              <AudioPlayer audioSrc={msg.audioUrl} />
+                            </div>
+                          )}
+
+                          {/* Footer da mensagem */}
+                          <div className="flex items-center justify-between mt-3 pt-2 border-t border-current/20">
+                            <span className="text-xs opacity-70">
+                              {msg.timestamp.toLocaleTimeString('pt-BR', { 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                              })}
+                            </span>
+                            
+                            <div className="flex items-center gap-2">
+                              {msg.tokensConsumed && (
+                                <Badge variant="secondary" className="text-xs">
+                                  {msg.tokensConsumed.toLocaleString()} tokens
+                                </Badge>
+                              )}
+                              
+                              {msg.type === 'assistant' && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-6 w-6 p-0 opacity-70 hover:opacity-100"
+                                  onClick={() => playTextToSpeech(msg.content)}
+                                >
+                                  {isPlayingAudio ? (
+                                    <VolumeX className="w-3 h-3" />
+                                  ) : (
+                                    <Volume2 className="w-3 h-3" />
+                                  )}
+                                </Button>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))
+                    ))}
+                    
+                    {/* Indicador de digitação */}
+                    {isLoading && (
+                      <div className="flex justify-start">
+                        <div className="max-w-[85%] bg-slate-800 text-white border border-slate-700 rounded-lg p-4">
+                          <div className="flex items-center gap-3">
+                            <div className="flex gap-1">
+                              <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: '0ms' }}></div>
+                              <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: '150ms' }}></div>
+                              <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: '300ms' }}></div>
+                            </div>
+                            <span className="text-sm text-slate-300">Oráculo está formulando a resposta...</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
                 )}
                 <div ref={messagesEndRef} />
               </div>
