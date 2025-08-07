@@ -310,7 +310,7 @@ export default function Chat() {
     setIsLoading(true);
 
     try {
-      // Criar nova sessão se necessário
+      // Usar a sessão atual - só cria nova se não existir nenhuma
       let sessionId = currentSessionId;
       if (!sessionId) {
         sessionId = crypto.randomUUID();
