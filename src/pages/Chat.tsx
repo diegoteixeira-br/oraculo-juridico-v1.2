@@ -60,7 +60,7 @@ export default function Chat() {
   const currentSession = sessions.find(s => s.id === currentSessionId);
   const messages = currentSession?.messages || [];
 
-  // Sempre iniciar uma nova conversa quando acessar o chat
+  // Inicializar uma nova conversa apenas se não existir nenhuma
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const showHistory = urlParams.get('show-history');
@@ -70,25 +70,11 @@ export default function Chat() {
       setSidebarOpen(true);
       // Limpar o parâmetro da URL
       window.history.replaceState({}, '', '/chat');
-    } else {
-      // Sempre criar uma nova conversa ao acessar o chat
-      const newSessionId = crypto.randomUUID();
-      const newSession: ChatSession = {
-        id: newSessionId,
-        title: "Nova Conversa",
-        lastMessage: "",
-        timestamp: new Date(),
-        messages: []
-      };
-      
-      // Limpar sessão atual e criar nova
-      setCurrentSessionId(newSessionId);
-      setSessions(prev => [newSession, ...prev]);
-      
-      // Limpar parâmetros da URL se houver
-      if (window.location.search) {
-        window.history.replaceState({}, '', '/chat');
-      }
+    }
+    
+    // Limpar parâmetros da URL se houver
+    if (window.location.search) {
+      window.history.replaceState({}, '', '/chat');
     }
   }, [isMobile]);
   // Scroll automático para a última mensagem
@@ -168,21 +154,27 @@ export default function Chat() {
       const sessionsArray = Array.from(sessionMap.values())
         .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
       
-      // Atualizar apenas as sessões históricas, mantendo a nova conversa ativa
+      // Atualizar as sessões históricas
       setSessions(prev => {
-        // Manter a primeira sessão se for "Nova Conversa" e não tiver mensagens
-        const hasNewSession = prev.length > 0 && prev[0].title === "Nova Conversa" && prev[0].messages.length === 0;
-        if (hasNewSession) {
-          // Adicionar sessões históricas após a nova conversa
-          return [prev[0], ...sessionsArray];
-        } else {
-          // Se não há nova conversa vazia, mostrar todas as sessões históricas
-          return sessionsArray;
+        // Se não há sessão atual, criar uma nova conversa
+        if (prev.length === 0 && !currentSessionId) {
+          const newSessionId = crypto.randomUUID();
+          const newSession: ChatSession = {
+            id: newSessionId,
+            title: "Nova Conversa",
+            lastMessage: "",
+            timestamp: new Date(),
+            messages: []
+          };
+          setCurrentSessionId(newSessionId);
+          return [newSession, ...sessionsArray];
         }
+        
+        // Manter sessões existentes e adicionar históricas que não existem
+        const existingIds = new Set(prev.map(s => s.id));
+        const newSessions = sessionsArray.filter(s => !existingIds.has(s.id));
+        return [...prev, ...newSessions];
       });
-      
-      // Não selecionar automaticamente uma conversa existente
-      // O usuário sempre deve começar com uma nova conversa
     } catch (error) {
       console.error('Erro ao carregar sessões:', error);
     }
@@ -310,11 +302,21 @@ export default function Chat() {
     setIsLoading(true);
 
     try {
-      // Usar a sessão atual - só cria nova se não existir nenhuma
+      // Usar a sessão atual ou criar uma nova se não existir
       let sessionId = currentSessionId;
       if (!sessionId) {
         sessionId = crypto.randomUUID();
         setCurrentSessionId(sessionId);
+        
+        // Criar nova sessão se não existir
+        const newSession: ChatSession = {
+          id: sessionId,
+          title: "Nova Conversa",
+          lastMessage: "",
+          timestamp: new Date(),
+          messages: []
+        };
+        setSessions(prev => [newSession, ...prev]);
       }
 
       // Adicionar mensagem do usuário imediatamente
