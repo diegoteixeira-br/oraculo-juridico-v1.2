@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Send, Paperclip, MessageSquare, Plus, X, Download, Volume2, VolumeX, Menu, ArrowLeft } from "lucide-react";
+import { Send, Paperclip, Trash2, MessageSquare, Plus, X, Download, Volume2, VolumeX, Menu, ArrowLeft } from "lucide-react";
 import { AudioPlayer } from '@/components/AudioPlayer';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -185,6 +185,37 @@ export default function Chat() {
       // O usuário sempre deve começar com uma nova conversa
     } catch (error) {
       console.error('Erro ao carregar sessões:', error);
+    }
+  };
+
+  const deleteSession = async (sessionId: string) => {
+    try {
+      const { error } = await supabase
+        .from('query_history')
+        .delete()
+        .eq('session_id', sessionId)
+        .eq('user_id', user?.id);
+
+      if (error) throw error;
+
+      setSessions(prev => prev.filter(s => s.id !== sessionId));
+      
+      if (currentSessionId === sessionId) {
+        const remainingSessions = sessions.filter(s => s.id !== sessionId);
+        setCurrentSessionId(remainingSessions.length > 0 ? remainingSessions[0].id : null);
+      }
+
+      toast({
+        title: "Conversa excluída",
+        description: "A conversa foi removida com sucesso."
+      });
+    } catch (error) {
+      console.error('Erro ao excluir sessão:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível excluir a conversa.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -588,16 +619,30 @@ export default function Chat() {
                       if (isMobile) setSidebarOpen(false);
                     }}
                   >
-                    <div>
-                      <h4 className="text-sm font-medium text-white truncate">
-                        {session.title}
-                      </h4>
-                      <p className="text-xs text-slate-400 mt-1 line-clamp-2">
-                        {session.lastMessage}
-                      </p>
-                      <p className="text-xs text-slate-500 mt-1">
-                        {session.timestamp.toLocaleDateString('pt-BR')}
-                      </p>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-medium text-white truncate">
+                          {session.title}
+                        </h4>
+                        <p className="text-xs text-slate-400 mt-1 line-clamp-2">
+                          {session.lastMessage}
+                        </p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          {session.timestamp.toLocaleDateString('pt-BR')}
+                        </p>
+                      </div>
+                      
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity ml-2 h-6 w-6 p-0"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteSession(session.id);
+                        }}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
                     </div>
                   </div>
                 ))}
