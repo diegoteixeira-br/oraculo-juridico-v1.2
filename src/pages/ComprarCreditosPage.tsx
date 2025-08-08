@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CreditCard, Check, Star } from "lucide-react";
+import { CreditCard, Check, Star, Crown, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -50,6 +50,8 @@ export default function ComprarCreditosPage() {
   const [searchParams] = useSearchParams();
   const selectedPlan = searchParams.get('plano');
   const { visible: menuVisible } = useScrollDirection();
+  const [subLoading, setSubLoading] = useState(false);
+  const [portalLoading, setPortalLoading] = useState(false);
 
   // Garantir que a página sempre abra no topo
   useEffect(() => {
@@ -99,6 +101,50 @@ export default function ComprarCreditosPage() {
     }
   };
 
+  const handleSubscribe = async () => {
+    try {
+      setSubLoading(true);
+      const { data, error } = await supabase.functions.invoke('create-checkout');
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      } else {
+        throw new Error('URL de assinatura não recebida');
+      }
+    } catch (error) {
+      console.error('❌ Erro ao iniciar assinatura:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível iniciar a assinatura. Tente novamente.',
+        variant: 'destructive',
+      });
+    } finally {
+      setSubLoading(false);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    try {
+      setPortalLoading(true);
+      const { data, error } = await supabase.functions.invoke('customer-portal');
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      } else {
+        throw new Error('URL do portal do cliente não recebida');
+      }
+    } catch (error) {
+      console.error('❌ Erro ao abrir portal do cliente:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível abrir o portal do cliente.',
+        variant: 'destructive',
+      });
+    } finally {
+      setPortalLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-2 sm:p-4 lg:p-6">
       <div className="max-w-6xl mx-auto space-y-3 sm:space-y-4 lg:space-y-6">
@@ -129,6 +175,82 @@ export default function ComprarCreditosPage() {
               🎁 <strong>Plano Gratuito:</strong> 3.000 tokens diários
             </p>
           </div>
+        </div>
+
+        {/* Assinatura Mensal */}
+        <div className="max-w-4xl mx-auto">
+          <Card className="relative bg-slate-900/60 border-primary/50 shadow-lg shadow-primary/20 overflow-hidden">
+            <CardHeader className="pt-6 pb-2 text-center">
+              <Badge className="bg-primary text-primary-foreground mb-2 w-fit mx-auto">Novo</Badge>
+              <CardTitle className="text-xl lg:text-2xl text-primary flex items-center justify-center gap-2">
+                <Crown className="w-5 h-5" /> Plano Essencial
+              </CardTitle>
+              <CardDescription className="text-white text-2xl lg:text-3xl font-bold">
+                R$ 37,90/mês
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="px-4 sm:px-6 pb-6">
+              <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Check className="w-4 h-4 text-primary" />
+                    <span>30.000 tokens por mês</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Check className="w-4 h-4 text-primary" />
+                    <span>Calculadoras ilimitadas</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Check className="w-4 h-4 text-primary" />
+                    <span>Documentos Jurídicos ilimitados</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Check className="w-4 h-4 text-primary" />
+                    <span>Agenda de Compromissos ilimitada</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Check className="w-4 h-4 text-primary" />
+                    <span>Renovação automática. Cancele quando quiser.</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Check className="w-4 h-4 text-primary" />
+                    <span>7 dias grátis: 3.000 tokens/dia no período de teste</span>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center justify-center gap-3">
+                  <Button onClick={handleSubscribe} disabled={subLoading} className="w-full sm:w-auto h-12 px-6">
+                    {subLoading ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Redirecionando...
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <CreditCard className="w-5 h-5" />
+                        Assinar agora
+                      </div>
+                    )}
+                  </Button>
+                  <Button onClick={handleManageSubscription} disabled={portalLoading} variant="secondary" className="w-full sm:w-auto">
+                    {portalLoading ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Abrindo portal...
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <RefreshCw className="w-4 h-4" />
+                        Gerenciar assinatura
+                      </div>
+                    )}
+                  </Button>
+                  <p className="text-xs text-muted-foreground text-center">
+                    Inclui 30.000 tokens/mês. Excedentes? Compre pacotes avulsos abaixo.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Packages Grid - Responsivo: vertical no mobile, horizontal no desktop */}
