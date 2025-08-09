@@ -34,7 +34,7 @@ export default function Dashboard() {
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
   const [isDocumentViewerOpen, setIsDocumentViewerOpen] = useState(false);
   const [recentQueries, setRecentQueries] = useState<any[]>([]);
-  const [userDocs, setUserDocs] = useState<any[]>([]);
+  const [savedDocs, setSavedDocs] = useState<any[]>([]);
 
   const [templateOpen, setTemplateOpen] = useState(false);
   const [templateTitle, setTemplateTitle] = useState("");
@@ -98,7 +98,7 @@ export default function Dashboard() {
           .select('id, title, updated_at')
           .eq('user_id', user.id)
           .order('updated_at', { ascending: false });
-        setUserDocs(myDocs || []);
+        setSavedDocs(myDocs || []);
 
       } catch (error) {
         console.error('Erro ao carregar dados do usuário:', error);
@@ -118,7 +118,7 @@ export default function Dashboard() {
         .select('id, title, updated_at')
         .eq('user_id', user.id)
         .order('updated_at', { ascending: false });
-      setUserDocs(myDocs || []);
+      setSavedDocs(myDocs || []);
     };
 
     const channel = supabase
@@ -446,7 +446,7 @@ export default function Dashboard() {
                         <CardTitle className="text-lg text-white">Documentos Jurídicos</CardTitle>
                       </div>
                       <Badge variant="outline" className="text-xs">
-                        {(legalDocuments.length + userDocs.length)} disponíveis
+                        {(legalDocuments.length + savedDocs.length)} disponíveis
                       </Badge>
                     </div>
                     <CardDescription>
@@ -532,7 +532,7 @@ export default function Dashboard() {
                       </p>
                     </div>
 
-                    {userDocs.length > 0 && (
+                    {savedDocs.length > 0 && (
                       <div className="mt-6">
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="text-sm font-semibold text-white flex items-center gap-2">
@@ -549,7 +549,7 @@ export default function Dashboard() {
                           </Button>
                         </div>
                         <div className="space-y-2">
-                          {userDocs.slice(0,4).map((d) => (
+                          {savedDocs.slice(0,4).map((d) => (
                             <button
                               key={d.id}
                               onClick={() => navigate('/meus-documentos')}
