@@ -562,6 +562,14 @@ export default function Dashboard() {
                 <CardContent>
                   <div className="grid grid-cols-1 gap-3">
                     <Button 
+                      onClick={() => navigate("/meus-documentos")}
+                      variant="outline"
+                      className="justify-start border-slate-600 hover:bg-slate-700"
+                    >
+                      <FileText className="w-4 h-4 mr-2" />
+                      Meus Documentos
+                    </Button>
+                    <Button 
                       onClick={() => navigate("/minha-conta")}
                       variant="outline"
                       className="justify-start border-slate-600 hover:bg-slate-700"
