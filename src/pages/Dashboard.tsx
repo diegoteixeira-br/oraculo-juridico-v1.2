@@ -32,6 +32,7 @@ export default function Dashboard() {
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
   const [isDocumentViewerOpen, setIsDocumentViewerOpen] = useState(false);
   const [recentQueries, setRecentQueries] = useState<any[]>([]);
+  const [userDocs, setUserDocs] = useState<any[]>([]);
 
   const totalAvailableCredits = userCredits + dailyCredits;
 
@@ -82,6 +83,14 @@ export default function Dashboard() {
           .limit(3);
 
         setRecentQueries(queries || []);
+
+        // Carregar documentos do usuário
+        const { data: myDocs } = await supabase
+          .from('user_documents')
+          .select('id, title, updated_at')
+          .eq('user_id', user.id)
+          .order('updated_at', { ascending: false });
+        setUserDocs(myDocs || []);
 
       } catch (error) {
         console.error('Erro ao carregar dados do usuário:', error);
@@ -353,7 +362,7 @@ export default function Dashboard() {
                         <CardTitle className="text-lg text-white">Documentos Jurídicos</CardTitle>
                       </div>
                       <Badge variant="outline" className="text-xs">
-                        {legalDocuments.length} disponíveis
+                        {(legalDocuments.length + userDocs.length)} disponíveis
                       </Badge>
                     </div>
                     <CardDescription>
