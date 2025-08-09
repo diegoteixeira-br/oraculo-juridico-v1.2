@@ -35,6 +35,8 @@ export default function Dashboard() {
   const [isDocumentViewerOpen, setIsDocumentViewerOpen] = useState(false);
   const [recentQueries, setRecentQueries] = useState<any[]>([]);
   const [savedDocs, setSavedDocs] = useState<any[]>([]);
+  // Alias para compatibilidade com referências antigas
+  const userDocs = savedDocs;
 
   const [templateOpen, setTemplateOpen] = useState(false);
   const [templateTitle, setTemplateTitle] = useState("");
