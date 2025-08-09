@@ -100,6 +100,31 @@ export default function Dashboard() {
     loadUserData();
   }, [user?.id]);
 
+  // Atualiza "Meus Documentos" em tempo real quando salvar/editar
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const fetchUserDocs = async () => {
+      const { data: myDocs } = await supabase
+        .from('user_documents')
+        .select('id, title, updated_at')
+        .eq('user_id', user.id)
+        .order('updated_at', { ascending: false });
+      setUserDocs(myDocs || []);
+    };
+
+    const channel = supabase
+      .channel('realtime-user-docs')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_documents', filter: `user_id=eq.${user.id}` }, () => {
+        fetchUserDocs();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id]);
+
   const handleViewDocument = (documentId: string) => {
     setSelectedDocumentId(documentId);
     setIsDocumentViewerOpen(true);
@@ -447,6 +472,40 @@ export default function Dashboard() {
                         💡 <strong>Dica:</strong> Clique em qualquer documento para personalizar e baixar
                       </p>
                     </div>
+
+                    {userDocs.length > 0 && (
+                      <div className="mt-6">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="text-sm font-semibold text-white flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-primary" />
+                            Meus Documentos
+                          </h4>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="border-slate-600 hover:bg-slate-700 text-xs"
+                            onClick={() => navigate('/meus-documentos')}
+                          >
+                            Ver todos
+                          </Button>
+                        </div>
+                        <div className="space-y-2">
+                          {userDocs.slice(0,4).map((d) => (
+                            <button
+                              key={d.id}
+                              onClick={() => navigate('/meus-documentos')}
+                              className="w-full text-left p-2 rounded-md bg-slate-900/50 border border-slate-600 hover:bg-slate-800 transition"
+                            >
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm text-white truncate">{d.title}</span>
+                                <span className="text-[10px] text-slate-400">{new Date(d.updated_at).toLocaleDateString('pt-BR')}</span>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                   </CardContent>
                 </Card>
               )}
