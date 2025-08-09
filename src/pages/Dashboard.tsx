@@ -15,6 +15,8 @@ import CalendarAgendaWidget from "@/components/CalendarAgendaWidget";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useDocumentCache } from "@/hooks/useDocumentCache";
 import { useFeatureUsage } from "@/hooks/useFeatureUsage";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import MarkdownEditor from "@/components/MarkdownEditor";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -33,6 +35,12 @@ export default function Dashboard() {
   const [isDocumentViewerOpen, setIsDocumentViewerOpen] = useState(false);
   const [recentQueries, setRecentQueries] = useState<any[]>([]);
   const [userDocs, setUserDocs] = useState<any[]>([]);
+
+  const [templateOpen, setTemplateOpen] = useState(false);
+  const [templateTitle, setTemplateTitle] = useState("");
+  const [templateContent, setTemplateContent] = useState("");
+  const [templateLoading, setTemplateLoading] = useState(false);
+
 
   const totalAvailableCredits = userCredits + dailyCredits;
 
@@ -140,11 +148,62 @@ export default function Dashboard() {
     }
   };
 
+  const processTemplateToHtml = (text: string) => {
+    return (text || '')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, '<br>')
+      .replace(/^/, '<p>')
+      .replace(/$/, '</p>');
+  };
+
+  const openTemplateEditor = async (documentId: string) => {
+    setTemplateLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('legal_documents')
+        .select('id, title, content, category')
+        .eq('id', documentId)
+        .maybeSingle();
+      if (error) throw error;
+      const html = processTemplateToHtml((data as any)?.content || '');
+      setTemplateTitle((data as any)?.title || 'Documento');
+      setTemplateContent(html);
+      setTemplateOpen(true);
+      if (data) {
+        logFeatureUsage('template_edit_started', {
+          document_id: (data as any).id,
+          document_title: (data as any).title,
+          document_category: (data as any).category,
+        });
+      }
+    } catch (e) {
+      console.error('Erro ao carregar modelo:', e);
+      toast({ title: 'Erro', description: 'Não foi possível abrir o modelo para edição', variant: 'destructive' });
+    } finally {
+      setTemplateLoading(false);
+    }
+  };
+
+  const saveTemplateAsMyDoc = async () => {
+    if (!user?.id) return;
+    try {
+      const title = templateTitle.trim() || 'Documento';
+      const { error } = await supabase
+        .from('user_documents')
+        .insert({ user_id: user.id, title, content_md: templateContent });
+      if (error) throw error;
+      toast({ title: 'Documento salvo' });
+      setTemplateOpen(false);
+    } catch (e: any) {
+      console.error(e);
+      toast({ title: 'Erro ao salvar', description: e.message, variant: 'destructive' });
+    }
+  };
+
   const getUsagePercentage = () => {
     const total = totalAvailableCredits + creditsUsed;
     return total > 0 ? (creditsUsed / total) * 100 : 0;
   };
-
   const getPlanBadgeColor = (planType: string) => {
     switch (planType) {
       case 'premium': return 'bg-purple-600 text-white';
@@ -400,7 +459,7 @@ export default function Dashboard() {
                         <div 
                           key={doc.id}
                           className="group cursor-pointer"
-                          onClick={() => handleViewDocument(doc.id)}
+                          onClick={() => openTemplateEditor(doc.id)}
                         >
                           <div className="bg-white rounded-lg p-3 h-32 relative overflow-hidden shadow-lg group-hover:shadow-xl transition-all group-hover:scale-105">
                             <div className="text-center border-b border-gray-300 pb-1 mb-2">
@@ -660,6 +719,32 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Template Editor Modal */}
+      <Dialog open={templateOpen} onOpenChange={setTemplateOpen}>
+        <DialogContent className="max-w-6xl bg-slate-900 text-white border-slate-700">
+          <DialogHeader>
+            <DialogTitle>Editar Modelo</DialogTitle>
+          </DialogHeader>
+          {templateLoading ? (
+            <div className="flex items-center justify-center h-40">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+                <p>Carregando modelo...</p>
+              </div>
+            </div>
+          ) : (
+            <MarkdownEditor
+              title={templateTitle}
+              onTitleChange={setTemplateTitle}
+              content={templateContent}
+              onContentChange={setTemplateContent}
+              onSave={saveTemplateAsMyDoc}
+              onCancel={() => setTemplateOpen(false)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Document Viewer Modal */}
       <DocumentViewer
