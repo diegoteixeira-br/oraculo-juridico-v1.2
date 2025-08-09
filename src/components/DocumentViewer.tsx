@@ -131,8 +131,8 @@ export default function DocumentViewer({ documentId, isOpen, onClose }: Document
   const saveAsMyDocument = async () => {
     if (!user?.id || !document) return;
     try {
-      const md = `# ${document.title}\n\n${document.content}`;
-      const { error } = await supabase.from('user_documents').insert({ user_id: user.id, title: document.title, content_md: md });
+      const html = processedContent || document.content;
+      const { error } = await supabase.from('user_documents').insert({ user_id: user.id, title: document.title, content_md: html });
       if (error) throw error;
       toast({ title: 'Salvo em Meus Documentos' });
     } catch (e:any) {
