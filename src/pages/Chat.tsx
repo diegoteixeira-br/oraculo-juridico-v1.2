@@ -553,16 +553,17 @@ export default function Chat() {
         {/* Header da Sidebar */}
         <div className="p-4 border-b border-slate-700">
           {isMobile && (
-            <div className="flex items-center justify-between mb-4">
+            <div className="mb-4">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setSidebarOpen(false)}
                 className="text-white"
+                aria-label="Fechar histórico"
+                title="Fechar histórico"
               >
                 <ArrowLeft className="w-5 h-5" />
               </Button>
-              <UserMenu hideOptions={["chat"]} />
             </div>
           )}
           
@@ -637,13 +638,19 @@ export default function Chat() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="opacity-0 group-hover:opacity-100 transition-opacity ml-2 h-6 w-6 p-0"
+                        className={`ml-2 ${isMobile ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 transition-opacity'} h-8 w-8 p-0`}
+                        title="Excluir conversa"
+                        aria-label="Excluir conversa"
                         onClick={(e) => {
                           e.stopPropagation();
+                          if (isMobile) {
+                            const ok = window.confirm('Deseja excluir esta conversa?');
+                            if (!ok) return;
+                          }
                           deleteSession(session.id);
                         }}
                       >
-                        <Trash2 className="w-3 h-3" />
+                        <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
