@@ -185,12 +185,15 @@ export default function MeusDocumentos() {
                   <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar por título" className="pl-9 bg-slate-700 border-slate-600 text-white" />
                 </div>
                 <div className="w-full md:max-w-md flex gap-3">
-                  <Select value={folderFilter} onValueChange={setFolderFilter}>
+                  <Select
+                    value={folderFilter || "__all__"}
+                    onValueChange={(v) => setFolderFilter(v === "__all__" ? "" : v)}
+                  >
                     <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
                       <SelectValue placeholder="Todas as pastas" />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-800 text-white border-slate-700">
-                      <SelectItem value="">Todas</SelectItem>
+                    <SelectContent className="z-50 bg-slate-800 text-white border-slate-700">
+                      <SelectItem value="__all__">Todas</SelectItem>
                       {folders.map((f) => (
                         <SelectItem key={f} value={f}>{f}</SelectItem>
                       ))}
