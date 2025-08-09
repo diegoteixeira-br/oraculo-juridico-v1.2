@@ -92,7 +92,7 @@ export default function MarkdownEditor({
     // Inserir marcador de quebra (visível e com quebra real ao imprimir)
     quill.clipboard.dangerouslyPasteHTML(
       index,
-      '<p class="page-break" style="border-top:1px dashed #94a3b8;margin:24px 0;color:#94a3b8;text-align:center">— Quebra de página —</p>'
+      '<p class="page-break">— Quebra de página —</p>'
     );
   };
 
@@ -101,13 +101,13 @@ export default function MarkdownEditor({
     const html = root?.innerHTML || content || "";
     const w = window.open("", "_blank", "width=1024,height=768");
     if (!w) return;
-    w.document.write(`<!doctype html><html><head><meta charset=\"utf-8\" />
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8" />
       <title>${title || "Documento"}</title>
       <style>
         @page { size: A4; margin: 25mm; }
         .ql-editor { line-height: 1.6; }
         .page-break { break-after: page; }
-        body { font-family: 'Times New Roman', Times, serif; }
+        body { font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif; }
       </style>
     </head><body><div class="ql-editor">${html}</div></body></html>`);
     w.document.close();
@@ -124,38 +124,37 @@ export default function MarkdownEditor({
             value={title}
             onChange={(e) => onTitleChange(e.target.value)}
             placeholder="Título do documento"
-            className="bg-slate-700 border-slate-600 text-white"
           />
-          <Button onClick={onSave} className="bg-primary hover:bg-primary/90">Salvar</Button>
-          <Button variant="outline" onClick={onCancel} className="border-slate-600 hover:bg-slate-700">Cancelar</Button>
+          <Button onClick={onSave}>Salvar</Button>
+          <Button variant="outline" onClick={onCancel}>Cancelar</Button>
           <Button variant="secondary" onClick={exportPdf}>Exportar PDF</Button>
         </div>
         <div className="flex items-center gap-3 text-sm text-slate-300">
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" onClick={zoomOut} className="h-8 w-8 border-slate-600"><ZoomOut className="w-4 h-4"/></Button>
-            <Button variant="outline" size="icon" onClick={zoomIn} className="h-8 w-8 border-slate-600"><ZoomIn className="w-4 h-4"/></Button>
+            <Button variant="outline" size="icon" onClick={zoomOut} className="h-8 w-8"><ZoomOut className="w-4 h-4"/></Button>
+            <Button variant="outline" size="icon" onClick={zoomIn} className="h-8 w-8"><ZoomIn className="w-4 h-4"/></Button>
             <span className="min-w-[70px] text-center">{Math.round(zoom*100)}%</span>
           </div>
-          <Separator className="bg-slate-600 h-6" orientation="vertical" />
+          <Separator orientation="vertical" className="h-6" />
           <div className="flex items-center gap-2">
             <FileText className="w-4 h-4 text-primary"/>
             <span>{pages} página(s) A4</span>
           </div>
-          <Separator className="bg-slate-600 h-6" orientation="vertical" />
-          <Button variant="outline" size="sm" onClick={insertPageBreak} className="border-slate-600 hover:bg-slate-700">
+          <Separator orientation="vertical" className="h-6" />
+          <Button variant="outline" size="sm" onClick={insertPageBreak}>
             <FilePlus2 className="w-4 h-4 mr-2"/> Inserir quebra de página
           </Button>
         </div>
       </div>
 
       {/* Editor centralizado estilo “folha” */}
-      <Card className="bg-slate-800/50 border-slate-700">
+      <Card>
         <CardContent className="p-4">
-          <div className="bg-slate-900 rounded-lg p-4">
+          <div className="rounded-lg p-4 border bg-card h-[70vh] overflow-auto">
             <div
               ref={pageRef}
               className="mx-auto"
-              style={{ width: A4_WIDTH_PX, transform: `scale(${zoom})`, transformOrigin: "top center" }}
+              style={{ width: A4_WIDTH_PX, zoom: zoom as any, transformOrigin: "top center" }}
             >
               <ReactQuill
                 ref={quillRef as any}
@@ -174,12 +173,27 @@ export default function MarkdownEditor({
       {/* Estilos específicos do editor */}
       <style>{`
         .ql-snow { background: transparent; }
-        .ql-toolbar.ql-snow { border-color: #334155; background: #0f172a; }
-        .ql-toolbar .ql-stroke { stroke: #e2e8f0; }
-        .ql-toolbar .ql-picker { color: #e2e8f0; }
-        .ql-container.ql-snow { border-color: #334155; }
-        .ql-editor { padding: 28px 32px; }
-        .page-break { color: #94a3b8; }
+        .ql-toolbar.ql-snow { border-color: hsl(var(--border)); background: hsl(var(--muted)); }
+        .ql-toolbar .ql-stroke { stroke: hsl(var(--foreground)); }
+        .ql-toolbar .ql-picker { color: hsl(var(--foreground)); }
+        .ql-container.ql-snow { border-color: hsl(var(--border)); }
+        .ql-editor { 
+          padding: 28px 32px; 
+          line-height: 1.6;
+          background-image: linear-gradient(
+            to bottom,
+            transparent calc(${A4_HEIGHT_PX}px - 1px),
+            hsl(var(--border)) calc(${A4_HEIGHT_PX}px - 1px)
+          );
+          background-size: 100% ${A4_HEIGHT_PX}px;
+          background-repeat: repeat-y;
+        }
+        .page-break { 
+          border-top: 1px dashed hsl(var(--muted-foreground)); 
+          margin: 24px 0; 
+          color: hsl(var(--muted-foreground)); 
+          text-align: center; 
+        }
         @media print { .page-break { break-after: page; } }
       `}</style>
     </div>
