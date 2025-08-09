@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ZoomIn, ZoomOut, FilePlus2, FileText } from "lucide-react";
+import EditorRulers from "@/components/EditorRulers";
 
 interface EditorProps {
   title: string;
@@ -33,9 +34,14 @@ export default function MarkdownEditor({
   const pageRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(1);
   const [pages, setPages] = useState(1);
-  // Margem uniforme em milímetros
-  const [marginMm, setMarginMm] = useState(25);
-  const marginPx = useMemo(() => Math.round(marginMm * MM_TO_PX), [marginMm]);
+  // Margens em milímetros
+  const [margins, setMargins] = useState({ top: 25, right: 25, bottom: 25, left: 25 });
+  const marginPx = useMemo(() => ({
+    top: Math.round(margins.top * MM_TO_PX),
+    right: Math.round(margins.right * MM_TO_PX),
+    bottom: Math.round(margins.bottom * MM_TO_PX),
+    left: Math.round(margins.left * MM_TO_PX),
+  }), [margins]);
 
   const modules = useMemo(
     () => ({
@@ -84,7 +90,7 @@ export default function MarkdownEditor({
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => { recalcPages(); }, [content, zoom, marginMm]);
+  useEffect(() => { recalcPages(); }, [content, zoom, margins.top, margins.right, margins.bottom, margins.left]);
 
   const zoomIn = () => setZoom((z) => Math.min(2, +(z + 0.1).toFixed(2)));
   const zoomOut = () => setZoom((z) => Math.max(0.6, +(z - 0.1).toFixed(2)));
@@ -108,7 +114,7 @@ export default function MarkdownEditor({
     w.document.write(`<!doctype html><html><head><meta charset="utf-8" />
       <title>${title || "Documento"}</title>
       <style>
-        @page { size: A4; margin: ${marginMm}mm; }
+        @page { size: A4; margin: ${margins.top}mm ${margins.right}mm ${margins.bottom}mm ${margins.left}mm; }
         .ql-editor { line-height: 1.6; }
         .page-break { break-after: page; }
         body { font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif; }
@@ -146,8 +152,19 @@ export default function MarkdownEditor({
           </div>
           <Separator orientation="vertical" className="h-6" />
           <div className="flex items-center gap-2">
-            <span>Margem</span>
-            <Input type="number" className="w-20 h-8" min={0} max={50} step={1} value={marginMm} onChange={(e) => setMarginMm(Number(e.target.value))} />
+            <span>Margem (todas)</span>
+            <Input
+              type="number"
+              className="w-20 h-8"
+              min={0}
+              max={50}
+              step={1}
+              value={margins.top}
+              onChange={(e) => {
+                const v = Number(e.target.value) || 0;
+                setMargins({ top: v, right: v, bottom: v, left: v });
+              }}
+            />
             <span>mm</span>
           </div>
           <Separator orientation="vertical" className="h-6" />
@@ -161,20 +178,36 @@ export default function MarkdownEditor({
       <Card>
         <CardContent className="p-4">
           <div className="rounded-lg p-4 border bg-card h-[70vh] overflow-auto">
-            <div
-              ref={pageRef}
-              className="mx-auto"
-              style={{ width: A4_WIDTH_PX, zoom: zoom as any, transformOrigin: "top center", ["--m-top" as any]: `${marginPx}px`, ["--m-right" as any]: `${marginPx}px`, ["--m-bottom" as any]: `${marginPx}px`, ["--m-left" as any]: `${marginPx}px` }}
-            >
-              <ReactQuill
-                ref={quillRef as any}
-                theme="snow"
-                value={content}
-                onChange={onContentChange}
-                modules={modules}
-                formats={formats}
-                className="[&_.ql-container]:min-h-[1123px] [&_.ql-container]:bg-[hsl(var(--paper))] [&_.ql-container]:rounded-md [&_.ql-container]:shadow [&_.ql-editor]:min-h-[1123px] [&_.ql-editor]:text-[hsl(var(--paper-foreground))]"
+            <div className="relative mx-auto" style={{ width: Math.round(A4_WIDTH_PX * zoom) }}>
+              <EditorRulers
+                widthPx={A4_WIDTH_PX}
+                heightPx={A4_HEIGHT_PX}
+                zoom={zoom}
+                marginsMm={margins}
+                onChange={setMargins}
               />
+              <div
+                ref={pageRef}
+                style={{
+                  width: A4_WIDTH_PX,
+                  zoom: zoom as any,
+                  transformOrigin: "top left",
+                  ["--m-top" as any]: `${marginPx.top}px`,
+                  ["--m-right" as any]: `${marginPx.right}px`,
+                  ["--m-bottom" as any]: `${marginPx.bottom}px`,
+                  ["--m-left" as any]: `${marginPx.left}px`,
+                }}
+              >
+                <ReactQuill
+                  ref={quillRef as any}
+                  theme="snow"
+                  value={content}
+                  onChange={onContentChange}
+                  modules={modules}
+                  formats={formats}
+                  className="[&_.ql-container]:min-h-[1123px] [&_.ql-container]:bg-[hsl(var(--paper))] [&_.ql-container]:rounded-md [&_.ql-container]:shadow [&_.ql-editor]:min-h-[1123px] [&_.ql-editor]:text-[hsl(var(--paper-foreground))]"
+                />
+              </div>
             </div>
           </div>
         </CardContent>
