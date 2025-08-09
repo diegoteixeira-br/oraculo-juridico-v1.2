@@ -202,6 +202,49 @@ export default function Dashboard() {
     }
   };
 
+  const renameSavedDoc = async (d: any) => {
+    if (!user?.id) return;
+    const newTitle = prompt('Novo título', d.title)?.trim();
+    if (!newTitle || newTitle === d.title) return;
+    const { error } = await supabase
+      .from('user_documents')
+      .update({ title: newTitle })
+      .eq('id', d.id)
+      .eq('user_id', user.id);
+    if (error) {
+      toast({ title: 'Erro', description: 'Não foi possível renomear', variant: 'destructive' });
+    } else {
+      toast({ title: 'Documento renomeado' });
+    }
+  };
+
+  const duplicateSavedDoc = async (d: any) => {
+    if (!user?.id) return;
+    const { data, error } = await supabase
+      .from('user_documents')
+      .select('title, content_md, folder, tags')
+      .eq('id', d.id)
+      .maybeSingle();
+    if (error || !data) {
+      toast({ title: 'Erro', description: 'Não foi possível duplicar', variant: 'destructive' });
+      return;
+    }
+    const { error: insError } = await supabase
+      .from('user_documents')
+      .insert({
+        user_id: user.id,
+        title: `Cópia de ${data.title}`,
+        content_md: (data as any).content_md || '',
+        folder: (data as any).folder ?? null,
+        tags: (data as any).tags ?? []
+      });
+    if (insError) {
+      toast({ title: 'Erro', description: 'Falha ao criar cópia', variant: 'destructive' });
+    } else {
+      toast({ title: 'Cópia criada' });
+    }
+  };
+
   const getUsagePercentage = () => {
     const total = totalAvailableCredits + creditsUsed;
     return total > 0 ? (creditsUsed / total) * 100 : 0;
@@ -552,16 +595,32 @@ export default function Dashboard() {
                         </div>
                         <div className="space-y-2">
                           {savedDocs.slice(0,4).map((d) => (
-                            <button
+                            <div
                               key={d.id}
                               onClick={() => navigate('/meus-documentos')}
-                              className="w-full text-left p-2 rounded-md bg-slate-900/50 border border-slate-600 hover:bg-slate-800 transition"
+                              className="w-full cursor-pointer p-2 rounded-md bg-slate-900/50 border border-slate-600 hover:bg-slate-800 transition"
+                              role="button"
                             >
                               <div className="flex items-center justify-between">
                                 <span className="text-sm text-white truncate">{d.title}</span>
                                 <span className="text-[10px] text-slate-400">{new Date(d.updated_at).toLocaleDateString('pt-BR')}</span>
                               </div>
-                            </button>
+                              <div className="mt-1 flex items-center gap-3 text-[11px]">
+                                <button
+                                  className="text-primary hover:underline"
+                                  onClick={(e) => { e.stopPropagation(); renameSavedDoc(d); }}
+                                >
+                                  Renomear
+                                </button>
+                                <span className="text-slate-600">•</span>
+                                <button
+                                  className="text-blue-300 hover:underline"
+                                  onClick={(e) => { e.stopPropagation(); duplicateSavedDoc(d); }}
+                                >
+                                  Duplicar
+                                </button>
+                              </div>
+                            </div>
                           ))}
                         </div>
                       </div>

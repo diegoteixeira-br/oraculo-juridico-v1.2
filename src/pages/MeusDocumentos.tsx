@@ -12,7 +12,7 @@ import UserMenu from "@/components/UserMenu";
 import MarkdownEditor from "@/components/MarkdownEditor";
 import { FileText, Plus, Search, Trash2, Pencil, ArrowLeft } from "lucide-react";
 
-interface UserDoc { id: string; user_id: string; title: string; content_md: string; created_at: string; updated_at: string; }
+interface UserDoc { id: string; user_id: string; title: string; content_md: string; created_at: string; updated_at: string; folder?: string | null; tags?: string[] | null; }
 
 export default function MeusDocumentos() {
   const { user } = useAuth();
@@ -27,6 +27,8 @@ export default function MeusDocumentos() {
   const [editDoc, setEditDoc] = useState<UserDoc | null>(null);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState<string>("");
+  const [folder, setFolder] = useState<string>("");
+  const [tagsText, setTagsText] = useState<string>("");
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
@@ -57,6 +59,8 @@ export default function MeusDocumentos() {
     setEditDoc(null);
     setTitle("");
     setContent("");
+    setFolder("");
+    setTagsText("");
     setOpen(true);
   };
 
@@ -64,6 +68,8 @@ export default function MeusDocumentos() {
     setEditDoc(d);
     setTitle(d.title);
     setContent(d.content_md);
+    setFolder(d.folder || "");
+    setTagsText((d.tags || []).join(", "));
     setOpen(true);
   };
 
@@ -74,10 +80,19 @@ export default function MeusDocumentos() {
       return;
     }
     try {
+      const tags = tagsText
+        .split(',')
+        .map((t) => t.trim())
+        .filter(Boolean);
       if (editDoc) {
         const { error } = await supabase
           .from("user_documents")
-          .update({ title: title.trim(), content_md: content, updated_at: new Date().toISOString() })
+          .update({ 
+            title: title.trim(), 
+            content_md: content, 
+            folder: folder || null,
+            tags: tags.length ? tags : []
+          })
           .eq("id", editDoc.id)
           .eq("user_id", user.id);
         if (error) throw error;
@@ -85,7 +100,7 @@ export default function MeusDocumentos() {
       } else {
         const { error } = await supabase
           .from("user_documents")
-          .insert({ user_id: user.id, title: title.trim(), content_md: content });
+          .insert({ user_id: user.id, title: title.trim(), content_md: content, folder: folder || null, tags });
         if (error) throw error;
         toast({ title: "Documento criado" });
       }
@@ -190,6 +205,20 @@ export default function MeusDocumentos() {
           <DialogHeader>
             <DialogTitle>{editDoc ? "Editar Documento" : "Novo Documento"}</DialogTitle>
           </DialogHeader>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+            <Input
+              value={folder}
+              onChange={(e) => setFolder(e.target.value)}
+              placeholder="Pasta (ex.: Clientes/Contratos)"
+              className="bg-slate-800 border-slate-700 text-white"
+            />
+            <Input
+              value={tagsText}
+              onChange={(e) => setTagsText(e.target.value)}
+              placeholder="Tags (separe por vírgula: aluguel, residencial, 2025)"
+              className="bg-slate-800 border-slate-700 text-white"
+            />
+          </div>
           <MarkdownEditor
             title={title}
             onTitleChange={setTitle}
