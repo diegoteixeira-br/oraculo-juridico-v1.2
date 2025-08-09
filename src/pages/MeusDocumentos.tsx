@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,12 +31,29 @@ export default function MeusDocumentos() {
   const [content, setContent] = useState<string>("");
   const [folder, setFolder] = useState<string>("");
   const [tagsText, setTagsText] = useState<string>("");
+  const [folderFilter, setFolderFilter] = useState<string>("");
+  const [tagsFilter, setTagsFilter] = useState<string>("");
+
+  const folders = useMemo(
+    () => Array.from(new Set(docs.map((d) => d.folder).filter(Boolean))) as string[],
+    [docs]
+  );
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
-    if (!term) return docs;
-    return docs.filter(d => d.title.toLowerCase().includes(term));
-  }, [q, docs]);
+    const requestedTags = tagsFilter
+      .split(',')
+      .map((t) => t.trim().toLowerCase())
+      .filter(Boolean);
+
+    return docs.filter((d) => {
+      const matchTitle = term ? d.title.toLowerCase().includes(term) : true;
+      const matchFolder = folderFilter ? (d.folder || "") === folderFilter : true;
+      const docTags = (d.tags || []).map((t) => t.toLowerCase());
+      const matchTags = requestedTags.length ? requestedTags.every((t) => docTags.includes(t)) : true;
+      return matchTitle && matchFolder && matchTags;
+    });
+  }, [docs, q, folderFilter, tagsFilter]);
 
   const load = async () => {
     if (!user?.id) return;
@@ -165,6 +184,25 @@ export default function MeusDocumentos() {
                   <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar por título" className="pl-9 bg-slate-700 border-slate-600 text-white" />
                 </div>
+                <div className="w-full md:max-w-md flex gap-3">
+                  <Select value={folderFilter} onValueChange={setFolderFilter}>
+                    <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                      <SelectValue placeholder="Todas as pastas" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-800 text-white border-slate-700">
+                      <SelectItem value="">Todas</SelectItem>
+                      {folders.map((f) => (
+                        <SelectItem key={f} value={f}>{f}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    value={tagsFilter}
+                    onChange={(e) => setTagsFilter(e.target.value)}
+                    placeholder="Filtrar tags (vírgulas)"
+                    className="bg-slate-700 border-slate-600 text-white"
+                  />
+                </div>
                 <Button onClick={startNew} className="bg-primary hover:bg-primary/90">
                   <Plus className="w-4 h-4 mr-2" />
                   Novo Documento
@@ -179,6 +217,16 @@ export default function MeusDocumentos() {
                     <div key={d.id} className="p-4 bg-slate-700/30 rounded-lg border border-slate-600/50">
                       <h3 className="text-white font-medium truncate">{d.title}</h3>
                       <p className="text-xs text-slate-400 mt-1">Atualizado {new Date(d.updated_at).toLocaleString("pt-BR")}</p>
+                      {(d.folder || (d.tags && d.tags.length)) && (
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {d.folder && (
+                            <Badge variant="outline" className="border-slate-600 text-[11px]">{d.folder}</Badge>
+                          )}
+                          {(d.tags || []).map((t) => (
+                            <Badge key={t} variant="secondary" className="text-[10px]">{t}</Badge>
+                          ))}
+                        </div>
+                      )}
                       <div className="flex gap-2 mt-3">
                         <Button size="sm" onClick={() => startEdit(d)} className="bg-primary hover:bg-primary/90 text-xs">
                           <Pencil className="w-4 h-4 mr-1" /> Editar
