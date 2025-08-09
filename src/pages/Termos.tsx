@@ -99,7 +99,7 @@ const Termos = () => {
                 <li><strong>Cálculo de Pensão Alimentícia:</strong> Cálculo de valores em atraso com juros, correção monetária e relatórios detalhados</li>
               </ul>
               <p className="mt-2">
-                <strong>Limites por Plano:</strong> No Plano Essencial o uso é ilimitado. No plano gratuito, o usuário pode realizar até 2 cálculos por dia (somados entre as calculadoras). Não há cobrança de 15.000 tokens por cálculo.
+                <strong>Limites por Plano:</strong> No Plano Essencial o uso é ilimitado. No plano gratuito, o usuário pode realizar até 2 cálculos por dia (somados entre as calculadoras).
               </p>
             </section>
 

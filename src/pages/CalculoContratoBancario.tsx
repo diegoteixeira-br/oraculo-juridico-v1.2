@@ -60,7 +60,7 @@ const CalculoContratoBancario = () => {
       const tokenSuccess = await useTokens(tokensRequired, 'Cálculo de Contrato Bancário');
       
       if (!tokenSuccess) {
-        toast.error("Tokens insuficientes para realizar o cálculo. Você precisa de 15.000 tokens.");
+        toast.error("Limite do plano atingido para realizar o cálculo. Assine o Plano Essencial para uso ilimitado.");
         return;
       }
 
@@ -148,9 +148,6 @@ const CalculoContratoBancario = () => {
                     </p>
                   </div>
                 </div>
-                <Badge className="bg-blue-600 text-white">
-                  15.000 tokens
-                </Badge>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -343,7 +340,7 @@ const CalculoContratoBancario = () => {
                   ) : (
                     <>
                       <Calculator className="h-5 w-5 mr-2" />
-                      Calcular (15.000 tokens)
+                      Calcular
                     </>
                   )}
                 </Button>

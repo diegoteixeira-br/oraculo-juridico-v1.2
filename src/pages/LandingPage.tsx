@@ -356,11 +356,8 @@ const LandingPage = () => {
                 <li>Calculadoras: uso ilimitado</li>
                 <li>Documentos: cópia ilimitada</li>
                 <li>Agenda: compromissos ilimitados</li>
-                <li>Sem cobrança de 15.000 tokens por cálculo</li>
+                
               </ul>
-              <div className="mt-4">
-                <Link to="/comprar-creditos" className="inline-block btn-primary px-6 py-3">Ver planos e assinar</Link>
-              </div>
             </div>
           </div>
         </div>
@@ -409,11 +406,6 @@ const LandingPage = () => {
                   Relatório detalhado com fundamentação
                 </li>
               </ul>
-              <div className="bg-card p-4 rounded-lg border border-border">
-                <p className="text-sm text-muted-foreground">
-                  <strong>Custo:</strong> 15.000 tokens por cálculo
-                </p>
-              </div>
             </div>
 
             <div className="p-8 card-signup border-2 border-primary/20 hover:border-primary/40 transition-colors">
@@ -446,11 +438,6 @@ const LandingPage = () => {
                   Relatório completo para petições
                 </li>
               </ul>
-              <div className="bg-card p-4 rounded-lg border border-border">
-                <p className="text-sm text-muted-foreground">
-                  <strong>Custo:</strong> 15.000 tokens por cálculo
-                </p>
-              </div>
             </div>
           </div>
 
@@ -460,8 +447,7 @@ const LandingPage = () => {
                 Acesso às Calculadoras
               </h3>
               <p className="text-muted-foreground">
-                As calculadoras jurídicas estão disponíveis em sua conta após o login. Cada cálculo consome 
-                15.000 tokens e gera um relatório completo com fundamentação legal e valores atualizados.
+                As calculadoras jurídicas estão disponíveis em sua conta após o login. No Plano Essencial o uso é ilimitado; no Plano Gratuito você pode realizar até 2 cálculos por dia (somados entre as calculadoras).
               </p>
             </div>
           </div>

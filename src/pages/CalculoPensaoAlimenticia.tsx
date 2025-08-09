@@ -89,7 +89,7 @@ const CalculoPensaoAlimenticia = () => {
       const tokenSuccess = await useTokens(tokensRequired, 'Cálculo de Pensão Alimentícia');
       
       if (!tokenSuccess) {
-        toast.error("Tokens insuficientes para realizar o cálculo. Você precisa de 15.000 tokens.");
+        toast.error("Limite do plano atingido para realizar o cálculo. Assine o Plano Essencial para uso ilimitado.");
         return;
       }
 
@@ -184,9 +184,6 @@ const CalculoPensaoAlimenticia = () => {
                     </p>
                   </div>
                 </div>
-                <Badge className="bg-purple-600 text-white">
-                  15.000 tokens
-                </Badge>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -375,7 +372,7 @@ const CalculoPensaoAlimenticia = () => {
                   ) : (
                     <>
                       <Calculator className="h-5 w-5 mr-2" />
-                      Calcular (15.000 tokens)
+                      Calcular
                     </>
                   )}
                 </Button>

@@ -313,9 +313,6 @@ export default function Dashboard() {
                         </div>
                       </div>
                       <div className="flex items-center justify-between">
-                        <Badge variant="outline" className="text-xs border-blue-400/30 text-blue-300">
-                          15.000 tokens
-                        </Badge>
                         <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-xs">
                           Calcular
                         </Button>
@@ -337,9 +334,6 @@ export default function Dashboard() {
                         </div>
                       </div>
                       <div className="flex items-center justify-between">
-                        <Badge variant="outline" className="text-xs border-purple-400/30 text-purple-300">
-                          15.000 tokens
-                        </Badge>
                         <Button size="sm" className="bg-purple-600 hover:bg-purple-500 text-xs">
                           Calcular
                         </Button>
