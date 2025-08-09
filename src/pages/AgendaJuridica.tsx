@@ -195,6 +195,24 @@ const AgendaJuridica = () => {
     }
 
     try {
+      const isSubscriber = (profile?.plan_type && profile.plan_type !== 'gratuito');
+      if (!isSubscriber) {
+        const { count, error: countError } = await supabase
+          .from('legal_commitments' as any)
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .eq('status', 'pendente');
+        if (countError) throw countError;
+        if ((count ?? 0) >= 5) {
+          toast({
+            title: 'Limite atingido',
+            description: 'No plano gratuito, você pode manter até 5 compromissos pendentes simultaneamente. Assine o Plano Essencial para ilimitado.',
+            variant: 'destructive',
+          });
+          return;
+        }
+      }
+
       const { error } = await supabase
         .from('legal_commitments' as any)
         .insert({

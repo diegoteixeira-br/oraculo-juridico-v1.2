@@ -30,7 +30,7 @@ export default function DocumentViewer({ documentId, isOpen, onClose }: Document
   const [processedContent, setProcessedContent] = useState("");
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
 
   useEffect(() => {
     if (documentId && isOpen) {
@@ -106,25 +106,28 @@ export default function DocumentViewer({ documentId, isOpen, onClose }: Document
     if (!document || !user?.id) return;
     
     try {
-      // Verificar e consumir tokens antes de copiar
-      const tokensRequired = document.min_tokens_required || document.min_credits_required * 1000 || 3000;
-      
-      const { data: useTokensResult, error: tokensError } = await supabase.rpc(
-        'use_tokens',
-        {
-          p_user_id: user.id,
-          p_tokens: tokensRequired,
-          p_description: `Cópia do documento: ${document.title}`
-        }
-      );
+      const isSubscriber = (profile?.plan_type && profile.plan_type !== 'gratuito');
 
-      if (tokensError || !useTokensResult) {
-        toast({
-          title: "Tokens insuficientes",
-          description: `Você precisa de ${tokensRequired.toLocaleString()} tokens para copiar este documento`,
-          variant: "destructive"
-        });
-        return;
+      if (!isSubscriber) {
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+
+        const { count, error: countError } = await supabase
+          .from('user_document_access')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .eq('access_type', 'copy')
+          .gte('created_at', startOfToday.toISOString());
+
+        if (countError) throw countError;
+        if ((count ?? 0) >= 1) {
+          toast({
+            title: 'Limite diário atingido',
+            description: 'No plano gratuito, você pode copiar 1 documento por dia. Assine o Plano Essencial para acesso ilimitado.',
+            variant: 'destructive'
+          });
+          return;
+        }
       }
 
       // Converter HTML para texto simples básico
@@ -132,25 +135,37 @@ export default function DocumentViewer({ documentId, isOpen, onClose }: Document
         .replace(/<\/p>/g, '\n\n')
         .replace(/<\/h[1-6]>/g, '\n\n')
         .replace(/<\/li>/g, '\n')
-        .replace(/<br\s*\/?>/g, '\n')
+        .replace(/<br\s*\/>?/g, '\n')
         .replace(/<[^>]*>/g, '')
         .replace(/&nbsp;/g, ' ')
         .trim();
       
       await navigator.clipboard.writeText(textContent);
       setCopied(true);
+
+      // Registrar cópia
+      if (user?.id && documentId) {
+        await supabase
+          .from('user_document_access')
+          .insert({
+            user_id: user.id,
+            document_id: documentId,
+            access_type: 'copy'
+          });
+      }
+
       toast({
-        title: "Copiado!",
-        description: `Documento copiado! ${tokensRequired.toLocaleString()} tokens utilizados.`
+        title: 'Copiado! ',
+        description: 'Documento copiado para sua área de transferência.'
       });
       
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
       console.error('Erro ao copiar:', error);
       toast({
-        title: "Erro",
-        description: "Não foi possível copiar o documento",
-        variant: "destructive"
+        title: 'Erro',
+        description: 'Não foi possível copiar o documento',
+        variant: 'destructive'
       });
     }
   };
@@ -236,18 +251,12 @@ export default function DocumentViewer({ documentId, isOpen, onClose }: Document
           <Button
             variant="outline"
             size="lg"
-            onClick={() => {
-              const tokensRequired = document?.min_tokens_required || document?.min_credits_required * 1000 || 3000;
-              // Confirmação antes de copiar para evitar cliques acidentais
-              if (window.confirm(`Tem certeza que deseja copiar este documento? Serão consumidos ${tokensRequired.toLocaleString()} tokens.`)) {
-                copyToClipboard();
-              }
-            }}
+            onClick={copyToClipboard}
             disabled={!processedContent}
             className="bg-primary/10 hover:bg-primary/20 border-primary/30 text-primary font-semibold px-8 py-3"
           >
             {copied ? <Check className="w-5 h-5 mr-2" /> : <Copy className="w-5 h-5 mr-2" />}
-            {copied ? "Copiado!" : `Copiar Documento (${(document?.min_tokens_required || document?.min_credits_required * 1000 || 3000).toLocaleString()} tokens)`}
+            {copied ? "Copiado!" : "Copiar Documento"}
           </Button>
         </div>
 
