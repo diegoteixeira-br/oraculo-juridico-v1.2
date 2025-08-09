@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
-import { CreditCard, Check, Star, Crown, RefreshCw } from "lucide-react";
+import { CreditCard, Check, Star, Crown, RefreshCw, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import UserMenu from "@/components/UserMenu";
-import { useScrollDirection } from "@/hooks/useScrollDirection";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const tokenPackages = [
   {
@@ -49,9 +49,10 @@ export default function ComprarCreditosPage() {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const selectedPlan = searchParams.get('plano');
-  const { visible: menuVisible } = useScrollDirection();
   const [subLoading, setSubLoading] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);
+  const navigate = useNavigate();
+  usePageTitle();
 
   // Garantir que a página sempre abra no topo
   useEffect(() => {
@@ -146,209 +147,230 @@ export default function ComprarCreditosPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-2 sm:p-4 lg:p-6">
-      <div className="max-w-6xl mx-auto space-y-3 sm:space-y-4 lg:space-y-6">
-        {/* Header com Menu - com animação de scroll */}
-        <div className={`fixed top-0 right-0 z-50 p-2 sm:p-4 transition-transform duration-300 ${
-          menuVisible ? 'translate-y-0' : '-translate-y-full'
-        }`}>
-          <UserMenu />
-        </div>
-
-        <div className="text-center">
-          <img 
-            src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
-            alt="Oráculo Jurídico" 
-            className="h-12 sm:h-14 w-auto mx-auto mb-2 sm:mb-3"
-          />
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary mb-1 sm:mb-2">Planos de Tokens</h1>
-          <p className="text-xs sm:text-sm lg:text-base text-muted-foreground max-w-md mx-auto px-2">
-            Escolha o plano ideal para suas necessidades.
-          </p>
-          <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-2 sm:p-3 mt-2 sm:mt-3 max-w-sm mx-auto">
-            <p className="text-xs text-muted-foreground">
-              💡 <strong>Como funciona:</strong> Tokens usados na pergunta + resposta + documentos
-            </p>
-          </div>
-          <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-2 sm:p-3 mt-2 max-w-sm mx-auto">
-            <p className="text-xs text-blue-200">
-              🎁 <strong>Plano Gratuito:</strong> 3.000 tokens diários
-            </p>
-          </div>
-        </div>
-
-        {/* Assinatura Mensal */}
-        <div className="max-w-4xl mx-auto">
-          <Card className="relative bg-slate-900/60 border-primary/50 shadow-lg shadow-primary/20 overflow-hidden">
-            <CardHeader className="pt-6 pb-2 text-center">
-              <Badge className="bg-primary text-primary-foreground mb-2 w-fit mx-auto">Novo</Badge>
-              <CardTitle className="text-xl lg:text-2xl text-primary flex items-center justify-center gap-2">
-                <Crown className="w-5 h-5" /> Plano Essencial
-              </CardTitle>
-              <CardDescription className="text-white text-2xl lg:text-3xl font-bold">
-                R$ 37,90/mês
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="px-4 sm:px-6 pb-6">
-              <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm">
-                    <Check className="w-4 h-4 text-primary" />
-                    <span>30.000 tokens por mês</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Check className="w-4 h-4 text-primary" />
-                    <span>Calculadoras ilimitadas</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Check className="w-4 h-4 text-primary" />
-                    <span>Documentos Jurídicos ilimitados</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Check className="w-4 h-4 text-primary" />
-                    <span>Agenda de Compromissos ilimitada</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Check className="w-4 h-4 text-primary" />
-                    <span>Renovação automática. Cancele quando quiser.</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Check className="w-4 h-4 text-primary" />
-                    <span>7 dias grátis: 3.000 tokens/dia no período de teste</span>
-                  </div>
-                </div>
-                <div className="flex flex-col items-center justify-center gap-3">
-                  <Button onClick={handleSubscribe} disabled={subLoading} className="w-full sm:w-auto h-12 px-6">
-                    {subLoading ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Redirecionando...
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <CreditCard className="w-5 h-5" />
-                        Assinar agora
-                      </div>
-                    )}
-                  </Button>
-                  <Button onClick={handleManageSubscription} disabled={portalLoading} variant="secondary" className="w-full sm:w-auto">
-                    {portalLoading ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Abrindo portal...
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <RefreshCw className="w-4 h-4" />
-                        Gerenciar assinatura
-                      </div>
-                    )}
-                  </Button>
-                  <p className="text-xs text-muted-foreground text-center">
-                    Inclui 30.000 tokens/mês. Excedentes? Compre pacotes avulsos abaixo.
-                  </p>
-                </div>
+    <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col overflow-hidden">
+      {/* Header fixo */}
+      <div className="flex-shrink-0 bg-slate-800/50 border-b border-slate-700 backdrop-blur-sm">
+        <div className="container max-w-6xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate(-1)}
+                className="text-white hover:bg-slate-700"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <img 
+                src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
+                alt="Oráculo Jurídico" 
+                className="h-6 sm:h-8 w-auto"
+              />
+              <div>
+                <h1 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+                  <CreditCard className="h-5 w-5 text-primary" />
+                  Comprar Tokens
+                </h1>
+                <p className="text-xs text-slate-300 hidden lg:block">
+                  Escolha um plano mensal ou pacotes avulsos
+                </p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+            <UserMenu />
+          </div>
         </div>
+      </div>
 
-        {/* Packages Grid - Responsivo: vertical no mobile, horizontal no desktop */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 max-w-4xl mx-auto">
-          {tokenPackages.map((pkg) => (
-            <Card 
-              key={pkg.id}
-              className={`relative bg-slate-800 border-slate-700 transition-all duration-300 h-fit ${
-                pkg.popular ? 'border-primary shadow-lg shadow-primary/20' : ''
-              }`}
-            >
-              {pkg.popular && (
-                <div className="absolute -top-2 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-primary text-primary-foreground px-2 py-1 text-xs">
-                    <Star className="w-3 h-3 mr-1" />
-                    Mais Popular
-                  </Badge>
-                </div>
-              )}
-              
-              <CardHeader className="text-center pt-4 sm:pt-6 pb-2 sm:pb-3">
-                <CardTitle className="text-base sm:text-lg lg:text-xl font-bold text-primary">
-                  {pkg.name}
+      {/* Conteúdo principal com scroll interno */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="container max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
+          {/* Informações iniciais */}
+          <div className="text-center">
+            <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-2 sm:p-3 max-w-sm mx-auto">
+              <p className="text-xs text-muted-foreground">
+                💡 <strong>Como funciona:</strong> Tokens usados na pergunta + resposta + documentos
+              </p>
+            </div>
+            <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-2 sm:p-3 mt-2 max-w-sm mx-auto">
+              <p className="text-xs text-blue-200">
+                🎁 <strong>Plano Gratuito:</strong> 3.000 tokens diários
+              </p>
+            </div>
+          </div>
+
+          {/* Assinatura Mensal */}
+          <div className="max-w-4xl mx-auto">
+            <Card className="relative bg-slate-900/60 border-primary/50 shadow-lg shadow-primary/20 overflow-hidden">
+              <CardHeader className="pt-6 pb-2 text-center">
+                <Badge className="bg-primary text-primary-foreground mb-2 w-fit mx-auto">Novo</Badge>
+                <CardTitle className="text-xl lg:text-2xl text-primary flex items-center justify-center gap-2">
+                  <Crown className="w-5 h-5" /> Plano Essencial
                 </CardTitle>
-                <CardDescription className="text-lg sm:text-xl lg:text-2xl font-bold text-white">
-                  {pkg.tokens.toLocaleString()} tokens
+                <CardDescription className="text-white text-2xl lg:text-3xl font-bold">
+                  R$ 37,90/mês
                 </CardDescription>
               </CardHeader>
-
-              <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-6 pb-4 sm:pb-6">
-                <div className="text-center">
-                  {pkg.discount && (
-                    <div className="mb-1">
-                      <Badge className="bg-green-600 text-white text-xs">
-                        {pkg.discount}
-                      </Badge>
+              <CardContent className="px-4 sm:px-6 pb-6">
+                <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="w-4 h-4 text-primary" />
+                      <span>30.000 tokens por mês</span>
                     </div>
-                  )}
-                  <div className="flex items-center justify-center gap-2 mb-1 sm:mb-2">
-                    {pkg.originalPrice && (
-                      <span className="text-xs sm:text-sm text-muted-foreground line-through">
-                        R$ {pkg.originalPrice.toFixed(2).replace('.', ',')}
-                      </span>
-                    )}
-                    <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary">
-                      R$ {pkg.price.toFixed(2).replace('.', ',')}
-                    </span>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="w-4 h-4 text-primary" />
+                      <span>Calculadoras ilimitadas</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="w-4 h-4 text-primary" />
+                      <span>Documentos Jurídicos ilimitados</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="w-4 h-4 text-primary" />
+                      <span>Agenda de Compromissos ilimitada</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="w-4 h-4 text-primary" />
+                      <span>Renovação automática. Cancele quando quiser.</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="w-4 h-4 text-primary" />
+                      <span>7 dias grátis: 3.000 tokens/dia no período de teste</span>
+                    </div>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    R$ {(pkg.price / (pkg.tokens / 1000)).toFixed(3).replace('.', ',')} por 1k tokens
-                  </p>
+                  <div className="flex flex-col items-center justify-center gap-3">
+                    <Button onClick={handleSubscribe} disabled={subLoading} className="w-full sm:w-auto h-12 px-6">
+                      {subLoading ? (
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          Redirecionando...
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <CreditCard className="w-5 h-5" />
+                          Assinar agora
+                        </div>
+                      )}
+                    </Button>
+                    <Button onClick={handleManageSubscription} disabled={portalLoading} variant="secondary" className="w-full sm:w-auto">
+                      {portalLoading ? (
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          Abrindo portal...
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <RefreshCw className="w-4 h-4" />
+                          Gerenciar assinatura
+                        </div>
+                      )}
+                    </Button>
+                    <p className="text-xs text-muted-foreground text-center">
+                      Inclui 30.000 tokens/mês. Excedentes? Compre pacotes avulsos abaixo.
+                    </p>
+                  </div>
                 </div>
-
-                <div className="space-y-1 sm:space-y-2">
-                  {pkg.features.map((feature, index) => (
-                    <div key={index} className="flex items-center gap-2 text-xs sm:text-sm">
-                      <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0" />
-                      <span>{feature}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <Button
-                  onClick={() => handlePurchase(pkg.id)}
-                  disabled={isLoading}
-                  className={`w-full mt-3 h-10 sm:h-12 text-sm sm:text-base ${
-                    pkg.popular 
-                      ? 'bg-primary hover:bg-primary/90' 
-                      : 'bg-slate-700 hover:bg-slate-600 text-white'
-                  }`}
-                >
-                  {isLoading && selectedPackage === pkg.id ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Processando...
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <CreditCard className="w-4 h-4 sm:w-5 sm:h-5" />
-                      Comprar Tokens
-                    </div>
-                  )}
-                </Button>
               </CardContent>
             </Card>
-          ))}
-        </div>
+          </div>
 
-        {/* Payment Info */}
-        <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-3 sm:p-4 text-center max-w-md mx-auto">
-          <h3 className="text-sm sm:text-base font-semibold text-primary mb-1 sm:mb-2">Pagamento Seguro</h3>
-          <p className="text-xs text-muted-foreground mb-2 sm:mb-3">
-            Processamento via Stripe com criptografia SSL.
-          </p>
-          <div className="flex items-center justify-center gap-2 sm:gap-3 text-xs text-muted-foreground">
-            <span>🔒 SSL</span>
-            <span>💳 Cartão</span>
-            <span>🔄 Instantâneo</span>
+          {/* Packages Grid - Responsivo: vertical no mobile, horizontal no desktop */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 max-w-4xl mx-auto">
+            {tokenPackages.map((pkg) => (
+              <Card 
+                key={pkg.id}
+                className={`relative bg-slate-800 border-slate-700 transition-all duration-300 h-fit ${
+                  pkg.popular ? 'border-primary shadow-lg shadow-primary/20' : ''
+                }`}
+              >
+                {pkg.popular && (
+                  <div className="absolute -top-2 left-1/2 -translate-x-1/2">
+                    <Badge className="bg-primary text-primary-foreground px-2 py-1 text-xs">
+                      <Star className="w-3 h-3 mr-1" />
+                      Mais Popular
+                    </Badge>
+                  </div>
+                )}
+                
+                <CardHeader className="text-center pt-4 sm:pt-6 pb-2 sm:pb-3">
+                  <CardTitle className="text-base sm:text-lg lg:text-xl font-bold text-primary">
+                    {pkg.name}
+                  </CardTitle>
+                  <CardDescription className="text-lg sm:text-xl lg:text-2xl font-bold text-white">
+                    {pkg.tokens.toLocaleString()} tokens
+                  </CardDescription>
+                </CardHeader>
+
+                <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-6 pb-4 sm:pb-6">
+                  <div className="text-center">
+                    {pkg.discount && (
+                      <div className="mb-1">
+                        <Badge className="bg-green-600 text-white text-xs">
+                          {pkg.discount}
+                        </Badge>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-center gap-2 mb-1 sm:mb-2">
+                      {pkg.originalPrice && (
+                        <span className="text-xs sm:text-sm text-muted-foreground line-through">
+                          R$ {pkg.originalPrice.toFixed(2).replace('.', ',')}
+                        </span>
+                      )}
+                      <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary">
+                        R$ {pkg.price.toFixed(2).replace('.', ',')}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      R$ {(pkg.price / (pkg.tokens / 1000)).toFixed(3).replace('.', ',')} por 1k tokens
+                    </p>
+                  </div>
+
+                  <div className="space-y-1 sm:space-y-2">
+                    {pkg.features.map((feature, index) => (
+                      <div key={index} className="flex items-center gap-2 text-xs sm:text-sm">
+                        <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0" />
+                        <span>{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <Button
+                    onClick={() => handlePurchase(pkg.id)}
+                    disabled={isLoading}
+                    className={`w-full mt-3 h-10 sm:h-12 text-sm sm:text-base ${
+                      pkg.popular 
+                        ? 'bg-primary hover:bg-primary/90' 
+                        : 'bg-slate-700 hover:bg-slate-600 text-white'
+                    }`}
+                  >
+                    {isLoading && selectedPackage === pkg.id ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Processando...
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <CreditCard className="w-4 h-4 sm:w-5 sm:h-5" />
+                        Comprar Tokens
+                      </div>
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Payment Info */}
+          <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-3 sm:p-4 text-center max-w-md mx-auto">
+            <h3 className="text-sm sm:text-base font-semibold text-primary mb-1 sm:mb-2">Pagamento Seguro</h3>
+            <p className="text-xs text-muted-foreground mb-2 sm:mb-3">
+              Processamento via Stripe com criptografia SSL.
+            </p>
+            <div className="flex items-center justify-center gap-2 sm:gap-3 text-xs text-muted-foreground">
+              <span>🔒 SSL</span>
+              <span>💳 Cartão</span>
+              <span>🔄 Instantâneo</span>
+            </div>
           </div>
         </div>
       </div>
