@@ -42,6 +42,13 @@ const Privacidade = () => {
             </section>
 
             <section>
+              <h2 className="text-xl font-semibold text-foreground mb-4">2.1 Dados de Uso e Limites por Plano</h2>
+              <p>
+                Para garantir o cumprimento dos limites de uso por plano, registramos métricas de utilização como contagem diária de cópias de documentos, quantidade de cálculos realizados e número de compromissos pendentes. Esses dados são usados exclusivamente para aplicar as regras de limite e melhorar a experiência do usuário, em conformidade com a LGPD.
+              </p>
+            </section>
+
+            <section>
               <h2 className="text-xl font-semibold text-foreground mb-4">3. Compartilhamento de Dados</h2>
               <p>
                 Não vendemos, alugamos ou compartilhamos suas informações pessoais com terceiros, 

@@ -52,29 +52,23 @@ const Termos = () => {
             <section>
               <h2 className="text-xl font-semibold text-foreground mb-4">3. Sistema de Tokens</h2>
               <p>
-                Nossa plataforma utiliza um sistema baseado em tokens para o consumo dos serviços:
+                Tokens são utilizados exclusivamente no chat com a IA para processar consultas. No plano gratuito, cada usuário recebe 3.000 tokens por dia, renovados a cada 24 horas (não cumulativos). No Plano Essencial, o usuário recebe 30.000 tokens por mês.
               </p>
-              <ul className="list-disc ml-6 mt-2 space-y-2">
-                <li><strong>Tokens Diários Gratuitos:</strong> Todos os usuários recebem 3.000 tokens diários gratuitamente, renovados automaticamente a cada 24 horas.</li>
-                <li><strong>Tokens de Planos:</strong> Tokens adquiridos através da compra de planos que não expiram e podem ser utilizados a qualquer momento.</li>
-                <li><strong>Consumo de Tokens:</strong> O consumo varia conforme o tamanho da consulta, resposta e processamento de documentos anexados.</li>
-                <li><strong>Ordem de Uso:</strong> Tokens diários são utilizados primeiro, seguidos pelos tokens do plano adquirido.</li>
-              </ul>
+              <p className="mt-2">
+                Importante: calculadoras, documentos e agenda não consomem tokens. Esses recursos seguem os limites do plano conforme descrito abaixo.
+              </p>
             </section>
 
             <section>
               <h2 className="text-xl font-semibold text-foreground mb-4">4. Planos e Preços</h2>
               <p>
-                Oferecemos diferentes planos de tokens para atender às necessidades dos usuários:
+                Oferecemos um plano de assinatura mensal e pacotes opcionais de tokens:
               </p>
               <ul className="list-disc ml-6 mt-2 space-y-2">
-                <li><strong>Plano Básico:</strong> 75.000 tokens por R$ 59,90</li>
-                <li><strong>Plano Premium:</strong> 150.000 tokens por R$ 97,00 (desconto de 20%)</li>
-                <li><strong>Período Gratuito:</strong> 7 dias de acesso completo para novos usuários</li>
+                <li><strong>Plano Essencial:</strong> R$ 37,90/mês, com 30.000 tokens/mês para o chat e uso ilimitado das calculadoras, documentos (cópia) e agenda.</li>
+                <li><strong>Teste Gratuito:</strong> 7 dias com 3.000 tokens/dia para o chat.</li>
+                <li><strong>Pacotes Opcionais:</strong> 75.000 e 150.000 tokens avulsos (opcionais) para quem desejar ampliar o uso do chat.</li>
               </ul>
-              <p className="mt-2">
-                Os tokens adquiridos não possuem data de expiração e podem ser utilizados conforme a necessidade do usuário.
-              </p>
             </section>
 
             <section>
@@ -98,30 +92,21 @@ const Termos = () => {
             <section>
               <h2 className="text-xl font-semibold text-foreground mb-4">6. Calculadoras Jurídicas</h2>
               <p>
-                A plataforma oferece calculadoras jurídicas especializadas para auxiliar em cálculos 
-                complexos do dia a dia da advocacia:
+                A plataforma oferece calculadoras jurídicas especializadas para auxiliar em cálculos complexos do dia a dia da advocacia:
               </p>
               <ul className="list-disc ml-6 mt-2 space-y-2">
                 <li><strong>Cálculo de Contrato Bancário:</strong> Análise de juros, taxas, cláusulas abusivas e valores de devolução indevida</li>
                 <li><strong>Cálculo de Pensão Alimentícia:</strong> Cálculo de valores em atraso com juros, correção monetária e relatórios detalhados</li>
               </ul>
               <p className="mt-2">
-                <strong>Custo por Cálculo:</strong> Cada calculadora consome 15.000 tokens por execução, 
-                gerando um relatório completo com fundamentação legal e valores atualizados conforme 
-                índices oficiais.
-              </p>
-              <p className="mt-2">
-                <strong>Importante:</strong> As calculadoras são ferramentas auxiliares baseadas em 
-                parâmetros legais estabelecidos, mas não substituem a análise jurídica profissional 
-                para casos específicos e complexos.
+                <strong>Limites por Plano:</strong> No Plano Essencial o uso é ilimitado. No plano gratuito, o usuário pode realizar até 2 cálculos por dia (somados entre as calculadoras). Não há cobrança de 15.000 tokens por cálculo.
               </p>
             </section>
 
             <section>
               <h2 className="text-xl font-semibold text-foreground mb-4">7. Documentos Jurídicos</h2>
               <p>
-                A plataforma oferece acesso a documentos jurídicos pré-formulados que podem ser 
-                personalizados conforme a necessidade:
+                A plataforma oferece acesso a documentos jurídicos pré-formulados que podem ser personalizados conforme a necessidade:
               </p>
               <ul className="list-disc ml-6 mt-2 space-y-2">
                 <li>Contratos diversos</li>
@@ -130,8 +115,17 @@ const Termos = () => {
                 <li>Declarações</li>
               </ul>
               <p className="mt-2">
-                O acesso aos documentos requer um mínimo de tokens disponíveis na conta, garantindo 
-                que o usuário possa efetivamente utilizar os recursos.
+                <strong>Limites por Plano:</strong> No Plano Essencial, a cópia de documentos é ilimitada. No plano gratuito, o usuário pode copiar 1 documento por dia. A cópia de documentos não consome tokens.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold text-foreground mb-4">8. Agenda Jurídica</h2>
+              <p>
+                A Agenda Jurídica permite organizar prazos processuais, audiências, reuniões e compromissos personalizados.
+              </p>
+              <p className="mt-2">
+                <strong>Limites por Plano:</strong> No Plano Essencial, o uso é ilimitado. No plano gratuito, o usuário pode manter até 5 compromissos com status pendente simultaneamente.
               </p>
             </section>
 
@@ -145,7 +139,7 @@ const Termos = () => {
                 <li>Utilizar os serviços de forma ética e legal</li>
                 <li>Não compartilhar sua conta com terceiros</li>
                 <li>Verificar as informações obtidas com profissionais qualificados quando necessário</li>
-                <li>Respeitar os limites de uso estabelecidos pelos tokens disponíveis</li>
+                <li>Respeitar os limites de uso conforme o plano (gratuito e Plano Essencial)</li>
               </ul>
             </section>
 

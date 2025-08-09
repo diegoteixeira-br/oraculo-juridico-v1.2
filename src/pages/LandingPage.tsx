@@ -23,11 +23,11 @@ const LandingPage = () => {
   const faqData = [
     {
       question: "Como funcionam os tokens?",
-      answer: "É muito simples. Cada pergunta completa que você faz à nossa Inteligência Artificial consome tokens de acordo com o tamanho da consulta. Ao se cadastrar, você entra no nosso plano gratuito e ganha 3.000 tokens que se renovam a cada 24 horas."
+      answer: "Tokens são usados apenas no chat com a IA. No plano gratuito você tem 3.000 tokens/dia; no Plano Essencial você recebe 30.000 tokens/mês. Calculadoras, documentos e agenda seguem os limites do seu plano (veja abaixo)."
     },
     {
       question: "Meus tokens gratuitos se acumulam se eu não usar?",
-      answer: "Não. Os 3.000 tokens gratuitos são renovados diariamente, ou seja, você tem direito a novas consultas grátis a cada dia. Eles não são cumulativos. Para ter tokens ilimitados para usar quando quiser, você pode adquirir planos pagos dentro da sua conta."
+      answer: "Não. Os 3.000 tokens gratuitos do chat se renovam diariamente e não são cumulativos. Para uso sem limites das calculadoras, documentos e agenda, assine o Plano Essencial."
     },
     {
       question: "Preciso cadastrar um cartão de crédito para usar o plano gratuito?",
@@ -39,7 +39,7 @@ const LandingPage = () => {
     },
     {
       question: "Como posso adquirir mais tokens?",
-      answer: "Após criar sua conta gratuita e fazer login, você terá acesso à área de planos onde poderá adquirir o Plano Básico (75.000 tokens por R$ 59,90) ou Premium (150.000 tokens por R$ 97,00). Os tokens dos planos pagos não expiram."
+      answer: "Você pode assinar o Plano Essencial por R$ 37,90/mês para liberar uso ilimitado de calculadoras, documentos e agenda (além de 30.000 tokens/mês para o chat). Pacotes avulsos de 75k e 150k tokens permanecem disponíveis de forma opcional."
     },
     {
       question: "O que é a Agenda Jurídica?",
@@ -325,6 +325,41 @@ const LandingPage = () => {
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Planos e Limites */}
+      <section className="py-20 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-4xl font-bold mb-4 text-foreground">Planos e Limites</h2>
+            <p className="text-muted-foreground">Entenda o que você pode fazer no Plano Gratuito e no Plano Essencial</p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="p-6 card-signup border border-border">
+              <h3 className="text-xl font-semibold text-foreground mb-2">Plano Gratuito</h3>
+              <ul className="list-disc ml-6 space-y-2 text-muted-foreground">
+                <li>Chat com IA: 3.000 tokens por dia</li>
+                <li>Calculadoras: até 2 cálculos por dia (somados entre as calculadoras)</li>
+                <li>Documentos: 1 cópia de documento por dia</li>
+                <li>Agenda: até 5 compromissos pendentes simultaneamente</li>
+              </ul>
+            </div>
+            <div className="p-6 card-signup border border-border">
+              <h3 className="text-xl font-semibold text-foreground mb-2">Plano Essencial • R$ 37,90/mês</h3>
+              <ul className="list-disc ml-6 space-y-2 text-muted-foreground">
+                <li>Chat com IA: 30.000 tokens por mês</li>
+                <li>Teste grátis de 7 dias: 3.000 tokens/dia</li>
+                <li>Calculadoras: uso ilimitado</li>
+                <li>Documentos: cópia ilimitada</li>
+                <li>Agenda: compromissos ilimitados</li>
+                <li>Sem cobrança de 15.000 tokens por cálculo</li>
+              </ul>
+              <div className="mt-4">
+                <Link to="/comprar-creditos" className="inline-block btn-primary px-6 py-3">Ver planos e assinar</Link>
               </div>
             </div>
           </div>
