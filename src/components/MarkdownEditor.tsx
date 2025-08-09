@@ -129,7 +129,7 @@ export default function MarkdownEditor({
           <Button variant="outline" onClick={onCancel}>Cancelar</Button>
           <Button variant="secondary" onClick={exportPdf}>Exportar PDF</Button>
         </div>
-        <div className="flex items-center gap-3 text-sm text-slate-300">
+        <div className="flex items-center gap-3 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <Button variant="outline" size="icon" onClick={zoomOut} className="h-8 w-8"><ZoomOut className="w-4 h-4"/></Button>
             <Button variant="outline" size="icon" onClick={zoomIn} className="h-8 w-8"><ZoomIn className="w-4 h-4"/></Button>
@@ -163,7 +163,7 @@ export default function MarkdownEditor({
                 onChange={onContentChange}
                 modules={modules}
                 formats={formats}
-                className="[&_.ql-container]:min-h-[1123px] [&_.ql-container]:bg-white [&_.ql-container]:rounded-md [&_.ql-container]:shadow [&_.ql-editor]:min-h-[1123px]"
+                className="[&_.ql-container]:min-h-[1123px] [&_.ql-container]:bg-[hsl(var(--paper))] [&_.ql-container]:rounded-md [&_.ql-container]:shadow [&_.ql-editor]:min-h-[1123px] [&_.ql-editor]:text-[hsl(var(--paper-foreground))]"
               />
             </div>
           </div>
@@ -173,13 +173,14 @@ export default function MarkdownEditor({
       {/* Estilos específicos do editor */}
       <style>{`
         .ql-snow { background: transparent; }
-        .ql-toolbar.ql-snow { border-color: hsl(var(--border)); background: hsl(var(--muted)); }
-        .ql-toolbar .ql-stroke { stroke: hsl(var(--foreground)); }
-        .ql-toolbar .ql-picker { color: hsl(var(--foreground)); }
-        .ql-container.ql-snow { border-color: hsl(var(--border)); }
+        .ql-toolbar.ql-snow { border-color: hsl(var(--border)); background: hsl(var(--card)); }
+        .ql-toolbar .ql-stroke { stroke: hsl(var(--card-foreground)); }
+        .ql-toolbar .ql-picker { color: hsl(var(--card-foreground)); }
+        .ql-container.ql-snow { border-color: hsl(var(--border)); background: hsl(var(--paper)); }
         .ql-editor { 
           padding: 28px 32px; 
           line-height: 1.6;
+          color: hsl(var(--paper-foreground));
           background-image: linear-gradient(
             to bottom,
             transparent calc(${A4_HEIGHT_PX}px - 1px),
@@ -188,6 +189,7 @@ export default function MarkdownEditor({
           background-size: 100% ${A4_HEIGHT_PX}px;
           background-repeat: repeat-y;
         }
+        .ql-editor.ql-blank::before { color: hsl(var(--muted-foreground)); opacity: 0.9; }
         .page-break { 
           border-top: 1px dashed hsl(var(--muted-foreground)); 
           margin: 24px 0; 
