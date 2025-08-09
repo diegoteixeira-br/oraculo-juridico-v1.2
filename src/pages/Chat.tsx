@@ -527,7 +527,7 @@ export default function Chat() {
 
       {/* Menu flutuante - apenas desktop */}
       {!isMobile && (
-        <div className={`fixed top-0 right-0 z-50 p-4 transition-transform duration-300 ${
+        <div className={`fixed top-0 right-0 z-50 p-2 -mt-2 transition-transform duration-300 ${
           menuVisible ? 'translate-y-0' : '-translate-y-full'
         }`}>
           <UserMenu hideOptions={["chat"]} />
