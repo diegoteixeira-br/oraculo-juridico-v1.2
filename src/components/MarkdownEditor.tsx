@@ -19,6 +19,7 @@ interface EditorProps {
 // Medidas aproximadas de A4 a ~96dpi
 const A4_WIDTH_PX = 794;  // 210mm
 const A4_HEIGHT_PX = 1123; // 297mm
+const MM_TO_PX = 3.7795; // 1mm em pixels (~96dpi)
 
 export default function MarkdownEditor({
   title,
@@ -32,6 +33,9 @@ export default function MarkdownEditor({
   const pageRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(1);
   const [pages, setPages] = useState(1);
+  // Margem uniforme em milímetros
+  const [marginMm, setMarginMm] = useState(25);
+  const marginPx = useMemo(() => Math.round(marginMm * MM_TO_PX), [marginMm]);
 
   const modules = useMemo(
     () => ({
@@ -80,7 +84,7 @@ export default function MarkdownEditor({
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => { recalcPages(); }, [content, zoom]);
+  useEffect(() => { recalcPages(); }, [content, zoom, marginMm]);
 
   const zoomIn = () => setZoom((z) => Math.min(2, +(z + 0.1).toFixed(2)));
   const zoomOut = () => setZoom((z) => Math.max(0.6, +(z - 0.1).toFixed(2)));
@@ -104,7 +108,7 @@ export default function MarkdownEditor({
     w.document.write(`<!doctype html><html><head><meta charset="utf-8" />
       <title>${title || "Documento"}</title>
       <style>
-        @page { size: A4; margin: 25mm; }
+        @page { size: A4; margin: ${marginMm}mm; }
         .ql-editor { line-height: 1.6; }
         .page-break { break-after: page; }
         body { font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif; }
@@ -141,6 +145,12 @@ export default function MarkdownEditor({
             <span>{pages} página(s) A4</span>
           </div>
           <Separator orientation="vertical" className="h-6" />
+          <div className="flex items-center gap-2">
+            <span>Margem</span>
+            <Input type="number" className="w-20 h-8" min={0} max={50} step={1} value={marginMm} onChange={(e) => setMarginMm(Number(e.target.value))} />
+            <span>mm</span>
+          </div>
+          <Separator orientation="vertical" className="h-6" />
           <Button variant="outline" size="sm" onClick={insertPageBreak}>
             <FilePlus2 className="w-4 h-4 mr-2"/> Inserir quebra de página
           </Button>
@@ -154,7 +164,7 @@ export default function MarkdownEditor({
             <div
               ref={pageRef}
               className="mx-auto"
-              style={{ width: A4_WIDTH_PX, zoom: zoom as any, transformOrigin: "top center" }}
+              style={{ width: A4_WIDTH_PX, zoom: zoom as any, transformOrigin: "top center", ["--m-top" as any]: `${marginPx}px`, ["--m-right" as any]: `${marginPx}px`, ["--m-bottom" as any]: `${marginPx}px`, ["--m-left" as any]: `${marginPx}px` }}
             >
               <ReactQuill
                 ref={quillRef as any}
@@ -178,7 +188,7 @@ export default function MarkdownEditor({
         .ql-toolbar .ql-picker { color: hsl(var(--card-foreground)); }
         .ql-container.ql-snow { border-color: hsl(var(--border)); background: hsl(var(--paper)); }
         .ql-editor { 
-          padding: 28px 32px; 
+          padding: var(--m-top, 28px) var(--m-right, 32px) var(--m-bottom, 28px) var(--m-left, 32px);
           line-height: 1.6;
           color: hsl(var(--paper-foreground));
           background-image: linear-gradient(
