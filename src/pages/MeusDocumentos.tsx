@@ -194,7 +194,7 @@ export default function MeusDocumentos() {
                     </SelectTrigger>
                     <SelectContent className="z-50 bg-slate-800 text-white border-slate-700">
                       <SelectItem value="__all__">Todas</SelectItem>
-                      {folders.map((f) => (
+                      {folders.filter((f) => typeof f === 'string' && f.trim().length > 0 && f !== "__all__").map((f) => (
                         <SelectItem key={f} value={f}>{f}</SelectItem>
                       ))}
                     </SelectContent>
