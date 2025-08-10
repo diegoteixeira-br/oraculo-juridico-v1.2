@@ -35,7 +35,7 @@ const InlineWordUnderlineOverlay: React.FC<InlineWordUnderlineOverlayProps> = ({
     }
 
     try {
-      // Count only speakable words: skip nodes inside code/pre/kbd/samp or aria-hidden content
+      // Count only speakable tokens (letters/numbers), skip code-like/hidden content
       const isSkippable = (n: Node) => {
         const el = (n.parentElement || (n as any).parentNode) as HTMLElement | null;
         if (!el) return false;
@@ -45,43 +45,65 @@ const InlineWordUnderlineOverlay: React.FC<InlineWordUnderlineOverlayProps> = ({
 
       const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
       let node: Node | null = walker.nextNode();
-      const wordRegex = /\S+/g; // non-whitespace sequences
+      const letterNumRegex = /[\p{L}\p{N}]+/gu; // words without trailing punctuation
+      const fallbackRegex = /\S+/g;
 
-      // First pass: count speakable words
-      let total = 0;
+      // First pass: total speakable characters
+      let totalChars = 0;
       while (node) {
         if (!isSkippable(node)) {
           const value = (node as Text).nodeValue || "";
-          wordRegex.lastIndex = 0;
-          while (wordRegex.exec(value) !== null) total++;
+          letterNumRegex.lastIndex = 0;
+          let m: RegExpExecArray | null;
+          while ((m = letterNumRegex.exec(value)) !== null) totalChars += m[0].length;
         }
         node = walker.nextNode();
       }
 
-      if (total === 0) {
+      if (totalChars === 0) {
+        // Fallback to non-whitespace word counting if no letter/number tokens found
+        const walkerFB = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+        let nodeFB: Node | null = walkerFB.nextNode();
+        let totalFB = 0;
+        while (nodeFB) {
+          if (!isSkippable(nodeFB)) {
+            const value = (nodeFB as Text).nodeValue || "";
+            fallbackRegex.lastIndex = 0;
+            let fm: RegExpExecArray | null;
+            while ((fm = fallbackRegex.exec(value)) !== null) totalFB += fm[0].length;
+          }
+          nodeFB = walkerFB.nextNode();
+        }
+        totalChars = totalFB;
+      }
+
+      if (totalChars === 0) {
         setStyle((s) => ({ ...s, visible: false }));
         return;
       }
 
       const clamped = Math.max(0, Math.min(1, progress));
-      let targetIndex = Math.floor(clamped * total);
-      if (targetIndex >= total) targetIndex = total - 1;
+      let targetChar = Math.floor(clamped * totalChars);
+      if (targetChar >= totalChars) targetChar = totalChars - 1;
 
-      // Second pass: locate target word rect
+      // Second pass: locate token containing targetChar
       const walker2 = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
       let node2: Node | null = walker2.nextNode();
-      let wordCounter = 0;
+      let acc = 0;
       while (node2) {
         if (!isSkippable(node2)) {
           const textNode = node2 as Text;
           const value = textNode.nodeValue || "";
-          let match: RegExpExecArray | null;
-          wordRegex.lastIndex = 0;
-          while ((match = wordRegex.exec(value)) !== null) {
-            if (wordCounter === targetIndex) {
+          letterNumRegex.lastIndex = 0;
+          let m: RegExpExecArray | null;
+          while ((m = letterNumRegex.exec(value)) !== null) {
+            const startAcc = acc;
+            const endAcc = acc + m[0].length - 1;
+            if (targetChar >= startAcc && targetChar <= endAcc) {
+              // underline this token
               const range = document.createRange();
-              range.setStart(textNode, match.index);
-              range.setEnd(textNode, match.index + match[0].length);
+              range.setStart(textNode, m.index);
+              range.setEnd(textNode, m.index + m[0].length);
               const rects = range.getClientRects();
               const rect = rects[0] || range.getBoundingClientRect();
               range.detach?.();
@@ -95,7 +117,7 @@ const InlineWordUnderlineOverlay: React.FC<InlineWordUnderlineOverlayProps> = ({
                 return;
               }
             }
-            wordCounter++;
+            acc += m[0].length;
           }
         }
         node2 = walker2.nextNode();
