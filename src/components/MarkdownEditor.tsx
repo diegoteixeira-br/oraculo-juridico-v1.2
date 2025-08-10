@@ -23,6 +23,7 @@ const MM_TO_PX = 3.7795; // 1mm em pixels (~96dpi)
 const PAPER_SIZES = {
   A4: { id: "A4", label: "A4 (210 × 297 mm)", widthMm: 210, heightMm: 297 },
   OFICIO: { id: "OFICIO", label: "Ofício (216 × 330 mm)", widthMm: 216, heightMm: 330 },
+  LEGAL: { id: "LEGAL", label: "Legal (216 × 356 mm)", widthMm: 216, heightMm: 356 },
 } as const;
 type PaperId = keyof typeof PAPER_SIZES;
 export default function MarkdownEditor({
@@ -180,6 +181,7 @@ export default function MarkdownEditor({
               <SelectContent>
                 <SelectItem value="A4">{PAPER_SIZES.A4.label}</SelectItem>
                 <SelectItem value="OFICIO">{PAPER_SIZES.OFICIO.label}</SelectItem>
+                <SelectItem value="LEGAL">{PAPER_SIZES.LEGAL.label}</SelectItem>
               </SelectContent>
             </Select>
           </div>
