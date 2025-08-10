@@ -80,7 +80,7 @@ export default function RulerLeft({ heightPx, zoom, topMarginMm, bottomMarginMm,
 
   return (
     <div
-      className="bg-muted/70 rounded-sm relative"
+      className="bg-muted/70 rounded-sm relative cursor-pointer"
       style={{ width: 24, height: scaledHeight }}
       ref={containerRef}
       onPointerDown={startDrag}
@@ -91,13 +91,25 @@ export default function RulerLeft({ heightPx, zoom, topMarginMm, bottomMarginMm,
       {/* Marcadores/handles das margens */}
       <div
         aria-label="Margem superior"
-        className="absolute -right-[1px] w-3 h-[2px] bg-border"
+        className="absolute -right-[1px] w-3 h-[2px] bg-border hover:bg-accent cursor-pointer transition-colors"
         style={{ top: topY }}
       />
       <div
         aria-label="Margem inferior"
-        className="absolute -right-[1px] w-3 h-[2px] bg-border"
+        className="absolute -right-[1px] w-3 h-[2px] bg-border hover:bg-accent cursor-pointer transition-colors"
         style={{ top: bottomY }}
+      />
+
+      {/* Setas suaves indicando a posição das margens */}
+      <div
+        aria-hidden
+        className="absolute opacity-70"
+        style={{ top: topY, right: 2, transform: "translateY(-50%)", width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: "6px solid hsl(var(--accent))" }}
+      />
+      <div
+        aria-hidden
+        className="absolute opacity-70"
+        style={{ top: bottomY, right: 2, transform: "translateY(-50%)", width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: "6px solid hsl(var(--accent))" }}
       />
     </div>
   );
