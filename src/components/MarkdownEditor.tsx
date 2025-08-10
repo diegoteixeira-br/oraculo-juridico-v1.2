@@ -361,7 +361,7 @@ export default function MarkdownEditor({
               {showRulers && (
                 <div
                   className="pointer-events-none absolute inset-0 z-10"
-                  style={{ top: -RULER_SIZE, height: pages * scaledHeight + Math.max(0, pages - 1) * scaledGap + RULER_SIZE }}
+                  style={{ top: 0, height: pages * scaledHeight + Math.max(0, pages - 1) * scaledGap + RULER_SIZE }}
                 >
                   {/* Régua horizontal alinhada ao topo da página atual */}
                   <div
@@ -400,7 +400,7 @@ export default function MarkdownEditor({
                     zoom: zoom as any,
                     transformOrigin: "top left",
                     marginLeft: 0,
-                    marginTop: 0,
+                    marginTop: showRulers ? RULER_SIZE : 0,
                     ["--m-top" as any]: `${marginPx.top}px`,
                     ["--m-right" as any]: `${marginPx.right}px`,
                     ["--m-bottom" as any]: `${marginPx.bottom}px`,
