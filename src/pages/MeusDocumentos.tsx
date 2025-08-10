@@ -14,6 +14,19 @@ import UserMenu from "@/components/UserMenu";
 import MarkdownEditor from "@/components/MarkdownEditor";
 import { FileText, Plus, Search, Trash2, Pencil, ArrowLeft } from "lucide-react";
 
+function cleanEditorHtml(html: string): string {
+  try {
+    let out = html || "";
+    out = out.replace(/\s+$/, "");
+    out = out.replace(/(?:<p>(?:\s|&nbsp;|<br\s*\/?\s*>)*<\/p>\s*)+$/i, "");
+    out = out.replace(/(?:<p[^>]*class="[^"]*\bpage-break\b[^"]*"[^>]*>\s*<\/p>\s*)+$/i, "");
+    out = out.replace(/(?:<p>(?:\s|&nbsp;|<br\s*\/?\s*>)*<\/p>\s*)+$/i, "");
+    return out.trim();
+  } catch {
+    return html;
+  }
+}
+
 interface UserDoc { id: string; user_id: string; title: string; content_md: string; created_at: string; updated_at: string; folder?: string | null; tags?: string[] | null; }
 
 export default function MeusDocumentos() {
@@ -103,12 +116,13 @@ export default function MeusDocumentos() {
         .split(',')
         .map((t) => t.trim())
         .filter(Boolean);
+      const cleaned = cleanEditorHtml(content);
       if (editDoc) {
         const { error } = await supabase
           .from("user_documents")
           .update({ 
             title: title.trim(), 
-            content_md: content, 
+            content_md: cleaned, 
             folder: folder || null,
             tags: tags.length ? tags : []
           })
@@ -119,7 +133,7 @@ export default function MeusDocumentos() {
       } else {
         const { error } = await supabase
           .from("user_documents")
-          .insert({ user_id: user.id, title: title.trim(), content_md: content, folder: folder || null, tags });
+          .insert({ user_id: user.id, title: title.trim(), content_md: cleaned, folder: folder || null, tags });
         if (error) throw error;
         toast({ title: "Documento criado" });
       }
