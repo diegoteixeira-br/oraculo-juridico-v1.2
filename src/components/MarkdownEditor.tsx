@@ -189,13 +189,67 @@ export default function MarkdownEditor({
       const pageInnerHeight = Math.max(1, heightPx - marginPx.top - marginPx.bottom);
       const offsetY = el.offsetTop - marginPx.top; // desconta o padding superior (margem superior)
       const remainder = ((offsetY % pageInnerHeight) + pageInnerHeight) % pageInnerHeight;
-      const spacer = remainder === 0 ? 0 : pageInnerHeight - remainder;
+      const interGap = marginPx.bottom + pageGapPx + marginPx.top; // espaço entre páginas (margem inferior + gap + margem superior)
+      const spacer = (remainder === 0 ? 0 : pageInnerHeight - remainder) + interGap;
       el.style.height = `${spacer}px`;
 
       recalcPages();
       try { el.scrollIntoView({ block: "start", behavior: "smooth" }); } catch {}
     }, 0);
   };
+
+  // Garante que nenhum texto fique nas margens inferior/topo da próxima página inserindo espaçadores automáticos
+  const enforceFlowWithinMargins = () => {
+    const root = pageRef.current?.querySelector(".ql-editor") as HTMLElement | null;
+    if (!root) return;
+
+    // Remove quebras automáticas antigas
+    root.querySelectorAll("p.page-break[data-auto='1']").forEach((el) => el.remove());
+
+    const pageInnerHeight = Math.max(1, heightPx - marginPx.top - marginPx.bottom);
+    const interGap = marginPx.bottom + pageGapPx + marginPx.top; // zona proibida entre páginas
+
+    // Limite inferior da 1ª página (fim da área útil)
+    let boundary = marginPx.top + pageInnerHeight;
+
+    const findFirstChildAtOrAfter = (y: number): HTMLElement | null => {
+      let el = root.firstElementChild as HTMLElement | null;
+      while (el) {
+        if (!el.classList.contains("page-break") && el.offsetTop >= y) return el;
+        el = el.nextElementSibling as HTMLElement | null;
+      }
+      return null;
+    };
+
+    let guard = 0;
+    while (guard++ < 1000) {
+      const el = findFirstChildAtOrAfter(boundary);
+      if (!el) break;
+
+      // Se já está após a faixa de margem+gap, avança para a próxima página
+      if (el.offsetTop >= boundary + interGap - 1) {
+        boundary += interGap + pageInnerHeight;
+        continue;
+      }
+
+      // Precisa empurrar este elemento para depois da zona proibida
+      const gapNeeded = boundary + interGap - el.offsetTop;
+      const br = document.createElement("p");
+      br.className = "page-break";
+      br.setAttribute("data-auto", "1");
+      br.style.height = `${gapNeeded}px`;
+      el.parentElement?.insertBefore(br, el);
+
+      boundary += interGap + pageInnerHeight;
+    }
+
+    recalcPages();
+  };
+
+  useEffect(() => {
+    const t = setTimeout(() => enforceFlowWithinMargins(), 0);
+    return () => clearTimeout(t);
+  }, [content, marginPx.top, marginPx.bottom, marginPx.left, marginPx.right, pageGapPx, heightPx]);
 
   const exportPdf = () => {
     const root = pageRef.current?.querySelector(".ql-editor") as HTMLElement | null;
@@ -392,7 +446,7 @@ export default function MarkdownEditor({
           height: 0; /* será ajustado dinamicamente via inline style */
           margin: 0;
         }
-        @media print { .page-break { break-after: page; } }
+        @media print { .page-break { break-after: page; height: 0 !important; border: 0 !important; margin: 0 !important; } }
       `}</style>
     </div>
   );
