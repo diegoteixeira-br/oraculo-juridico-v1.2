@@ -72,6 +72,17 @@ export default function RulerTop({ widthPx, zoom, leftMarginMm, rightMarginMm, z
 
   return (
     <div ref={containerRef} className="bg-muted/70 rounded-sm relative" style={{ width: scaledWidth, height: 24 }} onPointerDown={startDrag}>
+      {/* Destaques de zonas em mm (0–80mm e 170–210mm) */}
+      <div aria-hidden className="absolute inset-0 pointer-events-none">
+        <div
+          className="absolute top-0 bottom-0 bg-accent/15 border-t border-dashed border-accent"
+          style={{ left: 0, width: Math.round(80 * pxPerMm) }}
+        />
+        <div
+          className="absolute top-0 bottom-0 bg-accent/15 border-t border-dashed border-accent"
+          style={{ left: Math.round(170 * pxPerMm), width: Math.max(0, Math.round((widthMm - 170) * pxPerMm)) }}
+        />
+      </div>
       <div className="relative w-full h-full">{ticks}</div>
       {/* Handle do zero */}
       <div

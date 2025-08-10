@@ -72,9 +72,13 @@ export default function MarkdownEditor({
     left: Math.round(margins.left * MM_TO_PX),
   }), [margins]);
   const scaledTopMarginPx = Math.round(margins.top * MM_TO_PX * zoom);
-// Cabeçalho/Rodapé desativados neste modo (A4 puro)
-const headerPx = 0;
-const footerPx = 0;
+  // Cabeçalho/Rodapé desativados neste modo (A4 puro)
+  const headerPx = 0;
+  const footerPx = 0;
+  // Espaçamento visual entre páginas (mm)
+  const PAGE_GAP_MM = 24;
+  const pageGapPx = Math.round(PAGE_GAP_MM * MM_TO_PX);
+  const scaledGap = Math.round(pageGapPx * zoom);
 
 const showRulers = !isMobile;
 const RULER_SIZE = 24;
@@ -136,10 +140,11 @@ const RULER_SIZE = 24;
   useEffect(() => {
     const scroller = scrollerRef.current;
     if (!scroller) return;
-    const onScroll = () => {
-      const idx = Math.max(0, Math.min(pages - 1, Math.floor(scroller.scrollTop / scaledHeight)));
-      setCurrentPage(idx);
-    };
+      const onScroll = () => {
+        const pageStep = scaledHeight + scaledGap;
+        const idx = Math.max(0, Math.min(pages - 1, Math.floor(scroller.scrollTop / Math.max(1, pageStep))));
+        setCurrentPage(idx);
+      };
     scroller.addEventListener("scroll", onScroll, { passive: true } as any);
     onScroll();
     return () => scroller.removeEventListener("scroll", onScroll);
@@ -319,12 +324,12 @@ const RULER_SIZE = 24;
               {showRulers && (
                 <div
                   className="pointer-events-none absolute inset-0"
-                  style={{ height: pages * scaledHeight }}
+                  style={{ height: pages * scaledHeight + Math.max(0, pages - 1) * scaledGap }}
                 >
                   {/* Régua horizontal alinhada ao topo da área útil */}
                   <div
                     className="absolute pointer-events-auto"
-                    style={{ left: RULER_SIZE, top: Math.max(0, currentPage * scaledHeight + scaledTopMarginPx - RULER_SIZE) }}
+                    style={{ left: RULER_SIZE, top: Math.max(0, currentPage * (scaledHeight + scaledGap) + scaledTopMarginPx - RULER_SIZE) }}
                   >
                     <RulerTop
                       widthPx={widthPx}
@@ -336,7 +341,7 @@ const RULER_SIZE = 24;
                     />
                   </div>
                   {/* Régua vertical alinhada à página atual */}
-                  <div className="absolute pointer-events-auto" style={{ left: 0, top: currentPage * scaledHeight }}>
+                  <div className="absolute pointer-events-auto" style={{ left: 0, top: currentPage * (scaledHeight + scaledGap) }}>
                     <RulerLeft
                       heightPx={heightPx}
                       zoom={zoom}
@@ -369,7 +374,7 @@ const RULER_SIZE = 24;
                   }}
                 >
                   {/* Page frames behind the editor content */}
-                  <PageFrames widthPx={widthPx} heightPx={heightPx} pages={pages} zoom={zoom} />
+                  <PageFrames widthPx={widthPx} heightPx={heightPx} pages={pages} zoom={zoom} pageGapPx={pageGapPx} />
 
                   {/* Main content editor */}
                   <ReactQuill
