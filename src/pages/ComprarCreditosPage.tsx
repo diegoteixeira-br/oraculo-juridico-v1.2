@@ -207,7 +207,7 @@ export default function ComprarCreditosPage() {
                   <Crown className="w-5 h-5" /> Plano Essencial
                 </CardTitle>
                 <CardDescription className="text-white text-2xl lg:text-3xl font-bold">
-                  R$ 37,90/mês
+                  De R$ 75,80/mês por R$ 37,90/mês (50% OFF)
                 </CardDescription>
               </CardHeader>
               <CardContent className="px-4 sm:px-6 pb-6">

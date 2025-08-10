@@ -39,7 +39,7 @@ const LandingPage = () => {
     },
     {
       question: "Como posso adquirir mais tokens?",
-      answer: "Você pode assinar o Plano Essencial por R$ 37,90/mês para liberar uso ilimitado de calculadoras, documentos e agenda (além de 30.000 tokens/mês para o chat). Pacotes avulsos de 75k e 150k tokens permanecem disponíveis de forma opcional."
+      answer: "Você pode assinar o Plano Essencial: de R$ 75,80/mês por R$ 37,90/mês (50% OFF) para liberar uso ilimitado de calculadoras, documentos e agenda (além de 30.000 tokens/mês para o chat). Pacotes avulsos de 75k e 150k tokens permanecem disponíveis de forma opcional."
     },
     {
       question: "O que é a Agenda Jurídica?",
@@ -349,7 +349,7 @@ const LandingPage = () => {
               </ul>
             </div>
             <div className="p-6 card-signup border border-border">
-              <h3 className="text-xl font-semibold text-foreground mb-2">Plano Essencial • R$ 37,90/mês</h3>
+              <h3 className="text-xl font-semibold text-foreground mb-2">Plano Essencial • De R$ 75,80/mês Por R$ 37,90/mês</h3>
               <ul className="list-disc ml-6 space-y-2 text-muted-foreground">
                 <li>Chat com IA: 30.000 tokens por mês</li>
                 <li>Teste grátis de 7 dias: 3.000 tokens/dia</li>
