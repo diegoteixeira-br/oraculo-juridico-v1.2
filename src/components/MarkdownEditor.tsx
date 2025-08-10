@@ -101,19 +101,9 @@ export default function MarkdownEditor({
   ];
 
   useEffect(() => {
-    // Ajuste automático no mobile para caber na largura
-    if (!isMobile) return;
-    const computeFit = () => {
-      const w = scrollerRef.current?.clientWidth || 0;
-      if (!w) return;
-      const available = Math.max(0, w - 16);
-      const fit = available / widthPx;
-      setZoom(+Math.max(0.6, Math.min(1.5, fit)).toFixed(2));
-    };
-    computeFit();
-    window.addEventListener("resize", computeFit);
-    return () => window.removeEventListener("resize", computeFit);
-  }, [isMobile, widthPx]);
+    // Mobile: iniciar sempre em 100% (1.0), igual ao desktop
+    if (isMobile) setZoom(1);
+  }, [isMobile]);
   const recalcPages = () => {
     const root = pageRef.current?.querySelector(".main-editor .ql-editor") as HTMLElement | null;
     if (!root) { setPages(1); return; }
