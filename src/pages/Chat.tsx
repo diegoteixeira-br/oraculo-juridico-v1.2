@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Send, Paperclip, Trash2, MessageSquare, Plus, X, Download, Volume2, VolumeX, Menu, ArrowLeft } from "lucide-react";
-
+import { AudioPlayer } from '@/components/AudioPlayer';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,7 +13,7 @@ import UserMenu from "@/components/UserMenu";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 import ReactMarkdown from "react-markdown";
 import { useIsMobile } from "@/hooks/use-mobile";
-import AssistantAudioBlock from "@/components/AssistantAudioBlock";
+import UnderlineProgressOverlay from "@/components/UnderlineProgressOverlay";
 
 interface Message {
   id: string;
@@ -50,6 +50,8 @@ export default function Chat() {
   const [ttsLoading, setTtsLoading] = useState(false);
   const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [readingMsgId, setReadingMsgId] = useState<string | null>(null);
+  const [readingProgress, setReadingProgress] = useState(0);
   
   const { user, profile, refreshProfile } = useAuth();
   const { toast } = useToast();
@@ -413,17 +415,12 @@ export default function Chat() {
     }
   };
 
-  const playTextToSpeech = async (text: string) => {
-    if (isPlayingAudio) {
-      currentAudio?.pause();
-      setCurrentAudio(null);
-      setIsPlayingAudio(false);
-      return;
-    }
-
+  const playTextToSpeech = async (id: string, text: string) => {
     try {
-      setIsPlayingAudio(true);
       setTtsLoading(true);
+      setReadingMsgId(id);
+      setReadingProgress(0);
+
       const { data, error } = await supabase.functions.invoke('text-to-speech', {
         body: {
           text: text.substring(0, 4000), // Limitar texto para evitar arquivos muito grandes
@@ -465,15 +462,15 @@ export default function Chat() {
         title: "Áudio gerado!",
         description: `${data.tokensUsed} tokens utilizados para síntese de voz.`
       });
-      
     } catch (error: any) {
       console.error('Erro no text-to-speech:', error);
-      setIsPlayingAudio(false);
       toast({
         title: "Erro",
         description: error.message || "Erro ao gerar áudio.",
         variant: "destructive"
       });
+    } finally {
+      setTtsLoading(false);
     }
   };
 
@@ -743,24 +740,29 @@ export default function Chat() {
                           )}
 
                           {/* Conteúdo da mensagem */}
-                          <div className="prose prose-invert max-w-none text-sm">
+                          <div className="relative prose prose-invert max-w-none text-sm leading-7">
                             {msg.type === 'assistant' ? (
-                              <ReactMarkdown
-                                components={{
-                                  p: ({ children }) => <p className="mb-3 last:mb-0 break-words">{children}</p>,
-                                  ul: ({ children }) => <ul className="list-disc ml-4 mb-3">{children}</ul>,
-                                  ol: ({ children }) => <ol className="list-decimal ml-4 mb-3">{children}</ol>,
-                                  li: ({ children }) => <li className="mb-1">{children}</li>,
-                                  h1: ({ children }) => <h1 className="text-base font-bold mb-3">{children}</h1>,
-                                  h2: ({ children }) => <h2 className="text-sm font-bold mb-2">{children}</h2>,
-                                  h3: ({ children }) => <h3 className="text-sm font-bold mb-2">{children}</h3>,
-                                  strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
-                                  code: ({ children }) => <code className="bg-slate-700 px-1 py-0.5 rounded text-xs break-all">{children}</code>,
-                                  pre: ({ children }) => <pre className="bg-slate-700 p-3 rounded overflow-x-auto text-xs">{children}</pre>
-                                }}
-                              >
-                                {msg.content}
-                              </ReactMarkdown>
+                              <>
+                                {readingMsgId === msg.id && (isPlayingAudio || readingProgress > 0) && (
+                                  <UnderlineProgressOverlay progress={readingProgress} />
+                                )}
+                                <ReactMarkdown
+                                  components={{
+                                    p: ({ children }) => <p className="mb-3 last:mb-0 break-words">{children}</p>,
+                                    ul: ({ children }) => <ul className="list-disc ml-4 mb-3">{children}</ul>,
+                                    ol: ({ children }) => <ol className="list-decimal ml-4 mb-3">{children}</ol>,
+                                    li: ({ children }) => <li className="mb-1">{children}</li>,
+                                    h1: ({ children }) => <h1 className="text-base font-bold mb-3">{children}</h1>,
+                                    h2: ({ children }) => <h2 className="text-sm font-bold mb-2">{children}</h2>,
+                                    h3: ({ children }) => <h3 className="text-sm font-bold mb-2">{children}</h3>,
+                                    strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                                    code: ({ children }) => <code className="bg-slate-700 px-1 py-0.5 rounded text-xs break-all">{children}</code>,
+                                    pre: ({ children }) => <pre className="bg-slate-700 p-3 rounded overflow-x-auto text-xs">{children}</pre>
+                                  }}
+                                >
+                                  {msg.content}
+                                </ReactMarkdown>
+                              </>
                             ) : (
                               <p className="whitespace-pre-wrap break-words">{msg.content}</p>
                             )}
@@ -769,7 +771,24 @@ export default function Chat() {
                           {/* Player de áudio se houver audioUrl */}
                           {msg.audioUrl && (
                             <div className="mt-3">
-                              <AssistantAudioBlock audioSrc={msg.audioUrl} text={msg.content} />
+                              <AudioPlayer
+                                audioSrc={msg.audioUrl}
+                                onProgress={(_, __, percent, isPlaying) => {
+                                  if (readingMsgId === msg.id) setReadingProgress(percent);
+                                  if (!isPlaying && readingMsgId === msg.id && percent >= 0.99) {
+                                    setReadingProgress(1);
+                                  }
+                                }}
+                                onPlayChange={(playing) => {
+                                  setIsPlayingAudio(playing);
+                                  if (playing) {
+                                    setReadingMsgId(msg.id);
+                                  } else if (readingMsgId === msg.id) {
+                                    setReadingProgress(0);
+                                  }
+                                }}
+                                onLoadingChange={setTtsLoading}
+                              />
                             </div>
                           )}
 
@@ -794,7 +813,7 @@ export default function Chat() {
                                   variant="ghost"
                                   size="sm"
                                   className="h-6 w-6 p-0 opacity-70 hover:opacity-100"
-                                  onClick={() => playTextToSpeech(msg.content)}
+                                  onClick={() => playTextToSpeech(msg.id, msg.content)}
                                 >
                                   {ttsLoading ? (
                                     <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
