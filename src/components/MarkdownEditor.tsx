@@ -107,11 +107,30 @@ export default function MarkdownEditor({
   const recalcPages = () => {
     const root = pageRef.current?.querySelector(".main-editor .ql-editor") as HTMLElement | null;
     if (!root) { setPages(1); return; }
-    // Altura do conteúdo + paddings (já inclusos no scrollHeight)
-    const contentHeight = root.scrollHeight;
+
     const pageContentHeight = Math.max(1, heightPx - marginPx.top - marginPx.bottom);
-    const effectiveContent = Math.max(0, contentHeight - marginPx.top - marginPx.bottom);
-    const pagesCount = Math.max(1, Math.ceil(effectiveContent / pageContentHeight));
+
+    // Calcula a última posição de conteúdo útil, ignorando parágrafos vazios e marcadores de quebra
+    let lastBottom = marginPx.top; // início da área útil
+    const children = Array.from(root.children) as HTMLElement[];
+    const isEmpty = (el: HTMLElement) => {
+      if (el.classList.contains("page-break")) return true;
+      if (el.tagName === "P") {
+        const html = el.innerHTML.replace(/\s|&nbsp;/g, "");
+        if (!html || html === "<br>" || html === "<br/>" || html === "<br />") return true;
+      }
+      if (el.textContent?.trim() === "" && el.querySelectorAll("img, table, iframe, video, audio, svg").length === 0) {
+        return true;
+      }
+      return false;
+    };
+    for (const el of children) {
+      if (isEmpty(el)) continue;
+      lastBottom = Math.max(lastBottom, el.offsetTop + el.offsetHeight);
+    }
+    const contentInnerHeight = Math.max(0, lastBottom - marginPx.top);
+    const epsilon = 2; // evita página extra por arredondamento/bordas
+    const pagesCount = Math.max(1, Math.ceil(Math.max(0, contentInnerHeight - epsilon) / pageContentHeight));
     setPages(pagesCount);
   };
   useEffect(() => {
