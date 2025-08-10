@@ -139,7 +139,8 @@ export default function MarkdownEditor({
     if (!scroller) return;
       const onScroll = () => {
         const pageStep = scaledHeight + scaledGap;
-        const idx = Math.max(0, Math.min(pages - 1, Math.floor(scroller.scrollTop / Math.max(1, pageStep))));
+        const centerY = scroller.scrollTop + scroller.clientHeight / 2;
+        const idx = Math.max(0, Math.min(pages - 1, Math.floor(centerY / Math.max(1, pageStep))));
         setCurrentPage(idx);
       };
     scroller.addEventListener("scroll", onScroll, { passive: true } as any);
@@ -320,7 +321,7 @@ export default function MarkdownEditor({
       <Card>
         <CardContent className="p-4">
           {/* Toolbar fixa acima da régua */}
-          <div id="doc-toolbar" className="ql-toolbar ql-snow sticky top-0 z-20 mb-3 rounded-md border bg-card">
+          <div id="doc-toolbar" className="ql-toolbar ql-snow sticky top-0 z-30 mb-3 rounded-md border bg-card">
             <span className="ql-formats">
               <select className="ql-header">
                 <option value="">Normal</option>
@@ -360,12 +361,12 @@ export default function MarkdownEditor({
               {showRulers && (
                 <div
                   className="pointer-events-none absolute inset-0 z-10"
-                  style={{ height: pages * scaledHeight + Math.max(0, pages - 1) * scaledGap }}
+                  style={{ top: -RULER_SIZE, height: pages * scaledHeight + Math.max(0, pages - 1) * scaledGap + RULER_SIZE }}
                 >
                   {/* Régua horizontal alinhada ao topo da página atual */}
                   <div
                     className="absolute pointer-events-auto"
-                    style={{ left: RULER_SIZE, top: Math.max(0, currentPage * (scaledHeight + scaledGap) + scaledTopMarginPx - RULER_SIZE) }}
+                    style={{ left: RULER_SIZE, top: currentPage * (scaledHeight + scaledGap) }}
                   >
                     <RulerTop
                       widthPx={widthPx}
@@ -376,7 +377,7 @@ export default function MarkdownEditor({
                     />
                   </div>
                   {/* Régua vertical alinhada à página atual */}
-                  <div className="absolute pointer-events-auto" style={{ left: 0, top: currentPage * (scaledHeight + scaledGap) }}>
+                  <div className="absolute pointer-events-auto" style={{ left: 0, top: currentPage * (scaledHeight + scaledGap) + RULER_SIZE }}>
                     <RulerLeft
                       heightPx={heightPx}
                       zoom={zoom}
