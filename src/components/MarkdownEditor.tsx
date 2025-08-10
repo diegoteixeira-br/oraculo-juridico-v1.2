@@ -278,22 +278,23 @@ export default function MarkdownEditor({
           <Button variant="outline" onClick={onCancel}>Cancelar</Button>
           <Button variant="secondary" onClick={exportPdf}>Exportar PDF</Button>
         </div>
-        <div className="flex items-center gap-3 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 text-sm text-muted-foreground overflow-x-auto whitespace-nowrap flex-nowrap">
+          <div className="flex items-center gap-2 shrink-0">
             <Button variant="outline" size="icon" onClick={zoomOut} className="h-8 w-8"><ZoomOut className="w-4 h-4"/></Button>
             <Button variant="outline" size="icon" onClick={zoomIn} className="h-8 w-8"><ZoomIn className="w-4 h-4"/></Button>
             <span className="min-w-[70px] text-center">{Math.round(zoom*100)}%</span>
           </div>
-          <Separator orientation="vertical" className="h-6" />
-          <div className="flex items-center gap-2">
+          <Separator orientation="vertical" className="h-6 hidden sm:block" />
+          <div className="flex items-center gap-2 shrink-0">
             <FileText className="w-4 h-4 text-primary"/>
-            <span>{pages} página(s) {PAPER_SIZES[paperId].id}</span>
+            <span className="hidden sm:inline">{pages} página(s) {PAPER_SIZES[paperId].id}</span>
+            <span className="sm:hidden inline">{pages}p {PAPER_SIZES[paperId].id}</span>
           </div>
-          <Separator orientation="vertical" className="h-6" />
-          <div className="flex items-center gap-2 min-w-[220px]">
+          <Separator orientation="vertical" className="h-6 hidden sm:block" />
+          <div className="flex items-center gap-2 min-w-[180px] sm:min-w-[220px] shrink-0">
             <span>Tamanho</span>
             <Select value={paperId} onValueChange={(v) => setPaperId(v as PaperId)}>
-              <SelectTrigger className="w-[170px] h-8"><SelectValue placeholder="Selecione o papel" /></SelectTrigger>
+              <SelectTrigger className="w-[140px] sm:w-[170px] h-8"><SelectValue placeholder="Selecione o papel" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="A4">{PAPER_SIZES.A4.label}</SelectItem>
                 <SelectItem value="OFICIO">{PAPER_SIZES.OFICIO.label}</SelectItem>
@@ -301,8 +302,8 @@ export default function MarkdownEditor({
               </SelectContent>
             </Select>
           </div>
-          <Button variant="outline" size="sm" onClick={insertPageBreakBeforeSelection}>
-            <FilePlus2 className="w-4 h-4 mr-2"/> Nova página
+          <Button variant="outline" size="sm" onClick={insertPageBreakBeforeSelection} className="shrink-0">
+            <FilePlus2 className="w-4 h-4 mr-2"/> <span className="hidden sm:inline">Nova página</span>
           </Button>
         </div>
       </div>
