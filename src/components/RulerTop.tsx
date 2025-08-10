@@ -61,13 +61,13 @@ export default function RulerTop({ widthPx, zoom, leftMarginMm, rightMarginMm, o
     const isMajor = mm % 10 === 0;
     const h = isMajor ? 12 : 8;
     ticks.push(
-      <div key={`t-${mm}`} className="absolute bottom-0 border-r border-border" style={{ left: x, height: h }} />
+      <div key={`t-${mm}`} className="absolute bottom-0 border-r border-border/60" style={{ left: x, height: h }} />
     );
     if (isMajor) {
       ticks.push(
         <div
           key={`tl-${mm}`}
-          className="absolute text-[10px] text-foreground select-none"
+          className="absolute text-[10px] text-primary/80 select-none"
           style={{ left: x, bottom: 12, transform: "translateX(-50%)" }}
         >
           {mm}
@@ -82,23 +82,12 @@ export default function RulerTop({ widthPx, zoom, leftMarginMm, rightMarginMm, o
   return (
     <div
       ref={containerRef}
-      className="bg-muted/70 rounded-sm relative"
+      className="bg-muted rounded-t-md relative border-b border-border"
       style={{ width: scaledWidth, height: 24 }}
       onPointerDown={startDrag}
       role="slider"
       aria-label="Régua horizontal com marcadores de margem"
     >
-      {/* Destaques 0–80mm e 170–210mm (visuais) */}
-      <div aria-hidden className="absolute inset-0 pointer-events-none">
-        <div
-          className="absolute top-0 bottom-0 bg-accent/15 border-t border-dashed border-accent"
-          style={{ left: 0, width: Math.round(80 * pxPerMm) }}
-        />
-        <div
-          className="absolute top-0 bottom-0 bg-accent/15 border-t border-dashed border-accent"
-          style={{ left: Math.round(170 * pxPerMm), width: Math.max(0, Math.round((widthMm - 170) * pxPerMm)) }}
-        />
-      </div>
       <div className="relative w-full h-full">{ticks}</div>
 
       {/* Marcadores/handles das margens */}
