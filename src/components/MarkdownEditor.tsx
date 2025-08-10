@@ -355,7 +355,7 @@ export default function MarkdownEditor({
           <div ref={scrollerRef} className="rounded-lg p-4 border bg-muted h-[70vh] overflow-auto">
             <div
               className="relative mx-auto"
-              style={{ width: scaledWidth + (showRulers ? RULER_SIZE : 0), paddingTop: showRulers ? RULER_SIZE : 0 }}
+              style={{ width: scaledWidth + (showRulers ? RULER_SIZE : 0) }}
             >
               {/* Overlay de réguas sincronizadas com a página visível */}
               {showRulers && (
