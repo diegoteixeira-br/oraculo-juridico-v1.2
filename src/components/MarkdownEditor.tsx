@@ -361,7 +361,7 @@ export default function MarkdownEditor({
               {showRulers && (
                 <div
                   className="pointer-events-none absolute inset-0 z-10"
-                  style={{ top: -(RULER_SIZE + 10), height: pages * scaledHeight + Math.max(0, pages - 1) * scaledGap + (RULER_SIZE + 10) }}
+                  style={{ top: -RULER_SIZE, height: pages * scaledHeight + Math.max(0, pages - 1) * scaledGap + RULER_SIZE }}
                 >
                   {/* Régua horizontal alinhada ao topo da página atual */}
                   <div
