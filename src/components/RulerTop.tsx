@@ -3,18 +3,21 @@ import React from "react";
 interface RulerTopProps {
   widthPx: number;
   zoom: number;
+  leftMarginMm: number;
+  rightMarginMm: number;
 }
 
 const MM_TO_PX = 3.7795;
 
-export default function RulerTop({ widthPx, zoom }: RulerTopProps) {
+export default function RulerTop({ widthPx, zoom, leftMarginMm, rightMarginMm }: RulerTopProps) {
   const widthMm = Math.round(widthPx / MM_TO_PX);
+  const contentWidthMm = Math.max(0, widthMm - Math.round(leftMarginMm) - Math.round(rightMarginMm));
   const scaledWidth = Math.round(widthPx * zoom);
 
   const ticks: JSX.Element[] = [];
-  for (let mm = 0; mm <= widthMm; mm += 1) {
+  for (let mm = 0; mm <= contentWidthMm; mm += 1) {
     if (mm % 5 !== 0) continue;
-    const x = Math.round(mm * MM_TO_PX * zoom);
+    const x = Math.round((mm + leftMarginMm) * MM_TO_PX * zoom);
     const isMajor = mm % 10 === 0;
     const h = isMajor ? 12 : 8;
     ticks.push(

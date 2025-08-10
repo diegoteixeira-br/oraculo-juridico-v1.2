@@ -5,11 +5,12 @@ interface RulerLeftProps {
   zoom: number;
   topMarginMm: number;
   bottomMarginMm: number;
+  zeroOffsetMm?: number; // desloca o ponto zero em mm, positivo move para baixo
 }
 
 const MM_TO_PX = 3.7795;
 
-export default function RulerLeft({ heightPx, zoom, topMarginMm, bottomMarginMm }: RulerLeftProps) {
+export default function RulerLeft({ heightPx, zoom, topMarginMm, bottomMarginMm, zeroOffsetMm = 0 }: RulerLeftProps) {
   const heightMm = Math.round(heightPx / MM_TO_PX);
   const contentHeightMm = Math.max(0, heightMm - Math.round(topMarginMm) - Math.round(bottomMarginMm));
   const scaledHeight = Math.round(heightPx * zoom);
@@ -18,7 +19,8 @@ export default function RulerLeft({ heightPx, zoom, topMarginMm, bottomMarginMm 
   for (let mm = 0; mm <= contentHeightMm; mm += 1) {
     if (mm % 5 !== 0) continue;
     const y = Math.round((mm + topMarginMm) * MM_TO_PX * zoom);
-    const isMajor = mm % 10 === 0;
+    const labelVal = mm - Math.round(zeroOffsetMm);
+    const isMajor = mm % 10 === 0; // mantemos divisões principais a cada 10mm
     const w = isMajor ? 12 : 8;
     ticks.push(
       <div key={`vt-${mm}`} className="absolute left-0 border-t border-border" style={{ top: y, width: w }} />
@@ -30,7 +32,7 @@ export default function RulerLeft({ heightPx, zoom, topMarginMm, bottomMarginMm 
           className="absolute text-[10px] text-muted-foreground select-none"
           style={{ left: 0, top: y - 6 }}
         >
-          {mm}
+          {labelVal}
         </div>
       );
     }

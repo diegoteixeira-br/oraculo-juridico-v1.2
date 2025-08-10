@@ -54,10 +54,14 @@ export default function MarkdownEditor({
   const isMobile = useIsMobile();
   const [zoom, setZoom] = useState(1);
   const [pages, setPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0); // página visível
+  const [rulerZeroV, setRulerZeroV] = useState(0); // ajuste manual do zero da régua vertical
   const [paperId, setPaperId] = useState<PaperId>("A4");
   const paper = PAPER_SIZES[paperId];
   const widthPx = Math.round(paper.widthMm * MM_TO_PX);
   const heightPx = Math.round(paper.heightMm * MM_TO_PX);
+  const scaledWidth = Math.round(widthPx * zoom);
+  const scaledHeight = Math.round(heightPx * zoom);
   // Margens em milímetros
   const [margins, setMargins] = useState({ top: 25, right: 25, bottom: 25, left: 25 });
   const marginPx = useMemo(() => ({
@@ -66,6 +70,7 @@ export default function MarkdownEditor({
     bottom: Math.round(margins.bottom * MM_TO_PX),
     left: Math.round(margins.left * MM_TO_PX),
   }), [margins]);
+  const scaledTopMarginPx = Math.round(margins.top * MM_TO_PX * zoom);
 // Cabeçalho/Rodapé desativados neste modo (A4 puro)
 const headerPx = 0;
 const footerPx = 0;
@@ -125,6 +130,41 @@ const RULER_SIZE = 24;
     return () => observer.disconnect();
   }, []);
   useEffect(() => { recalcPages(); }, [content, zoom, heightPx, margins.top, margins.right, margins.bottom, margins.left]);
+
+  // Atualiza página atual conforme rolagem
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+    const onScroll = () => {
+      const idx = Math.max(0, Math.min(pages - 1, Math.floor(scroller.scrollTop / scaledHeight)));
+      setCurrentPage(idx);
+    };
+    scroller.addEventListener("scroll", onScroll, { passive: true } as any);
+    onScroll();
+    return () => scroller.removeEventListener("scroll", onScroll);
+  }, [pages, scaledHeight]);
+
+  // Remoção automática de linhas vazias no fim (reduz páginas em branco)
+  useEffect(() => {
+    const quill = quillRef.current?.getEditor();
+    if (!quill) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Backspace" || e.key === "Delete") {
+        setTimeout(() => {
+          const q = quillRef.current?.getEditor();
+          if (!q) return;
+          const text = q.getText();
+          const trimmed = text.replace(/[ \t\r\n]+$/g, "\n");
+          if (trimmed.length < text.length) {
+            q.deleteText(trimmed.length, text.length - trimmed.length);
+          }
+          recalcPages();
+        }, 0);
+      }
+    };
+    quill.root.addEventListener("keydown", handler as any);
+    return () => quill.root.removeEventListener("keydown", handler as any);
+  }, [content]);
   const zoomIn = () => setZoom((z) => Math.min(2, +(z + 0.1).toFixed(2)));
   const zoomOut = () => setZoom((z) => Math.max(0.6, +(z - 0.1).toFixed(2)));
 
@@ -216,6 +256,20 @@ const RULER_SIZE = 24;
             <span>mm</span>
           </div>
           <Separator orientation="vertical" className="h-6" />
+          <div className="flex items-center gap-2">
+            <span>Régua V 0</span>
+            <Input
+              type="number"
+              className="w-16 h-8"
+              min={-50}
+              max={50}
+              step={1}
+              value={rulerZeroV}
+              onChange={(e) => setRulerZeroV(Number(e.target.value) || 0)}
+            />
+            <span>mm</span>
+          </div>
+          <Separator orientation="vertical" className="h-6" />
           <Button variant="outline" size="sm" onClick={insertPageBreak}>
             <FilePlus2 className="w-4 h-4 mr-2"/> Inserir quebra de página
           </Button>
@@ -258,18 +312,39 @@ const RULER_SIZE = 24;
           </div>
 
           <div ref={scrollerRef} className="rounded-lg p-4 border bg-muted h-[70vh] overflow-auto">
-            <div className="mx-auto" style={{ width: Math.round(widthPx * zoom) + (showRulers ? RULER_SIZE : 0) }}>
+            <div
+              className="relative mx-auto"
+              style={{ width: scaledWidth + (showRulers ? RULER_SIZE : 0) }}
+            >
+              {/* Overlay de réguas sincronizadas com a página visível */}
               {showRulers && (
-                <div className="ml-[24px]">
-                  <RulerTop widthPx={widthPx} zoom={zoom} />
+                <div
+                  className="pointer-events-none absolute inset-0"
+                  style={{ height: pages * scaledHeight }}
+                >
+                  {/* Régua horizontal alinhada ao topo da área útil */}
+                  <div
+                    className="absolute"
+                    style={{ left: RULER_SIZE, top: Math.max(0, currentPage * scaledHeight + scaledTopMarginPx - RULER_SIZE) }}
+                  >
+                    <RulerTop widthPx={widthPx} zoom={zoom} leftMarginMm={margins.left} rightMarginMm={margins.right} />
+                  </div>
+                  {/* Régua vertical alinhada à página atual */}
+                  <div className="absolute" style={{ left: 0, top: currentPage * scaledHeight }}>
+                    <RulerLeft
+                      heightPx={heightPx}
+                      zoom={zoom}
+                      topMarginMm={margins.top}
+                      bottomMarginMm={margins.bottom}
+                      zeroOffsetMm={rulerZeroV}
+                    />
+                  </div>
                 </div>
               )}
+
+              {/* Linha de conteúdo */}
               <div className="flex">
-                {showRulers && (
-                  <div style={{ width: RULER_SIZE }}>
-                    <RulerLeft heightPx={heightPx} zoom={zoom} topMarginMm={margins.top} bottomMarginMm={margins.bottom} />
-                  </div>
-                )}
+                {showRulers && <div style={{ width: RULER_SIZE }} />}
                 <div
                   ref={pageRef}
                   style={{
