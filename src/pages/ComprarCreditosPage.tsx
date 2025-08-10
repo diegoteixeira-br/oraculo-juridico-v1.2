@@ -203,17 +203,15 @@ export default function ComprarCreditosPage() {
             <Card className="relative bg-slate-900/60 border-primary/50 shadow-lg shadow-primary/20 overflow-hidden">
               <CardHeader className="pt-6 pb-2 text-center">
                 <Badge className="bg-primary text-primary-foreground mb-2 w-fit mx-auto">Novo</Badge>
-                <CardTitle className="text-xl lg:text-2xl text-primary flex items-center justify-center gap-2">
+                <CardTitle className="text-xl lg:text-2xl text-primary flex items-center justify-center gap-2 flex-wrap">
                   <Crown className="w-5 h-5" /> Plano Essencial
+                  <Badge className="bg-primary text-primary-foreground ml-1">50% OFF</Badge>
+                  <span className="text-xs text-muted-foreground italic">Promoção por tempo limitado — pode acabar a qualquer momento.</span>
                 </CardTitle>
                 <CardDescription className="text-white text-2xl lg:text-3xl font-bold flex items-center justify-center gap-3">
                   <span className="text-muted-foreground line-through text-lg lg:text-xl">R$ 75,80/mês</span>
                   <span>R$ 37,90/mês</span>
                 </CardDescription>
-                <div className="mt-1 flex items-center justify-center gap-2">
-                  <Badge className="bg-primary text-primary-foreground">50% OFF</Badge>
-                  <span className="text-xs text-muted-foreground italic">Promoção por tempo limitado — pode acabar a qualquer momento.</span>
-                </div>
               </CardHeader>
               <CardContent className="px-4 sm:px-6 pb-6">
                 <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
