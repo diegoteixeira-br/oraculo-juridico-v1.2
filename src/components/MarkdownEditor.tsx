@@ -419,7 +419,7 @@ export default function MarkdownEditor({
                     onChange={onContentChange}
                     modules={modules}
                     formats={formats}
-                    className="main-editor [&_.ql-container]:bg-transparent [&_.ql-container]:rounded-md [&_.ql-container]:shadow-none [&_.ql-editor]:text-[hsl(var(--paper-foreground))]"
+                    className="main-editor [&_.ql-container]:bg-transparent [&_.ql-container]:rounded-none [&_.ql-container]:border-0 [&_.ql-container]:shadow-none [&_.ql-editor]:text-[hsl(var(--paper-foreground))]"
                   />
                 </div>
               </div>
@@ -433,7 +433,7 @@ export default function MarkdownEditor({
         .ql-toolbar.ql-snow { border-color: hsl(var(--border)); background: hsl(var(--card)); }
         .ql-toolbar .ql-stroke { stroke: hsl(var(--card-foreground)); }
         .ql-toolbar .ql-picker { color: hsl(var(--card-foreground)); }
-        .ql-container.ql-snow { border-color: hsl(var(--border)); background: transparent; }
+        .ql-container.ql-snow { border: 0 !important; background: transparent; }
         .ql-container, .ql-editor { min-height: var(--page-height-px, 1123px); }
         .ql-editor { 
           padding: var(--m-top, 28px) var(--m-right, 32px) var(--m-bottom, 28px) var(--m-left, 32px);
