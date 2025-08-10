@@ -16,6 +16,12 @@ interface EditorProps {
   onContentChange: (v: string) => void;
   onSave: () => void;
   onCancel: () => void;
+  headerContent?: string; // HTML
+  footerContent?: string; // HTML
+  onHeaderChange?: (v: string) => void;
+  onFooterChange?: (v: string) => void;
+  headerHeightMm?: number;
+  footerHeightMm?: number;
 }
 
 // Conversões e tamanhos de papel
@@ -33,6 +39,12 @@ export default function MarkdownEditor({
   onContentChange,
   onSave,
   onCancel,
+  headerContent,
+  footerContent,
+  onHeaderChange,
+  onFooterChange,
+  headerHeightMm = 15,
+  footerHeightMm = 15,
 }: EditorProps) {
   const quillRef = useRef<ReactQuill | null>(null);
   const pageRef = useRef<HTMLDivElement>(null);
@@ -52,8 +64,20 @@ export default function MarkdownEditor({
     bottom: Math.round(margins.bottom * MM_TO_PX),
     left: Math.round(margins.left * MM_TO_PX),
   }), [margins]);
-  const showRulers = !isMobile;
-  const rulerOffset = showRulers ? 24 : 0;
+// Header/Footer states and sizes
+const [localHeader, setLocalHeader] = useState<string>(headerContent ?? "");
+const [localFooter, setLocalFooter] = useState<string>(footerContent ?? "");
+const headerHtml = headerContent ?? localHeader;
+const footerHtml = footerContent ?? localFooter;
+const handleHeaderChange = (v: string) => { (onHeaderChange ?? (setLocalHeader as any))(v); };
+const handleFooterChange = (v: string) => { (onFooterChange ?? (setLocalFooter as any))(v); };
+const [headerMmState, setHeaderMmState] = useState<number>(headerHeightMm);
+const [footerMmState, setFooterMmState] = useState<number>(footerHeightMm);
+const headerPx = useMemo(() => Math.round(headerMmState * MM_TO_PX), [headerMmState]);
+const footerPx = useMemo(() => Math.round(footerMmState * MM_TO_PX), [footerMmState]);
+
+const showRulers = !isMobile;
+const rulerOffset = showRulers ? 24 : 0;
   const modules = useMemo(
     () => ({
       toolbar: [
@@ -62,6 +86,7 @@ export default function MarkdownEditor({
         [{ list: "ordered" }, { list: "bullet" }],
         [{ align: [] }],
         ["link"],
+        ["table"],
         [{ indent: "-1" }, { indent: "+1" }],
         ["clean"],
       ],
@@ -82,6 +107,7 @@ export default function MarkdownEditor({
     "link",
     "indent",
     "clean",
+    "table",
   ];
 
   useEffect(() => {
@@ -99,7 +125,7 @@ export default function MarkdownEditor({
     return () => window.removeEventListener("resize", computeFit);
   }, [isMobile, widthPx]);
   const recalcPages = () => {
-    const root = pageRef.current?.querySelector(".ql-editor") as HTMLElement | null;
+    const root = pageRef.current?.querySelector(".main-editor .ql-editor") as HTMLElement | null;
     if (!root) { setPages(1); return; }
     // Altura do conteúdo + paddings (já inclusos no scrollHeight)
     const contentHeight = root.scrollHeight;
@@ -113,7 +139,7 @@ export default function MarkdownEditor({
     recalcPages();
     return () => observer.disconnect();
   }, []);
-  useEffect(() => { recalcPages(); }, [content, zoom, heightPx, margins.top, margins.right, margins.bottom, margins.left]);
+  useEffect(() => { recalcPages(); }, [content, zoom, heightPx, margins.top, margins.right, margins.bottom, margins.left, headerMmState, footerMmState]);
   const zoomIn = () => setZoom((z) => Math.min(2, +(z + 0.1).toFixed(2)));
   const zoomOut = () => setZoom((z) => Math.max(0.6, +(z - 0.1).toFixed(2)));
 
@@ -131,11 +157,13 @@ export default function MarkdownEditor({
   const exportPdf = () => {
     const root = pageRef.current?.querySelector(".ql-editor") as HTMLElement | null;
     const html = root?.innerHTML || content || "";
+    const header = headerHtml || "";
+    const footer = footerHtml || "";
     const w = window.open("", "_blank", "width=1024,height=768");
     if (!w) return;
     const marginCss = `${margins.top}mm ${margins.right}mm ${margins.bottom}mm ${margins.left}mm`;
     const sizeCss = `${paper.widthMm}mm ${paper.heightMm}mm`;
-    w.document.write(`<!doctype html><html><head><meta charset=\"utf-8\" />
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8" />
       <title>${title || "Documento"}</title>
       <style>
         @page { size: ${sizeCss}; margin: ${marginCss}; }
@@ -143,7 +171,11 @@ export default function MarkdownEditor({
         .page-break { break-after: page; }
         body { font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif; }
       </style>
-    </head><body><div class="ql-editor">${html}</div></body></html>`);
+    </head><body>
+      ${header ? `<div class="ql-editor header-area" style="min-height:${headerMmState}mm;">${header}</div>` : ""}
+      <div class="ql-editor">${html}</div>
+      ${footer ? `<div class="ql-editor footer-area" style="min-height:${footerMmState}mm;">${footer}</div>` : ""}
+    </body></html>`);
     w.document.close();
     w.focus();
     w.print();
@@ -203,6 +235,34 @@ export default function MarkdownEditor({
             <span>mm</span>
           </div>
           <Separator orientation="vertical" className="h-6" />
+          <div className="flex items-center gap-2">
+            <span>Cabeçalho</span>
+            <Input
+              type="number"
+              className="w-20 h-8"
+              min={0}
+              max={100}
+              step={1}
+              value={headerMmState}
+              onChange={(e) => setHeaderMmState(Number(e.target.value) || 0)}
+            />
+            <span>mm</span>
+          </div>
+          <Separator orientation="vertical" className="h-6" />
+          <div className="flex items-center gap-2">
+            <span>Rodapé</span>
+            <Input
+              type="number"
+              className="w-20 h-8"
+              min={0}
+              max={100}
+              step={1}
+              value={footerMmState}
+              onChange={(e) => setFooterMmState(Number(e.target.value) || 0)}
+            />
+            <span>mm</span>
+          </div>
+          <Separator orientation="vertical" className="h-6" />
           <Button variant="outline" size="sm" onClick={insertPageBreak}>
             <FilePlus2 className="w-4 h-4 mr-2"/> Inserir quebra de página
           </Button>
@@ -212,7 +272,7 @@ export default function MarkdownEditor({
       {/* Editor centralizado estilo “folha” */}
       <Card>
         <CardContent className="p-4">
-          <div ref={scrollerRef} className="rounded-lg p-4 border bg-card h-[70vh] overflow-auto">
+          <div ref={scrollerRef} className="rounded-lg p-4 border bg-muted h-[70vh] overflow-auto">
             <div className="relative mx-auto" style={{ width: Math.round(widthPx * zoom) }}>
               {showRulers && (
                 <div style={{ position: "absolute", top: -24, left: -24 }}>
@@ -228,6 +288,7 @@ export default function MarkdownEditor({
               <div
                 ref={pageRef}
                 style={{
+                  position: "relative",
                   width: widthPx,
                   zoom: zoom as any,
                   transformOrigin: "top left",
@@ -238,8 +299,30 @@ export default function MarkdownEditor({
                   ["--m-bottom" as any]: `${marginPx.bottom}px`,
                   ["--m-left" as any]: `${marginPx.left}px`,
                   ["--page-height-px" as any]: `${heightPx}px`,
+                  ["--header-height-px" as any]: `${headerPx}px`,
+                  ["--footer-height-px" as any]: `${footerPx}px`,
                 }}
               >
+                {/* Header editor */}
+                <ReactQuill
+                  theme="snow"
+                  value={headerHtml}
+                  onChange={handleHeaderChange}
+                  modules={{ toolbar: false }}
+                  formats={formats}
+                  placeholder="Cabeçalho"
+                  className="header-editor"
+                  style={{
+                    position: "absolute",
+                    zIndex: 10,
+                    top: "var(--m-top)",
+                    left: "var(--m-left)",
+                    right: "var(--m-right)",
+                    height: "var(--header-height-px)",
+                  } as any}
+                />
+
+                {/* Main content editor */}
                 <ReactQuill
                   ref={quillRef as any}
                   theme="snow"
@@ -247,7 +330,26 @@ export default function MarkdownEditor({
                   onChange={onContentChange}
                   modules={modules}
                   formats={formats}
-                  className="[&_.ql-container]:bg-[hsl(var(--paper))] [&_.ql-container]:rounded-md [&_.ql-container]:shadow [&_.ql-editor]:text-[hsl(var(--paper-foreground))]"
+                  className="main-editor [&_.ql-container]:bg-[hsl(var(--paper))] [&_.ql-container]:rounded-md [&_.ql-container]:shadow [&_.ql-editor]:text-[hsl(var(--paper-foreground))]"
+                />
+
+                {/* Footer editor */}
+                <ReactQuill
+                  theme="snow"
+                  value={footerHtml}
+                  onChange={handleFooterChange}
+                  modules={{ toolbar: false }}
+                  formats={formats}
+                  placeholder="Rodapé"
+                  className="footer-editor"
+                  style={{
+                    position: "absolute",
+                    zIndex: 10,
+                    bottom: "var(--m-bottom)",
+                    left: "var(--m-left)",
+                    right: "var(--m-right)",
+                    height: "var(--footer-height-px)",
+                  } as any}
                 />
               </div>
             </div>
@@ -263,7 +365,7 @@ export default function MarkdownEditor({
         .ql-container.ql-snow { border-color: hsl(var(--border)); background: hsl(var(--paper)); }
         .ql-container, .ql-editor { min-height: var(--page-height-px, 1123px); }
         .ql-editor { 
-          padding: var(--m-top, 28px) var(--m-right, 32px) var(--m-bottom, 28px) var(--m-left, 32px);
+          padding: calc(var(--m-top, 28px) + var(--header-height-px, 0px)) var(--m-right, 32px) calc(var(--m-bottom, 28px) + var(--footer-height-px, 0px)) var(--m-left, 32px);
           line-height: 1.6;
           color: hsl(var(--paper-foreground));
           background-image: linear-gradient(
@@ -274,6 +376,12 @@ export default function MarkdownEditor({
           background-size: 100% var(--page-height-px, 1123px);
           background-repeat: repeat-y;
         }
+        .header-editor .ql-container.ql-snow,
+        .footer-editor .ql-container.ql-snow { border: none; background: transparent; }
+        .header-editor .ql-editor,
+        .footer-editor .ql-editor { padding: 0; min-height: 0; }
+        .header-editor .ql-toolbar,
+        .footer-editor .ql-toolbar { display: none; }
         .ql-editor.ql-blank::before { color: hsl(var(--muted-foreground)); opacity: 0.9; }
         .page-break { 
           border-top: 1px dashed hsl(var(--muted-foreground)); 
