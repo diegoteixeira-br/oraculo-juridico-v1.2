@@ -311,7 +311,7 @@ export default function MarkdownEditor({
             </Select>
           </div>
           <Button variant="outline" size="sm" onClick={insertPageBreakBeforeSelection}>
-            <FilePlus2 className="w-4 h-4 mr-2"/> Inserir quebra de página
+            <FilePlus2 className="w-4 h-4 mr-2"/> Nova página
           </Button>
         </div>
       </div>
@@ -359,7 +359,7 @@ export default function MarkdownEditor({
               {/* Overlay de réguas sincronizadas com a página visível */}
               {showRulers && (
                 <div
-                  className="pointer-events-none absolute inset-0"
+                  className="pointer-events-none absolute inset-0 z-10"
                   style={{ height: pages * scaledHeight + Math.max(0, pages - 1) * scaledGap }}
                 >
                   {/* Régua horizontal alinhada ao topo da página atual */}
@@ -442,9 +442,9 @@ export default function MarkdownEditor({
         .ql-editor.ql-blank::before { color: hsl(var(--muted-foreground)); opacity: 0.9; }
         .page-break {
           display: block;
-          border-top: 1px dashed hsl(var(--muted-foreground));
-          height: 0; /* será ajustado dinamicamente via inline style */
+          height: 0; /* ajustado dinamicamente via inline style */
           margin: 0;
+          border: 0;
         }
         @media print { .page-break { break-after: page; height: 0 !important; border: 0 !important; margin: 0 !important; } }
       `}</style>
