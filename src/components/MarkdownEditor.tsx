@@ -55,7 +55,8 @@ export default function MarkdownEditor({
   const [zoom, setZoom] = useState(1);
   const [pages, setPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(0); // página visível
-  const [rulerZeroV, setRulerZeroV] = useState(0); // ajuste manual do zero da régua vertical
+  const [rulerZeroV, setRulerZeroV] = useState(0); // ajuste manual do zero vertical
+  const [rulerZeroH, setRulerZeroH] = useState(0); // ajuste manual do zero horizontal
   const [paperId, setPaperId] = useState<PaperId>("A4");
   const paper = PAPER_SIZES[paperId];
   const widthPx = Math.round(paper.widthMm * MM_TO_PX);
@@ -256,20 +257,6 @@ const RULER_SIZE = 24;
             <span>mm</span>
           </div>
           <Separator orientation="vertical" className="h-6" />
-          <div className="flex items-center gap-2">
-            <span>Régua V 0</span>
-            <Input
-              type="number"
-              className="w-16 h-8"
-              min={-50}
-              max={50}
-              step={1}
-              value={rulerZeroV}
-              onChange={(e) => setRulerZeroV(Number(e.target.value) || 0)}
-            />
-            <span>mm</span>
-          </div>
-          <Separator orientation="vertical" className="h-6" />
           <Button variant="outline" size="sm" onClick={insertPageBreak}>
             <FilePlus2 className="w-4 h-4 mr-2"/> Inserir quebra de página
           </Button>
@@ -316,6 +303,18 @@ const RULER_SIZE = 24;
               className="relative mx-auto"
               style={{ width: scaledWidth + (showRulers ? RULER_SIZE : 0) }}
             >
+              {showRulers && (
+                <div className="ml-[24px]">
+                  <RulerTop
+                    widthPx={widthPx}
+                    zoom={zoom}
+                    leftMarginMm={margins.left}
+                    rightMarginMm={margins.right}
+                    zeroOffsetMm={rulerZeroH}
+                    onZeroChange={setRulerZeroH}
+                  />
+                </div>
+              )}
               {/* Overlay de réguas sincronizadas com a página visível */}
               {showRulers && (
                 <div
@@ -324,19 +323,27 @@ const RULER_SIZE = 24;
                 >
                   {/* Régua horizontal alinhada ao topo da área útil */}
                   <div
-                    className="absolute"
+                    className="absolute pointer-events-auto"
                     style={{ left: RULER_SIZE, top: Math.max(0, currentPage * scaledHeight + scaledTopMarginPx - RULER_SIZE) }}
                   >
-                    <RulerTop widthPx={widthPx} zoom={zoom} leftMarginMm={margins.left} rightMarginMm={margins.right} />
+                    <RulerTop
+                      widthPx={widthPx}
+                      zoom={zoom}
+                      leftMarginMm={margins.left}
+                      rightMarginMm={margins.right}
+                      zeroOffsetMm={rulerZeroH}
+                      onZeroChange={setRulerZeroH}
+                    />
                   </div>
                   {/* Régua vertical alinhada à página atual */}
-                  <div className="absolute" style={{ left: 0, top: currentPage * scaledHeight }}>
+                  <div className="absolute pointer-events-auto" style={{ left: 0, top: currentPage * scaledHeight }}>
                     <RulerLeft
                       heightPx={heightPx}
                       zoom={zoom}
                       topMarginMm={margins.top}
                       bottomMarginMm={margins.bottom}
                       zeroOffsetMm={rulerZeroV}
+                      onZeroChange={setRulerZeroV}
                     />
                   </div>
                 </div>
