@@ -160,3 +160,38 @@ All colors MUST be HSL.
     }
   }
 }
+
+/* Quill editor theming and dropdown fixes (overlay, z-index, legibility) */
+.ql-toolbar.ql-snow {
+  background-color: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border-color: hsl(var(--border));
+  position: sticky;
+  z-index: 30;
+  overflow: visible;
+}
+.ql-container.ql-snow {
+  border-color: hsl(var(--border));
+}
+.ql-snow .ql-stroke { stroke: hsl(var(--card-foreground)); }
+.ql-snow .ql-fill { fill: hsl(var(--card-foreground)); }
+.ql-toolbar .ql-picker-label,
+.ql-toolbar .ql-picker-item,
+.ql-toolbar button { color: hsl(var(--card-foreground)); }
+.ql-snow .ql-picker-options {
+  background-color: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 8px 24px hsl(var(--background) / 0.5);
+  z-index: 60;
+}
+.ql-snow .ql-picker-options .ql-picker-item:hover {
+  background-color: hsl(var(--muted));
+}
+.ql-editor {
+  background-color: hsl(var(--paper));
+  color: hsl(var(--paper-foreground));
+}
+.ql-editor.ql-blank::before {
+  color: hsl(var(--muted-foreground));
+}
