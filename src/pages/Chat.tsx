@@ -13,7 +13,7 @@ import UserMenu from "@/components/UserMenu";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 import ReactMarkdown from "react-markdown";
 import { useIsMobile } from "@/hooks/use-mobile";
-import UnderlineProgressOverlay from "@/components/UnderlineProgressOverlay";
+import InlineWordUnderlineOverlay from "@/components/InlineWordUnderlineOverlay";
 
 interface Message {
   id: string;
@@ -57,9 +57,10 @@ export default function Chat() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+const messagesEndRef = useRef<HTMLDivElement>(null);
   const { visible: menuVisible } = useScrollDirection();
   const isMobile = useIsMobile();
+  const messageContainerRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const currentSession = sessions.find(s => s.id === currentSessionId);
   const messages = currentSession?.messages || [];
@@ -740,11 +741,22 @@ export default function Chat() {
                           )}
 
                           {/* Conteúdo da mensagem */}
-                          <div className="relative prose prose-invert max-w-none text-sm leading-7">
+                          <div
+                            className="relative prose prose-invert max-w-none text-sm leading-7"
+                            ref={(el) => {
+                              if (msg.type === 'assistant') {
+                                messageContainerRefs.current[msg.id] = el as HTMLDivElement | null;
+                              }
+                            }}
+                          >
                             {msg.type === 'assistant' ? (
                               <>
                                 {readingMsgId === msg.id && (isPlayingAudio || readingProgress > 0) && (
-                                  <UnderlineProgressOverlay progress={readingProgress} />
+                                  <InlineWordUnderlineOverlay
+                                    containerRef={{ current: messageContainerRefs.current[msg.id] as HTMLDivElement | null }}
+                                    text={msg.content}
+                                    progress={readingProgress}
+                                  />
                                 )}
                                 <ReactMarkdown
                                   components={{
