@@ -24,66 +24,88 @@ const InlineWordUnderlineOverlay: React.FC<InlineWordUnderlineOverlayProps> = ({
     visible: false,
   });
 
-  const totalWords = React.useMemo(() => {
-    const trimmed = text.trim();
-    if (!trimmed) return 0;
-    return trimmed.split(/\s+/).length;
-  }, [text]);
-
-  const currentIndex = React.useMemo(() => {
-    if (totalWords <= 0) return -1;
-    const idx = Math.floor(Math.max(0, Math.min(1, progress)) * totalWords);
-    return Math.min(totalWords - 1, idx);
-  }, [progress, totalWords]);
+  // We derive word counts directly from the DOM so we only count what is actually visible/speakable
+  // (avoids desync when audio skips markdown/code etc.)
 
   const computePosition = React.useCallback(() => {
     const container = containerRef.current;
-    if (!container || totalWords <= 0 || currentIndex < 0) {
+    if (!container) {
       setStyle((s) => ({ ...s, visible: false }));
       return;
     }
 
     try {
-      // Walk text nodes inside the container to locate the Nth word
+      // Count only speakable words: skip nodes inside code/pre/kbd/samp or aria-hidden content
+      const isSkippable = (n: Node) => {
+        const el = (n.parentElement || (n as any).parentNode) as HTMLElement | null;
+        if (!el) return false;
+        if (el.closest('code, pre, kbd, samp, [aria-hidden="true"], .sr-only, .visually-hidden')) return true;
+        return false;
+      };
+
       const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
       let node: Node | null = walker.nextNode();
-      let wordCounter = 0;
       const wordRegex = /\S+/g; // non-whitespace sequences
 
+      // First pass: count speakable words
+      let total = 0;
       while (node) {
-        const textNode = node as Text;
-        const value = textNode.nodeValue || "";
-        let match: RegExpExecArray | null;
-        wordRegex.lastIndex = 0;
-        while ((match = wordRegex.exec(value)) !== null) {
-          if (wordCounter === currentIndex) {
-            const range = document.createRange();
-            range.setStart(textNode, match.index);
-            range.setEnd(textNode, match.index + match[0].length);
-            const rects = range.getClientRects();
-            const rect = rects[0] || range.getBoundingClientRect();
-            range.detach?.();
-
-            if (rect && rect.width > 0 && rect.height > 0) {
-              const containerRect = container.getBoundingClientRect();
-              const left = rect.left - containerRect.left;
-              const top = rect.bottom - containerRect.top - thicknessPx; // place just under text
-              const width = rect.width;
-              setStyle({ left, top, width, visible: true });
-              return;
-            }
-          }
-          wordCounter++;
+        if (!isSkippable(node)) {
+          const value = (node as Text).nodeValue || "";
+          wordRegex.lastIndex = 0;
+          while (wordRegex.exec(value) !== null) total++;
         }
         node = walker.nextNode();
       }
 
-      // If not found
+      if (total === 0) {
+        setStyle((s) => ({ ...s, visible: false }));
+        return;
+      }
+
+      const clamped = Math.max(0, Math.min(1, progress));
+      let targetIndex = Math.floor(clamped * total);
+      if (targetIndex >= total) targetIndex = total - 1;
+
+      // Second pass: locate target word rect
+      const walker2 = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+      let node2: Node | null = walker2.nextNode();
+      let wordCounter = 0;
+      while (node2) {
+        if (!isSkippable(node2)) {
+          const textNode = node2 as Text;
+          const value = textNode.nodeValue || "";
+          let match: RegExpExecArray | null;
+          wordRegex.lastIndex = 0;
+          while ((match = wordRegex.exec(value)) !== null) {
+            if (wordCounter === targetIndex) {
+              const range = document.createRange();
+              range.setStart(textNode, match.index);
+              range.setEnd(textNode, match.index + match[0].length);
+              const rects = range.getClientRects();
+              const rect = rects[0] || range.getBoundingClientRect();
+              range.detach?.();
+
+              if (rect && rect.width > 0 && rect.height > 0) {
+                const containerRect = container.getBoundingClientRect();
+                const left = rect.left - containerRect.left;
+                const top = rect.bottom - containerRect.top - thicknessPx;
+                const width = rect.width;
+                setStyle({ left, top, width, visible: true });
+                return;
+              }
+            }
+            wordCounter++;
+          }
+        }
+        node2 = walker2.nextNode();
+      }
+
       setStyle((s) => ({ ...s, visible: false }));
     } catch (e) {
       setStyle((s) => ({ ...s, visible: false }));
     }
-  }, [containerRef, currentIndex, thicknessPx, totalWords]);
+  }, [containerRef, progress, thicknessPx]);
 
   React.useEffect(() => {
     computePosition();
