@@ -349,7 +349,15 @@ const LandingPage = () => {
               </ul>
             </div>
             <div className="p-6 card-signup border border-border">
-              <h3 className="text-xl font-semibold text-foreground mb-2">Plano Essencial • De R$ 75,80/mês Por R$ 37,90/mês</h3>
+              <h3 className="text-xl font-semibold text-foreground mb-2">Plano Essencial</h3>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2 animate-fade-in">
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground line-through text-sm">R$ 75,80/mês</span>
+                  <span className="text-foreground font-bold text-lg">R$ 37,90/mês</span>
+                  <span className="inline-flex items-center px-2 py-0.5 rounded bg-primary text-primary-foreground text-xs">50% OFF</span>
+                </div>
+                <span className="text-xs text-muted-foreground italic">Promoção por tempo limitado — pode acabar a qualquer momento.</span>
+              </div>
               <ul className="list-disc ml-6 space-y-2 text-muted-foreground">
                 <li>Chat com IA: 30.000 tokens por mês</li>
                 <li>Teste grátis de 7 dias: 3.000 tokens/dia</li>
