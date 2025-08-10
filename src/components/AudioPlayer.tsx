@@ -7,32 +7,77 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 interface AudioPlayerProps {
   audioSrc: string;
   className?: string;
+  onProgress?: (current: number, duration: number, percent: number, isPlaying: boolean) => void;
+  onPlayChange?: (playing: boolean) => void;
+  onLoadingChange?: (loading: boolean) => void;
 }
 
-export const AudioPlayer = ({ audioSrc, className = '' }: AudioPlayerProps) => {
+export const AudioPlayer = ({ audioSrc, className = '', onProgress, onPlayChange, onLoadingChange }: AudioPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [playbackRate, setPlaybackRate] = useState(1);
+  const [isLoadingAudio, setIsLoadingAudio] = useState(true);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    const updateTime = () => setCurrentTime(audio.currentTime);
-    const updateDuration = () => setDuration(audio.duration);
+    const updateTime = () => {
+      setCurrentTime(audio.currentTime);
+      const d = audio.duration || 0;
+      if (d > 0) {
+        onProgress?.(audio.currentTime, d, audio.currentTime / d, isPlaying);
+      }
+    };
+    const updateDuration = () => {
+      setDuration(audio.duration || 0);
+    };
+    const handleCanPlay = () => {
+      setIsLoadingAudio(false);
+      onLoadingChange?.(false);
+      updateDuration();
+    };
+    const handleWaiting = () => {
+      setIsLoadingAudio(true);
+      onLoadingChange?.(true);
+    };
+    const handlePlay = () => {
+      setIsPlaying(true);
+      onPlayChange?.(true);
+    };
+    const handlePause = () => {
+      setIsPlaying(false);
+      onPlayChange?.(false);
+    };
+    const handleEnded = () => {
+      setIsPlaying(false);
+      onPlayChange?.(false);
+    };
     
     audio.addEventListener('timeupdate', updateTime);
     audio.addEventListener('loadedmetadata', updateDuration);
-    audio.addEventListener('ended', () => setIsPlaying(false));
+    audio.addEventListener('canplay', handleCanPlay);
+    audio.addEventListener('canplaythrough', handleCanPlay);
+    audio.addEventListener('loadeddata', handleCanPlay);
+    audio.addEventListener('waiting', handleWaiting);
+    audio.addEventListener('play', handlePlay);
+    audio.addEventListener('pause', handlePause);
+    audio.addEventListener('ended', handleEnded);
 
     return () => {
       audio.removeEventListener('timeupdate', updateTime);
       audio.removeEventListener('loadedmetadata', updateDuration);
-      audio.removeEventListener('ended', () => setIsPlaying(false));
+      audio.removeEventListener('canplay', handleCanPlay);
+      audio.removeEventListener('canplaythrough', handleCanPlay);
+      audio.removeEventListener('loadeddata', handleCanPlay);
+      audio.removeEventListener('waiting', handleWaiting);
+      audio.removeEventListener('play', handlePlay);
+      audio.removeEventListener('pause', handlePause);
+      audio.removeEventListener('ended', handleEnded);
     };
-  }, [audioSrc]);
+  }, [audioSrc, isPlaying, onProgress, onPlayChange, onLoadingChange]);
 
   const togglePlayPause = () => {
     const audio = audioRef.current;
@@ -91,8 +136,16 @@ export const AudioPlayer = ({ audioSrc, className = '' }: AudioPlayerProps) => {
           variant="ghost"
           size="sm"
           className="text-blue-300 hover:text-blue-200 hover:bg-blue-600/20"
+          disabled={isLoadingAudio}
+          title={isLoadingAudio ? 'Carregando áudio...' : isPlaying ? 'Pausar' : 'Reproduzir'}
         >
-          {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+          {isLoadingAudio ? (
+            <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+          ) : isPlaying ? (
+            <Pause className="h-4 w-4" />
+          ) : (
+            <Play className="h-4 w-4" />
+          )}
         </Button>
 
         <Button
@@ -111,6 +164,7 @@ export const AudioPlayer = ({ audioSrc, className = '' }: AudioPlayerProps) => {
             max={100}
             step={0.1}
             className="w-full"
+            disabled={isLoadingAudio || !duration}
           />
         </div>
 
