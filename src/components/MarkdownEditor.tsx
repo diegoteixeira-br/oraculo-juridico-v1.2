@@ -7,7 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ZoomIn, ZoomOut, FilePlus2, FileText } from "lucide-react";
 import EditorRulers from "@/components/EditorRulers";
-
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import { useIsMobile } from "@/hooks/use-mobile";
 interface EditorProps {
   title: string;
   onTitleChange: (v: string) => void;
@@ -17,11 +18,13 @@ interface EditorProps {
   onCancel: () => void;
 }
 
-// Medidas aproximadas de A4 a ~96dpi
-const A4_WIDTH_PX = 794;  // 210mm
-const A4_HEIGHT_PX = 1123; // 297mm
+// Conversões e tamanhos de papel
 const MM_TO_PX = 3.7795; // 1mm em pixels (~96dpi)
-
+const PAPER_SIZES = {
+  A4: { id: "A4", label: "A4 (210 × 297 mm)", widthMm: 210, heightMm: 297 },
+  OFICIO: { id: "OFICIO", label: "Ofício (216 × 330 mm)", widthMm: 216, heightMm: 330 },
+} as const;
+type PaperId = keyof typeof PAPER_SIZES;
 export default function MarkdownEditor({
   title,
   onTitleChange,
@@ -32,8 +35,14 @@ export default function MarkdownEditor({
 }: EditorProps) {
   const quillRef = useRef<ReactQuill | null>(null);
   const pageRef = useRef<HTMLDivElement>(null);
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
   const [zoom, setZoom] = useState(1);
   const [pages, setPages] = useState(1);
+  const [paperId, setPaperId] = useState<PaperId>("A4");
+  const paper = PAPER_SIZES[paperId];
+  const widthPx = Math.round(paper.widthMm * MM_TO_PX);
+  const heightPx = Math.round(paper.heightMm * MM_TO_PX);
   // Margens em milímetros
   const [margins, setMargins] = useState({ top: 25, right: 25, bottom: 25, left: 25 });
   const marginPx = useMemo(() => ({
@@ -42,7 +51,8 @@ export default function MarkdownEditor({
     bottom: Math.round(margins.bottom * MM_TO_PX),
     left: Math.round(margins.left * MM_TO_PX),
   }), [margins]);
-
+  const showRulers = !isMobile;
+  const rulerOffset = showRulers ? 24 : 0;
   const modules = useMemo(
     () => ({
       toolbar: [
@@ -73,15 +83,28 @@ export default function MarkdownEditor({
     "clean",
   ];
 
+  useEffect(() => {
+    // Ajuste automático no mobile para caber na largura
+    if (!isMobile) return;
+    const computeFit = () => {
+      const w = scrollerRef.current?.clientWidth || 0;
+      if (!w) return;
+      const available = Math.max(0, w - 16);
+      const fit = available / widthPx;
+      setZoom(+Math.max(0.6, Math.min(1.5, fit)).toFixed(2));
+    };
+    computeFit();
+    window.addEventListener("resize", computeFit);
+    return () => window.removeEventListener("resize", computeFit);
+  }, [isMobile, widthPx]);
   const recalcPages = () => {
     const root = pageRef.current?.querySelector(".ql-editor") as HTMLElement | null;
     if (!root) { setPages(1); return; }
     // Altura do conteúdo + paddings (já inclusos no scrollHeight)
     const contentHeight = root.scrollHeight;
-    const pagesCount = Math.max(1, Math.ceil(contentHeight / A4_HEIGHT_PX));
+    const pagesCount = Math.max(1, Math.ceil(contentHeight / heightPx));
     setPages(pagesCount);
   };
-
   useEffect(() => {
     const observer = new ResizeObserver(() => recalcPages());
     const root = pageRef.current?.querySelector(".ql-editor") as HTMLElement | null;
@@ -89,9 +112,7 @@ export default function MarkdownEditor({
     recalcPages();
     return () => observer.disconnect();
   }, []);
-
-  useEffect(() => { recalcPages(); }, [content, zoom, margins.top, margins.right, margins.bottom, margins.left]);
-
+  useEffect(() => { recalcPages(); }, [content, zoom, heightPx, margins.top, margins.right, margins.bottom, margins.left]);
   const zoomIn = () => setZoom((z) => Math.min(2, +(z + 0.1).toFixed(2)));
   const zoomOut = () => setZoom((z) => Math.max(0.6, +(z - 0.1).toFixed(2)));
 
@@ -111,10 +132,12 @@ export default function MarkdownEditor({
     const html = root?.innerHTML || content || "";
     const w = window.open("", "_blank", "width=1024,height=768");
     if (!w) return;
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8" />
+    const marginCss = `${margins.top}mm ${margins.right}mm ${margins.bottom}mm ${margins.left}mm`;
+    const sizeCss = `${paper.widthMm}mm ${paper.heightMm}mm`;
+    w.document.write(`<!doctype html><html><head><meta charset=\"utf-8\" />
       <title>${title || "Documento"}</title>
       <style>
-        @page { size: A4; margin: ${margins.top}mm ${margins.right}mm ${margins.bottom}mm ${margins.left}mm; }
+        @page { size: ${sizeCss}; margin: ${marginCss}; }
         .ql-editor { line-height: 1.6; }
         .page-break { break-after: page; }
         body { font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif; }
@@ -124,7 +147,6 @@ export default function MarkdownEditor({
     w.focus();
     w.print();
   };
-
   return (
     <div className="space-y-3">
       {/* Barra de título e ações */}
@@ -148,7 +170,18 @@ export default function MarkdownEditor({
           <Separator orientation="vertical" className="h-6" />
           <div className="flex items-center gap-2">
             <FileText className="w-4 h-4 text-primary"/>
-            <span>{pages} página(s) A4</span>
+            <span>{pages} página(s) {PAPER_SIZES[paperId].id}</span>
+          </div>
+          <Separator orientation="vertical" className="h-6" />
+          <div className="flex items-center gap-2 min-w-[220px]">
+            <span>Tamanho</span>
+            <Select value={paperId} onValueChange={(v) => setPaperId(v as PaperId)}>
+              <SelectTrigger className="w-[170px] h-8"><SelectValue placeholder="Selecione o papel" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="A4">{PAPER_SIZES.A4.label}</SelectItem>
+                <SelectItem value="OFICIO">{PAPER_SIZES.OFICIO.label}</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <Separator orientation="vertical" className="h-6" />
           <div className="flex items-center gap-2">
@@ -177,25 +210,32 @@ export default function MarkdownEditor({
       {/* Editor centralizado estilo “folha” */}
       <Card>
         <CardContent className="p-4">
-          <div className="rounded-lg p-4 border bg-card h-[70vh] overflow-auto">
-            <div className="relative mx-auto" style={{ width: Math.round(A4_WIDTH_PX * zoom) }}>
-              <EditorRulers
-                widthPx={A4_WIDTH_PX}
-                heightPx={A4_HEIGHT_PX}
-                zoom={zoom}
-                marginsMm={margins}
-                onChange={setMargins}
-              />
+          <div ref={scrollerRef} className="rounded-lg p-4 border bg-card h-[70vh] overflow-auto">
+            <div className="relative mx-auto" style={{ width: Math.round(widthPx * zoom) }}>
+              {showRulers && (
+                <div style={{ position: "absolute", top: -24, left: -24 }}>
+                  <EditorRulers
+                    widthPx={widthPx}
+                    heightPx={heightPx}
+                    zoom={zoom}
+                    marginsMm={margins}
+                    onChange={setMargins}
+                  />
+                </div>
+              )}
               <div
                 ref={pageRef}
                 style={{
-                  width: A4_WIDTH_PX,
+                  width: widthPx,
                   zoom: zoom as any,
                   transformOrigin: "top left",
+                  marginLeft: rulerOffset,
+                  marginTop: rulerOffset,
                   ["--m-top" as any]: `${marginPx.top}px`,
                   ["--m-right" as any]: `${marginPx.right}px`,
                   ["--m-bottom" as any]: `${marginPx.bottom}px`,
                   ["--m-left" as any]: `${marginPx.left}px`,
+                  ["--page-height-px" as any]: `${heightPx}px`,
                 }}
               >
                 <ReactQuill
@@ -205,14 +245,13 @@ export default function MarkdownEditor({
                   onChange={onContentChange}
                   modules={modules}
                   formats={formats}
-                  className="[&_.ql-container]:min-h-[1123px] [&_.ql-container]:bg-[hsl(var(--paper))] [&_.ql-container]:rounded-md [&_.ql-container]:shadow [&_.ql-editor]:min-h-[1123px] [&_.ql-editor]:text-[hsl(var(--paper-foreground))]"
+                  className="[&_.ql-container]:bg-[hsl(var(--paper))] [&_.ql-container]:rounded-md [&_.ql-container]:shadow [&_.ql-editor]:text-[hsl(var(--paper-foreground))]"
                 />
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
-
       {/* Estilos específicos do editor */}
       <style>{`
         .ql-snow { background: transparent; }
@@ -220,16 +259,17 @@ export default function MarkdownEditor({
         .ql-toolbar .ql-stroke { stroke: hsl(var(--card-foreground)); }
         .ql-toolbar .ql-picker { color: hsl(var(--card-foreground)); }
         .ql-container.ql-snow { border-color: hsl(var(--border)); background: hsl(var(--paper)); }
+        .ql-container, .ql-editor { min-height: var(--page-height-px, 1123px); }
         .ql-editor { 
           padding: var(--m-top, 28px) var(--m-right, 32px) var(--m-bottom, 28px) var(--m-left, 32px);
           line-height: 1.6;
           color: hsl(var(--paper-foreground));
           background-image: linear-gradient(
             to bottom,
-            transparent calc(${A4_HEIGHT_PX}px - 1px),
-            hsl(var(--border)) calc(${A4_HEIGHT_PX}px - 1px)
+            transparent calc(var(--page-height-px, 1123px) - 1px),
+            hsl(var(--border)) calc(var(--page-height-px, 1123px) - 1px)
           );
-          background-size: 100% ${A4_HEIGHT_PX}px;
+          background-size: 100% var(--page-height-px, 1123px);
           background-repeat: repeat-y;
         }
         .ql-editor.ql-blank::before { color: hsl(var(--muted-foreground)); opacity: 0.9; }
