@@ -321,7 +321,7 @@ export default function MarkdownEditor({
       <Card>
         <CardContent className="p-4">
           {/* Toolbar fixa acima da régua */}
-          <div id="doc-toolbar" className="ql-toolbar ql-snow sticky top-0 z-30 mb-3 rounded-md border bg-card">
+          <div id="doc-toolbar" className="ql-toolbar ql-snow sticky top-0 z-30 mb-3 rounded-md border bg-card overflow-x-auto whitespace-nowrap">
             <span className="ql-formats">
               <select className="ql-header">
                 <option value="">Normal</option>
@@ -352,7 +352,7 @@ export default function MarkdownEditor({
             </span>
           </div>
 
-          <div ref={scrollerRef} className="rounded-lg p-4 border bg-muted h-[70vh] overflow-auto">
+          <div ref={scrollerRef} className="rounded-lg p-2 sm:p-4 border bg-muted h-[75dvh] sm:h-[70vh] overflow-auto">
             <div
               className="relative mx-auto"
               style={{ width: scaledWidth + (showRulers ? RULER_SIZE : 0) }}
@@ -397,7 +397,7 @@ export default function MarkdownEditor({
                   style={{
                     position: "relative",
                     width: widthPx,
-                    zoom: zoom as any,
+                    transform: `scale(${zoom})`,
                     transformOrigin: "top left",
                     marginLeft: 0,
                     marginTop: showRulers ? RULER_SIZE : 0,

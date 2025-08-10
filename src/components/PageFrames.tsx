@@ -20,7 +20,7 @@ export default function PageFrames({ widthPx, heightPx, pages, zoom, pageGapPx =
     <div
       aria-hidden
       className="pointer-events-none absolute inset-0"
-      style={{ width: widthPx, height: totalHeightPx, transformOrigin: "top left", zoom: zoom as any }}
+      style={{ width: widthPx, height: totalHeightPx, transformOrigin: "top left", transform: `scale(${zoom})` }}
     >
       {Array.from({ length: pages }).map((_, i) => (
         <div
