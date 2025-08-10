@@ -5,19 +5,17 @@ interface RulerTopProps {
   zoom: number;
   leftMarginMm: number;
   rightMarginMm: number;
-  zeroOffsetMm?: number; // deslocamento manual do zero a partir da margem esquerda
-  onZeroChange?: (mm: number) => void;
+  onChange: (leftMm: number, rightMm: number) => void;
 }
 
 const MM_TO_PX = 3.7795;
 
-export default function RulerTop({ widthPx, zoom, leftMarginMm, rightMarginMm, zeroOffsetMm = 0, onZeroChange }: RulerTopProps) {
+export default function RulerTop({ widthPx, zoom, leftMarginMm, rightMarginMm, onChange }: RulerTopProps) {
   const widthMm = Math.round(widthPx / MM_TO_PX);
-  const contentWidthMm = Math.max(0, widthMm - Math.round(leftMarginMm) - Math.round(rightMarginMm));
   const scaledWidth = Math.round(widthPx * zoom);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const [dragging, setDragging] = useState(false);
+  const [dragging, setDragging] = useState<null | 'left' | 'right'>(null);
 
   const pxPerMm = useMemo(() => MM_TO_PX * zoom, [zoom]);
 
@@ -25,11 +23,17 @@ export default function RulerTop({ widthPx, zoom, leftMarginMm, rightMarginMm, z
     const onMove = (e: PointerEvent) => {
       if (!dragging || !containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
-      const rawMm = (e.clientX - rect.left) / pxPerMm - leftMarginMm;
-      const clamped = Math.min(Math.max(Math.round(rawMm), 0), contentWidthMm);
-      onZeroChange?.(clamped);
+      const mm = (e.clientX - rect.left) / pxPerMm;
+
+      if (dragging === 'left') {
+        const newLeft = Math.max(0, Math.min(Math.round(mm), widthMm - rightMarginMm));
+        onChange(newLeft, rightMarginMm);
+      } else if (dragging === 'right') {
+        const newRight = Math.max(0, Math.min(Math.round(widthMm - mm), widthMm - leftMarginMm));
+        onChange(leftMarginMm, newRight);
+      }
     };
-    const onUp = () => setDragging(false);
+    const onUp = () => setDragging(null);
 
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
@@ -37,20 +41,25 @@ export default function RulerTop({ widthPx, zoom, leftMarginMm, rightMarginMm, z
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
     };
-  }, [dragging, contentWidthMm, leftMarginMm, onZeroChange, pxPerMm]);
+  }, [dragging, leftMarginMm, rightMarginMm, onChange, pxPerMm, widthMm]);
 
-  const startDrag = (e: React.PointerEvent) => {
+  const startDrag = (e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault();
-    setDragging(true);
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const mm = (e.clientX - rect.left) / pxPerMm;
+    const xLeft = leftMarginMm * pxPerMm;
+    const xRight = (widthMm - rightMarginMm) * pxPerMm;
+    const target = Math.abs(e.clientX - (rect.left + xLeft)) <= Math.abs(e.clientX - (rect.left + xRight)) ? 'left' : 'right';
+    setDragging(target);
   };
 
   const ticks: JSX.Element[] = [];
-  for (let mm = 0; mm <= contentWidthMm; mm += 1) {
+  for (let mm = 0; mm <= widthMm; mm += 1) {
     if (mm % 5 !== 0) continue;
-    const x = Math.round((mm + leftMarginMm) * pxPerMm);
+    const x = Math.round(mm * pxPerMm);
     const isMajor = mm % 10 === 0;
     const h = isMajor ? 12 : 8;
-    const labelVal = mm - Math.round(zeroOffsetMm);
     ticks.push(
       <div key={`t-${mm}`} className="absolute bottom-0 border-r border-border" style={{ left: x, height: h }} />
     );
@@ -61,18 +70,25 @@ export default function RulerTop({ widthPx, zoom, leftMarginMm, rightMarginMm, z
           className="absolute text-[10px] text-muted-foreground select-none"
           style={{ left: x, bottom: 12, transform: "translateX(-50%)" }}
         >
-          {labelVal}
+          {mm}
         </div>
       );
     }
   }
 
-  // Posição do handle do zero em px
-  const zeroX = Math.round((leftMarginMm + (zeroOffsetMm || 0)) * pxPerMm);
+  const leftX = Math.round(leftMarginMm * pxPerMm);
+  const rightX = Math.round((widthMm - rightMarginMm) * pxPerMm);
 
   return (
-    <div ref={containerRef} className="bg-muted/70 rounded-sm relative" style={{ width: scaledWidth, height: 24 }} onPointerDown={startDrag}>
-      {/* Destaques de zonas em mm (0–80mm e 170–210mm) */}
+    <div
+      ref={containerRef}
+      className="bg-muted/70 rounded-sm relative"
+      style={{ width: scaledWidth, height: 24 }}
+      onPointerDown={startDrag}
+      role="slider"
+      aria-label="Régua horizontal com marcadores de margem"
+    >
+      {/* Destaques 0–80mm e 170–210mm (visuais) */}
       <div aria-hidden className="absolute inset-0 pointer-events-none">
         <div
           className="absolute top-0 bottom-0 bg-accent/15 border-t border-dashed border-accent"
@@ -84,19 +100,18 @@ export default function RulerTop({ widthPx, zoom, leftMarginMm, rightMarginMm, z
         />
       </div>
       <div className="relative w-full h-full">{ticks}</div>
-      {/* Handle do zero */}
+
+      {/* Marcadores/handles das margens */}
       <div
-        role="slider"
-        aria-label="Ajuste do zero da régua horizontal"
-        className="absolute -bottom-[1px] h-3 w-[2px] bg-border pointer-events-none"
-        style={{ left: zeroX }}
+        aria-label="Margem esquerda"
+        className="absolute -bottom-[1px] h-3 w-[2px] bg-border"
+        style={{ left: leftX }}
       />
       <div
-        className="absolute text-[10px] text-muted-foreground select-none pointer-events-none"
-        style={{ left: zeroX, bottom: 12, transform: "translateX(-50%)" }}
-      >
-        0
-      </div>
+        aria-label="Margem direita"
+        className="absolute -bottom-[1px] h-3 w-[2px] bg-border"
+        style={{ left: rightX }}
+      />
     </div>
   );
 }

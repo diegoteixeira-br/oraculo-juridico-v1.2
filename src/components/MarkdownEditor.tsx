@@ -55,15 +55,13 @@ export default function MarkdownEditor({
   const [zoom, setZoom] = useState(1);
   const [pages, setPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(0); // página visível
-  const [rulerZeroV, setRulerZeroV] = useState(0); // ajuste manual do zero vertical
-  const [rulerZeroH, setRulerZeroH] = useState(0); // ajuste manual do zero horizontal
   const [paperId, setPaperId] = useState<PaperId>("A4");
   const paper = PAPER_SIZES[paperId];
   const widthPx = Math.round(paper.widthMm * MM_TO_PX);
   const heightPx = Math.round(paper.heightMm * MM_TO_PX);
   const scaledWidth = Math.round(widthPx * zoom);
   const scaledHeight = Math.round(heightPx * zoom);
-  // Margens em milímetros
+  // Réguas e margens ajustáveis via marcadores (mm)
   const [margins, setMargins] = useState({ top: 25, right: 25, bottom: 25, left: 25 });
   const marginPx = useMemo(() => ({
     top: Math.round(margins.top * MM_TO_PX),
@@ -72,16 +70,13 @@ export default function MarkdownEditor({
     left: Math.round(margins.left * MM_TO_PX),
   }), [margins]);
   const scaledTopMarginPx = Math.round(margins.top * MM_TO_PX * zoom);
-  // Cabeçalho/Rodapé desativados neste modo (A4 puro)
-  const headerPx = 0;
-  const footerPx = 0;
   // Espaçamento visual entre páginas (mm)
   const PAGE_GAP_MM = 24;
   const pageGapPx = Math.round(PAGE_GAP_MM * MM_TO_PX);
   const scaledGap = Math.round(pageGapPx * zoom);
 
-const showRulers = !isMobile;
-const RULER_SIZE = 24;
+  const showRulers = !isMobile;
+  const RULER_SIZE = 24;
   const modules = useMemo(
     () => ({
       toolbar: { container: "#doc-toolbar" },
@@ -124,7 +119,9 @@ const RULER_SIZE = 24;
     if (!root) { setPages(1); return; }
     // Altura do conteúdo + paddings (já inclusos no scrollHeight)
     const contentHeight = root.scrollHeight;
-    const pagesCount = Math.max(1, Math.ceil(contentHeight / heightPx));
+    const pageContentHeight = Math.max(1, heightPx - marginPx.top - marginPx.bottom);
+    const effectiveContent = Math.max(0, contentHeight - marginPx.top - marginPx.bottom);
+    const pagesCount = Math.max(1, Math.ceil(effectiveContent / pageContentHeight));
     setPages(pagesCount);
   };
   useEffect(() => {
@@ -148,7 +145,7 @@ const RULER_SIZE = 24;
     scroller.addEventListener("scroll", onScroll, { passive: true } as any);
     onScroll();
     return () => scroller.removeEventListener("scroll", onScroll);
-  }, [pages, scaledHeight]);
+  }, [pages, scaledHeight, scaledGap]);
 
   // Remoção automática de linhas vazias no fim (reduz páginas em branco)
   useEffect(() => {
@@ -244,24 +241,6 @@ const RULER_SIZE = 24;
               </SelectContent>
             </Select>
           </div>
-          <Separator orientation="vertical" className="h-6" />
-          <div className="flex items-center gap-2">
-            <span>Margem (todas)</span>
-            <Input
-              type="number"
-              className="w-20 h-8"
-              min={0}
-              max={50}
-              step={1}
-              value={margins.top}
-              onChange={(e) => {
-                const v = Number(e.target.value) || 0;
-                setMargins({ top: v, right: v, bottom: v, left: v });
-              }}
-            />
-            <span>mm</span>
-          </div>
-          <Separator orientation="vertical" className="h-6" />
           <Button variant="outline" size="sm" onClick={insertPageBreak}>
             <FilePlus2 className="w-4 h-4 mr-2"/> Inserir quebra de página
           </Button>
@@ -308,18 +287,6 @@ const RULER_SIZE = 24;
               className="relative mx-auto"
               style={{ width: scaledWidth + (showRulers ? RULER_SIZE : 0) }}
             >
-              {showRulers && (
-                <div className="ml-[24px]">
-                  <RulerTop
-                    widthPx={widthPx}
-                    zoom={zoom}
-                    leftMarginMm={margins.left}
-                    rightMarginMm={margins.right}
-                    zeroOffsetMm={rulerZeroH}
-                    onZeroChange={setRulerZeroH}
-                  />
-                </div>
-              )}
               {/* Overlay de réguas sincronizadas com a página visível */}
               {showRulers && (
                 <div
@@ -347,8 +314,7 @@ const RULER_SIZE = 24;
                       zoom={zoom}
                       topMarginMm={margins.top}
                       bottomMarginMm={margins.bottom}
-                      zeroOffsetMm={rulerZeroV}
-                      onZeroChange={setRulerZeroV}
+                      onChange={(t, b) => setMargins((m) => ({ ...m, top: t, bottom: b }))}
                     />
                   </div>
                 </div>
@@ -374,7 +340,7 @@ const RULER_SIZE = 24;
                   }}
                 >
                   {/* Page frames behind the editor content */}
-                  <PageFrames widthPx={widthPx} heightPx={heightPx} pages={pages} zoom={zoom} pageGapPx={pageGapPx} />
+                  <PageFrames widthPx={widthPx} heightPx={heightPx} pages={pages} zoom={zoom} pageGapPx={pageGapPx} marginPx={marginPx} />
 
                   {/* Main content editor */}
                   <ReactQuill
