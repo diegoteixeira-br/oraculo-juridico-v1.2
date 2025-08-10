@@ -424,8 +424,7 @@ export default function MarkdownEditor({
         .ql-toolbar.ql-snow { border-color: hsl(var(--border)); background: hsl(var(--card)); }
         .ql-toolbar .ql-stroke { stroke: hsl(var(--card-foreground)); }
         .ql-toolbar .ql-picker { color: hsl(var(--card-foreground)); }
-        .ql-container.ql-snow { border: 0 !important; background: transparent; }
-        .ql-container, .ql-editor { min-height: var(--page-height-px, 1123px); }
+        .ql-container, .ql-editor { min-height: calc(var(--page-height-px, 1123px) - var(--m-top, 28px) - var(--m-bottom, 28px)); }
         .ql-editor { 
           padding: var(--m-top, 28px) var(--m-right, 32px) var(--m-bottom, 28px) var(--m-left, 32px);
           line-height: 1.6;
