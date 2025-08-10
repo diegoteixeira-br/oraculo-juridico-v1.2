@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { ZoomIn, ZoomOut, FilePlus2, FileText } from "lucide-react";
 import PageFrames from "@/components/PageFrames";
 import RulerTop from "@/components/RulerTop";
+import RulerLeft from "@/components/RulerLeft";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { useIsMobile } from "@/hooks/use-mobile";
 interface EditorProps {
@@ -70,19 +71,10 @@ const headerPx = 0;
 const footerPx = 0;
 
 const showRulers = !isMobile;
-const rulerOffset = showRulers ? 24 : 0;
+const RULER_SIZE = 24;
   const modules = useMemo(
     () => ({
-      toolbar: [
-        [{ header: [1, 2, 3, false] }],
-        ["bold", "italic", "underline", "strike"],
-        [{ list: "ordered" }, { list: "bullet" }],
-        [{ align: [] }],
-        ["link"],
-        ["table"],
-        [{ indent: "-1" }, { indent: "+1" }],
-        ["clean"],
-      ],
+      toolbar: { container: "#doc-toolbar" },
       clipboard: { matchVisual: true },
     }),
     []
@@ -233,43 +225,81 @@ const rulerOffset = showRulers ? 24 : 0;
       {/* Editor centralizado estilo “folha” */}
       <Card>
         <CardContent className="p-4">
+          {/* Toolbar fixa acima da régua */}
+          <div id="doc-toolbar" className="ql-toolbar ql-snow sticky top-0 z-20 mb-3 rounded-md border bg-card">
+            <span className="ql-formats">
+              <select className="ql-header">
+                <option value="">Normal</option>
+                <option value="1">H1</option>
+                <option value="2">H2</option>
+                <option value="3">H3</option>
+              </select>
+            </span>
+            <span className="ql-formats">
+              <button className="ql-bold" />
+              <button className="ql-italic" />
+              <button className="ql-underline" />
+              <button className="ql-strike" />
+            </span>
+            <span className="ql-formats">
+              <button className="ql-list" value="ordered" />
+              <button className="ql-list" value="bullet" />
+            </span>
+            <span className="ql-formats">
+              <button className="ql-align" value="" />
+              <button className="ql-align" value="center" />
+              <button className="ql-align" value="right" />
+              <button className="ql-align" value="justify" />
+            </span>
+            <span className="ql-formats">
+              <button className="ql-link" />
+              <button className="ql-clean" />
+            </span>
+          </div>
+
           <div ref={scrollerRef} className="rounded-lg p-4 border bg-muted h-[70vh] overflow-auto">
-            <div className="relative mx-auto" style={{ width: Math.round(widthPx * zoom) }}>
+            <div className="mx-auto" style={{ width: Math.round(widthPx * zoom) + (showRulers ? RULER_SIZE : 0) }}>
               {showRulers && (
-                <div style={{ position: "absolute", top: -24, left: 0, width: Math.round(widthPx * zoom) }}>
+                <div className="ml-[24px]">
                   <RulerTop widthPx={widthPx} zoom={zoom} />
                 </div>
               )}
-              <div
-                ref={pageRef}
-                style={{
-                  position: "relative",
-                  width: widthPx,
-                  zoom: zoom as any,
-                  transformOrigin: "top left",
-                  marginLeft: 0,
-                  marginTop: rulerOffset,
-                  ["--m-top" as any]: `${marginPx.top}px`,
-                  ["--m-right" as any]: `${marginPx.right}px`,
-                  ["--m-bottom" as any]: `${marginPx.bottom}px`,
-                  ["--m-left" as any]: `${marginPx.left}px`,
-                  ["--page-height-px" as any]: `${heightPx}px`,
-                }}
-              >
-                {/* Page frames behind the editor content */}
-                <PageFrames widthPx={widthPx} heightPx={heightPx} pages={pages} zoom={zoom} />
+              <div className="flex">
+                {showRulers && (
+                  <div style={{ width: RULER_SIZE }}>
+                    <RulerLeft heightPx={heightPx} zoom={zoom} topMarginMm={margins.top} bottomMarginMm={margins.bottom} />
+                  </div>
+                )}
+                <div
+                  ref={pageRef}
+                  style={{
+                    position: "relative",
+                    width: widthPx,
+                    zoom: zoom as any,
+                    transformOrigin: "top left",
+                    marginLeft: 0,
+                    marginTop: 0,
+                    ["--m-top" as any]: `${marginPx.top}px`,
+                    ["--m-right" as any]: `${marginPx.right}px`,
+                    ["--m-bottom" as any]: `${marginPx.bottom}px`,
+                    ["--m-left" as any]: `${marginPx.left}px`,
+                    ["--page-height-px" as any]: `${heightPx}px`,
+                  }}
+                >
+                  {/* Page frames behind the editor content */}
+                  <PageFrames widthPx={widthPx} heightPx={heightPx} pages={pages} zoom={zoom} />
 
-                {/* Main content editor */}
-                <ReactQuill
-                  ref={quillRef as any}
-                  theme="snow"
-                  value={content}
-                  onChange={onContentChange}
-                  modules={modules}
-                  formats={formats}
-                  className="main-editor [&_.ql-container]:bg-transparent [&_.ql-container]:rounded-md [&_.ql-container]:shadow-none [&_.ql-editor]:text-[hsl(var(--paper-foreground))]"
-                />
-
+                  {/* Main content editor */}
+                  <ReactQuill
+                    ref={quillRef as any}
+                    theme="snow"
+                    value={content}
+                    onChange={onContentChange}
+                    modules={modules}
+                    formats={formats}
+                    className="main-editor [&_.ql-container]:bg-transparent [&_.ql-container]:rounded-md [&_.ql-container]:shadow-none [&_.ql-editor]:text-[hsl(var(--paper-foreground))]"
+                  />
+                </div>
               </div>
             </div>
           </div>
