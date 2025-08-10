@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ZoomIn, ZoomOut, FilePlus2, FileText } from "lucide-react";
-import EditorRulers from "@/components/EditorRulers";
+import PageFrames from "@/components/PageFrames";
+import RulerTop from "@/components/RulerTop";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { useIsMobile } from "@/hooks/use-mobile";
 interface EditorProps {
@@ -64,17 +65,9 @@ export default function MarkdownEditor({
     bottom: Math.round(margins.bottom * MM_TO_PX),
     left: Math.round(margins.left * MM_TO_PX),
   }), [margins]);
-// Header/Footer states and sizes
-const [localHeader, setLocalHeader] = useState<string>(headerContent ?? "");
-const [localFooter, setLocalFooter] = useState<string>(footerContent ?? "");
-const headerHtml = headerContent ?? localHeader;
-const footerHtml = footerContent ?? localFooter;
-const handleHeaderChange = (v: string) => { (onHeaderChange ?? (setLocalHeader as any))(v); };
-const handleFooterChange = (v: string) => { (onFooterChange ?? (setLocalFooter as any))(v); };
-const [headerMmState, setHeaderMmState] = useState<number>(headerHeightMm);
-const [footerMmState, setFooterMmState] = useState<number>(footerHeightMm);
-const headerPx = useMemo(() => Math.round(headerMmState * MM_TO_PX), [headerMmState]);
-const footerPx = useMemo(() => Math.round(footerMmState * MM_TO_PX), [footerMmState]);
+// Cabeçalho/Rodapé desativados neste modo (A4 puro)
+const headerPx = 0;
+const footerPx = 0;
 
 const showRulers = !isMobile;
 const rulerOffset = showRulers ? 24 : 0;
@@ -139,7 +132,7 @@ const rulerOffset = showRulers ? 24 : 0;
     recalcPages();
     return () => observer.disconnect();
   }, []);
-  useEffect(() => { recalcPages(); }, [content, zoom, heightPx, margins.top, margins.right, margins.bottom, margins.left, headerMmState, footerMmState]);
+  useEffect(() => { recalcPages(); }, [content, zoom, heightPx, margins.top, margins.right, margins.bottom, margins.left]);
   const zoomIn = () => setZoom((z) => Math.min(2, +(z + 0.1).toFixed(2)));
   const zoomOut = () => setZoom((z) => Math.max(0.6, +(z - 0.1).toFixed(2)));
 
@@ -157,8 +150,6 @@ const rulerOffset = showRulers ? 24 : 0;
   const exportPdf = () => {
     const root = pageRef.current?.querySelector(".ql-editor") as HTMLElement | null;
     const html = root?.innerHTML || content || "";
-    const header = headerHtml || "";
-    const footer = footerHtml || "";
     const w = window.open("", "_blank", "width=1024,height=768");
     if (!w) return;
     const marginCss = `${margins.top}mm ${margins.right}mm ${margins.bottom}mm ${margins.left}mm`;
@@ -172,9 +163,7 @@ const rulerOffset = showRulers ? 24 : 0;
         body { font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif; }
       </style>
     </head><body>
-      ${header ? `<div class="ql-editor header-area" style="min-height:${headerMmState}mm;">${header}</div>` : ""}
       <div class="ql-editor">${html}</div>
-      ${footer ? `<div class="ql-editor footer-area" style="min-height:${footerMmState}mm;">${footer}</div>` : ""}
     </body></html>`);
     w.document.close();
     w.focus();
@@ -235,34 +224,6 @@ const rulerOffset = showRulers ? 24 : 0;
             <span>mm</span>
           </div>
           <Separator orientation="vertical" className="h-6" />
-          <div className="flex items-center gap-2">
-            <span>Cabeçalho</span>
-            <Input
-              type="number"
-              className="w-20 h-8"
-              min={0}
-              max={100}
-              step={1}
-              value={headerMmState}
-              onChange={(e) => setHeaderMmState(Number(e.target.value) || 0)}
-            />
-            <span>mm</span>
-          </div>
-          <Separator orientation="vertical" className="h-6" />
-          <div className="flex items-center gap-2">
-            <span>Rodapé</span>
-            <Input
-              type="number"
-              className="w-20 h-8"
-              min={0}
-              max={100}
-              step={1}
-              value={footerMmState}
-              onChange={(e) => setFooterMmState(Number(e.target.value) || 0)}
-            />
-            <span>mm</span>
-          </div>
-          <Separator orientation="vertical" className="h-6" />
           <Button variant="outline" size="sm" onClick={insertPageBreak}>
             <FilePlus2 className="w-4 h-4 mr-2"/> Inserir quebra de página
           </Button>
@@ -275,14 +236,8 @@ const rulerOffset = showRulers ? 24 : 0;
           <div ref={scrollerRef} className="rounded-lg p-4 border bg-muted h-[70vh] overflow-auto">
             <div className="relative mx-auto" style={{ width: Math.round(widthPx * zoom) }}>
               {showRulers && (
-                <div style={{ position: "absolute", top: -24, left: -24 }}>
-                  <EditorRulers
-                    widthPx={widthPx}
-                    heightPx={heightPx}
-                    zoom={zoom}
-                    marginsMm={margins}
-                    onChange={setMargins}
-                  />
+                <div style={{ position: "absolute", top: -24, left: 0, width: Math.round(widthPx * zoom) }}>
+                  <RulerTop widthPx={widthPx} zoom={zoom} />
                 </div>
               )}
               <div
@@ -292,35 +247,17 @@ const rulerOffset = showRulers ? 24 : 0;
                   width: widthPx,
                   zoom: zoom as any,
                   transformOrigin: "top left",
-                  marginLeft: rulerOffset,
+                  marginLeft: 0,
                   marginTop: rulerOffset,
                   ["--m-top" as any]: `${marginPx.top}px`,
                   ["--m-right" as any]: `${marginPx.right}px`,
                   ["--m-bottom" as any]: `${marginPx.bottom}px`,
                   ["--m-left" as any]: `${marginPx.left}px`,
                   ["--page-height-px" as any]: `${heightPx}px`,
-                  ["--header-height-px" as any]: `${headerPx}px`,
-                  ["--footer-height-px" as any]: `${footerPx}px`,
                 }}
               >
-                {/* Header editor */}
-                <ReactQuill
-                  theme="snow"
-                  value={headerHtml}
-                  onChange={handleHeaderChange}
-                  modules={{ toolbar: false }}
-                  formats={formats}
-                  placeholder="Cabeçalho"
-                  className="header-editor"
-                  style={{
-                    position: "absolute",
-                    zIndex: 10,
-                    top: "var(--m-top)",
-                    left: "var(--m-left)",
-                    right: "var(--m-right)",
-                    height: "var(--header-height-px)",
-                  } as any}
-                />
+                {/* Page frames behind the editor content */}
+                <PageFrames widthPx={widthPx} heightPx={heightPx} pages={pages} zoom={zoom} />
 
                 {/* Main content editor */}
                 <ReactQuill
@@ -330,27 +267,9 @@ const rulerOffset = showRulers ? 24 : 0;
                   onChange={onContentChange}
                   modules={modules}
                   formats={formats}
-                  className="main-editor [&_.ql-container]:bg-[hsl(var(--paper))] [&_.ql-container]:rounded-md [&_.ql-container]:shadow [&_.ql-editor]:text-[hsl(var(--paper-foreground))]"
+                  className="main-editor [&_.ql-container]:bg-transparent [&_.ql-container]:rounded-md [&_.ql-container]:shadow-none [&_.ql-editor]:text-[hsl(var(--paper-foreground))]"
                 />
 
-                {/* Footer editor */}
-                <ReactQuill
-                  theme="snow"
-                  value={footerHtml}
-                  onChange={handleFooterChange}
-                  modules={{ toolbar: false }}
-                  formats={formats}
-                  placeholder="Rodapé"
-                  className="footer-editor"
-                  style={{
-                    position: "absolute",
-                    zIndex: 10,
-                    bottom: "var(--m-bottom)",
-                    left: "var(--m-left)",
-                    right: "var(--m-right)",
-                    height: "var(--footer-height-px)",
-                  } as any}
-                />
               </div>
             </div>
           </div>
@@ -362,26 +281,13 @@ const rulerOffset = showRulers ? 24 : 0;
         .ql-toolbar.ql-snow { border-color: hsl(var(--border)); background: hsl(var(--card)); }
         .ql-toolbar .ql-stroke { stroke: hsl(var(--card-foreground)); }
         .ql-toolbar .ql-picker { color: hsl(var(--card-foreground)); }
-        .ql-container.ql-snow { border-color: hsl(var(--border)); background: hsl(var(--paper)); }
+        .ql-container.ql-snow { border-color: hsl(var(--border)); background: transparent; }
         .ql-container, .ql-editor { min-height: var(--page-height-px, 1123px); }
         .ql-editor { 
-          padding: calc(var(--m-top, 28px) + var(--header-height-px, 0px)) var(--m-right, 32px) calc(var(--m-bottom, 28px) + var(--footer-height-px, 0px)) var(--m-left, 32px);
+          padding: var(--m-top, 28px) var(--m-right, 32px) var(--m-bottom, 28px) var(--m-left, 32px);
           line-height: 1.6;
           color: hsl(var(--paper-foreground));
-          background-image: linear-gradient(
-            to bottom,
-            transparent calc(var(--page-height-px, 1123px) - 1px),
-            hsl(var(--border)) calc(var(--page-height-px, 1123px) - 1px)
-          );
-          background-size: 100% var(--page-height-px, 1123px);
-          background-repeat: repeat-y;
         }
-        .header-editor .ql-container.ql-snow,
-        .footer-editor .ql-container.ql-snow { border: none; background: transparent; }
-        .header-editor .ql-editor,
-        .footer-editor .ql-editor { padding: 0; min-height: 0; }
-        .header-editor .ql-toolbar,
-        .footer-editor .ql-toolbar { display: none; }
         .ql-editor.ql-blank::before { color: hsl(var(--muted-foreground)); opacity: 0.9; }
         .page-break { 
           border-top: 1px dashed hsl(var(--muted-foreground)); 
