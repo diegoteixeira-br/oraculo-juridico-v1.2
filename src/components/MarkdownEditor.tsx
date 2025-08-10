@@ -293,18 +293,17 @@ export default function MarkdownEditor({
                   className="pointer-events-none absolute inset-0"
                   style={{ height: pages * scaledHeight + Math.max(0, pages - 1) * scaledGap }}
                 >
-                  {/* Régua horizontal alinhada ao topo da área útil */}
+                  {/* Régua horizontal alinhada ao topo da página atual */}
                   <div
                     className="absolute pointer-events-auto"
-                    style={{ left: RULER_SIZE, top: Math.max(0, currentPage * (scaledHeight + scaledGap) + scaledTopMarginPx - RULER_SIZE) }}
+                    style={{ left: RULER_SIZE, top: currentPage * (scaledHeight + scaledGap) - RULER_SIZE }}
                   >
                     <RulerTop
                       widthPx={widthPx}
                       zoom={zoom}
                       leftMarginMm={margins.left}
                       rightMarginMm={margins.right}
-                      zeroOffsetMm={rulerZeroH}
-                      onZeroChange={setRulerZeroH}
+                      onChange={(l, r) => setMargins((m) => ({ ...m, left: l, right: r }))}
                     />
                   </div>
                   {/* Régua vertical alinhada à página atual */}
