@@ -343,7 +343,7 @@ export default function MarkdownEditor({
             </span>
           </div>
 
-          <div ref={scrollerRef} className="rounded-lg p-2 sm:p-4 border bg-muted h-[75dvh] sm:h-[70vh] overflow-auto">
+          <div ref={scrollerRef} className="rounded-lg p-2 sm:p-4 border bg-muted h-[75dvh] sm:h-[70vh] overflow-auto" style={{ WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain' }}>
             <div
               className="relative mx-auto"
               style={{ width: scaledWidth + (showRulers ? RULER_SIZE : 0) }}
@@ -437,6 +437,13 @@ export default function MarkdownEditor({
           height: 0; /* ajustado dinamicamente via inline style */
           margin: 0;
           border: 0;
+        }
+        /* Ajustes de densidade para telas pequenas */
+        @media (max-width: 640px) {
+          #doc-toolbar { padding: 6px 8px; }
+          #doc-toolbar .ql-formats { margin-right: 6px; }
+          #doc-toolbar .ql-formats button { width: 28px; height: 28px; padding: 0; }
+          #doc-toolbar .ql-picker-label { padding: 0 6px; }
         }
         @media print { .page-break { break-after: page; height: 0 !important; border: 0 !important; margin: 0 !important; } }
       `}</style>
