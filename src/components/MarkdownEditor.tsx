@@ -296,7 +296,7 @@ export default function MarkdownEditor({
                   {/* Régua horizontal alinhada ao topo da página atual */}
                   <div
                     className="absolute pointer-events-auto"
-                    style={{ left: RULER_SIZE, top: Math.max(0, currentPage * (scaledHeight + scaledGap) - RULER_SIZE) }}
+                    style={{ left: RULER_SIZE, top: Math.max(0, currentPage * (scaledHeight + scaledGap) + scaledTopMarginPx - RULER_SIZE) }}
                   >
                     <RulerTop
                       widthPx={widthPx}
@@ -351,22 +351,6 @@ export default function MarkdownEditor({
                     formats={formats}
                     className="main-editor [&_.ql-container]:bg-transparent [&_.ql-container]:rounded-md [&_.ql-container]:shadow-none [&_.ql-editor]:text-[hsl(var(--paper-foreground))]"
                   />
-
-                  {/* Máscaras para ocultar conteúdo fora das margens (simula recorte da folha) */}
-                  <div aria-hidden className="pointer-events-none absolute inset-0 z-10" style={{ width: widthPx, height: pages * heightPx + pageGapPx * Math.max(0, pages - 1) }}>
-                    {Array.from({ length: pages }).map((_, i) => (
-                      <div key={i} className="absolute" style={{ top: i * (heightPx + pageGapPx), left: 0, width: widthPx, height: heightPx }}>
-                        {/* Topo */}
-                        <div className="absolute bg-[hsl(var(--paper))]" style={{ left: 0, right: 0, top: 0, height: marginPx.top }} />
-                        {/* Base */}
-                        <div className="absolute bg-[hsl(var(--paper))]" style={{ left: 0, right: 0, top: heightPx - marginPx.bottom, height: marginPx.bottom }} />
-                        {/* Esquerda */}
-                        <div className="absolute bg-[hsl(var(--paper))]" style={{ top: 0, bottom: 0, left: 0, width: marginPx.left }} />
-                        {/* Direita */}
-                        <div className="absolute bg-[hsl(var(--paper))]" style={{ top: 0, bottom: 0, left: widthPx - marginPx.right, width: marginPx.right }} />
-                      </div>
-                    ))}
-                  </div>
                 </div>
               </div>
             </div>
