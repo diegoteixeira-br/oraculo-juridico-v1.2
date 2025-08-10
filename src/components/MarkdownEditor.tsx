@@ -171,15 +171,30 @@ export default function MarkdownEditor({
   const zoomIn = () => setZoom((z) => Math.min(2, +(z + 0.1).toFixed(2)));
   const zoomOut = () => setZoom((z) => Math.max(0.6, +(z - 0.1).toFixed(2)));
 
-  const insertPageBreak = () => {
+  const insertPageBreakBeforeSelection = () => {
     const quill = quillRef.current?.getEditor();
     if (!quill) return;
-    const index = quill.getSelection()?.index ?? quill.getLength();
-    // Inserir marcador de quebra (visível e com quebra real ao imprimir)
-    quill.clipboard.dangerouslyPasteHTML(
-      index,
-      '<p class="page-break">— Quebra de página —</p>'
-    );
+    const range = quill.getSelection(true);
+    const index = range?.index ?? quill.getLength();
+    // Insere marcador de quebra no início da seleção (ou no cursor)
+    quill.clipboard.dangerouslyPasteHTML(index, '<p class="page-break"></p>');
+
+    // Ajusta altura do marcador para "pular" visualmente para a próxima página
+    setTimeout(() => {
+      const root = pageRef.current?.querySelector(".ql-editor") as HTMLElement | null;
+      const breaks = root?.querySelectorAll("p.page-break");
+      const el = (breaks && breaks[breaks.length - 1]) as HTMLElement | undefined;
+      if (!root || !el) return;
+
+      const pageInnerHeight = Math.max(1, heightPx - marginPx.top - marginPx.bottom);
+      const offsetY = el.offsetTop - marginPx.top; // desconta o padding superior (margem superior)
+      const remainder = ((offsetY % pageInnerHeight) + pageInnerHeight) % pageInnerHeight;
+      const spacer = remainder === 0 ? 0 : pageInnerHeight - remainder;
+      el.style.height = `${spacer}px`;
+
+      recalcPages();
+      try { el.scrollIntoView({ block: "start", behavior: "smooth" }); } catch {}
+    }, 0);
   };
 
   const exportPdf = () => {
@@ -241,7 +256,7 @@ export default function MarkdownEditor({
               </SelectContent>
             </Select>
           </div>
-          <Button variant="outline" size="sm" onClick={insertPageBreak}>
+          <Button variant="outline" size="sm" onClick={insertPageBreakBeforeSelection}>
             <FilePlus2 className="w-4 h-4 mr-2"/> Inserir quebra de página
           </Button>
         </div>
@@ -371,11 +386,11 @@ export default function MarkdownEditor({
           color: hsl(var(--paper-foreground));
         }
         .ql-editor.ql-blank::before { color: hsl(var(--muted-foreground)); opacity: 0.9; }
-        .page-break { 
-          border-top: 1px dashed hsl(var(--muted-foreground)); 
-          margin: 24px 0; 
-          color: hsl(var(--muted-foreground)); 
-          text-align: center; 
+        .page-break {
+          display: block;
+          border-top: 1px dashed hsl(var(--muted-foreground));
+          height: 0; /* será ajustado dinamicamente via inline style */
+          margin: 0;
         }
         @media print { .page-break { break-after: page; } }
       `}</style>
