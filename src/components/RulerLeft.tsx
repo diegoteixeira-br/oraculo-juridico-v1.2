@@ -66,7 +66,7 @@ export default function RulerLeft({ heightPx, zoom, topMarginMm, bottomMarginMm,
       ticks.push(
         <div
           key={`vl-${mm}`}
-          className="absolute text-[10px] text-muted-foreground select-none"
+          className="absolute text-[10px] text-foreground select-none"
           style={{ left: 0, top: y - 6 }}
         >
           {mm}

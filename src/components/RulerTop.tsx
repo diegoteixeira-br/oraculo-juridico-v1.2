@@ -67,7 +67,7 @@ export default function RulerTop({ widthPx, zoom, leftMarginMm, rightMarginMm, o
       ticks.push(
         <div
           key={`tl-${mm}`}
-          className="absolute text-[10px] text-muted-foreground select-none"
+          className="absolute text-[10px] text-foreground select-none"
           style={{ left: x, bottom: 12, transform: "translateX(-50%)" }}
         >
           {mm}

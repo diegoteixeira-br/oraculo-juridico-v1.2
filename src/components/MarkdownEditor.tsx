@@ -296,7 +296,7 @@ export default function MarkdownEditor({
                   {/* Régua horizontal alinhada ao topo da página atual */}
                   <div
                     className="absolute pointer-events-auto"
-                    style={{ left: RULER_SIZE, top: currentPage * (scaledHeight + scaledGap) - RULER_SIZE }}
+                    style={{ left: RULER_SIZE, top: Math.max(0, currentPage * (scaledHeight + scaledGap) + scaledTopMarginPx - RULER_SIZE) }}
                   >
                     <RulerTop
                       widthPx={widthPx}
