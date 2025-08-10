@@ -51,6 +51,7 @@ export default function MarkdownEditor({
   const quillRef = useRef<ReactQuill | null>(null);
   const pageRef = useRef<HTMLDivElement>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number | null>(null);
   const isMobile = useIsMobile();
   const [zoom, setZoom] = useState(1);
   const [pages, setPages] = useState(1);
@@ -129,7 +130,7 @@ export default function MarkdownEditor({
       lastBottom = Math.max(lastBottom, el.offsetTop + el.offsetHeight);
     }
     const contentInnerHeight = Math.max(0, lastBottom - marginPx.top);
-    const epsilon = 2; // evita página extra por arredondamento/bordas
+    const epsilon = 4; // evita página extra por arredondamento/bordas
     const pagesCount = Math.max(1, Math.ceil(Math.max(0, contentInnerHeight - epsilon) / pageContentHeight));
     setPages(pagesCount);
   };
@@ -260,6 +261,24 @@ export default function MarkdownEditor({
     const t = setTimeout(() => enforceFlowWithinMargins(), 0);
     return () => clearTimeout(t);
   }, [content, marginPx.top, marginPx.bottom, marginPx.left, marginPx.right, pageGapPx, heightPx]);
+
+  // Recalcula em qualquer mudança de texto (inclusive colar/apagar) e elimina página vazia imediatamente
+  useEffect(() => {
+    const quill = quillRef.current?.getEditor();
+    if (!quill) return;
+    const onChange = () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        recalcPages();
+        enforceFlowWithinMargins();
+      });
+    };
+    quill.on('text-change', onChange);
+    return () => {
+      quill.off('text-change', onChange);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [heightPx, marginPx.top, marginPx.bottom, pageGapPx]);
 
   const exportPdf = () => {
     const root = pageRef.current?.querySelector(".ql-editor") as HTMLElement | null;
