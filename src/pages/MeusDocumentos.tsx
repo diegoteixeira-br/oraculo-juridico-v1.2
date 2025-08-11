@@ -141,7 +141,8 @@ export default function MeusDocumentos() {
       } else {
         const { error } = await supabase
           .from("user_documents")
-          .insert({ user_id: user.id, title: title.trim(), content_md: cleaned, folder: folder || null, tags });
+          .insert({ user_id: user.id, title: title.trim(), content_md: cleaned, folder: folder || null, tags, paper_id: paperId, margins })
+          ;
         if (error) throw error;
         toast({ title: "Documento criado" });
       }
@@ -274,7 +275,7 @@ export default function MeusDocumentos() {
 
       {/* Editor */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-5xl bg-slate-900 text-white border-slate-700">
+        <DialogContent className="max-w-5xl bg-slate-900 text-white border-slate-700 max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100vh-4rem)] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editDoc ? "Editar Documento" : "Novo Documento"}</DialogTitle>
           </DialogHeader>
@@ -299,6 +300,10 @@ export default function MeusDocumentos() {
             onContentChange={setContent}
             onSave={save}
             onCancel={() => setOpen(false)}
+            initialMargins={margins}
+            initialPaperId={paperId as any}
+            onMarginsChange={setMargins}
+            onPaperChange={(p:any) => setPaperId(p)}
           />
         </DialogContent>
       </Dialog>
