@@ -52,4 +52,4 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.daily-agenda-summary]
-verify_jwt = true
+verify_jwt = false
