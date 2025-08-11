@@ -328,6 +328,14 @@ const AgendaJuridica = () => {
       process_number: commitment.process_number || "",
       client_name: commitment.client_name || "",
       priority: commitment.priority,
+      duration_hours: commitment.end_date
+        ? Math.max(
+            1,
+            Math.ceil(
+              (new Date(commitment.end_date).getTime() - new Date(commitment.commitment_date).getTime()) / 3600000
+            )
+          )
+        : 1,
     });
     setShowEditDialog(true);
   };
