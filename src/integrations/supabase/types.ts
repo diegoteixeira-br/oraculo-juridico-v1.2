@@ -152,7 +152,9 @@ export type Database = {
           file_url: string | null
           id: string
           is_active: boolean
+          margins: Json | null
           min_tokens_required: number | null
+          paper_id: string | null
           template_variables: Json | null
           title: string
           updated_at: string
@@ -165,7 +167,9 @@ export type Database = {
           file_url?: string | null
           id?: string
           is_active?: boolean
+          margins?: Json | null
           min_tokens_required?: number | null
+          paper_id?: string | null
           template_variables?: Json | null
           title: string
           updated_at?: string
@@ -178,7 +182,9 @@ export type Database = {
           file_url?: string | null
           id?: string
           is_active?: boolean
+          margins?: Json | null
           min_tokens_required?: number | null
+          paper_id?: string | null
           template_variables?: Json | null
           title?: string
           updated_at?: string

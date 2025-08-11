@@ -64,11 +64,16 @@ export default function DocumentViewer({ documentId, isOpen, onClose }: Document
 
   const processTemplate = () => {
     if (!document) return;
-    const content = document.content
+    let content = document.content
       .replace(/\n\n/g, '</p><p>')
       .replace(/\n/g, '<br>')
       .replace(/^/, '<p>')
       .replace(/$/, '</p>');
+    // Remove trailing empty paragraphs and page-break markers to avoid blank pages
+    content = content
+      .replace(/(?:<p>(?:&nbsp;|\s|<br\s*\/>)*<\/p>\s*)+$/i, '')
+      .replace(/(?:<div\s+class="page-break"\s*>\s*<\/div>\s*)+$/i, '')
+      .replace(/(?:<hr\s*\/>\s*)+$/i, '');
     setProcessedContent(content);
   };
 
@@ -114,7 +119,9 @@ export default function DocumentViewer({ documentId, isOpen, onClose }: Document
 
   const downloadDocument = async () => {
     try {
-      const htmlContent = `<!doctype html><html><head><meta charset="utf-8" /><title>${document?.title}</title><style>body{font-family:'Times New Roman',Times,serif;line-height:1.6;margin:40px}</style></head><body>${processedContent}</body></html>`;
+      const margins = (document as any)?.margins || { top: 10, right: 10, bottom: 24, left: 10 };
+      const css = `@page { size: A4; margin: ${margins.top}mm ${margins.right}mm ${margins.bottom}mm ${margins.left}mm; } body{font-family:'Times New Roman',Times,serif;line-height:1.6;}`;
+      const htmlContent = `<!doctype html><html><head><meta charset="utf-8" /><title>${document?.title}</title><style>${css}</style></head><body>${processedContent}</body></html>`;
       const blob = new Blob([htmlContent], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
       const a = globalThis.document.createElement('a');
@@ -132,7 +139,9 @@ export default function DocumentViewer({ documentId, isOpen, onClose }: Document
     if (!user?.id || !document) return;
     try {
       const html = processedContent || document.content;
-      const { error } = await supabase.from('user_documents').insert({ user_id: user.id, title: document.title, content_md: html });
+      const paperId = (document as any)?.paper_id || 'A4';
+      const margins = (document as any)?.margins || { top: 10, right: 10, bottom: 24, left: 10 };
+      const { error } = await supabase.from('user_documents').insert({ user_id: user.id, title: document.title, content_md: html, paper_id: paperId, margins });
       if (error) throw error;
       toast({ title: 'Salvo em Meus Documentos' });
     } catch (e:any) {
