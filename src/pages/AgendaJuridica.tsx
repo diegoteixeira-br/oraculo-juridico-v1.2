@@ -124,6 +124,9 @@ const AgendaJuridica = () => {
     priority: "normal",
   });
 
+  // Converte 'datetime-local' (local) para ISO UTC
+  const toIsoUtc = (value: string) => value ? new Date(value).toISOString() : null;
+
   // Carregar compromissos de forma otimizada
   const loadCommitments = async () => {
     if (!user) return;
@@ -218,7 +221,8 @@ const AgendaJuridica = () => {
         .insert({
           user_id: user.id,
           ...newCommitment,
-          end_date: newCommitment.end_date || null,
+          commitment_date: toIsoUtc(newCommitment.commitment_date),
+          end_date: newCommitment.end_date ? toIsoUtc(newCommitment.end_date) : null,
           status: 'pendente',
           auto_detected: false,
         });
@@ -295,7 +299,8 @@ const AgendaJuridica = () => {
         .from('legal_commitments' as any)
         .update({
           ...editCommitment,
-          end_date: editCommitment.end_date || null,
+          commitment_date: toIsoUtc(editCommitment.commitment_date),
+          end_date: editCommitment.end_date ? toIsoUtc(editCommitment.end_date) : null,
         })
         .eq('id', selectedCommitment.id);
 
