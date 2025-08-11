@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { User, LogOut, Settings, MessageSquare, CreditCard, Calculator, Heart } from "lucide-react";
+import { useEffect, useState } from "react";
+import { User, LogOut, Settings, MessageSquare, CreditCard, Calculator, Heart, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
-
+import { supabase } from "@/integrations/supabase/client";
 interface UserMenuProps {
   hideOptions?: string[];
 }
@@ -20,6 +20,30 @@ export default function UserMenu({ hideOptions = [] }: UserMenuProps) {
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    if (!user) {
+      setIsAdmin(false);
+      return;
+    }
+    (async () => {
+      try {
+        const { data, error } = await supabase.rpc('is_current_user_admin');
+        if (!active) return;
+        if (error) {
+          console.error('Erro verificando admin:', error);
+          setIsAdmin(false);
+          return;
+        }
+        setIsAdmin(!!data);
+      } catch {
+        if (active) setIsAdmin(false);
+      }
+    })();
+    return () => { active = false; };
+  }, [user]);
 
   const handleSignOut = async () => {
     try {
@@ -38,36 +62,43 @@ export default function UserMenu({ hideOptions = [] }: UserMenuProps) {
       label: "Dashboard",
       icon: CreditCard,
       onClick: () => navigate("/dashboard"),
-      show: !hideOptions.includes("dashboard")
+      show: !hideOptions.includes("dashboard"),
     },
     {
       key: "chat",
       label: "Iniciar Consulta",
       icon: MessageSquare,
       onClick: () => navigate("/chat?new=true"),
-      show: !hideOptions.includes("chat")
+      show: !hideOptions.includes("chat"),
     },
     {
       key: "calc-contrato",
       label: "Calc. Contrato Bancário",
       icon: Calculator,
       onClick: () => navigate("/calculo-contrato-bancario"),
-      show: !hideOptions.includes("calc-contrato")
+      show: !hideOptions.includes("calc-contrato"),
     },
     {
       key: "calc-pensao",
       label: "Calc. Pensão Alimentícia",
       icon: Heart,
       onClick: () => navigate("/calculo-pensao-alimenticia"),
-      show: !hideOptions.includes("calc-pensao")
+      show: !hideOptions.includes("calc-pensao"),
+    },
+    {
+      key: "admin",
+      label: "Admin",
+      icon: Shield,
+      onClick: () => navigate("/admin/documentos"),
+      show: isAdmin && !hideOptions.includes("admin"),
     },
     {
       key: "account",
       label: "Minha Conta", 
       icon: Settings,
       onClick: () => navigate("/minha-conta"),
-      show: !hideOptions.includes("account")
-    }
+      show: !hideOptions.includes("account"),
+    },
   ].filter(item => item.show);
 
   return (
