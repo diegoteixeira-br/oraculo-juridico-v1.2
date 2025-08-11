@@ -24,6 +24,11 @@ interface EditorProps {
   onFooterChange?: (v: string) => void;
   headerHeightMm?: number;
   footerHeightMm?: number;
+  // Novos: preferências do documento
+  initialMargins?: { top: number; right: number; bottom: number; left: number };
+  initialPaperId?: "A4" | "OFICIO" | "LEGAL";
+  onMarginsChange?: (m: { top: number; right: number; bottom: number; left: number }) => void;
+  onPaperChange?: (p: "A4" | "OFICIO" | "LEGAL") => void;
 }
 
 // Conversões e tamanhos de papel
@@ -47,6 +52,10 @@ export default function MarkdownEditor({
   onFooterChange,
   headerHeightMm = 15,
   footerHeightMm = 15,
+  initialMargins,
+  initialPaperId,
+  onMarginsChange,
+  onPaperChange,
 }: EditorProps) {
   const quillRef = useRef<ReactQuill | null>(null);
   const pageRef = useRef<HTMLDivElement>(null);
@@ -56,14 +65,14 @@ export default function MarkdownEditor({
   const [zoom, setZoom] = useState(1);
   const [pages, setPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(0); // página visível
-  const [paperId, setPaperId] = useState<PaperId>("A4");
+  const [paperId, setPaperId] = useState<PaperId>((initialPaperId as PaperId) ?? "A4");
   const paper = PAPER_SIZES[paperId];
   const widthPx = Math.round(paper.widthMm * MM_TO_PX);
   const heightPx = Math.round(paper.heightMm * MM_TO_PX);
   const scaledWidth = Math.round(widthPx * zoom);
   const scaledHeight = Math.round(heightPx * zoom);
   // Réguas e margens ajustáveis via marcadores (mm)
-  const [margins, setMargins] = useState({ top: 25, right: 25, bottom: 25, left: 25 });
+  const [margins, setMargins] = useState(initialMargins ?? { top: 25, right: 25, bottom: 25, left: 25 });
   const marginPx = useMemo(() => ({
     top: Math.round(margins.top * MM_TO_PX),
     right: Math.round(margins.right * MM_TO_PX),
@@ -105,6 +114,23 @@ export default function MarkdownEditor({
     // Mobile: iniciar sempre em 100% (1.0), igual ao desktop
     if (isMobile) setZoom(1);
   }, [isMobile]);
+
+  // Sincroniza valores iniciais vindos de fora (ex.: ao abrir outro documento)
+  useEffect(() => {
+    if (initialMargins) setMargins(initialMargins);
+  }, [initialMargins?.top, initialMargins?.right, initialMargins?.bottom, initialMargins?.left]);
+  useEffect(() => {
+    if (initialPaperId) setPaperId(initialPaperId as PaperId);
+  }, [initialPaperId]);
+
+  // Evita "corte" no topo ao abrir: rola para o início
+  useEffect(() => {
+    const s = scrollerRef.current;
+    if (!s) return;
+    setTimeout(() => {
+      try { (s as any).scrollTo({ top: 0, behavior: 'instant' }); } catch { s.scrollTop = 0; }
+    }, 0);
+  }, []);
   const recalcPages = () => {
     const root = pageRef.current?.querySelector(".main-editor .ql-editor") as HTMLElement | null;
     if (!root) { setPages(1); return; }
@@ -257,6 +283,25 @@ export default function MarkdownEditor({
     recalcPages();
   };
 
+  // Remove quebras manuais e parágrafos vazios no final do documento
+  const cleanupTrailingBreaks = () => {
+    const root = pageRef.current?.querySelector('.ql-editor') as HTMLElement | null;
+    if (!root) return;
+    let changed = false;
+    while (root.lastElementChild) {
+      const el = root.lastElementChild as HTMLElement;
+      const html = (el.innerHTML || '').replace(/\s|&nbsp;/g, '');
+      const isEmptyPara = el.tagName === 'P' && (html === '' || html === '<br>' || html === '<br/>' || html === '<br />');
+      if (el.classList.contains('page-break') || isEmptyPara) {
+        el.remove();
+        changed = true;
+        continue;
+      }
+      break;
+    }
+    if (changed) recalcPages();
+  };
+
   useEffect(() => {
     const t = setTimeout(() => enforceFlowWithinMargins(), 0);
     return () => clearTimeout(t);
@@ -269,6 +314,7 @@ export default function MarkdownEditor({
     const onChange = () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(() => {
+        cleanupTrailingBreaks();
         recalcPages();
         enforceFlowWithinMargins();
       });
@@ -331,7 +377,7 @@ export default function MarkdownEditor({
           <Separator orientation="vertical" className="h-6 hidden sm:block" />
           <div className="flex items-center gap-2 min-w-[180px] sm:min-w-[220px] shrink-0">
             <span>Tamanho</span>
-            <Select value={paperId} onValueChange={(v) => setPaperId(v as PaperId)}>
+            <Select value={paperId} onValueChange={(v) => { setPaperId(v as PaperId); onPaperChange?.(v as any); }}>
               <SelectTrigger className="w-[140px] sm:w-[170px] h-8"><SelectValue placeholder="Selecione o papel" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="A4">{PAPER_SIZES.A4.label}</SelectItem>
@@ -402,7 +448,7 @@ export default function MarkdownEditor({
                       zoom={zoom}
                       leftMarginMm={margins.left}
                       rightMarginMm={margins.right}
-                      onChange={(l, r) => setMargins((m) => ({ ...m, left: l, right: r }))}
+                      onChange={(l, r) => setMargins((m) => { const next = { ...m, left: l, right: r }; onMarginsChange?.(next); return next; })}
                     />
                   </div>
                   {/* Régua vertical alinhada à página atual */}
@@ -412,7 +458,7 @@ export default function MarkdownEditor({
                       zoom={zoom}
                       topMarginMm={margins.top}
                       bottomMarginMm={margins.bottom}
-                      onChange={(t, b) => setMargins((m) => ({ ...m, top: t, bottom: b }))}
+                      onChange={(t, b) => setMargins((m) => { const next = { ...m, top: t, bottom: b }; onMarginsChange?.(next); return next; })}
                     />
                   </div>
                 </div>

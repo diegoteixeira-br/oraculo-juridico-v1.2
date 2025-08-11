@@ -27,7 +27,7 @@ function cleanEditorHtml(html: string): string {
   }
 }
 
-interface UserDoc { id: string; user_id: string; title: string; content_md: string; created_at: string; updated_at: string; folder?: string | null; tags?: string[] | null; }
+interface UserDoc { id: string; user_id: string; title: string; content_md: string; created_at: string; updated_at: string; folder?: string | null; tags?: string[] | null; paper_id?: string | null; margins?: { top: number; right: number; bottom: number; left: number } | null; }
 
 export default function MeusDocumentos() {
   const { user } = useAuth();
@@ -46,6 +46,8 @@ export default function MeusDocumentos() {
   const [tagsText, setTagsText] = useState<string>("");
   const [folderFilter, setFolderFilter] = useState<string>("");
   const [tagsFilter, setTagsFilter] = useState<string>("");
+  const [paperId, setPaperId] = useState<"A4" | "OFICIO" | "LEGAL">("A4");
+  const [margins, setMargins] = useState({ top: 25, right: 25, bottom: 25, left: 25 });
 
   const folders = useMemo(
     () => Array.from(new Set(docs.map((d) => d.folder).filter(Boolean))) as string[],
@@ -93,6 +95,8 @@ export default function MeusDocumentos() {
     setContent("");
     setFolder("");
     setTagsText("");
+    setPaperId("A4");
+    setMargins({ top: 25, right: 25, bottom: 25, left: 25 });
     setOpen(true);
   };
 
@@ -102,6 +106,8 @@ export default function MeusDocumentos() {
     setContent(d.content_md);
     setFolder(d.folder || "");
     setTagsText((d.tags || []).join(", "));
+    setPaperId((d.paper_id as any) || "A4");
+    setMargins(d.margins || { top: 25, right: 25, bottom: 25, left: 25 });
     setOpen(true);
   };
 
@@ -124,7 +130,9 @@ export default function MeusDocumentos() {
             title: title.trim(), 
             content_md: cleaned, 
             folder: folder || null,
-            tags: tags.length ? tags : []
+            tags: tags.length ? tags : [],
+            paper_id: paperId,
+            margins
           })
           .eq("id", editDoc.id)
           .eq("user_id", user.id);
