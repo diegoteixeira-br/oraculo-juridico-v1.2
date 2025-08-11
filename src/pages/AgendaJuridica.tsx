@@ -216,12 +216,34 @@ const AgendaJuridica = () => {
         }
       }
 
+      // Verificar conflito de horário (mesmo horário já agendado)
+      const desiredStart = toIsoUtc(newCommitment.commitment_date);
+      if (!desiredStart) {
+        throw new Error('Data/Hora inválida');
+      }
+      const { data: existingAtSameTime, error: conflictError } = await supabase
+        .from('legal_commitments' as any)
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('status', 'pendente')
+        .eq('commitment_date', desiredStart)
+        .limit(1);
+      if (conflictError) throw conflictError;
+      if (existingAtSameTime && existingAtSameTime.length > 0) {
+        toast({
+          title: 'Horário indisponível',
+          description: 'Já existe um compromisso neste horário. Escolha outro horário ou dia.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
       const { error } = await supabase
         .from('legal_commitments' as any)
         .insert({
           user_id: user.id,
           ...newCommitment,
-          commitment_date: toIsoUtc(newCommitment.commitment_date),
+          commitment_date: desiredStart,
           end_date: newCommitment.end_date ? toIsoUtc(newCommitment.end_date) : null,
           status: 'pendente',
           auto_detected: false,
@@ -295,11 +317,31 @@ const AgendaJuridica = () => {
     }
 
     try {
+      const desiredStart = toIsoUtc(editCommitment.commitment_date);
+      if (!desiredStart) throw new Error('Data/Hora inválida');
+      const { data: existingAtSameTime, error: conflictError } = await supabase
+        .from('legal_commitments' as any)
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('status', 'pendente')
+        .eq('commitment_date', desiredStart)
+        .neq('id', selectedCommitment.id)
+        .limit(1);
+      if (conflictError) throw conflictError;
+      if (existingAtSameTime && existingAtSameTime.length > 0) {
+        toast({
+          title: 'Horário indisponível',
+          description: 'Já existe um compromisso neste horário. Escolha outro horário ou dia.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
       const { error } = await supabase
         .from('legal_commitments' as any)
         .update({
           ...editCommitment,
-          commitment_date: toIsoUtc(editCommitment.commitment_date),
+          commitment_date: desiredStart,
           end_date: editCommitment.end_date ? toIsoUtc(editCommitment.end_date) : null,
         })
         .eq('id', selectedCommitment.id);
