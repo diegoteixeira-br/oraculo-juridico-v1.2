@@ -255,6 +255,7 @@ export type Database = {
           last_daily_reset: string | null
           plan_tokens: number | null
           plan_type: string | null
+          receber_notificacao_agenda: boolean
           subscription_end_date: string | null
           subscription_status: string | null
           tokens: number | null
@@ -272,6 +273,7 @@ export type Database = {
           last_daily_reset?: string | null
           plan_tokens?: number | null
           plan_type?: string | null
+          receber_notificacao_agenda?: boolean
           subscription_end_date?: string | null
           subscription_status?: string | null
           tokens?: number | null
@@ -289,6 +291,7 @@ export type Database = {
           last_daily_reset?: string | null
           plan_tokens?: number | null
           plan_type?: string | null
+          receber_notificacao_agenda?: boolean
           subscription_end_date?: string | null
           subscription_status?: string | null
           tokens?: number | null
