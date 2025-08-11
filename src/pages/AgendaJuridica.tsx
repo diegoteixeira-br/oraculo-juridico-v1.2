@@ -95,6 +95,7 @@ const AgendaJuridica = () => {
     process_number: "",
     client_name: "",
     priority: "normal" as const,
+    duration_hours: 1 as number,
   });
 
   // Estados para editar compromisso
@@ -110,6 +111,7 @@ const AgendaJuridica = () => {
     process_number: string;
     client_name: string;
     priority: 'baixa' | 'normal' | 'alta' | 'urgente';
+    duration_hours: number;
   }>({
     title: "",
     description: "",
@@ -122,10 +124,18 @@ const AgendaJuridica = () => {
     process_number: "",
     client_name: "",
     priority: "normal",
+    duration_hours: 1,
   });
 
   // Converte 'datetime-local' (local) para ISO UTC
   const toIsoUtc = (value: string) => value ? new Date(value).toISOString() : null;
+  // Calcula o término a partir de um datetime-local somando horas e retorna ISO UTC
+  const endIsoFromLocal = (startLocal: string, hours: number) => {
+    if (!startLocal) return null;
+    const d = new Date(startLocal);
+    d.setHours(d.getHours() + (Number.isFinite(hours) ? hours : 1));
+    return d.toISOString();
+  };
 
   // Carregar compromissos de forma otimizada
   const loadCommitments = async () => {
@@ -218,21 +228,37 @@ const AgendaJuridica = () => {
 
       // Verificar conflito de horário (mesmo horário já agendado)
       const desiredStart = toIsoUtc(newCommitment.commitment_date);
-      if (!desiredStart) {
+      const desiredEnd = endIsoFromLocal(newCommitment.commitment_date, newCommitment.duration_hours || 1);
+      if (!desiredStart || !desiredEnd) {
         throw new Error('Data/Hora inválida');
       }
-      const { data: existingAtSameTime, error: conflictError } = await supabase
+
+      // Verificar conflito de horário (sobreposição)
+      const { data: overlaps1, error: err1 } = await supabase
         .from('legal_commitments' as any)
         .select('id')
         .eq('user_id', user.id)
         .eq('status', 'pendente')
-        .eq('commitment_date', desiredStart)
+        .gt('end_date', desiredStart)
+        .lt('commitment_date', desiredEnd)
         .limit(1);
-      if (conflictError) throw conflictError;
-      if (existingAtSameTime && existingAtSameTime.length > 0) {
+      if (err1) throw err1;
+
+      const { data: overlaps2, error: err2 } = await supabase
+        .from('legal_commitments' as any)
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('status', 'pendente')
+        .is('end_date', null)
+        .gte('commitment_date', desiredStart)
+        .lt('commitment_date', desiredEnd)
+        .limit(1);
+      if (err2) throw err2;
+
+      if ((overlaps1 && overlaps1.length > 0) || (overlaps2 && overlaps2.length > 0)) {
         toast({
           title: 'Horário indisponível',
-          description: 'Já existe um compromisso neste horário. Escolha outro horário ou dia.',
+          description: 'Já existe um compromisso neste período. Escolha outro horário ou dia.',
           variant: 'destructive',
         });
         return;
@@ -244,7 +270,7 @@ const AgendaJuridica = () => {
           user_id: user.id,
           ...newCommitment,
           commitment_date: desiredStart,
-          end_date: newCommitment.end_date ? toIsoUtc(newCommitment.end_date) : null,
+          end_date: desiredEnd,
           status: 'pendente',
           auto_detected: false,
         });
@@ -275,6 +301,7 @@ const AgendaJuridica = () => {
         process_number: "",
         client_name: "",
         priority: "normal",
+        duration_hours: 1,
       });
       loadCommitments();
     } catch (error: any) {
