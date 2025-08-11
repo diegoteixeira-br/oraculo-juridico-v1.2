@@ -287,18 +287,41 @@ export default function MarkdownEditor({
   const cleanupTrailingBreaks = () => {
     const root = pageRef.current?.querySelector('.ql-editor') as HTMLElement | null;
     if (!root) return;
+
+    const quill = quillRef.current?.getEditor();
+    const sel = quill?.getSelection();
+    const length = quill?.getLength() ?? 0;
+    const selectionAtEnd = !!sel && sel.index >= Math.max(0, length - 1);
+
     let changed = false;
+    let removedEmptyCount = 0;
+
     while (root.lastElementChild) {
       const el = root.lastElementChild as HTMLElement;
       const html = (el.innerHTML || '').replace(/\s|&nbsp;/g, '');
       const isEmptyPara = el.tagName === 'P' && (html === '' || html === '<br>' || html === '<br/>' || html === '<br />');
-      if (el.classList.contains('page-break') || isEmptyPara) {
+
+      // Sempre remover page-break no final
+      if (el.classList.contains('page-break')) {
         el.remove();
+        changed = true;
+        continue;
+      }
+
+      // Se o cursor está no fim, preserva um único parágrafo vazio para permitir nova linha ao digitar
+      if (selectionAtEnd && isEmptyPara && removedEmptyCount === 0) {
+        break; // mantém 1 <p> vazio no final
+      }
+
+      if (isEmptyPara) {
+        el.remove();
+        removedEmptyCount++;
         changed = true;
         continue;
       }
       break;
     }
+
     if (changed) recalcPages();
   };
 
