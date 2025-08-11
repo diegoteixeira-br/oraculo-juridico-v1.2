@@ -1,44 +1,39 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AdminProtectedRouteProps {
   children: React.ReactNode;
 }
 
 export default function AdminProtectedRoute({ children }: AdminProtectedRouteProps) {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const { user, loading } = useAuth();
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const checkAuth = () => {
-      const authStatus = sessionStorage.getItem("admin_authenticated");
-      const loginTime = sessionStorage.getItem("admin_login_time");
-      
-      if (!authStatus || !loginTime) {
-        setIsAuthenticated(false);
-        return;
+    if (loading) return;
+    if (!user) {
+      setIsAdmin(false);
+      return;
+    }
+
+    let active = true;
+    (async () => {
+      try {
+        const { data, error } = await supabase.rpc('is_current_user_admin');
+        if (error) throw error;
+        if (active) setIsAdmin(!!data);
+      } catch (e) {
+        console.error('Erro verificando admin:', e);
+        if (active) setIsAdmin(false);
       }
+    })();
 
-      // Verificar se a sessão expirou (24 horas)
-      const now = Date.now();
-      const loginTimestamp = parseInt(loginTime);
-      const twentyFourHours = 24 * 60 * 60 * 1000;
-      
-      if (now - loginTimestamp > twentyFourHours) {
-        // Sessão expirada
-        sessionStorage.removeItem("admin_authenticated");
-        sessionStorage.removeItem("admin_login_time");
-        setIsAuthenticated(false);
-        return;
-      }
+    return () => { active = false; };
+  }, [user, loading]);
 
-      setIsAuthenticated(true);
-    };
-
-    checkAuth();
-  }, []);
-
-  // Enquanto verifica a autenticação
-  if (isAuthenticated === null) {
+  if (loading || isAdmin === null) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
         <div className="text-center">
@@ -49,11 +44,13 @@ export default function AdminProtectedRoute({ children }: AdminProtectedRoutePro
     );
   }
 
-  // Se não autenticado, redireciona para login admin
-  if (!isAuthenticated) {
-    return <Navigate to="/admin/login" replace />;
+  if (!user) {
+    return <Navigate to="/login" replace />;
   }
 
-  // Se autenticado, renderiza os children
+  if (!isAdmin) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   return <>{children}</>;
 }

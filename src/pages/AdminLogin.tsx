@@ -6,41 +6,59 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Lock, Shield } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function AdminLogin() {
-  const [credentials, setCredentials] = useState({ username: "", password: "" });
+  const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { signIn } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    // Credenciais de administrador
-    const adminUsername = "admin";
-    const adminPassword = "OurLegal2024Admin#";
+    try {
+      const { error } = await signIn(credentials.email, credentials.password);
+      if (error) {
+        toast({
+          title: "Erro ao entrar",
+          description: error.message || "Verifique suas credenciais.",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
 
-    if (credentials.username === adminUsername && credentials.password === adminPassword) {
-      // Salvar sessão administrativa
-      sessionStorage.setItem("admin_authenticated", "true");
-      sessionStorage.setItem("admin_login_time", Date.now().toString());
-      
+      // Verificar se o usuário autenticado é admin
+      const { data: isAdmin, error: adminErr } = await supabase.rpc('is_current_user_admin');
+      if (adminErr) throw adminErr;
+
+      if (isAdmin) {
+        toast({
+          title: "Login realizado com sucesso",
+          description: "Bem-vindo à área administrativa",
+        });
+        navigate("/admin/documentos", { replace: true });
+      } else {
+        toast({
+          title: "Acesso restrito",
+          description: "Sua conta não possui permissão de administrador.",
+          variant: "destructive",
+        });
+        navigate("/dashboard", { replace: true });
+      }
+    } catch (err: any) {
       toast({
-        title: "Login realizado com sucesso",
-        description: "Bem-vindo à área administrativa"
+        title: "Erro inesperado",
+        description: err?.message || "Tente novamente mais tarde.",
+        variant: "destructive",
       });
-      
-      navigate("/admin/documentos");
-    } else {
-      toast({
-        title: "Credenciais inválidas",
-        description: "Usuário ou senha incorretos",
-        variant: "destructive"
-      });
+    } finally {
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   return (
@@ -49,7 +67,7 @@ export default function AdminLogin() {
         <div className="text-center mb-8">
           <img 
             src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
-            alt="Oráculo Jurídico" 
+            alt="Oráculo Jurídico"
             className="h-16 w-auto mx-auto mb-4"
           />
           <h1 className="text-2xl font-bold text-primary mb-2">Área Administrativa</h1>
@@ -63,19 +81,19 @@ export default function AdminLogin() {
               Login Administrativo
             </CardTitle>
             <CardDescription>
-              Insira suas credenciais para acessar o painel de administração
+              Entre com e-mail e senha da sua conta
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <Label htmlFor="username">Usuário</Label>
+                <Label htmlFor="email">E-mail</Label>
                 <Input
-                  id="username"
-                  type="text"
-                  value={credentials.username}
-                  onChange={(e) => setCredentials(prev => ({ ...prev, username: e.target.value }))}
-                  placeholder="Digite o usuário"
+                  id="email"
+                  type="email"
+                  value={credentials.email}
+                  onChange={(e) => setCredentials(prev => ({ ...prev, email: e.target.value }))}
+                  placeholder="seuemail@exemplo.com"
                   required
                 />
               </div>
@@ -87,7 +105,7 @@ export default function AdminLogin() {
                   type="password"
                   value={credentials.password}
                   onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
-                  placeholder="Digite a senha"
+                  placeholder="Digite sua senha"
                   required
                 />
               </div>
