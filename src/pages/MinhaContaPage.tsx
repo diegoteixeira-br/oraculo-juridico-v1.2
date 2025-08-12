@@ -176,7 +176,7 @@ export default function MinhaContaPage() {
     }
   };
 
-  const totalTokens = (profile?.daily_tokens || 0) + (profile?.plan_tokens || 0);
+  const totalTokens = (profile?.token_balance || 0) + (profile?.plan_tokens || 0);
 
   return (
     <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col overflow-hidden">
@@ -287,8 +287,8 @@ export default function MinhaContaPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-green-400">{Math.floor(profile?.daily_tokens || 0).toLocaleString()}</div>
-                  <div className="text-xs text-slate-400">Tokens Diários</div>
+                  <div className="text-lg font-bold text-green-400">{Math.floor(profile?.token_balance || 0).toLocaleString()}</div>
+                  <div className="text-xs text-slate-400">Tokens de Teste</div>
                 </div>
                 <div className="text-center p-3 bg-white/5 rounded-lg">
                   <div className="text-lg font-bold text-blue-400">{Math.floor(profile?.plan_tokens || 0).toLocaleString()}</div>

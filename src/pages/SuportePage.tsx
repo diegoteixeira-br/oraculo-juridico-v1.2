@@ -88,7 +88,7 @@ const SuportePage = () => {
       `${message}\n\n` +
       `📧 Email: ${user?.email || 'Não informado'}\n` +
       `👤 Nome: ${profile?.full_name || 'Não informado'}\n` +
-      `🎯 Tokens: ${Math.floor(((profile?.daily_tokens || 0) + (profile?.plan_tokens || 0)))}\n` +
+      `🎯 Tokens: ${Math.floor(((profile?.token_balance || 0) + (profile?.plan_tokens || 0)))}\n` +
       `📋 Plano: ${profile?.plan_type || 'gratuito'}`
     );
     
@@ -96,7 +96,7 @@ const SuportePage = () => {
     window.open(whatsappUrl, '_blank');
   };
 
-  const totalTokens = (profile?.daily_tokens || 0) + (profile?.plan_tokens || 0);
+  const totalTokens = (profile?.token_balance || 0) + (profile?.plan_tokens || 0);
 
   return (
     <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col overflow-hidden">

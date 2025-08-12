@@ -294,7 +294,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
     }
 
     // Verificar tokens disponíveis
-    const totalTokens = (profile?.daily_tokens || 0) + (profile?.plan_tokens || 0);
+    const totalTokens = (profile?.token_balance || 0) + (profile?.plan_tokens || 0);
     if (totalTokens < 1000) {
       toast({
         title: "Tokens insuficientes",
@@ -491,7 +491,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
     URL.revokeObjectURL(url);
   };
 
-  const totalTokens = (profile?.daily_tokens || 0) + (profile?.plan_tokens || 0);
+  const totalTokens = (profile?.token_balance || 0) + (profile?.plan_tokens || 0);
 
   return (
     <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex overflow-hidden relative">

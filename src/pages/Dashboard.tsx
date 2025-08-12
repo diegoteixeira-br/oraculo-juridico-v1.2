@@ -45,6 +45,7 @@ export default function Dashboard() {
 
 
   const totalAvailableCredits = userCredits + dailyCredits;
+  const isTrial = profile?.subscription_status === 'trial';
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -54,16 +55,16 @@ export default function Dashboard() {
         // Carregar dados do perfil
         const { data: profileData } = await supabase
           .from('profiles')
-          .select('tokens, daily_tokens, plan_tokens, plan_type')
+          .select('plan_tokens, token_balance, plan_type, subscription_status')
           .eq('user_id', user.id)
           .single();
 
         if (profileData) {
-          const dailyTokens = Number(profileData.daily_tokens || 0);
-          const planTokens = Number(profileData.plan_tokens || 0);
+          const trialTokens = Number((profileData as any).token_balance || 0);
+          const planTokens = Number((profileData as any).plan_tokens || 0);
           
           setUserCredits(planTokens);
-          setDailyCredits(dailyTokens);
+          setDailyCredits(trialTokens);
           setTotalCreditsPurchased(planTokens);
         }
 
@@ -77,7 +78,8 @@ export default function Dashboard() {
           let totalUsed = 0;
           transactions.forEach(transaction => {
             if (transaction.transaction_type === 'usage' || 
-                transaction.transaction_type === 'daily_usage') {
+                transaction.transaction_type === 'daily_usage' ||
+                transaction.transaction_type === 'trial_usage') {
               totalUsed += Math.abs(transaction.amount);
             }
           });
@@ -315,21 +317,23 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-green-600/20 to-green-600/10 border-green-600/30">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs text-green-300 font-medium">Tokens Diários</p>
-                    <p className="text-2xl font-bold text-green-400">
-                      {Math.floor(dailyCredits).toLocaleString()}
-                    </p>
+            {isTrial && (
+              <Card className="bg-gradient-to-br from-green-600/20 to-green-600/10 border-green-600/30">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-green-300 font-medium">Tokens de Teste</p>
+                      <p className="text-2xl font-bold text-green-400">
+                        {Math.floor(dailyCredits).toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="p-2 bg-green-600/20 rounded-lg">
+                      <Clock className="w-6 h-6 text-green-400" />
+                    </div>
                   </div>
-                  <div className="p-2 bg-green-600/20 rounded-lg">
-                    <Clock className="w-6 h-6 text-green-400" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
 
             <Card className="bg-gradient-to-br from-blue-600/20 to-blue-600/10 border-blue-600/30">
               <CardContent className="p-4">
@@ -659,16 +663,18 @@ export default function Dashboard() {
                       <Progress value={getUsagePercentage()} className="h-2" />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3 pt-2">
-                      <div className="text-center p-2 bg-green-600/10 rounded-lg">
-                        <div className="text-sm font-bold text-green-400">{Math.floor(dailyCredits)}</div>
-                        <div className="text-xs text-slate-400">Diários</div>
+                      <div className={`grid ${isTrial ? 'grid-cols-2' : 'grid-cols-1'} gap-3 pt-2`}>
+                        {isTrial && (
+                          <div className="text-center p-2 bg-green-600/10 rounded-lg">
+                            <div className="text-sm font-bold text-green-400">{Math.floor(dailyCredits)}</div>
+                            <div className="text-xs text-slate-400">Teste</div>
+                          </div>
+                        )}
+                        <div className="text-center p-2 bg-blue-600/10 rounded-lg">
+                          <div className="text-sm font-bold text-blue-400">{Math.floor(userCredits)}</div>
+                          <div className="text-xs text-slate-400">Plano</div>
+                        </div>
                       </div>
-                      <div className="text-center p-2 bg-blue-600/10 rounded-lg">
-                        <div className="text-sm font-bold text-blue-400">{Math.floor(userCredits)}</div>
-                        <div className="text-xs text-slate-400">Plano</div>
-                      </div>
-                    </div>
                   </div>
                   
                   <div className="space-y-2 pt-4 border-t border-slate-600">
