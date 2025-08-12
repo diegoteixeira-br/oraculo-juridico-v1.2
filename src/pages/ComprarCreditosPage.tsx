@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import UserMenu from "@/components/UserMenu";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useAccessControl } from "@/hooks/useAccessControl";
 
 const tokenPackages = [
   {
@@ -53,6 +54,7 @@ export default function ComprarCreditosPage() {
   const [portalLoading, setPortalLoading] = useState(false);
   const navigate = useNavigate();
   usePageTitle();
+  const { canPurchaseTokens } = useAccessControl();
 
   // Garantir que a página sempre abra no topo
   useEffect(() => {
@@ -67,6 +69,14 @@ export default function ComprarCreditosPage() {
   }, [selectedPlan]);
 
   const handlePurchase = async (packageId: string) => {
+    if (!canPurchaseTokens) {
+      toast({
+        title: 'Ação não permitida',
+        description: 'A compra de tokens está disponível apenas para assinantes ativos.',
+        variant: 'destructive',
+      });
+      return;
+    }
     try {
       setIsLoading(true);
       setSelectedPackage(packageId);

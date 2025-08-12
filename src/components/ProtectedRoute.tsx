@@ -4,15 +4,18 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Clock, CreditCard } from 'lucide-react';
+import { useAccessControl } from '@/hooks/useAccessControl';
 
 interface ProtectedRouteProps {
   children: ReactNode;
-  requiresActiveSubscription?: boolean;
+  requiresActiveSubscription?: boolean; // legado
+  gate?: 'any' | 'premium' | 'chat';
 }
 
 export default function ProtectedRoute({ 
   children, 
-  requiresActiveSubscription = false 
+  requiresActiveSubscription = false,
+  gate = 'any'
 }: ProtectedRouteProps) {
   const { user, profile, loading, hasActiveAccess } = useAuth();
   const navigate = useNavigate();
@@ -35,9 +38,21 @@ export default function ProtectedRoute({
     return null;
   }
 
-  if (requiresActiveSubscription && !hasActiveAccess()) {
-    const isTrialExpired = profile?.subscription_status === 'trial' && 
-      new Date() >= new Date(profile.trial_end_date);
+  const { isTrialExpired, isBlocked, canAccessPremiumTools, canUseChat } = useAccessControl();
+
+  const shouldBlock = (() => {
+    if (gate === 'premium') return !canAccessPremiumTools;
+    if (gate === 'chat') return !canUseChat;
+    return isBlocked;
+  })();
+
+  if (shouldBlock) {
+    const title = isTrialExpired ? 'Período Gratuito Expirado' : 'Acesso Restrito';
+    const description = gate === 'premium'
+      ? 'Disponível para assinantes ativos ou durante o período gratuito.'
+      : gate === 'chat'
+        ? 'Para usar o Chat, ative sua assinatura ou use tokens disponíveis.'
+        : 'Seu período gratuito de 7 dias chegou ao fim. Ative uma assinatura para continuar usando a plataforma.';
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center p-4">
@@ -47,34 +62,24 @@ export default function ProtectedRoute({
               {isTrialExpired ? (
                 <>
                   <Clock className="w-12 h-12 mx-auto mb-4 text-amber-500" />
-                  <CardTitle>Período Gratuito Expirado</CardTitle>
-                  <CardDescription>
-                    Seu período gratuito de 7 dias chegou ao fim. Continue aproveitando todos os recursos da plataforma!
-                  </CardDescription>
+                  <CardTitle>{title}</CardTitle>
                 </>
               ) : (
                 <>
                   <CreditCard className="w-12 h-12 mx-auto mb-4 text-primary" />
-                  <CardTitle>Acesso Restrito</CardTitle>
-                  <CardDescription>
-                    Esta funcionalidade requer uma assinatura ativa.
-                  </CardDescription>
+                  <CardTitle>{title}</CardTitle>
                 </>
               )}
+              <CardDescription>{description}</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <Button 
-                className="w-full" 
-                onClick={() => navigate('/pricing')}
-              >
-                Ver Planos e Preços
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                className="w-full"
-                onClick={() => navigate('/dashboard')}
-              >
+            <CardContent className="space-y-3">
+              <Button className="w-full" onClick={() => navigate('/comprar-creditos')}>Assinar agora</Button>
+              {gate === 'premium' && (
+                <Button variant="outline" className="w-full" onClick={() => navigate('/chat')}>
+                  Ir para o Chat Jurídico IA
+                </Button>
+              )}
+              <Button variant="ghost" className="w-full" onClick={() => navigate('/dashboard')}>
                 Voltar ao Dashboard
               </Button>
             </CardContent>

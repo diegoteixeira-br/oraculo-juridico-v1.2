@@ -51,19 +51,19 @@ function AppContent() {
       <Route path="/termos" element={<PageWrapper><Termos /></PageWrapper>} />
       <Route path="/privacidade" element={<PageWrapper><Privacidade /></PageWrapper>} />
       <Route path="/contato" element={<PageWrapper><ContatoPage /></PageWrapper>} />
-      <Route path="/calculo-contrato-bancario" element={<PageWrapper><ProtectedRoute><CalculoContratoBancario /></ProtectedRoute></PageWrapper>} />
-      <Route path="/calculo-pensao-alimenticia" element={<PageWrapper><ProtectedRoute><CalculoPensaoAlimenticia /></ProtectedRoute></PageWrapper>} />
+      <Route path="/calculo-contrato-bancario" element={<PageWrapper><ProtectedRoute gate="premium"><CalculoContratoBancario /></ProtectedRoute></PageWrapper>} />
+      <Route path="/calculo-pensao-alimenticia" element={<PageWrapper><ProtectedRoute gate="premium"><CalculoPensaoAlimenticia /></ProtectedRoute></PageWrapper>} />
       <Route path="/dashboard" element={<PageWrapper><ProtectedRoute><Dashboard /></ProtectedRoute></PageWrapper>} />
-      <Route path="/chat" element={<PageWrapper><ProtectedRoute><Chat /></ProtectedRoute></PageWrapper>} />
+      <Route path="/chat" element={<PageWrapper><ProtectedRoute gate="chat"><Chat /></ProtectedRoute></PageWrapper>} />
       <Route path="/minha-conta" element={<PageWrapper><ProtectedRoute><MinhaContaPage /></ProtectedRoute></PageWrapper>} />
       <Route path="/historico-transacoes" element={<PageWrapper><ProtectedRoute><HistoricoTransacoesPage /></ProtectedRoute></PageWrapper>} />
       <Route path="/comprar-creditos" element={<PageWrapper><ProtectedRoute><ComprarCreditosPage /></ProtectedRoute></PageWrapper>} />
       <Route path="/payment-success" element={<PageWrapper><ProtectedRoute><PaymentSuccessPage /></ProtectedRoute></PageWrapper>} />
-      <Route path="/agenda-juridica" element={<PageWrapper><ProtectedRoute><AgendaJuridica /></ProtectedRoute></PageWrapper>} />
+      <Route path="/agenda-juridica" element={<PageWrapper><ProtectedRoute gate="premium"><AgendaJuridica /></ProtectedRoute></PageWrapper>} />
       <Route path="/admin/login" element={<PageWrapper><AdminLogin /></PageWrapper>} />
       <Route path="/admin/documentos" element={<PageWrapper><AdminProtectedRoute><AdminDocuments /></AdminProtectedRoute></PageWrapper>} />
       <Route path="/suporte" element={<PageWrapper><ProtectedRoute><SuportePage /></ProtectedRoute></PageWrapper>} />
-      <Route path="/meus-documentos" element={<PageWrapper><ProtectedRoute><MeusDocumentos /></ProtectedRoute></PageWrapper>} />
+      <Route path="/meus-documentos" element={<PageWrapper><ProtectedRoute gate="premium"><MeusDocumentos /></ProtectedRoute></PageWrapper>} />
       
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
