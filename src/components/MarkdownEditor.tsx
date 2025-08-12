@@ -172,7 +172,7 @@ export default function MarkdownEditor({
     recalcPages();
     return () => observer.disconnect();
   }, []);
-  useEffect(() => { recalcPages(); }, [content, zoom, heightPx, margins.top, margins.right, margins.bottom, margins.left]);
+  useEffect(() => { recalcPages(); }, [zoom, heightPx, margins.top, margins.right, margins.bottom, margins.left]);
 
   // Atualiza página atual conforme rolagem
   useEffect(() => {
@@ -333,7 +333,7 @@ export default function MarkdownEditor({
   useEffect(() => {
     const t = setTimeout(() => enforceFlowWithinMargins(), 0);
     return () => clearTimeout(t);
-  }, [content, marginPx.top, marginPx.bottom, marginPx.left, marginPx.right, pageGapPx, heightPx]);
+  }, [marginPx.top, marginPx.bottom, marginPx.left, marginPx.right, pageGapPx, heightPx]);
 
   // Recalcula em qualquer mudança de texto (inclusive colar/apagar) e elimina página vazia imediatamente
   useEffect(() => {
@@ -540,7 +540,6 @@ export default function MarkdownEditor({
                     ["--m-bottom" as any]: `${marginPx.bottom}px`,
                     ["--m-left" as any]: `${marginPx.left}px`,
                     ["--page-height-px" as any]: `${heightPx}px`,
-                    ["--doc-inner-height-px" as any]: `${(heightPx - marginPx.top - marginPx.bottom) * pages + Math.max(0, pages - 1) * (pageGapPx + marginPx.top + marginPx.bottom)}px`,
                   }}
                 >
                   {/* Page frames behind the editor content */}
@@ -568,7 +567,7 @@ export default function MarkdownEditor({
         .ql-toolbar.ql-snow { border-color: hsl(var(--border)); background: hsl(var(--card)); }
         .ql-toolbar .ql-stroke { stroke: hsl(var(--card-foreground)); }
         .ql-toolbar .ql-picker { color: hsl(var(--card-foreground)); }
-        .ql-container, .ql-editor { min-height: var(--doc-inner-height-px, calc(var(--page-height-px, 1123px) - var(--m-top, 28px) - var(--m-bottom, 28px))); }
+        .ql-container, .ql-editor { min-height: calc(var(--page-height-px, 1123px) - var(--m-top, 28px) - var(--m-bottom, 28px)); }
         .ql-editor { 
           padding: var(--m-top, 28px) var(--m-right, 32px) var(--m-bottom, 28px) var(--m-left, 32px);
           line-height: 1.6;
