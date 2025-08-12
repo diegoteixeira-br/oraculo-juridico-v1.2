@@ -489,10 +489,7 @@ const LandingPage = () => {
                   <Check className="w-5 h-5 text-primary flex-shrink-0" />
                   <span className="text-muted-foreground">Histórico de conversas</span>
                 </div>
-                <div className="flex items-center space-x-3 text-left">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-muted-foreground">Sem cartão de crédito necessário</span>
-                </div>
+                
               </div>
               
               <Link to="/cadastro" className="inline-block w-full py-4 px-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-lg font-semibold text-lg">
