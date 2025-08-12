@@ -172,11 +172,16 @@ export default function MinhaContaPage() {
     switch (planType) {
       case 'premium': return 'bg-purple-600 text-white';
       case 'basico': return 'bg-blue-600 text-white';
-      default: return 'bg-green-600 text-white';
+      default: return 'bg-slate-900 text-white border border-slate-700';
     }
   };
 
   const totalTokens = (profile?.token_balance || 0) + (profile?.plan_tokens || 0);
+  const isTrial = profile?.subscription_status === 'trial';
+  const trialEndDate = profile?.trial_end_date ? new Date(profile.trial_end_date) : null;
+  const daysRemaining = isTrial && trialEndDate
+    ? Math.max(0, Math.ceil((trialEndDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+    : 0;
 
   return (
     <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col overflow-hidden">
@@ -275,7 +280,7 @@ export default function MinhaContaPage() {
                     <div className="flex items-center gap-2 mt-2">
                       <Badge className={getPlanBadgeColor(profile?.plan_type || 'gratuito')}>
                         {profile?.plan_type === 'premium' ? 'Premium' : 
-                         profile?.plan_type === 'basico' ? 'Básico' : 'Gratuito'}
+                         profile?.plan_type === 'basico' ? 'Básico' : (isTrial ? `Gratuito • ${daysRemaining}d` : 'Gratuito')}
                       </Badge>
                       <Badge variant="outline" className="text-xs border-slate-500/30 text-slate-300">
                         {Math.floor(totalTokens).toLocaleString()} tokens

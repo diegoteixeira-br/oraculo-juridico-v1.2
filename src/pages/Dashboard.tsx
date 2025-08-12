@@ -394,8 +394,11 @@ export default function Dashboard() {
                         </p>
                       </div>
                     </div>
-                    <Badge className={profile?.subscription_status === 'active' ? 'bg-primary text-white' : 'bg-green-600 text-white'}>
-                      {profile?.subscription_status === 'active' ? 'Assinante' : 'Gratuito'}
+                    <Badge
+                      className={isTrial ? 'bg-slate-900 text-white border border-slate-700' : 'bg-green-600 text-white'}
+                      aria-label={isTrial ? 'Período Gratuito' : 'Assinante Mensal'}
+                    >
+                      {isTrial ? `Gratuito • ${daysRemaining}d` : 'Assinante Mensal'}
                     </Badge>
                   </div>
 
