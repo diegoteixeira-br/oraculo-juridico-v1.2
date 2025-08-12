@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import UserMenu from "@/components/UserMenu";
 import MarkdownEditor from "@/components/MarkdownEditor";
+import SharedDocumentsList from "@/components/SharedDocumentsList";
 import { FileText, Plus, Search, Trash2, Pencil, ArrowLeft } from "lucide-react";
 
 function cleanEditorHtml(html: string): string {
@@ -270,6 +271,8 @@ export default function MeusDocumentos() {
               )}
             </CardContent>
           </Card>
+
+          <SharedDocumentsList />
         </div>
       </div>
 
