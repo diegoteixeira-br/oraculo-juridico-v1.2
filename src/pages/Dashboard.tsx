@@ -293,19 +293,6 @@ export default function Dashboard() {
                 </span>
                 <span className="text-xs text-slate-300">tokens</span>
               </div>
-
-              {/* Plano atual */}
-              <Badge className={getPlanBadgeColor(planType)}>
-                {planType === 'premium' ? 'Premium' : planType === 'basico' ? 'Básico' : 'Gratuito'}
-              </Badge>
-
-              {/* Status do período gratuito */}
-              {isTrial && (
-                <div className="hidden md:flex items-center gap-1 bg-green-700/30 text-green-300 border border-green-600/40 rounded-lg px-2 py-1 text-xs">
-                  <Clock className="w-3 h-3" />
-                  <span>Período Gratuito: {daysRemaining} {daysRemaining === 1 ? 'dia' : 'dias'}</span>
-                </div>
-              )}
               
               <UserMenu hideOptions={["dashboard"]} />
             </div>
@@ -407,9 +394,8 @@ export default function Dashboard() {
                         </p>
                       </div>
                     </div>
-                    <Badge className={getPlanBadgeColor(profile?.plan_type || 'gratuito')}>
-                      {profile?.plan_type === 'premium' ? 'Premium' : 
-                       profile?.plan_type === 'basico' ? 'Básico' : 'Gratuito'}
+                    <Badge className={profile?.subscription_status === 'active' ? 'bg-primary text-white' : 'bg-green-600 text-white'}>
+                      {profile?.subscription_status === 'active' ? 'Assinante' : 'Gratuito'}
                     </Badge>
                   </div>
 
@@ -693,6 +679,28 @@ export default function Dashboard() {
                           <div className="text-xs text-slate-400">Plano</div>
                         </div>
                       </div>
+                  </div>
+                  
+                  {/* Status da Conta */}
+                  <div className="pt-2">
+                    <div className="text-xs text-slate-400 mb-1">Status da Conta</div>
+                    {isTrial ? (
+                      <div className="flex items-center gap-2">
+                        <Badge className="bg-green-600 text-white">Período Gratuito</Badge>
+                        <span className="text-xs text-slate-300">
+                          até {trialEndDate ? trialEndDate.toLocaleDateString('pt-BR') : '-'} • {daysRemaining} {daysRemaining === 1 ? 'dia' : 'dias'} restantes
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <Badge className={profile?.subscription_status === 'active' ? 'bg-primary text-white' : 'bg-slate-600 text-white'}>
+                          {profile?.subscription_status === 'active' ? 'Assinante' : 'Sem Assinatura'}
+                        </Badge>
+                        {profile?.subscription_status === 'active' && profile?.subscription_end_date && (
+                          <span className="text-xs text-slate-300">renova em {new Date(profile.subscription_end_date).toLocaleDateString('pt-BR')}</span>
+                        )}
+                      </div>
+                    )}
                   </div>
                   
                   <div className="space-y-2 pt-4 border-t border-slate-600">
