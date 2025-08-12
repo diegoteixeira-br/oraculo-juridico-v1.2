@@ -12,10 +12,11 @@ interface Profile {
   trial_end_date: string;
   subscription_end_date?: string;
   tokens: number;
-  daily_tokens: number;
   plan_tokens: number;
   plan_type: string;
-  last_daily_reset: string;
+  token_balance?: number;
+  daily_tokens?: number;
+  last_daily_reset?: string;
 }
 
 interface AuthContextType {
@@ -45,9 +46,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchProfile = async (userId: string) => {
     try {
-      // Primeiro, resetar tokens diários se necessário
-      await supabase.rpc('reset_daily_tokens_if_needed', { p_user_id: userId });
-      
+      // Tokens são geridos no banco; sem reset manual
+
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -71,9 +71,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!user?.id) return;
     
     try {
-      // Primeiro, resetar tokens diários se necessário
-      await supabase.rpc('reset_daily_tokens_if_needed', { p_user_id: user.id });
-      
+      // Tokens são geridos no banco; sem reset manual
+
       // Buscar perfil atualizado
       const { data: profile, error } = await supabase
         .from('profiles')
@@ -122,9 +121,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const hasActiveAccess = () => {
     if (!profile) return false;
     
-    // Com sistema de tokens, verifica se tem tokens disponíveis
+    // Com sistema de tokens, verifica se há saldo de teste (token_balance) ou do plano
     if (profile.plan_type === 'gratuito') {
-      return (profile.daily_tokens || 0) > 0;
+      return (profile.token_balance || 0) > 0;
     } else {
       return (profile.plan_tokens || 0) > 0;
     }
