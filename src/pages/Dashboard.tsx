@@ -749,7 +749,14 @@ export default function Dashboard() {
                   ) : (
                     <div className="space-y-3">
                       {recentQueries.slice(0, 3).map((query) => (
-                        <div key={query.id} className="p-3 bg-slate-700/30 rounded-lg border border-slate-600/50">
+                        <div
+                          key={query.id}
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => navigate(`/chat?session=${encodeURIComponent(query.session_id || query.id)}`)}
+                          onKeyDown={(e) => { if (e.key === 'Enter') navigate(`/chat?session=${encodeURIComponent(query.session_id || query.id)}`); }}
+                          className="p-3 bg-slate-700/30 rounded-lg border border-slate-600/50 hover:bg-slate-700/50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/40"
+                        >
                           <p className="text-sm text-white line-clamp-2 mb-2">
                             {query.prompt_text}
                           </p>

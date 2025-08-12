@@ -46,6 +46,7 @@ export default function Chat() {
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const [pendingSessionId, setPendingSessionId] = useState<string | null>(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [ttsLoading, setTtsLoading] = useState(false);
   const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
@@ -65,19 +66,20 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
   const currentSession = sessions.find(s => s.id === currentSessionId);
   const messages = currentSession?.messages || [];
 
-  // Inicializar uma nova conversa apenas se não existir nenhuma
+  // Inicializar parâmetros da URL (mostrar histórico no mobile e abrir sessão específica)
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const showHistory = urlParams.get('show-history');
-    
-    // Se for para mostrar histórico no mobile, apenas abrir sidebar
+    const sessionParam = urlParams.get('session');
+
     if (showHistory === 'true' && isMobile) {
       setSidebarOpen(true);
-      // Limpar o parâmetro da URL
-      window.history.replaceState({}, '', '/chat');
     }
-    
-    // Limpar parâmetros da URL se houver
+    if (sessionParam) {
+      setPendingSessionId(sessionParam);
+    }
+
+    // Limpar os parâmetros da URL
     if (window.location.search) {
       window.history.replaceState({}, '', '/chat');
     }
@@ -185,6 +187,14 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
     }
   };
 
+  // Após carregar/atualizar sessões, selecionar a sessão passada pela URL, se houver
+  useEffect(() => {
+    if (pendingSessionId) {
+      setCurrentSessionId(pendingSessionId);
+      setPendingSessionId(null);
+      if (isMobile) setSidebarOpen(false);
+    }
+  }, [pendingSessionId, sessions.length, isMobile]);
   const deleteSession = async (sessionId: string) => {
     try {
       const { error } = await supabase
