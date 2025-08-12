@@ -135,7 +135,7 @@ const LandingPage = () => {
                 1
               </div>
               <h3 className="text-xl font-semibold mb-4 text-foreground">Cadastre-se Gratuitamente</h3>
-              <p className="text-muted-foreground">Crie sua conta gratuita e comece a usar imediatamente com 3.000 tokens renovados diariamente. Sem compromisso, sem cartão de crédito.</p>
+              <p className="text-muted-foreground">Crie sua conta gratuita e comece a usar imediatamente teste 7 dias com 15.000 tokens. Sem compromisso, sem cartão de crédito.</p>
             </div>
             
             <div className="text-center">
@@ -325,10 +325,10 @@ const LandingPage = () => {
             <div className="p-6 card-signup border border-border">
               <h3 className="text-xl font-semibold text-foreground mb-2">Plano Gratuito </h3>
               <ul className="list-disc ml-6 space-y-2 text-muted-foreground">
-                <li>Chat com IA </li>
-                <li>Calculadoras </li>
-                <li>Documentos</li>
-                <li>Agenda</li>
+                <li>Chat com IA 15.000 tokens</li>
+                <li>Calculadoras: 7 dias teste</li>
+                <li>Documentos: 7 dias teste</li>
+                <li>Agenda jurídica: compromissos 7 dias teste</li>
               </ul>
             </div>
             <div className="p-6 card-signup border border-border">
@@ -343,10 +343,10 @@ const LandingPage = () => {
               </div>
               <ul className="list-disc ml-6 space-y-2 text-muted-foreground">
                 <li>Chat com IA: 30.000 tokens por mês</li>
-                <li>Teste grátis de 7 dias</li>
+                
                 <li>Calculadoras: uso ilimitado</li>
-                <li>Documentos: cópia ilimitada</li>
-                <li>Agenda: compromissos ilimitados</li>
+                <li>Documentos: ilimitada</li>
+                <li>Agenda jurídica: compromissos ilimitados</li>
                 
               </ul>
             </div>
@@ -437,9 +437,7 @@ const LandingPage = () => {
               <h3 className="text-xl font-bold mb-3 text-foreground">
                 Acesso às Calculadoras
               </h3>
-              <p className="text-muted-foreground">
-                As calculadoras jurídicas estão disponíveis em sua conta após o login. No Plano Essencial o uso é ilimitado; no Plano Gratuito você pode realizar até 2 cálculos por dia (somados entre as calculadoras).
-              </p>
+              <p className="text-muted-foreground">As calculadoras jurídicas estão disponíveis em sua conta após o login. No Plano Essencial o uso é ilimitado; no Plano Gratuito você pode realizar teste por 7 dia.</p>
             </div>
           </div>
         </div>
@@ -473,15 +471,15 @@ const LandingPage = () => {
               <div className="space-y-3 mb-8">
                 <div className="flex items-center space-x-3 text-left">
                   <Check className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-muted-foreground">3.000 tokens renovados diariamente</span>
+                  <span className="text-muted-foreground">7 dias para teste </span>
                 </div>
                 <div className="flex items-center space-x-3 text-left">
                   <Check className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-muted-foreground">Acesso completo à IA Jurídica</span>
+                  <span className="text-muted-foreground">Acesso completo à IA Jurídica com 15.000 tokens</span>
                 </div>
                 <div className="flex items-center space-x-3 text-left">
                   <Check className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-muted-foreground">Agenda jurídica com IA</span>
+                  <span className="text-muted-foreground">Agenda jurídica</span>
                 </div>
                 <div className="flex items-center space-x-3 text-left">
                   <Check className="w-5 h-5 text-primary flex-shrink-0" />
