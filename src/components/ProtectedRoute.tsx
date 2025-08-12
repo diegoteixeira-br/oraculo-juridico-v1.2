@@ -17,8 +17,9 @@ export default function ProtectedRoute({
   requiresActiveSubscription = false,
   gate = 'any'
 }: ProtectedRouteProps) {
-  const { user, profile, loading, hasActiveAccess } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const access = useAccessControl();
 
   useEffect(() => {
     if (!loading && !user) {
@@ -38,7 +39,7 @@ export default function ProtectedRoute({
     return null;
   }
 
-  const { isTrialExpired, isBlocked, canAccessPremiumTools, canUseChat } = useAccessControl();
+  const { isTrialExpired, isBlocked, canAccessPremiumTools, canUseChat } = access;
 
   const shouldBlock = (() => {
     if (gate === 'premium') return !canAccessPremiumTools;
