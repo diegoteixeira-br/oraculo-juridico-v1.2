@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { usePageTitle } from "./hooks/usePageTitle";
 import { useSmoothScrollTop } from "./hooks/useSmoothScrollTop";
@@ -28,8 +28,6 @@ import CalculoContratoBancario from "./pages/CalculoContratoBancario";
 import CalculoPensaoAlimenticia from "./pages/CalculoPensaoAlimenticia";
 import ComprarCreditosPage from "./pages/ComprarCreditosPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
-import AdminDocuments from "./pages/AdminDocuments";
-import AdminLogin from "./pages/AdminLogin";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import AgendaJuridica from "./pages/AgendaJuridica";
 import SuportePage from "./pages/SuportePage";
@@ -61,8 +59,8 @@ function AppContent() {
       <Route path="/comprar-creditos" element={<PageWrapper><ProtectedRoute><ComprarCreditosPage /></ProtectedRoute></PageWrapper>} />
       <Route path="/payment-success" element={<PageWrapper><ProtectedRoute><PaymentSuccessPage /></ProtectedRoute></PageWrapper>} />
       <Route path="/agenda-juridica" element={<PageWrapper><ProtectedRoute gate="premium"><AgendaJuridica /></ProtectedRoute></PageWrapper>} />
-      <Route path="/admin/login" element={<PageWrapper><AdminLogin /></PageWrapper>} />
-      <Route path="/admin/documentos" element={<PageWrapper><AdminProtectedRoute><AdminDocuments /></AdminProtectedRoute></PageWrapper>} />
+      <Route path="/admin/login" element={<PageWrapper><Navigate to="/admin" replace /></PageWrapper>} />
+      <Route path="/admin/documentos" element={<PageWrapper><Navigate to="/admin" replace /></PageWrapper>} />
       <Route path="/admin" element={<PageWrapper><AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute></PageWrapper>} />
       
       <Route path="/suporte" element={<PageWrapper><ProtectedRoute><SuportePage /></ProtectedRoute></PageWrapper>} />

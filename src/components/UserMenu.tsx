@@ -89,7 +89,7 @@ export default function UserMenu({ hideOptions = [] }: UserMenuProps) {
       key: "admin",
       label: "Admin",
       icon: Shield,
-      onClick: () => navigate("/admin/documentos"),
+      onClick: () => navigate("/admin"),
       show: isAdmin && !hideOptions.includes("admin"),
     },
     {

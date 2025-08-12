@@ -3,13 +3,20 @@ import DocumentUploader from "@/components/admin/DocumentUploader";
 import DocumentManager from "@/components/admin/DocumentManager";
 import UserManager from "@/components/admin/UserManager";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 export default function AdminDashboard() {
   return (
     <main className="container mx-auto py-8">
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold">Dashboard do Administrador</h1>
-        <p className="text-muted-foreground">Gerencie documentos e usuários</p>
+      <header className="mb-6 flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Dashboard do Administrador</h1>
+          <p className="text-muted-foreground">Gerencie documentos e usuários</p>
+        </div>
+        <Button asChild variant="outline" aria-label="Voltar ao Dashboard">
+          <Link to="/dashboard">Voltar ao Dashboard</Link>
+        </Button>
       </header>
 
       <Tabs defaultValue="docs" className="space-y-6">
