@@ -328,7 +328,7 @@ export default function Dashboard() {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs text-green-300 font-medium">Tokens de Teste</p>
+                      <p className="text-xs text-green-300 font-medium">Tokens de Teste / {daysRemaining} {daysRemaining === 1 ? 'dia' : 'dias'}</p>
                       <p className="text-2xl font-bold text-green-400">
                         {Math.floor(dailyCredits).toLocaleString()}
                       </p>
@@ -396,10 +396,10 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <Badge
-                      className={isTrial ? 'bg-slate-900 text-white border border-slate-700' : 'bg-green-600 text-white'}
+                      className={isTrial ? 'bg-amber-500/20 text-amber-200 border border-amber-400/30' : 'bg-green-600 text-white'}
                       aria-label={isTrial ? 'Período Gratuito' : 'Pago'}
                     >
-                      {isTrial ? `Gratuito • ${daysRemaining}d` : 'Pago'}
+                      {isTrial ? 'Gratuito' : 'Pago'}
                     </Badge>
                   </div>
 
@@ -692,7 +692,7 @@ export default function Dashboard() {
                       <div className="flex items-center gap-2">
                         <Badge className="bg-green-600 text-white">Período Gratuito</Badge>
                         <span className="text-xs text-slate-300">
-                          até {trialEndDate ? trialEndDate.toLocaleDateString('pt-BR') : '-'} • {daysRemaining} {daysRemaining === 1 ? 'dia' : 'dias'} restantes
+                          até {trialEndDate ? trialEndDate.toLocaleDateString('pt-BR') : '-'}
                         </span>
                       </div>
                     ) : (
