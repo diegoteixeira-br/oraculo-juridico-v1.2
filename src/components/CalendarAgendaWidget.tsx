@@ -296,6 +296,7 @@ const CalendarAgendaWidget = () => {
                 )}
               </>
             }
+          </div>
         </div>
       </CardContent>
     </Card>;
