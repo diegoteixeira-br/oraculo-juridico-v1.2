@@ -46,6 +46,7 @@ export default function Dashboard() {
 
   const totalAvailableCredits = userCredits + dailyCredits;
   const isTrial = profile?.subscription_status === 'trial';
+  const isPaid = profile?.subscription_status === 'active';
   const planType = profile?.plan_type || 'gratuito';
   const trialEndDate = profile?.trial_end_date ? new Date(profile.trial_end_date) : null;
   const daysRemaining = isTrial && trialEndDate 
@@ -396,9 +397,9 @@ export default function Dashboard() {
                     </div>
                     <Badge
                       className={isTrial ? 'bg-slate-900 text-white border border-slate-700' : 'bg-green-600 text-white'}
-                      aria-label={isTrial ? 'Período Gratuito' : (planType === 'basico' ? 'Essencial' : 'Premium')}
+                      aria-label={isTrial ? 'Período Gratuito' : 'Pago'}
                     >
-                      {isTrial ? `Gratuito • ${daysRemaining}d` : (planType === 'basico' ? 'Essencial' : 'Premium')}
+                      {isTrial ? `Gratuito • ${daysRemaining}d` : 'Pago'}
                     </Badge>
                   </div>
 

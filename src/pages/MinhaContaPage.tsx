@@ -178,10 +178,13 @@ export default function MinhaContaPage() {
 
   const totalTokens = (profile?.token_balance || 0) + (profile?.plan_tokens || 0);
   const isTrial = profile?.subscription_status === 'trial';
+  const isPaid = profile?.subscription_status === 'active';
   const trialEndDate = profile?.trial_end_date ? new Date(profile.trial_end_date) : null;
   const daysRemaining = isTrial && trialEndDate
     ? Math.max(0, Math.ceil((trialEndDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
     : 0;
+  const statusBadgeClass = isPaid ? 'bg-green-600 text-white' : 'bg-slate-900 text-white border border-slate-700';
+  const statusLabel = isPaid ? 'Pago' : (isTrial ? `Gratuito • ${daysRemaining}d` : 'Gratuito');
 
   return (
     <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col overflow-hidden">
@@ -278,10 +281,7 @@ export default function MinhaContaPage() {
                       {user?.email}
                     </p>
                     <div className="flex items-center gap-2 mt-2">
-                      <Badge className={getPlanBadgeColor(profile?.plan_type || 'gratuito')}>
-                        {profile?.plan_type === 'premium' ? 'Premium' : 
-                         profile?.plan_type === 'basico' ? 'Essencial' : (isTrial ? `Gratuito • ${daysRemaining}d` : 'Gratuito')}
-                      </Badge>
+                      <Badge className={statusBadgeClass}>{statusLabel}</Badge>
                       <Badge variant="outline" className="text-xs border-slate-500/30 text-slate-300">
                         {Math.floor(totalTokens).toLocaleString()} tokens
                       </Badge>
@@ -347,15 +347,11 @@ export default function MinhaContaPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="plan" className="text-sm text-slate-300">Plano Atual</Label>
+                    <Label htmlFor="subscription" className="text-sm text-slate-300">Assinatura</Label>
                     <div className="flex items-center gap-2">
-                      <Badge className={`${getPlanBadgeColor(profile?.plan_type || 'gratuito')} px-3 py-1`}>
-                        {profile?.plan_type === 'premium' ? 'Premium' : 
-                         profile?.plan_type === 'basico' ? 'Essencial' : 'Gratuito'}
-                      </Badge>
+                      <Badge className={`${statusBadgeClass} px-3 py-1`}>{statusLabel}</Badge>
                       <span className="text-sm text-slate-400">
-                        {profile?.plan_type === 'premium' ? '150.000 tokens' : 
-                         profile?.plan_type === 'basico' ? '75.000 tokens' : '3.000 tokens diários'}
+                        {isPaid ? 'Mensal ativa' : 'Período gratuito'}
                       </span>
                     </div>
                   </div>
