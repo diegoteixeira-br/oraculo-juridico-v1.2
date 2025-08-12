@@ -3,14 +3,11 @@ import { Clock, DollarSign, AlertTriangle, Shield, Globe, Smartphone, History, L
 import { useState } from "react";
 import heroBrain from "../assets/hero-brain-legal.jpg";
 import legalOffice from "../assets/legal-office.jpg";
-
 const LandingPage = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
   };
-  
   const scrollToFreeAccount = () => {
     const freeAccountSection = document.getElementById('free-account-section');
     if (freeAccountSection) {
@@ -19,45 +16,31 @@ const LandingPage = () => {
       });
     }
   };
-  
-  const faqData = [
-    {
-      question: "Como funcionam os tokens?",
-      answer: "Tokens são usados apenas no chat com a IA. No plano gratuito você tem 3.000 tokens/dia; no Plano Essencial você recebe 30.000 tokens/mês. Calculadoras, documentos e agenda seguem os limites do seu plano (veja abaixo)."
-    },
-    {
-      question: "Meus tokens gratuitos se acumulam se eu não usar?",
-      answer: "Não. Os 3.000 tokens gratuitos do chat se renovam diariamente e não são cumulativos. Para uso sem limites das calculadoras, documentos e agenda, assine o Plano Essencial."
-    },
-    {
-      question: "Preciso cadastrar um cartão de crédito para usar o plano gratuito?",
-      answer: "Não. Para criar sua conta no plano gratuito e usar seus 3.000 tokens diários, você não precisa fornecer nenhuma informação de pagamento. Você só precisará inserir seus dados de pagamento se decidir assinar um plano pago."
-    },
-    {
-      question: "As informações da IA são confiáveis?",
-      answer: "Sim! Nossa IA integra-se diretamente com a LexML, base oficial de jurisprudência do governo brasileiro, garantindo acesso a dados atualizados e confiáveis dos tribunais superiores e estaduais. Mesmo assim, recomendamos sempre consultar um advogado para casos específicos e complexos."
-    },
-    {
-      question: "Como posso adquirir mais tokens?",
-      answer: "Você pode assinar o Plano Essencial: de R$ 75,80/mês por R$ 37,90/mês (50% OFF) para liberar uso ilimitado de calculadoras, documentos e agenda (além de 30.000 tokens/mês para o chat). Pacotes avulsos de 75k e 150k tokens permanecem disponíveis de forma opcional."
-    },
-    {
-      question: "O que é a Agenda Jurídica?",
-      answer: "É uma ferramenta completa para organizar seus prazos processuais, audiências e compromissos jurídicos. Inclui extração automática de prazos usando IA e calendário integrado para nunca perder um prazo importante."
-    }
-  ];
-
-  return (
-    <div className="min-h-screen bg-background text-foreground">
+  const faqData = [{
+    question: "Como funcionam os tokens?",
+    answer: "Tokens são usados apenas no chat com a IA. No plano gratuito você tem 3.000 tokens/dia; no Plano Essencial você recebe 30.000 tokens/mês. Calculadoras, documentos e agenda seguem os limites do seu plano (veja abaixo)."
+  }, {
+    question: "Meus tokens gratuitos se acumulam se eu não usar?",
+    answer: "Não. Os 3.000 tokens gratuitos do chat se renovam diariamente e não são cumulativos. Para uso sem limites das calculadoras, documentos e agenda, assine o Plano Essencial."
+  }, {
+    question: "Preciso cadastrar um cartão de crédito para usar o plano gratuito?",
+    answer: "Não. Para criar sua conta no plano gratuito e usar seus 3.000 tokens diários, você não precisa fornecer nenhuma informação de pagamento. Você só precisará inserir seus dados de pagamento se decidir assinar um plano pago."
+  }, {
+    question: "As informações da IA são confiáveis?",
+    answer: "Sim! Nossa IA integra-se diretamente com a LexML, base oficial de jurisprudência do governo brasileiro, garantindo acesso a dados atualizados e confiáveis dos tribunais superiores e estaduais. Mesmo assim, recomendamos sempre consultar um advogado para casos específicos e complexos."
+  }, {
+    question: "Como posso adquirir mais tokens?",
+    answer: "Você pode assinar o Plano Essencial: de R$ 75,80/mês por R$ 37,90/mês (50% OFF) para liberar uso ilimitado de calculadoras, documentos e agenda (além de 30.000 tokens/mês para o chat). Pacotes avulsos de 75k e 150k tokens permanecem disponíveis de forma opcional."
+  }, {
+    question: "O que é a Agenda Jurídica?",
+    answer: "É uma ferramenta completa para organizar seus prazos processuais, audiências e compromissos jurídicos. Inclui extração automática de prazos usando IA e calendário integrado para nunca perder um prazo importante."
+  }];
+  return <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
       <header className="py-6 px-4 border-b border-border bg-slate-800/50 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img 
-              src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
-              alt="Oráculo Jurídico" 
-              className="h-8 w-auto"
-            />
+            <img src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" alt="Oráculo Jurídico" className="h-8 w-auto" />
             <h1 className="text-2xl font-bold text-foreground">
               Oráculo Jurídico
             </h1>
@@ -360,7 +343,7 @@ const LandingPage = () => {
               </div>
               <ul className="list-disc ml-6 space-y-2 text-muted-foreground">
                 <li>Chat com IA: 30.000 tokens por mês</li>
-                <li>Teste grátis de 7 dias: 3.000 tokens/dia</li>
+                <li>Teste grátis de 7 dias</li>
                 <li>Calculadoras: uso ilimitado</li>
                 <li>Documentos: cópia ilimitada</li>
                 <li>Agenda: compromissos ilimitados</li>
@@ -663,28 +646,17 @@ const LandingPage = () => {
           </div>
           
           <div className="space-y-4">
-            {faqData.map((faq, index) => (
-              <div key={index} className="card-signup">
-                <button 
-                  onClick={() => toggleFaq(index)} 
-                  className="w-full p-6 text-left flex items-center justify-between hover:bg-muted/10 transition-colors"
-                >
+            {faqData.map((faq, index) => <div key={index} className="card-signup">
+                <button onClick={() => toggleFaq(index)} className="w-full p-6 text-left flex items-center justify-between hover:bg-muted/10 transition-colors">
                   <h3 className="text-lg font-semibold text-foreground">
                     {faq.question}
                   </h3>
-                  {openFaq === index ? (
-                    <ChevronDown className="w-5 h-5 text-muted-foreground" />
-                  ) : (
-                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                  )}
+                  {openFaq === index ? <ChevronDown className="w-5 h-5 text-muted-foreground" /> : <ChevronRight className="w-5 h-5 text-muted-foreground" />}
                 </button>
-                {openFaq === index && (
-                  <div className="px-6 pb-6">
+                {openFaq === index && <div className="px-6 pb-6">
                     <p className="text-muted-foreground">{faq.answer}</p>
-                  </div>
-                )}
-              </div>
-            ))}
+                  </div>}
+              </div>)}
           </div>
         </div>
       </section>
@@ -719,8 +691,6 @@ const LandingPage = () => {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default LandingPage;
