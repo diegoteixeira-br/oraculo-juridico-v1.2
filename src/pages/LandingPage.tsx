@@ -323,12 +323,12 @@ const LandingPage = () => {
           </div>
           <div className="grid md:grid-cols-2 gap-6">
             <div className="p-6 card-signup border border-border">
-              <h3 className="text-xl font-semibold text-foreground mb-2">Plano Gratuito</h3>
+              <h3 className="text-xl font-semibold text-foreground mb-2">Plano Gratuito </h3>
               <ul className="list-disc ml-6 space-y-2 text-muted-foreground">
-                <li>Chat com IA: 3.000 tokens por dia</li>
-                <li>Calculadoras: até 2 cálculos por dia (somados entre as calculadoras)</li>
-                <li>Documentos: 1 cópia de documento por dia</li>
-                <li>Agenda: até 5 compromissos pendentes simultaneamente</li>
+                <li>Chat com IA </li>
+                <li>Calculadoras </li>
+                <li>Documentos</li>
+                <li>Agenda</li>
               </ul>
             </div>
             <div className="p-6 card-signup border border-border">
