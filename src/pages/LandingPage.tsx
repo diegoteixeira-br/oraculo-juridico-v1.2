@@ -39,7 +39,7 @@ const LandingPage = () => {
     answer: "Você pode assinar o Plano Essencial: de R$ 75,80/mês por R$ 37,90/mês (50% OFF) para liberar uso ilimitado de calculadoras, documentos e agenda (além de 30.000 tokens/mês para o chat). Pacotes avulsos de 75k e 150k tokens permanecem disponíveis de forma opcional."
   }, {
     question: "O que é a Agenda Jurídica?",
-    answer: "É uma ferramenta completa para organizar seus prazos processuais, audiências e compromissos jurídicos. Inclui extração automática de prazos usando IA e calendário integrado para nunca perder um prazo importante."
+    answer: "É uma ferramenta para registrar manualmente prazos, audiências e compromissos. Quando houver itens agendados, você recebe um e-mail de lembrete diariamente às 08h (horário de Brasília)."
   }];
   return <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
@@ -188,7 +188,7 @@ const LandingPage = () => {
               <Calendar className="w-12 h-12 text-primary mb-4" />
               <h3 className="text-xl font-semibold mb-4 text-foreground">Agenda Jurídica</h3>
               <p className="text-muted-foreground">
-                Organize prazos processuais com extração automática de IA.
+                Registre e organize manualmente prazos e compromissos; receba lembretes por e-mail às 08h (Brasília) nos dias com eventos.
               </p>
             </div>
             
@@ -235,7 +235,7 @@ const LandingPage = () => {
               Agenda Jurídica Inteligente
             </h2>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              Nunca mais perca um prazo processual com nossa agenda inteligente que extrai prazos automaticamente
+              Nunca mais perca um prazo: cadastre compromissos manualmente e receba lembretes por e-mail às 08h (horário de Brasília) nos dias com eventos
             </p>
           </div>
           
@@ -246,9 +246,9 @@ const LandingPage = () => {
                   <Target className="w-6 h-6 text-blue-400" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-2 text-foreground">Extração Automática de Prazos</h3>
+                  <h3 className="text-xl font-semibold mb-2 text-foreground">Cadastro Manual de Compromissos</h3>
                   <p className="text-muted-foreground">
-                    Cole o texto de uma decisão ou intimação e nossa IA extrai automaticamente todos os prazos processuais, identificando tipo, data e prioridade.
+                    Registre prazos, audiências e compromissos manualmente de forma rápida e organizada.
                   </p>
                 </div>
               </div>
@@ -545,7 +545,7 @@ const LandingPage = () => {
                 <div>
                   <h3 className="text-xl font-semibold mb-2 text-foreground">Análise Processual Avançada</h3>
                   <p className="text-muted-foreground">
-                    Identifica estratégias processuais, extrai prazos automaticamente e sugere fundamentação legal baseada em casos similares.
+                    Identifica estratégias processuais e sugere fundamentação legal baseada em casos similares.
                   </p>
                 </div>
               </div>
@@ -609,7 +609,7 @@ const LandingPage = () => {
               </div>
               <h3 className="text-lg font-semibold mb-2 text-foreground">Agenda Inteligente</h3>
               <p className="text-sm text-muted-foreground">
-                Extração automática de prazos e organização de compromissos
+                Cadastro manual e organização de compromissos com lembretes por e-mail às 08h (Brasília)
               </p>
             </div>
             
