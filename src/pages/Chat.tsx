@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Send, Paperclip, Trash2, MessageSquare, Plus, X, Download, Volume2, VolumeX, Menu, ArrowLeft } from "lucide-react";
+import { Send, Paperclip, Trash2, MessageSquare, Plus, X, Download, Volume2, VolumeX, Menu, ArrowLeft, Zap } from "lucide-react";
 import { AudioPlayer } from '@/components/AudioPlayer';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -520,19 +520,19 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
               />
             </button>
             
-            <UserMenu hideOptions={["chat"]} />
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 bg-slate-700/60 rounded-lg px-3 py-1.5">
+                <Zap className="w-4 h-4 text-primary" />
+                <span className="text-sm text-white">{Math.floor(totalTokens).toLocaleString()}</span>
+                <span className="text-xs text-slate-300">tokens</span>
+              </div>
+              <UserMenu hideOptions={["chat"]} />
+            </div>
           </div>
         </div>
       )}
 
       {/* Menu flutuante - apenas desktop */}
-      {!isMobile && (
-        <div className={`fixed top-0 right-0 z-50 p-2 -mt-2 transition-transform duration-300 ${
-          menuVisible ? 'translate-y-0' : '-translate-y-full'
-        }`}>
-          <UserMenu hideOptions={["chat"]} />
-        </div>
-      )}
 
       {/* Overlay para mobile quando sidebar está aberta */}
       {isMobile && sidebarOpen && (
@@ -666,7 +666,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
         {/* Header do Chat - apenas desktop */}
         {!isMobile && (
           <div className="bg-slate-800/50 border-b border-slate-700 p-4">
-            <div className="flex items-center justify-center">
+            <div className="max-w-7xl mx-auto flex items-center justify-between">
               <button
                 onClick={() => navigate('/dashboard')}
                 className="flex items-center gap-2 hover:opacity-80 transition-opacity"
@@ -678,6 +678,15 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
                   className="h-8 w-auto"
                 />
               </button>
+
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 bg-slate-700/50 rounded-lg px-3 py-1.5">
+                  <Zap className="w-4 h-4 text-primary" />
+                  <span className="text-sm text-white">{Math.floor(totalTokens).toLocaleString()}</span>
+                  <span className="text-xs text-slate-300">tokens</span>
+                </div>
+                <UserMenu hideOptions={["chat"]} />
+              </div>
             </div>
           </div>
         )}
