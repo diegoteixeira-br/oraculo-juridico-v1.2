@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ZoomIn, ZoomOut, FilePlus2, FileText } from "lucide-react";
+import { ZoomIn, ZoomOut, FilePlus2, FileText, Trash2 } from "lucide-react";
 import PageFrames from "@/components/PageFrames";
 import RulerTop from "@/components/RulerTop";
 import RulerLeft from "@/components/RulerLeft";
@@ -349,6 +349,30 @@ export default function MarkdownEditor({
     };
   }, [heightPx, marginPx.top, marginPx.bottom, pageGapPx]);
 
+  const clearBlankPages = () => {
+    const root = pageRef.current?.querySelector('.ql-editor') as HTMLElement | null;
+    if (!root) return;
+    // Remove todas as quebras de página
+    root.querySelectorAll('p.page-break').forEach((el) => el.remove());
+    // Mantém apenas um parágrafo vazio
+    const children = Array.from(root.children) as HTMLElement[];
+    let keptEmpty = false;
+    for (const el of children) {
+      const html = (el.innerHTML || '').replace(/\s|&nbsp;/g, '');
+      const isEmptyPara = el.tagName === 'P' && (html === '' || html === '<br>' || html === '<br/>' || html === '<br />');
+      if (isEmptyPara) {
+        if (!keptEmpty) { keptEmpty = true; continue; }
+        el.remove();
+      }
+    }
+    recalcPages();
+    // Volta para o topo e foca no início
+    const s = scrollerRef.current;
+    if (s) { try { (s as any).scrollTo({ top: 0, behavior: 'smooth' }); } catch { s.scrollTop = 0; } }
+    const q = quillRef.current?.getEditor();
+    q?.setSelection(0, 0);
+  };
+
   const exportPdf = () => {
     const root = pageRef.current?.querySelector(".ql-editor") as HTMLElement | null;
     const html = root?.innerHTML || content || "";
@@ -411,6 +435,9 @@ export default function MarkdownEditor({
           </div>
           <Button variant="outline" size="sm" onClick={insertPageBreakBeforeSelection} className="shrink-0">
             <FilePlus2 className="w-4 h-4 mr-2"/> <span className="hidden sm:inline">Nova página</span>
+          </Button>
+          <Button variant="outline" size="sm" onClick={clearBlankPages} className="shrink-0">
+            <Trash2 className="w-4 h-4 mr-2"/> <span className="hidden sm:inline">Limpar páginas vazias</span>
           </Button>
         </div>
       </div>
