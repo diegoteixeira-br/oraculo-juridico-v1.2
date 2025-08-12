@@ -32,6 +32,8 @@ const CalendarAgendaWidget = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [showAll, setShowAll] = useState(false);
+  const MAX_ITEMS = 5;
   useEffect(() => {
     if (user?.id) {
       loadCommitments();
@@ -110,6 +112,8 @@ const CalendarAgendaWidget = () => {
     return commitments.filter(c => isSameDay(parseISO(c.commitment_date), date));
   };
   const selectedDateCommitments = getCommitmentsForDate(selectedDate);
+  const displayedCommitments = showAll ? selectedDateCommitments : selectedDateCommitments.slice(0, MAX_ITEMS);
+  useEffect(() => { setShowAll(false); }, [selectedDate, commitments]);
   const renderCalendarDays = () => {
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(currentMonth);
@@ -227,41 +231,71 @@ const CalendarAgendaWidget = () => {
                 <p className="text-sm text-blue-300/80">
                   Nenhum compromisso neste dia
                 </p>
-              </div> : <div className="space-y-2">
-                {selectedDateCommitments.map(commitment => <div key={commitment.id} className={`p-3 rounded-xl border ${getItemAppearance(commitment.commitment_type, commitment.priority)}`}>
-                    <div className="flex items-start gap-2">
-                      <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${getCommitmentColor(commitment.commitment_type, commitment.priority)}`} />
-                      <div className="flex-1 min-w-0">
-                        <h5 className="font-medium text-sm text-blue-200 truncate">{commitment.title}</h5>
-                        <p className="text-xs text-blue-300/80 flex items-center gap-1 mt-1">
-                          <Clock className="h-3 w-3 flex-shrink-0" />
-                          {format(parseISO(commitment.commitment_date), 'HH:mm', {
-                      locale: ptBR
-                    })}
-                        </p>
-                        
-                        <div className="flex gap-1 mt-2">
-                          <Badge variant="outline" className="text-xs border-blue-400/30 text-blue-300">
-                            {typeLabels[commitment.commitment_type]}
-                          </Badge>
-                          {commitment.priority !== 'normal' && <Badge variant={commitment.priority === 'urgente' ? 'destructive' : 'default'} className="text-xs">
-                              {priorityLabels[commitment.priority]}
-                            </Badge>}
+              </div> : <>
+                <div className="space-y-2">
+                  {displayedCommitments.map((commitment) => (
+                    <div key={commitment.id} className={`p-3 rounded-xl border ${getItemAppearance(commitment.commitment_type, commitment.priority)}`}>
+                      <div className="flex items-start gap-2">
+                        <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${getCommitmentColor(commitment.commitment_type, commitment.priority)}`} />
+                        <div className="flex-1 min-w-0">
+                          <h5 className="font-medium text-sm text-blue-200 truncate">{commitment.title}</h5>
+                          <p className="text-xs text-blue-300/80 flex items-center gap-1 mt-1">
+                            <Clock className="h-3 w-3 flex-shrink-0" />
+                            {format(parseISO(commitment.commitment_date), 'HH:mm', { locale: ptBR })}
+                          </p>
+                          <div className="flex gap-1 mt-2">
+                            <Badge variant="outline" className="text-xs border-blue-400/30 text-blue-300">
+                              {typeLabels[commitment.commitment_type]}
+                            </Badge>
+                            {commitment.priority !== 'normal' && (
+                              <Badge variant={commitment.priority === 'urgente' ? 'destructive' : 'default'} className="text-xs">
+                                {priorityLabels[commitment.priority]}
+                              </Badge>
+                            )}
+                          </div>
+                          {(commitment.process_number || commitment.client_name || commitment.location) && (
+                            <div className="mt-2 space-y-1 text-xs text-blue-300/70">
+                              {commitment.process_number && <div className="truncate">Processo: {commitment.process_number}</div>}
+                              {commitment.client_name && <div className="truncate">Cliente: {commitment.client_name}</div>}
+                              {commitment.location && (
+                                <div className="flex items-center gap-1 truncate">
+                                  <MapPin className="h-3 w-3 flex-shrink-0" />
+                                  {commitment.location}
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
-                        
-                        {(commitment.process_number || commitment.client_name || commitment.location) && <div className="mt-2 space-y-1 text-xs text-blue-300/70">
-                            {commitment.process_number && <div className="truncate">Processo: {commitment.process_number}</div>}
-                            {commitment.client_name && <div className="truncate">Cliente: {commitment.client_name}</div>}
-                            {commitment.location && <div className="flex items-center gap-1 truncate">
-                                <MapPin className="h-3 w-3 flex-shrink-0" />
-                                {commitment.location}
-                              </div>}
-                          </div>}
                       </div>
                     </div>
-                  </div>)}
-              </div>}
-          </div>
+                  ))}
+                </div>
+
+                {selectedDateCommitments.length > MAX_ITEMS && (
+                  <div className="mt-3">
+                    {!showAll ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowAll(true)}
+                        className="border-blue-400/30 text-blue-300 hover:bg-blue-600/10"
+                      >
+                        Ver mais
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowAll(false)}
+                        className="text-blue-300 hover:bg-blue-600/10"
+                      >
+                        Ver menos
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </>
+            }
         </div>
       </CardContent>
     </Card>;
