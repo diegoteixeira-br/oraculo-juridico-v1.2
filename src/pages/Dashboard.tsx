@@ -46,6 +46,11 @@ export default function Dashboard() {
 
   const totalAvailableCredits = userCredits + dailyCredits;
   const isTrial = profile?.subscription_status === 'trial';
+  const planType = profile?.plan_type || 'gratuito';
+  const trialEndDate = profile?.trial_end_date ? new Date(profile.trial_end_date) : null;
+  const daysRemaining = isTrial && trialEndDate 
+    ? Math.max(0, Math.ceil((trialEndDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+    : 0;
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -288,6 +293,19 @@ export default function Dashboard() {
                 </span>
                 <span className="text-xs text-slate-300">tokens</span>
               </div>
+
+              {/* Plano atual */}
+              <Badge className={getPlanBadgeColor(planType)}>
+                {planType === 'premium' ? 'Premium' : planType === 'basico' ? 'Básico' : 'Gratuito'}
+              </Badge>
+
+              {/* Status do período gratuito */}
+              {isTrial && (
+                <div className="hidden md:flex items-center gap-1 bg-green-700/30 text-green-300 border border-green-600/40 rounded-lg px-2 py-1 text-xs">
+                  <Clock className="w-3 h-3" />
+                  <span>Período Gratuito: {daysRemaining} {daysRemaining === 1 ? 'dia' : 'dias'}</span>
+                </div>
+              )}
               
               <UserMenu hideOptions={["dashboard"]} />
             </div>
