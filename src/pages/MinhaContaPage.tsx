@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Eye, EyeOff, Save, User, Lock, Camera, ArrowLeft, Zap, Shield, Mail, Calendar, Award } from "lucide-react";
+import { Eye, EyeOff, Save, User, Lock, Camera, Trash, ArrowLeft, Zap, Shield, Mail, Calendar, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -109,6 +109,36 @@ export default function MinhaContaPage() {
         description: "Não foi possível atualizar sua foto de perfil. Tente novamente.",
         variant: "destructive",
       });
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
+
+  const handleRemoveAvatar = async () => {
+    if (!user?.id) return;
+    setIsUploadingAvatar(true);
+    try {
+      if (avatarUrl) {
+        try {
+          const url = new URL(avatarUrl);
+          const prefix = '/storage/v1/object/public/avatars/';
+          const filePath = decodeURIComponent(url.pathname.split(prefix)[1] || '');
+          if (filePath) {
+            await supabase.storage.from('avatars').remove([filePath]);
+          }
+        } catch (_) {}
+      }
+      const { error } = await supabase
+        .from('profiles')
+        .update({ avatar_url: null })
+        .eq('user_id', user.id);
+      if (error) throw error;
+      setAvatarUrl(null);
+      await refreshProfile();
+      toast({ title: 'Foto removida' });
+    } catch (error) {
+      console.error('Error removing avatar:', error);
+      toast({ title: 'Erro ao remover', description: 'Não foi possível remover sua foto.', variant: 'destructive' });
     } finally {
       setIsUploadingAvatar(false);
     }
@@ -263,6 +293,18 @@ export default function MinhaContaPage() {
                         <Camera className="w-3 h-3 text-white" />
                       )}
                     </Button>
+                    {avatarUrl && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="absolute -top-1 -left-1 h-6 w-6 rounded-full bg-slate-700 hover:bg-slate-600 border-slate-500 p-0"
+                        onClick={handleRemoveAvatar}
+                        disabled={isUploadingAvatar}
+                        aria-label="Remover foto do perfil"
+                      >
+                        <Trash className="w-3 h-3 text-white" />
+                      </Button>
+                    )}
                     <input
                       ref={fileInputRef}
                       type="file"
