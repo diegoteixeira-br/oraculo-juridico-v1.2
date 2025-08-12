@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Clock, DollarSign, AlertTriangle, Shield, Globe, Smartphone, History, Lock, Check, ChevronDown, ChevronRight, Brain, Zap, Users, Award, Scale, Gavel, FileText, Building, Calendar, Heart, MessageCircle, Calculator, Target, TrendingUp, MessageSquare } from "lucide-react";
 import { useState } from "react";
+import { useSEO } from "@/hooks/useSEO";
 import heroBrain from "../assets/hero-brain-legal.jpg";
 import legalOffice from "../assets/legal-office.jpg";
 const LandingPage = () => {
@@ -16,15 +17,20 @@ const LandingPage = () => {
       });
     }
   };
+
+  useSEO({
+    title: "Oráculo Jurídico — IA Jurídica para Advogados",
+    description: "Crie sua conta gratuita e teste 7 dias com 15.000 tokens. Chat jurídico com IA, calculadoras, documentos e agenda."
+  });
   const faqData = [{
     question: "Como funcionam os tokens?",
-    answer: "Tokens são usados apenas no chat com a IA. No plano gratuito você tem 3.000 tokens/dia; no Plano Essencial você recebe 30.000 tokens/mês. Calculadoras, documentos e agenda seguem os limites do seu plano (veja abaixo)."
+    answer: "Tokens são usados apenas no chat com a IA. No Plano Gratuito de teste você recebe 15.000 tokens válidos por 7 dias; no Plano Essencial, 30.000 tokens por mês. Calculadoras, documentos e agenda seguem os limites do seu plano (veja abaixo)."
   }, {
     question: "Meus tokens gratuitos se acumulam se eu não usar?",
-    answer: "Não. Os 3.000 tokens gratuitos do chat se renovam diariamente e não são cumulativos. Para uso sem limites das calculadoras, documentos e agenda, assine o Plano Essencial."
+    answer: "Não. O saldo de 15.000 tokens do teste é único para o período de 7 dias e não é cumulativo após o término do teste."
   }, {
     question: "Preciso cadastrar um cartão de crédito para usar o plano gratuito?",
-    answer: "Não. Para criar sua conta no plano gratuito e usar seus 3.000 tokens diários, você não precisa fornecer nenhuma informação de pagamento. Você só precisará inserir seus dados de pagamento se decidir assinar um plano pago."
+    answer: "Não. Para criar sua conta gratuita e usar 15.000 tokens por 7 dias, você não precisa cadastrar cartão de crédito. Pagamento só é necessário se decidir assinar um plano."
   }, {
     question: "As informações da IA são confiáveis?",
     answer: "Sim! Nossa IA integra-se diretamente com a LexML, base oficial de jurisprudência do governo brasileiro, garantindo acesso a dados atualizados e confiáveis dos tribunais superiores e estaduais. Mesmo assim, recomendamos sempre consultar um advogado para casos específicos e complexos."
@@ -41,9 +47,9 @@ const LandingPage = () => {
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" alt="Oráculo Jurídico" className="h-8 w-auto" />
-            <h1 className="text-2xl font-bold text-foreground">
+            <div className="text-2xl font-bold text-foreground" aria-label="Oráculo Jurídico">
               Oráculo Jurídico
-            </h1>
+            </div>
           </div>
           
           <div className="flex items-center gap-3">
@@ -58,13 +64,12 @@ const LandingPage = () => {
       {/* Hero Section */}
       <section className="relative py-20 px-4 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-background/80">
-          <img src={heroBrain} alt="AI Technology" className="w-full h-full object-cover object-center opacity-20" />
+          <img src={heroBrain} alt="IA jurídica - imagem hero" loading="lazy" decoding="async" className="w-full h-full object-cover object-center opacity-20" />
         </div>
         <div className="relative max-w-6xl mx-auto text-center">
-          <h2 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
-            A Resposta Jurídica que Você Precisa,{" "}
-            <span className="text-primary">na Velocidade da Luz</span>
-          </h2>
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
+            A Resposta Jurídica que Você Precisa, <span className="text-primary">na Velocidade da Luz</span>
+          </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-4xl mx-auto animate-fade-in">
             Chega de perder horas em pesquisa. Com o Oráculo Jurídico, você acessa uma IA treinada para o Direito brasileiro e obtém respostas fundamentadas em segundos.
           </p>
@@ -345,7 +350,7 @@ const LandingPage = () => {
                 <li>Chat com IA: 30.000 tokens por mês</li>
                 
                 <li>Calculadoras: uso ilimitado</li>
-                <li>Documentos: ilimitada</li>
+                <li>Documentos: ilimitados</li>
                 <li>Agenda jurídica: compromissos ilimitados</li>
                 
               </ul>
@@ -437,7 +442,7 @@ const LandingPage = () => {
               <h3 className="text-xl font-bold mb-3 text-foreground">
                 Acesso às Calculadoras
               </h3>
-              <p className="text-muted-foreground">As calculadoras jurídicas estão disponíveis em sua conta após o login. No Plano Essencial o uso é ilimitado; no Plano Gratuito você pode realizar teste por 7 dia.</p>
+              <p className="text-muted-foreground">As calculadoras jurídicas estão disponíveis em sua conta após o login. No Plano Essencial o uso é ilimitado; no Plano Gratuito você pode realizar teste por 7 dias.</p>
             </div>
           </div>
         </div>
@@ -559,7 +564,7 @@ const LandingPage = () => {
             </div>
             
             <div className="relative">
-              <img src={legalOffice} alt="Escritório Jurídico Moderno" className="w-full h-64 sm:h-80 md:h-96 object-cover object-center rounded-lg" />
+              <img src={legalOffice} alt="Escritório jurídico moderno - imagem ilustrativa" loading="lazy" decoding="async" className="w-full h-64 sm:h-80 md:h-96 object-cover object-center rounded-lg" />
               <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent rounded-lg"></div>
               <div className="absolute bottom-6 left-6 right-6">
                 <div className="flex items-center space-x-4 bg-card/90 backdrop-blur-sm rounded-lg p-4">
