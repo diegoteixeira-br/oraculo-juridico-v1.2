@@ -190,7 +190,7 @@ const CalendarAgendaWidget = () => {
         </div>
       </CardHeader>
       <CardContent className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_2.3fr] gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_1.85fr] gap-6">
           
           {/* Calendário */}
           <div className={isMobile ? 'order-1' : ''}>
