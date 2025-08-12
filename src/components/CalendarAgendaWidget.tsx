@@ -77,6 +77,23 @@ const CalendarAgendaWidget = () => {
         return 'bg-gray-500';
     }
   };
+
+  const getItemAppearance = (type: string, priority: string) => {
+    // Fundo e borda do item (estilo ficha colorida)
+    if (priority === 'urgente') return 'bg-red-500/15 border-red-500/30';
+    if (priority === 'alta') return 'bg-orange-500/15 border-orange-500/30';
+    switch (type) {
+      case 'prazo_processual':
+        return 'bg-blue-500/15 border-blue-500/30';
+      case 'audiencia':
+        return 'bg-red-500/15 border-red-500/30';
+      case 'reuniao':
+        return 'bg-green-500/15 border-green-500/30';
+      default:
+        return 'bg-slate-700/30 border-slate-600/40';
+    }
+  };
+
   const typeLabels = {
     'prazo_processual': 'Prazo',
     'audiencia': 'Audiência',
@@ -169,7 +186,7 @@ const CalendarAgendaWidget = () => {
         </div>
       </CardHeader>
       <CardContent className="p-6">
-        <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_2.3fr] gap-6">
           
           {/* Calendário */}
           <div className={isMobile ? 'order-1' : ''}>
@@ -210,8 +227,8 @@ const CalendarAgendaWidget = () => {
                 <p className="text-sm text-blue-300/80">
                   Nenhum compromisso neste dia
                 </p>
-              </div> : <div className="space-y-2 max-h-80 overflow-y-auto">
-                {selectedDateCommitments.map(commitment => <div key={commitment.id} className="p-3 rounded-lg bg-blue-600/10 border border-blue-500/20">
+              </div> : <div className="space-y-2">
+                {selectedDateCommitments.map(commitment => <div key={commitment.id} className={`p-3 rounded-xl border ${getItemAppearance(commitment.commitment_type, commitment.priority)}`}>
                     <div className="flex items-start gap-2">
                       <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${getCommitmentColor(commitment.commitment_type, commitment.priority)}`} />
                       <div className="flex-1 min-w-0">
