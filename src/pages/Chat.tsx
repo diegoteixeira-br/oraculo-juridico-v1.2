@@ -64,6 +64,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
   const { visible: menuVisible } = useScrollDirection();
   const isMobile = useIsMobile();
   const messageContainerRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [pendingNewSession, setPendingNewSession] = useState(false);
 
   const currentSession = sessions.find(s => s.id === currentSessionId);
   const messages = currentSession?.messages || [];
@@ -74,6 +75,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
     const showHistory = urlParams.get('show-history');
     const sessionParam = urlParams.get('session');
     const messageParam = urlParams.get('msg');
+    const newParam = urlParams.get('new');
 
     if (showHistory === 'true') {
       setPendingShowHistory(true);
@@ -83,6 +85,9 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
     }
     if (messageParam) {
       setPendingMessageId(messageParam);
+    }
+    if (newParam === 'true' || newParam === '1') {
+      setPendingNewSession(true);
     }
 
     // Limpar os parâmetros da URL após capturar intenções
@@ -98,6 +103,14 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
       setPendingShowHistory(false);
     }
   }, [pendingShowHistory, isMobile]);
+
+  // Criar nova conversa quando solicitado via URL
+  useEffect(() => {
+    if (pendingNewSession) {
+      createNewSession();
+      setPendingNewSession(false);
+    }
+  }, [pendingNewSession]);
   // Scroll automático para a última mensagem
   // Scroll automático para a última mensagem
   const scrollToBottom = () => {
@@ -190,7 +203,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
           }
           
           // Só cria uma nova conversa vazia se não houver histórico e não houver intenção pendente
-          if (!pendingSessionId) {
+          if (!pendingSessionId && !pendingNewSession) {
             const newSessionId = crypto.randomUUID();
             const newSession: ChatSession = {
               id: newSessionId,
@@ -210,7 +223,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
         const merged = [...prev, ...newSessions];
         
         // Se ainda não há sessão selecionada e não há intenção pendente, selecionar a primeira disponível
-        if (!currentSessionId && !pendingSessionId && merged.length > 0) {
+        if (!currentSessionId && !pendingSessionId && !pendingNewSession && merged.length > 0) {
           setCurrentSessionId(merged[0].id);
         }
         
