@@ -53,6 +53,7 @@ export default function Chat() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [readingMsgId, setReadingMsgId] = useState<string | null>(null);
   const [readingProgress, setReadingProgress] = useState(0);
+  const [pendingShowHistory, setPendingShowHistory] = useState(false);
   
   const { user, profile, refreshProfile } = useAuth();
   const { toast } = useToast();
@@ -72,18 +73,27 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
     const showHistory = urlParams.get('show-history');
     const sessionParam = urlParams.get('session');
 
-    if (showHistory === 'true' && isMobile) {
-      setSidebarOpen(true);
+    if (showHistory === 'true') {
+      setPendingShowHistory(true);
     }
     if (sessionParam) {
       setPendingSessionId(sessionParam);
     }
 
-    // Limpar os parâmetros da URL
+    // Limpar os parâmetros da URL após capturar intenções
     if (window.location.search) {
       window.history.replaceState({}, '', '/chat');
     }
-  }, [isMobile]);
+  }, []);
+
+  // Abrir histórico no mobile assim que a info e o estado de mobile estiverem prontos
+  useEffect(() => {
+    if (pendingShowHistory && isMobile) {
+      setSidebarOpen(true);
+      setPendingShowHistory(false);
+    }
+  }, [pendingShowHistory, isMobile]);
+  // Scroll automático para a última mensagem
   // Scroll automático para a última mensagem
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -163,24 +173,43 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
       
       // Atualizar as sessões históricas
       setSessions(prev => {
-        // Se não há sessão atual, criar uma nova conversa
+        // Quando ainda não há sessões na memória e nenhuma sessão selecionada
         if (prev.length === 0 && !currentSessionId) {
-          const newSessionId = crypto.randomUUID();
-          const newSession: ChatSession = {
-            id: newSessionId,
-            title: "Nova Conversa",
-            lastMessage: "",
-            timestamp: new Date(),
-            messages: []
-          };
-          setCurrentSessionId(newSessionId);
-          return [newSession, ...sessionsArray];
+          if (sessionsArray.length > 0) {
+            // Se já existem conversas históricas, usar a correta (pendente) ou a mais recente
+            const targetId = (pendingSessionId && sessionsArray.find(s => s.id === pendingSessionId))
+              ? pendingSessionId
+              : sessionsArray[0].id;
+            setCurrentSessionId(targetId);
+            return [...sessionsArray];
+          }
+          
+          // Só cria uma nova conversa vazia se não houver histórico e não houver intenção pendente
+          if (!pendingSessionId) {
+            const newSessionId = crypto.randomUUID();
+            const newSession: ChatSession = {
+              id: newSessionId,
+              title: "Nova Conversa",
+              lastMessage: "",
+              timestamp: new Date(),
+              messages: []
+            };
+            setCurrentSessionId(newSessionId);
+            return [newSession];
+          }
         }
         
         // Manter sessões existentes e adicionar históricas que não existem
         const existingIds = new Set(prev.map(s => s.id));
         const newSessions = sessionsArray.filter(s => !existingIds.has(s.id));
-        return [...prev, ...newSessions];
+        const merged = [...prev, ...newSessions];
+        
+        // Se ainda não há sessão selecionada e não há intenção pendente, selecionar a primeira disponível
+        if (!currentSessionId && !pendingSessionId && merged.length > 0) {
+          setCurrentSessionId(merged[0].id);
+        }
+        
+        return merged;
       });
     } catch (error) {
       console.error('Erro ao carregar sessões:', error);

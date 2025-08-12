@@ -752,9 +752,8 @@ export default function Dashboard() {
                         <div
                           key={query.id}
                           role="button"
-                          tabIndex={0}
+                          aria-label="Abrir conversa"
                           onClick={() => navigate(`/chat?session=${encodeURIComponent(query.session_id || query.id)}`)}
-                          onKeyDown={(e) => { if (e.key === 'Enter') navigate(`/chat?session=${encodeURIComponent(query.session_id || query.id)}`); }}
                           className="p-3 bg-slate-700/30 rounded-lg border border-slate-600/50 hover:bg-slate-700/50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/40"
                         >
                           <p className="text-sm text-white line-clamp-2 mb-2">
