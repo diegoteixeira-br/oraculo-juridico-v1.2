@@ -65,6 +65,89 @@ export type Database = {
         }
         Relationships: []
       }
+      document_shares: {
+        Row: {
+          created_at: string
+          document_id: string
+          id: string
+          shared_by: string
+          target_group_id: string | null
+          target_user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          document_id: string
+          id?: string
+          shared_by: string
+          target_group_id?: string | null
+          target_user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          document_id?: string
+          id?: string
+          shared_by?: string
+          target_group_id?: string | null
+          target_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_shares_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents_library"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documents_library: {
+        Row: {
+          bucket_id: string
+          content: string | null
+          created_at: string
+          doc_type: string
+          file_url: string | null
+          folder: string | null
+          id: string
+          is_active: boolean
+          object_path: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          bucket_id?: string
+          content?: string | null
+          created_at?: string
+          doc_type?: string
+          file_url?: string | null
+          folder?: string | null
+          id?: string
+          is_active?: boolean
+          object_path?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          bucket_id?: string
+          content?: string | null
+          created_at?: string
+          doc_type?: string
+          file_url?: string | null
+          folder?: string | null
+          id?: string
+          is_active?: boolean
+          object_path?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          uploaded_by?: string
+        }
+        Relationships: []
+      }
       feature_usage: {
         Row: {
           created_at: string
@@ -245,19 +328,49 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          read: boolean
+          title: string
+          url: string | null
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          read?: boolean
+          title: string
+          url?: string | null
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          read?: boolean
+          title?: string
+          url?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
           created_at: string
-          daily_tokens: number | null
           full_name: string | null
           id: string
-          last_daily_reset: string | null
+          is_active: boolean
           plan_tokens: number | null
           plan_type: string | null
           receber_notificacao_agenda: boolean
           subscription_end_date: string | null
           subscription_status: string | null
+          token_balance: number | null
           tokens: number | null
           trial_end_date: string | null
           trial_start_date: string | null
@@ -267,15 +380,15 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
-          daily_tokens?: number | null
           full_name?: string | null
           id?: string
-          last_daily_reset?: string | null
+          is_active?: boolean
           plan_tokens?: number | null
           plan_type?: string | null
           receber_notificacao_agenda?: boolean
           subscription_end_date?: string | null
           subscription_status?: string | null
+          token_balance?: number | null
           tokens?: number | null
           trial_end_date?: string | null
           trial_start_date?: string | null
@@ -285,15 +398,15 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
-          daily_tokens?: number | null
           full_name?: string | null
           id?: string
-          last_daily_reset?: string | null
+          is_active?: boolean
           plan_tokens?: number | null
           plan_type?: string | null
           receber_notificacao_agenda?: boolean
           subscription_end_date?: string | null
           subscription_status?: string | null
+          token_balance?: number | null
           tokens?: number | null
           trial_end_date?: string | null
           trial_start_date?: string | null
@@ -412,6 +525,74 @@ export type Database = {
         }
         Relationships: []
       }
+      user_group_members: {
+        Row: {
+          created_at: string
+          group_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          group_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          group_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "user_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_groups: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -462,6 +643,17 @@ export type Database = {
       halfvec_typmod_in: {
         Args: { "": unknown[] }
         Returns: number
+      }
+      has_document_access: {
+        Args: { p_document_id: string; p_user_id: string }
+        Returns: boolean
+      }
+      has_role: {
+        Args: {
+          _user_id: string
+          _role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
       }
       hnsw_bit_support: {
         Args: { "": unknown }
@@ -538,10 +730,6 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: boolean
       }
-      reset_daily_tokens_if_needed: {
-        Args: { p_user_id: string }
-        Returns: boolean
-      }
       sparsevec_out: {
         Args: { "": unknown }
         Returns: unknown
@@ -590,7 +778,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -717,6 +905,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const

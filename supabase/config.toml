@@ -53,3 +53,12 @@ verify_jwt = true
 
 [functions.daily-agenda-summary]
 verify_jwt = false
+
+[functions.admin-list-users]
+verify_jwt = true
+
+[functions.notify-document-share]
+verify_jwt = true
+
+[functions.admin-reset-password]
+verify_jwt = true
