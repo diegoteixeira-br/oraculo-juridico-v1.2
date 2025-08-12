@@ -135,10 +135,14 @@ export default function MarkdownEditor({
     const root = pageRef.current?.querySelector(".main-editor .ql-editor") as HTMLElement | null;
     if (!root) { setPages(1); return; }
 
+    // Altura útil da página (sem margens)
     const pageContentHeight = Math.max(1, heightPx - marginPx.top - marginPx.bottom);
 
-    // Calcula a última posição de conteúdo útil, ignorando parágrafos vazios e marcadores de quebra
-    let lastBottom = marginPx.top; // início da área útil
+    // 1) Tente usar scrollHeight (mais robusto para diferentes nós internos)
+    const rawContentHeight = Math.max(0, root.scrollHeight - marginPx.top - marginPx.bottom);
+
+    // 2) Como fallback, calcula pela posição do último bloco não vazio
+    let lastBottom = marginPx.top;
     const children = Array.from(root.children) as HTMLElement[];
     const isEmpty = (el: HTMLElement) => {
       if (el.classList.contains("page-break")) return true;
@@ -146,17 +150,18 @@ export default function MarkdownEditor({
         const html = el.innerHTML.replace(/\s|&nbsp;/g, "");
         if (!html || html === "<br>" || html === "<br/>" || html === "<br />") return true;
       }
-      if (el.textContent?.trim() === "" && el.querySelectorAll("img, table, iframe, video, audio, svg").length === 0) {
-        return true;
-      }
-      return false;
+      return el.textContent?.trim() === "";
     };
     for (const el of children) {
       if (isEmpty(el)) continue;
       lastBottom = Math.max(lastBottom, el.offsetTop + el.offsetHeight);
     }
-    const contentInnerHeight = Math.max(0, lastBottom - marginPx.top);
-    const epsilon = 4; // evita página extra por arredondamento/bordas
+    const fallbackHeight = Math.max(0, lastBottom - marginPx.top);
+
+    const contentInnerHeight = Math.max(rawContentHeight, fallbackHeight);
+
+    // Tolerância para evitar página extra por arredondamento
+    const epsilon = 8;
     const pagesCount = Math.max(1, Math.ceil(Math.max(0, contentInnerHeight - epsilon) / pageContentHeight));
     setPages(pagesCount);
   };
