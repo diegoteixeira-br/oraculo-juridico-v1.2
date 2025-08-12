@@ -231,6 +231,15 @@ const CalendarAgendaWidget = () => {
                 <p className="text-sm text-blue-300/80">
                   Nenhum compromisso neste dia
                 </p>
+                {commitments.length === 0 && (
+                  <Button
+                    onClick={() => navigate('/agenda-juridica?new=true')}
+                    size="sm"
+                    className="mt-3 text-white bg-black hover:bg-stone-800"
+                  >
+                    Criar primeiro compromisso
+                  </Button>
+                )}
               </div> : <>
                 <div className="space-y-2">
                   {displayedCommitments.map((commitment) => (

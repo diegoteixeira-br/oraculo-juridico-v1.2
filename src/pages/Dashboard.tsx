@@ -494,7 +494,7 @@ export default function Dashboard() {
               </Card>
 
               {/* Documentos Jurídicos */}
-              {totalAvailableCredits > 3000 && (
+              {/* Unlocked: Documentos Jurídicos always visible */}
                 <Card className="bg-slate-800/50 border-slate-700">
                   <CardHeader className="pb-4">
                     <div className="flex items-center justify-between">
@@ -640,7 +640,7 @@ export default function Dashboard() {
 
                   </CardContent>
                 </Card>
-              )}
+               {/* end unlocked section */}
             </div>
 
             {/* Coluna direita - Informações e ações */}
