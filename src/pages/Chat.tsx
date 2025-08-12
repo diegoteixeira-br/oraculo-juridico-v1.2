@@ -54,6 +54,7 @@ export default function Chat() {
   const [readingMsgId, setReadingMsgId] = useState<string | null>(null);
   const [readingProgress, setReadingProgress] = useState(0);
   const [pendingShowHistory, setPendingShowHistory] = useState(false);
+  const [pendingMessageId, setPendingMessageId] = useState<string | null>(null);
   
   const { user, profile, refreshProfile } = useAuth();
   const { toast } = useToast();
@@ -72,12 +73,16 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
     const urlParams = new URLSearchParams(window.location.search);
     const showHistory = urlParams.get('show-history');
     const sessionParam = urlParams.get('session');
+    const messageParam = urlParams.get('msg');
 
     if (showHistory === 'true') {
       setPendingShowHistory(true);
     }
     if (sessionParam) {
       setPendingSessionId(sessionParam);
+    }
+    if (messageParam) {
+      setPendingMessageId(messageParam);
     }
 
     // Limpar os parâmetros da URL após capturar intenções
@@ -224,6 +229,20 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
       if (isMobile) setSidebarOpen(false);
     }
   }, [pendingSessionId, sessions.length, isMobile]);
+
+  // Se veio um msg=<id> na URL, rolar até a mensagem correspondente quando pronta
+  useEffect(() => {
+    if (!pendingMessageId) return;
+    const keysToTry = [
+      `${pendingMessageId}-assistant`,
+      `${pendingMessageId}-user`
+    ];
+    const target = keysToTry.map(k => messageContainerRefs.current[k]).find(Boolean);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setPendingMessageId(null);
+    }
+  }, [messages.length, currentSessionId, pendingMessageId]);
   const deleteSession = async (sessionId: string) => {
     try {
       const { error } = await supabase
@@ -792,9 +811,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
                           <div
                             className="relative prose prose-invert max-w-none text-sm leading-7"
                             ref={(el) => {
-                              if (msg.type === 'assistant') {
-                                messageContainerRefs.current[msg.id] = el as HTMLDivElement | null;
-                              }
+                              messageContainerRefs.current[msg.id] = el as HTMLDivElement | null;
                             }}
                           >
                             {msg.type === 'assistant' ? (
