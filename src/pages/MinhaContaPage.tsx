@@ -280,7 +280,7 @@ export default function MinhaContaPage() {
                     <div className="flex items-center gap-2 mt-2">
                       <Badge className={getPlanBadgeColor(profile?.plan_type || 'gratuito')}>
                         {profile?.plan_type === 'premium' ? 'Premium' : 
-                         profile?.plan_type === 'basico' ? 'Básico' : (isTrial ? `Gratuito • ${daysRemaining}d` : 'Gratuito')}
+                         profile?.plan_type === 'basico' ? 'Essencial' : (isTrial ? `Gratuito • ${daysRemaining}d` : 'Gratuito')}
                       </Badge>
                       <Badge variant="outline" className="text-xs border-slate-500/30 text-slate-300">
                         {Math.floor(totalTokens).toLocaleString()} tokens
@@ -351,7 +351,7 @@ export default function MinhaContaPage() {
                     <div className="flex items-center gap-2">
                       <Badge className={`${getPlanBadgeColor(profile?.plan_type || 'gratuito')} px-3 py-1`}>
                         {profile?.plan_type === 'premium' ? 'Premium' : 
-                         profile?.plan_type === 'basico' ? 'Básico' : 'Gratuito'}
+                         profile?.plan_type === 'basico' ? 'Essencial' : 'Gratuito'}
                       </Badge>
                       <span className="text-sm text-slate-400">
                         {profile?.plan_type === 'premium' ? '150.000 tokens' : 

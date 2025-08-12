@@ -396,9 +396,9 @@ export default function Dashboard() {
                     </div>
                     <Badge
                       className={isTrial ? 'bg-slate-900 text-white border border-slate-700' : 'bg-green-600 text-white'}
-                      aria-label={isTrial ? 'Período Gratuito' : 'Assinante Mensal'}
+                      aria-label={isTrial ? 'Período Gratuito' : (planType === 'basico' ? 'Essencial' : 'Premium')}
                     >
-                      {isTrial ? `Gratuito • ${daysRemaining}d` : 'Assinante Mensal'}
+                      {isTrial ? `Gratuito • ${daysRemaining}d` : (planType === 'basico' ? 'Essencial' : 'Premium')}
                     </Badge>
                   </div>
 
