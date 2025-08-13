@@ -9,35 +9,8 @@ import { supabase } from "@/integrations/supabase/client";
 import UserMenu from "@/components/UserMenu";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useAccessControl } from "@/hooks/useAccessControl";
+import { useProductTypes } from "@/hooks/useProductTypes";
 
-const tokenPackages = [
-  {
-    id: "basico",
-    name: "Plano Básico",
-    tokens: 75000,
-    price: 59.90,
-    planType: "basico",
-    popular: true,
-    features: [
-      "75.000 tokens",
-      "Sem expiração"
-    ]
-  },
-  {
-    id: "premium",
-    name: "Plano Premium",
-    tokens: 150000,
-    price: 97.00,
-    originalPrice: 120.00,
-    discount: "20% OFF",
-    planType: "premium",
-    popular: false,
-    features: [
-      "150.000 tokens",
-      "Sem expiração"
-    ]
-  }
-];
 
 export default function ComprarCreditosPage() {
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
@@ -53,6 +26,7 @@ export default function ComprarCreditosPage() {
   const navigate = useNavigate();
   usePageTitle();
   const { canPurchaseTokens } = useAccessControl();
+  const { subscriptions, tokenPacks, formatPrice, loading } = useProductTypes();
 
   // Garantir que a página sempre abra no topo
   useEffect(() => {
@@ -72,7 +46,7 @@ export default function ComprarCreditosPage() {
       setShowReason(true);
     }
   }, [reason]);
-  const handlePurchase = async (packageId: string) => {
+  const handlePurchase = async (productTypeId: string) => {
     if (!canPurchaseTokens) {
       toast({
         title: 'Ação não permitida',
@@ -83,13 +57,13 @@ export default function ComprarCreditosPage() {
     }
     try {
       setIsLoading(true);
-      setSelectedPackage(packageId);
+      setSelectedPackage(productTypeId);
 
-      console.log("🚀 Iniciando compra de tokens:", packageId);
+      console.log("🚀 Iniciando compra de tokens:", productTypeId);
       
-      // Chamar a função create-payment
-      const { data, error } = await supabase.functions.invoke('create-payment', {
-        body: { packageId }
+      // Chamar a função create-checkout com o novo product_type_id
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { product_type_id: productTypeId }
       });
 
       if (error) {
@@ -119,7 +93,15 @@ export default function ComprarCreditosPage() {
   const handleSubscribe = async () => {
     try {
       setSubLoading(true);
-      const { data, error } = await supabase.functions.invoke('create-checkout');
+      // Buscar o produto de assinatura Essencial
+      const essentialPlan = subscriptions.find(sub => sub.name === 'Essencial');
+      if (!essentialPlan) {
+        throw new Error('Plano Essencial não encontrado');
+      }
+      
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { product_type_id: essentialPlan.id }
+      });
       if (error) throw error;
       if (data?.url) {
         // Redirecionar na mesma aba
@@ -246,170 +228,190 @@ export default function ComprarCreditosPage() {
             </div>
           </div>
 
-          {/* Assinatura Mensal */}
-          <div className="max-w-4xl mx-auto">
-            <Card className="relative bg-slate-900/60 border-primary/50 shadow-lg shadow-primary/20 overflow-hidden">
-              <CardHeader className="pt-6 pb-2 text-center">
-                <Badge className="bg-primary text-primary-foreground mb-2 w-fit mx-auto">Novo</Badge>
-                <CardTitle className="text-xl lg:text-2xl text-primary flex items-center justify-center gap-2 flex-wrap">
-                  <Crown className="w-5 h-5" /> Plano Essencial
-                  <Badge className="bg-primary text-primary-foreground ml-1">50% OFF</Badge>
-                  <span className="text-xs text-muted-foreground italic">Promoção por tempo limitado — pode acabar a qualquer momento.</span>
-                </CardTitle>
-                <CardDescription className="text-white text-2xl lg:text-3xl font-bold flex items-center justify-center gap-3">
-                  <span className="text-muted-foreground line-through text-lg lg:text-xl">R$ 75,80/mês</span>
-                  <span>R$ 37,90/mês</span>
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="px-4 sm:px-6 pb-6">
-                <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Check className="w-4 h-4 text-primary" />
-                      <span>30.000 tokens por mês</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Check className="w-4 h-4 text-primary" />
-                      <span>Calculadoras ilimitadas</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Check className="w-4 h-4 text-primary" />
-                      <span>Documentos Jurídicos ilimitados</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Check className="w-4 h-4 text-primary" />
-                      <span>Agenda de Compromissos ilimitada</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Check className="w-4 h-4 text-primary" />
-                      <span>Renovação automática. Cancele quando quiser.</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Check className="w-4 h-4 text-primary" />
-                      <span>7 dias grátis: 15.000 tokens no período de teste</span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-center justify-center gap-3">
-                    <Button onClick={handleSubscribe} disabled={subLoading} className="w-full sm:w-auto h-12 px-6">
-                      {subLoading ? (
-                        <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          Redirecionando...
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <CreditCard className="w-5 h-5" />
-                          Assinar agora
-                        </div>
-                      )}
-                    </Button>
-                    <Button onClick={handleManageSubscription} disabled={portalLoading} variant="secondary" className="w-full sm:w-auto">
-                      {portalLoading ? (
-                        <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          Abrindo portal...
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <RefreshCw className="w-4 h-4" />
-                          Gerenciar assinatura
-                        </div>
-                      )}
-                    </Button>
-                    <p className="text-xs text-muted-foreground text-center">
-                      Inclui 30.000 tokens/mês. Excedentes? Compre pacotes avulsos abaixo.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Packages Grid - Responsivo: vertical no mobile, horizontal no desktop */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 max-w-4xl mx-auto">
-            {tokenPackages.map((pkg) => (
-              <Card 
-                key={pkg.id}
-                className={`relative bg-slate-800 border-slate-700 transition-all duration-300 h-fit ${
-                  pkg.popular ? 'border-primary shadow-lg shadow-primary/20' : ''
-                }`}
-              >
-                {pkg.popular && (
-                  <div className="absolute -top-2 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-primary text-primary-foreground px-2 py-1 text-xs">
-                      <Star className="w-3 h-3 mr-1" />
-                      Mais Popular
+          {/* Planos de Assinatura */}
+          {loading ? (
+            <div className="max-w-4xl mx-auto">
+              <div className="animate-pulse bg-slate-800/50 h-64 rounded-lg"></div>
+            </div>
+          ) : (
+            subscriptions.map((subscription) => (
+              <div key={subscription.id} className="max-w-4xl mx-auto">
+                <Card className="relative bg-slate-900/60 border-primary/50 shadow-lg shadow-primary/20 overflow-hidden">
+                  <CardHeader className="pt-6 pb-2 text-center">
+                    <Badge className="bg-primary text-primary-foreground mb-2 w-fit mx-auto">
+                      <Crown className="w-4 h-4 mr-1" />
+                      Planos de Assinatura
                     </Badge>
-                  </div>
-                )}
-                
-                <CardHeader className="text-center pt-4 sm:pt-6 pb-2 sm:pb-3">
-                  <CardTitle className="text-base sm:text-lg lg:text-xl font-bold text-primary">
-                    {pkg.name}
-                  </CardTitle>
-                  <CardDescription className="text-lg sm:text-xl lg:text-2xl font-bold text-white">
-                    {pkg.tokens.toLocaleString()} tokens
-                  </CardDescription>
-                </CardHeader>
-
-                <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-6 pb-4 sm:pb-6">
-                  <div className="text-center">
-                    {pkg.discount && (
-                      <div className="mb-1">
-                        <Badge className="bg-green-600 text-white text-xs">
-                          {pkg.discount}
-                        </Badge>
+                    <CardTitle className="text-xl lg:text-2xl text-primary flex items-center justify-center gap-2 flex-wrap">
+                      {subscription.name}
+                    </CardTitle>
+                    <CardDescription className="text-white text-2xl lg:text-3xl font-bold flex items-center justify-center gap-3">
+                      {formatPrice(subscription.price_cents)}
+                      {subscription.billing_period === 'monthly' && '/mês'}
+                      {subscription.billing_period === 'yearly' && '/ano'}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="px-4 sm:px-6 pb-6">
+                    <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-sm">
+                          <Check className="w-4 h-4 text-primary" />
+                          <span>{subscription.tokens_included.toLocaleString()} tokens inclusos</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm">
+                          <Check className="w-4 h-4 text-primary" />
+                          <span>Calculadoras ilimitadas</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm">
+                          <Check className="w-4 h-4 text-primary" />
+                          <span>Documentos Jurídicos ilimitados</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm">
+                          <Check className="w-4 h-4 text-primary" />
+                          <span>Agenda de Compromissos ilimitada</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm">
+                          <Check className="w-4 h-4 text-primary" />
+                          <span>Renovação automática. Cancele quando quiser.</span>
+                        </div>
                       </div>
-                    )}
-                    <div className="flex items-center justify-center gap-2 mb-1 sm:mb-2">
-                      {pkg.originalPrice && (
-                        <span className="text-xs sm:text-sm text-muted-foreground line-through">
-                          R$ {pkg.originalPrice.toFixed(2).replace('.', ',')}
-                        </span>
-                      )}
-                      <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary">
-                        R$ {pkg.price.toFixed(2).replace('.', ',')}
-                      </span>
+                      <div className="flex flex-col items-center justify-center gap-3">
+                        <Button onClick={handleSubscribe} disabled={subLoading || subscription.price_cents === 0} className="w-full sm:w-auto h-12 px-6">
+                          {subLoading ? (
+                            <div className="flex items-center gap-2">
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              Redirecionando...
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <CreditCard className="w-5 h-5" />
+                              {subscription.price_cents === 0 ? 'Gratuito' : 'Assinar agora'}
+                            </div>
+                          )}
+                        </Button>
+                        <Button onClick={handleManageSubscription} disabled={portalLoading} variant="secondary" className="w-full sm:w-auto">
+                          {portalLoading ? (
+                            <div className="flex items-center gap-2">
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              Abrindo portal...
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <RefreshCw className="w-4 h-4" />
+                              Gerenciar assinatura
+                            </div>
+                          )}
+                        </Button>
+                      </div>
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      R$ {(pkg.price / (pkg.tokens / 1000)).toFixed(3).replace('.', ',')} por 1k tokens
-                    </p>
-                  </div>
+                  </CardContent>
+                </Card>
+              </div>
+            ))
+          )}
 
-                  <div className="space-y-1 sm:space-y-2">
-                    {pkg.features.map((feature, index) => (
-                      <div key={index} className="flex items-center gap-2 text-xs sm:text-sm">
-                        <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0" />
-                        <span>{feature}</span>
-                      </div>
-                    ))}
-                  </div>
+          {/* Pacotes de Tokens Extras */}
+          {tokenPacks.length > 0 && (
+            <div className="max-w-4xl mx-auto">
+              {!canPurchaseTokens && (
+                <Card className="bg-amber-500/10 border-amber-500/30 mb-4">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2">
+                      <Crown className="w-4 h-4 text-amber-400" />
+                      <p className="text-sm text-amber-200">
+                        Pacotes de tokens extras estão disponíveis apenas para assinantes do plano Essencial.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+                {loading ? (
+                  Array.from({ length: 2 }).map((_, i) => (
+                    <div key={i} className="animate-pulse bg-slate-800/50 h-64 rounded-lg"></div>
+                  ))
+                ) : (
+                  tokenPacks.map((tokenPack, index) => (
+                    <Card 
+                      key={tokenPack.id}
+                      className={`relative bg-slate-800 border-slate-700 transition-all duration-300 h-fit ${
+                        index === 0 ? 'border-blue-500 shadow-lg shadow-blue-500/20' : ''
+                      } ${!canPurchaseTokens ? 'opacity-60' : ''}`}
+                    >
+                      {index === 0 && (
+                        <div className="absolute -top-2 left-1/2 -translate-x-1/2">
+                          <Badge className="bg-blue-600 text-white px-2 py-1 text-xs">
+                            <Star className="w-3 h-3 mr-1" />
+                            Mais Popular
+                          </Badge>
+                        </div>
+                      )}
+                      
+                      <CardHeader className="text-center pt-4 sm:pt-6 pb-2 sm:pb-3">
+                        <CardTitle className="text-base sm:text-lg lg:text-xl font-bold text-blue-400">
+                          {tokenPack.name}
+                        </CardTitle>
+                        <CardDescription className="text-lg sm:text-xl lg:text-2xl font-bold text-white">
+                          {tokenPack.tokens_included.toLocaleString()} tokens
+                        </CardDescription>
+                      </CardHeader>
 
-                  <Button
-                    onClick={() => handlePurchase(pkg.id)}
-                    disabled={isLoading}
-                    className={`w-full mt-3 h-10 sm:h-12 text-sm sm:text-base ${
-                      pkg.popular 
-                        ? 'bg-primary hover:bg-primary/90' 
-                        : 'bg-slate-700 hover:bg-slate-600 text-white'
-                    }`}
-                  >
-                    {isLoading && selectedPackage === pkg.id ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Processando...
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <CreditCard className="w-4 h-4 sm:w-5 sm:h-5" />
-                        Comprar Tokens
-                      </div>
-                    )}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                      <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-6 pb-4 sm:pb-6">
+                        <div className="text-center">
+                          <div className="flex items-center justify-center gap-2 mb-1 sm:mb-2">
+                            <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-400">
+                              {formatPrice(tokenPack.price_cents)}
+                            </span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {formatPrice(Math.round((tokenPack.price_cents / (tokenPack.tokens_included / 1000))))} por 1k tokens
+                          </p>
+                        </div>
+
+                        <div className="space-y-1 sm:space-y-2">
+                          <div className="flex items-center gap-2 text-xs sm:text-sm">
+                            <Check className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400 flex-shrink-0" />
+                            <span>{tokenPack.tokens_included.toLocaleString()} tokens</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs sm:text-sm">
+                            <Check className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400 flex-shrink-0" />
+                            <span>Sem expiração</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs sm:text-sm">
+                            <Check className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400 flex-shrink-0" />
+                            <span>Compra única</span>
+                          </div>
+                        </div>
+
+                        <Button
+                          onClick={() => handlePurchase(tokenPack.id)}
+                          disabled={isLoading || !canPurchaseTokens}
+                          className={`w-full mt-3 h-10 sm:h-12 text-sm sm:text-base ${
+                            index === 0 
+                              ? 'bg-blue-600 hover:bg-blue-700' 
+                              : 'bg-slate-700 hover:bg-slate-600 text-white'
+                          }`}
+                        >
+                          {isLoading && selectedPackage === tokenPack.id ? (
+                            <div className="flex items-center gap-2">
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              Processando...
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <CreditCard className="w-4 h-4 sm:w-5 sm:h-5" />
+                              {canPurchaseTokens ? 'Comprar Tokens' : 'Assine o Essencial'}
+                            </div>
+                          )}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Payment Info */}
           <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-3 sm:p-4 text-center max-w-md mx-auto">

@@ -18,7 +18,7 @@ import { useFeatureUsage } from "@/hooks/useFeatureUsage";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import MarkdownEditor from "@/components/MarkdownEditor";
 import { useAccessControl } from "@/hooks/useAccessControl";
-import { ProductTypesSection } from "@/components/ProductTypesSection";
+
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -910,18 +910,6 @@ const openTemplateEditor = async (documentId: string) => {
                 </CardContent>
               </Card>
               
-              {/* Seção de Tipos de Produtos */}
-              <Card className="bg-slate-800/50 border-slate-700">
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-white">Planos e Pacotes</CardTitle>
-                  <CardDescription>
-                    Gerencie sua assinatura e compre pacotes extras de tokens
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ProductTypesSection />
-                </CardContent>
-              </Card>
             </div>
           </div>
         </div>
