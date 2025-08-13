@@ -216,7 +216,7 @@ export default function ComprarCreditosPage() {
         <div className="container max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
           {/* Informações iniciais */}
           <div className="text-center">
-            <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-2 sm:p-3 max-w-sm mx-auto">
+            <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-2 sm:p-3 max-w-lg mx-auto">
               <p className="text-xs text-muted-foreground">
                 💡 <strong>Como funciona:</strong> Tokens usados na pergunta + resposta + documentos
               </p>
@@ -226,11 +226,6 @@ export default function ComprarCreditosPage() {
           {/* Plano de Assinatura Essencial */}
           <div className="max-w-4xl mx-auto">
             <Card className="relative bg-slate-900/60 border-primary/50 shadow-lg shadow-primary/20 overflow-hidden">
-              <div className="absolute -top-2 left-1/2 -translate-x-1/2">
-                <Badge className="bg-amber-600 text-white px-2 py-1 text-xs">
-                  Novo
-                </Badge>
-              </div>
               <CardHeader className="pt-6 pb-2 text-center">
                 <Badge className="bg-primary text-primary-foreground mb-2 w-fit mx-auto">
                   <Crown className="w-4 h-4 mr-1" />
