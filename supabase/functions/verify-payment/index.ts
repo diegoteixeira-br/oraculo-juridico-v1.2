@@ -47,73 +47,99 @@ serve(async (req) => {
     if (session.payment_status === 'paid') {
       console.log("✅ Pagamento confirmado!");
       
-      const { user_id, tokens, package_id, plan_type } = session.metadata || {};
-      console.log("📦 Metadata da sessão:", { user_id, tokens, package_id, plan_type });
+      const { user_id, tokens, package_id, plan_type, plan } = session.metadata || {};
+      console.log("📦 Metadata da sessão:", { user_id, tokens, package_id, plan_type, plan });
 
-      if (!user_id || !tokens) {
-        throw new Error("Metadata da sessão incompleta");
+      if (!user_id) {
+        throw new Error("User ID não encontrado na sessão");
       }
 
-      // Create Supabase client with service role key
-      const supabaseClient = createClient(
-        Deno.env.get("SUPABASE_URL") ?? "",
-        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-      );
-      console.log("🔑 Cliente Supabase criado com service role");
+      // Verificar se é assinatura ou compra de tokens
+      const isSubscription = session.mode === 'subscription';
+      console.log("📋 Tipo de pagamento:", isSubscription ? "Assinatura" : "Compra de tokens");
 
-      // Check for existing transaction to prevent duplicates
-      const { data: existingTransactions } = await supabaseClient
-        .from('credit_transactions')
-        .select('id')
-        .eq('cakto_transaction_id', session.id);
+      if (isSubscription) {
+        // Para assinaturas, processar diretamente sem chamar check-subscription
+        console.log("🔄 Processando assinatura...");
+        
+        // Create Supabase client with service role key
+        const supabaseClient = createClient(
+          Deno.env.get("SUPABASE_URL") ?? "",
+          Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+        );
 
-      if (existingTransactions && existingTransactions.length > 0) {
-        console.log("⚠️ Transação já processada:", session.id, "- Total encontradas:", existingTransactions.length);
+        // Para assinatura essencial, dar 30.000 tokens
+        const tokensToAdd = 30000;
+        const planType = plan === "essencial" ? "premium" : "basico";
+        
+        console.log(`🎁 Adicionando ${tokensToAdd} tokens para plano ${planType}`);
+
+        // Check for existing transaction to prevent duplicates
+        const { data: existingTransactions } = await supabaseClient
+          .from('credit_transactions')
+          .select('id')
+          .eq('stripe_session_id', session.id);
+
+        if (existingTransactions && existingTransactions.length > 0) {
+          console.log("⚠️ Assinatura já processada:", session.id);
+          return new Response(JSON.stringify({
+            success: true,
+            message: "Assinatura já processada",
+            tokens_added: tokensToAdd,
+            already_processed: true
+          }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+            status: 200,
+          });
+        }
+
+        // Add tokens to user
+        const { data: addTokensResult, error: addTokensError } = await supabaseClient
+          .rpc('add_tokens_to_user', {
+            p_user_id: user_id,
+            p_tokens: tokensToAdd,
+            p_plan_type: planType,
+            p_transaction_id: session.id,
+            p_description: `Assinatura ${plan} - ${tokensToAdd} tokens`
+          });
+
+        if (addTokensError) {
+          console.error("❌ Erro ao adicionar tokens da assinatura:", addTokensError);
+          throw addTokensError;
+        }
+
+        console.log("✅ Tokens da assinatura adicionados com sucesso:", addTokensResult);
+        
         return new Response(JSON.stringify({
           success: true,
-          message: "Pagamento já processado",
-          tokens_added: parseInt(tokens),
-          already_processed: true
+          message: "Assinatura ativada com sucesso",
+          tokens_added: tokensToAdd,
+          plan_type: planType
         }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
           status: 200,
         });
-      }
-
-      // Add tokens to user - usando try/catch para lidar com duplicatas
-      console.log("🔄 Chamando add_tokens_to_user...");
-      try {
-        const { data: addTokensResult, error: addTokensError } = await supabaseClient
-          .rpc('add_tokens_to_user', {
-            p_user_id: user_id,
-            p_tokens: parseInt(tokens),
-            p_plan_type: plan_type || 'basico',
-            p_transaction_id: session.id,
-            p_description: `Compra de ${tokens} tokens - ${package_id}`
-          });
-
-        if (addTokensError) {
-          // Se o erro for por duplicata da constraint, tratamos como já processado
-          if (addTokensError.message?.includes('unique_cakto_transaction_user')) {
-            console.log("⚠️ Transação já processada (constraint violation):", session.id);
-            return new Response(JSON.stringify({
-              success: true,
-              message: "Pagamento já processado",
-              tokens_added: parseInt(tokens),
-              already_processed: true
-            }), {
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-              status: 200,
-            });
-          }
-          
-          console.error("❌ Erro ao adicionar tokens:", addTokensError);
-          throw addTokensError;
+      } else {
+        // Para compras de tokens
+        if (!tokens) {
+          throw new Error("Tokens não especificados para compra");
         }
-      } catch (error) {
-        // Capturar erros de constraint violation
-        if (error?.message?.includes('unique_cakto_transaction_user')) {
-          console.log("⚠️ Transação já processada (catch constraint):", session.id);
+
+        // Create Supabase client with service role key
+        const supabaseClient = createClient(
+          Deno.env.get("SUPABASE_URL") ?? "",
+          Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+        );
+        console.log("🔑 Cliente Supabase criado com service role");
+
+        // Check for existing transaction to prevent duplicates
+        const { data: existingTransactions } = await supabaseClient
+          .from('credit_transactions')
+          .select('id')
+          .eq('stripe_session_id', session.id);
+
+        if (existingTransactions && existingTransactions.length > 0) {
+          console.log("⚠️ Transação já processada:", session.id, "- Total encontradas:", existingTransactions.length);
           return new Response(JSON.stringify({
             success: true,
             message: "Pagamento já processado",
@@ -124,20 +150,35 @@ serve(async (req) => {
             status: 200,
           });
         }
-        throw error;
+
+        // Add tokens to user
+        console.log("🔄 Chamando add_tokens_to_user...");
+        const { data: addTokensResult, error: addTokensError } = await supabaseClient
+          .rpc('add_tokens_to_user', {
+            p_user_id: user_id,
+            p_tokens: parseInt(tokens),
+            p_plan_type: plan_type || 'basico',
+            p_transaction_id: session.id,
+            p_description: `Compra de ${tokens} tokens - ${package_id}`
+          });
+
+        if (addTokensError) {
+          console.error("❌ Erro ao adicionar tokens:", addTokensError);
+          throw addTokensError;
+        }
+
+        console.log("✅ Tokens adicionados com sucesso:", addTokensResult);
+
+        return new Response(JSON.stringify({
+          success: true,
+          message: "Tokens adicionados com sucesso",
+          tokens_added: parseInt(tokens),
+          transaction_id: session.id
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 200,
+        });
       }
-
-      console.log("✅ Tokens adicionados com sucesso:", addTokensResult);
-
-      return new Response(JSON.stringify({
-        success: true,
-        message: "Tokens adicionados com sucesso",
-        tokens_added: parseInt(tokens),
-        transaction_id: session.id
-      }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 200,
-      });
     } else {
       console.log("⏳ Pagamento ainda não confirmado:", session.payment_status);
       return new Response(JSON.stringify({
