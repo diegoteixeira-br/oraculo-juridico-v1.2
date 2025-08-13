@@ -729,6 +729,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      renew_monthly_subscription: {
+        Args: { p_user_id: string; p_tokens: number; p_transaction_id: string }
+        Returns: boolean
+      }
       reset_daily_credits_if_needed: {
         Args: { p_user_id: string }
         Returns: boolean
