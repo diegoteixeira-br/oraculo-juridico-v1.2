@@ -1,7 +1,13 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { useSEO } from "@/hooks/useSEO";
+
 
 const Privacidade = () => {
+  useSEO({
+    title: "Política de Privacidade | Oráculo Jurídico",
+    description: "Política de Privacidade — Stripe, LexML e teste gratuito de 7 dias com 15.000 tokens.",
+  });
   return (
     <div className="min-h-screen bg-background">
       <header className="py-6 px-4 border-b border-border">
@@ -44,7 +50,14 @@ const Privacidade = () => {
             <section>
               <h2 className="text-xl font-semibold text-foreground mb-4">2.1 Dados de Uso e Limites por Plano</h2>
               <p>
-                Para garantir o cumprimento dos limites de uso por plano, registramos métricas de utilização como contagem diária de cópias de documentos, quantidade de cálculos realizados e número de compromissos pendentes. Esses dados são usados exclusivamente para aplicar as regras de limite e melhorar a experiência do usuário, em conformidade com a LGPD.
+                Para garantir o cumprimento dos limites de uso por plano e do teste gratuito, registramos métricas de utilização como consumo de tokens no chat, número de cópias de documentos, quantidade de cálculos realizados e compromissos pendentes. Esses dados são usados exclusivamente para aplicar as regras de limite e melhorar a experiência do usuário, em conformidade com a LGPD.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold text-foreground mb-4">2.2 Período de Teste Gratuito</h2>
+              <p>
+                Oferecemos um teste gratuito de 7 dias com 15.000 tokens para uso no chat com a IA. Durante o período de teste, coletamos métricas de consumo de tokens e eventos de uso para aplicar as regras do teste, prevenir abusos e garantir a qualidade do serviço. Não há cobrança durante o teste; dados de faturamento só são processados quando você opta por assinar um plano.
               </p>
             </section>
 
@@ -53,6 +66,20 @@ const Privacidade = () => {
               <p>
                 Não vendemos, alugamos ou compartilhamos suas informações pessoais com terceiros, 
                 exceto quando necessário para fornecer nossos serviços ou conforme exigido por lei.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold text-foreground mb-4">3.1 Processamento de Pagamentos (Stripe)</h2>
+              <p>
+                Pagamentos são processados pela Stripe. Não armazenamos dados completos de cartão em nossos servidores. Mantemos apenas metadados necessários (por exemplo: identificador da transação, status, valor e e-mail de cobrança) para fins de conciliação e suporte. Para mais detalhes, consulte a política de privacidade da Stripe.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold text-foreground mb-4">3.2 Integrações e Fontes Oficiais (LexML)</h2>
+              <p>
+                Para consultas de jurisprudência, integramos com a LexML, base oficial do governo brasileiro. As consultas utilizam termos de busca e não compartilhamos seus dados pessoais com essa base. Coletamos logs técnicos mínimos (como termo de busca e horário) para auditoria e melhoria contínua.
               </p>
             </section>
 
