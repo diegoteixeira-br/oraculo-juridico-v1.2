@@ -730,6 +730,10 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: boolean
       }
+      reset_trial_tokens_if_expired: {
+        Args: { p_user_id: string }
+        Returns: boolean
+      }
       sparsevec_out: {
         Args: { "": unknown }
         Returns: unknown
