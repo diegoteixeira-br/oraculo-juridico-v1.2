@@ -19,13 +19,29 @@ export default function ProtectedRoute({
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const access = useAccessControl();
-  
 
+  const { isTrialExpired, isBlocked, canAccessPremiumTools, canUseChat } = access;
+
+  const shouldBlock = (() => {
+    if (gate === 'dashboard') return false;
+    if (gate === 'premium') return !canAccessPremiumTools;
+    if (gate === 'chat') return !canUseChat;
+    return isBlocked;
+  })();
+
+  // Always run hooks in the same order (no early returns before hooks)
   useEffect(() => {
     if (!loading && !user) {
       navigate('/login');
     }
   }, [user, loading, navigate]);
+
+  useEffect(() => {
+    if (!loading && user && shouldBlock) {
+      const reason = isTrialExpired ? 'trial_expired' : 'blocked';
+      navigate(`/comprar-creditos?reason=${reason}&gate=${gate}`);
+    }
+  }, [loading, user, shouldBlock, navigate, isTrialExpired, gate]);
 
   if (loading) {
     return (
@@ -38,22 +54,6 @@ export default function ProtectedRoute({
   if (!user) {
     return null;
   }
-
-  const { isTrialExpired, isBlocked, canAccessPremiumTools, canUseChat } = access;
-
-  const shouldBlock = (() => {
-    if (gate === 'dashboard') return false;
-    if (gate === 'premium') return !canAccessPremiumTools;
-    if (gate === 'chat') return !canUseChat;
-    return isBlocked;
-  })();
-
-  useEffect(() => {
-    if (shouldBlock) {
-      const reason = isTrialExpired ? 'trial_expired' : 'blocked';
-      navigate(`/comprar-creditos?reason=${reason}&gate=${gate}`);
-    }
-  }, [shouldBlock, navigate, isTrialExpired, gate]);
 
   if (shouldBlock) {
     return (
