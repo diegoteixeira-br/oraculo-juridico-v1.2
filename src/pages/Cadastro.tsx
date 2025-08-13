@@ -10,6 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Eye, EyeOff, UserPlus, Shield, Gift, Zap, Users, Award, CheckCircle } from 'lucide-react';
 import ReCAPTCHA from "react-google-recaptcha";
 import ReCaptchaProvider, { useReCaptcha } from "@/components/ReCaptchaProvider";
+import { useSEO } from "@/hooks/useSEO";
 
 function CadastroForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -27,6 +28,11 @@ function CadastroForm() {
   const selectedPlan = searchParams.get('plano');
   const { siteKey } = useReCaptcha();
 
+  // SEO
+  useSEO({
+    title: "Criar Conta Grátis | IA Jurídica — Oráculo Jurídico",
+    description: "Crie sua conta e aproveite 7 dias grátis com 15.000 tokens. Plano Mensal Essencial com 30.000 tokens/mês.",
+  });
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -126,7 +132,7 @@ function CadastroForm() {
                   Criar Conta Gratuita
                 </h1>
                 <p className="text-xs text-slate-300 hidden md:block">
-                  Comece agora e ganhe 3.000 tokens diários
+                  7 dias grátis com 15.000 tokens para começar
                 </p>
               </div>
             </div>
@@ -157,8 +163,8 @@ function CadastroForm() {
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="text-center p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-green-400">3.000</div>
-                  <div className="text-xs text-slate-400">Tokens Diários</div>
+                  <div className="text-lg font-bold text-green-400">15.000</div>
+                  <div className="text-xs text-slate-400">Tokens no Teste (7 dias)</div>
                 </div>
                 <div className="text-center p-3 bg-white/5 rounded-lg">
                   <div className="text-lg font-bold text-blue-400">Sem</div>
@@ -335,8 +341,8 @@ function CadastroForm() {
                     <div className="flex items-center gap-3 p-3 bg-green-600/10 rounded-lg border border-green-500/20">
                       <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
                       <div>
-                        <p className="text-sm font-medium text-green-200">3.000 Tokens Diários</p>
-                        <p className="text-xs text-green-300/80">Renovados automaticamente todo dia</p>
+                        <p className="text-sm font-medium text-green-200">15.000 tokens no teste de 7 dias</p>
+                        <p className="text-xs text-green-300/80">Use durante os primeiros 7 dias</p>
                       </div>
                     </div>
 
@@ -372,35 +378,32 @@ function CadastroForm() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-white">
                     <Award className="w-5 h-5 text-primary" />
-                    Precisa de Mais Tokens?
+                    Planos Disponíveis
                   </CardTitle>
                   <CardDescription>
-                    Planos disponíveis após criar sua conta
+                    Comece no Plano Grátis e evolua para o Plano Mensal (Essencial)
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="p-3 bg-blue-600/10 rounded-lg border border-blue-500/20">
+                  <div className="p-3 bg-green-600/10 rounded-lg border border-green-500/20">
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-blue-200">Plano Básico</h4>
-                      <span className="text-lg font-bold text-blue-400">R$ 59,90</span>
+                      <h4 className="font-semibold text-green-200">Plano Grátis</h4>
+                      <span className="text-xs px-2 py-1 rounded bg-green-500/20 text-green-300">7 dias</span>
                     </div>
-                    <p className="text-xs text-blue-300/80 mb-2">75.000 tokens • Sem expiração</p>
+                    <p className="text-xs text-green-300/80 mb-2">15.000 tokens no período de teste</p>
                     <div className="text-xs text-slate-400">
-                      Ideal para uso regular da IA jurídica
+                      IA jurídica completa, calculadoras e histórico
                     </div>
                   </div>
 
                   <div className="p-3 bg-purple-600/10 rounded-lg border border-purple-500/20">
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-purple-200">Plano Premium</h4>
-                      <div className="text-right">
-                        <span className="text-lg font-bold text-purple-400">R$ 97,00</span>
-                        <div className="text-xs text-green-400">20% OFF</div>
-                      </div>
+                      <h4 className="font-semibold text-purple-200">Plano Mensal (Essencial)</h4>
+                      <span className="text-lg font-bold text-purple-400">R$ 37,90/mês</span>
                     </div>
-                    <p className="text-xs text-purple-300/80 mb-2">150.000 tokens • Sem expiração</p>
+                    <p className="text-xs text-purple-300/80 mb-2">30.000 tokens por mês</p>
                     <div className="text-xs text-slate-400">
-                      Melhor custo-benefício para uso intensivo
+                      Renovação automática • Cancele quando quiser • 7 dias grátis com 15.000 tokens
                     </div>
                   </div>
                 </CardContent>
