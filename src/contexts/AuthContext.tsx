@@ -11,6 +11,7 @@ interface Profile {
   trial_start_date: string;
   trial_end_date: string;
   subscription_end_date?: string;
+  subscription_activated_at?: string;
   tokens: number;
   plan_tokens: number;
   plan_type: string;

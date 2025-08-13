@@ -404,7 +404,10 @@ export default function MinhaContaPage() {
                           <div className="flex justify-between items-center">
                             <span className="text-xs text-slate-400">Data de Ativação:</span>
                             <span className="text-xs text-white">
-                              {profile?.trial_start_date ? new Date(profile.trial_start_date).toLocaleDateString('pt-BR') : 'N/A'}
+                              {profile?.subscription_activated_at 
+                                ? new Date(profile.subscription_activated_at).toLocaleDateString('pt-BR') 
+                                : (profile?.trial_start_date ? new Date(profile.trial_start_date).toLocaleDateString('pt-BR') : 'N/A')
+                              }
                             </span>
                           </div>
                           
