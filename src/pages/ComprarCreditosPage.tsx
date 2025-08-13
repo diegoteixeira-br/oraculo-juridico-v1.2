@@ -224,57 +224,57 @@ export default function ComprarCreditosPage() {
           </div>
 
           {/* Plano de Assinatura Essencial */}
-          <div className="max-w-5xl mx-auto mb-8">
-            <Card className="relative bg-gradient-to-br from-primary/20 to-primary-foreground/5 border-primary border-2 shadow-2xl shadow-primary/30 overflow-hidden transform scale-105">
-              <CardHeader className="pt-8 pb-4 text-center">
-                <Badge className="bg-primary text-primary-foreground mb-4 w-fit mx-auto text-lg px-4 py-2">
-                  <Crown className="w-5 h-5 mr-2" />
+          <div className="max-w-4xl mx-auto">
+            <Card className="relative bg-slate-900/60 border-primary/50 shadow-lg shadow-primary/20 overflow-hidden">
+              <CardHeader className="pt-6 pb-2 text-center">
+                <Badge className="bg-primary text-primary-foreground mb-2 w-fit mx-auto text-base px-3 py-1">
+                  <Crown className="w-5 h-5 mr-1" />
                   Plano Essencial
                 </Badge>
-                <div className="flex items-center justify-center gap-3 mb-4">
-                  <Badge className="bg-red-600 text-white px-3 py-2 text-base">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Badge className="bg-red-600 text-white px-2 py-1 text-sm">
                     50% OFF
                   </Badge>
-                  <span className="text-base text-muted-foreground">Promoção por tempo limitado — pode acabar a qualquer momento.</span>
+                  <span className="text-sm text-muted-foreground">Promoção por tempo limitado — pode acabar a qualquer momento.</span>
                 </div>
-                <CardDescription className="text-white text-3xl lg:text-4xl font-bold flex items-center justify-center gap-4">
+                <CardDescription className="text-white text-3xl lg:text-4xl font-bold flex items-center justify-center gap-3">
                   <span className="line-through text-xl text-muted-foreground">R$ 75,80/mês</span>
                   <span>R$ 37,90/mês</span>
                 </CardDescription>
               </CardHeader>
-              <CardContent className="px-6 sm:px-8 pb-8">
-                <div className="grid sm:grid-cols-2 gap-6 sm:gap-8">
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3 text-base">
+              <CardContent className="px-4 sm:px-6 pb-6">
+                <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-base">
                       <Check className="w-5 h-5 text-primary" />
                       <span>30.000 tokens por mês</span>
                     </div>
-                    <div className="flex items-center gap-3 text-base">
+                    <div className="flex items-center gap-2 text-base">
                       <Check className="w-5 h-5 text-primary" />
                       <span>Calculadoras ilimitadas</span>
                     </div>
-                    <div className="flex items-center gap-3 text-base">
+                    <div className="flex items-center gap-2 text-base">
                       <Check className="w-5 h-5 text-primary" />
                       <span>Documentos Jurídicos ilimitados</span>
                     </div>
-                    <div className="flex items-center gap-3 text-base">
+                    <div className="flex items-center gap-2 text-base">
                       <Check className="w-5 h-5 text-primary" />
                       <span>Agenda de Compromissos ilimitada</span>
                     </div>
-                    <div className="flex items-center gap-3 text-base">
+                    <div className="flex items-center gap-2 text-base">
                       <Check className="w-5 h-5 text-primary" />
                       <span>Renovação automática. Cancele quando quiser.</span>
                     </div>
-                    <div className="flex items-center gap-3 text-base">
+                    <div className="flex items-center gap-2 text-base">
                       <Check className="w-5 h-5 text-primary" />
-                      <span className="text-primary font-medium">7 dias grátis: 15.000 tokens no período de teste</span>
+                      <span>7 dias grátis: 15.000 tokens no período de teste</span>
                     </div>
                   </div>
-                  <div className="flex flex-col items-center justify-center gap-4">
+                  <div className="flex flex-col items-center justify-center gap-3">
                     <Button onClick={handleSubscribe} disabled={subLoading} className="w-full sm:w-auto h-14 px-8 text-lg">
                       {subLoading ? (
                         <div className="flex items-center gap-2">
-                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                           Redirecionando...
                         </div>
                       ) : (
@@ -284,7 +284,7 @@ export default function ComprarCreditosPage() {
                         </div>
                       )}
                     </Button>
-                    <Button onClick={handleManageSubscription} disabled={portalLoading} variant="secondary" className="w-full sm:w-auto h-12 px-6">
+                    <Button onClick={handleManageSubscription} disabled={portalLoading} variant="secondary" className="w-full sm:w-auto">
                       {portalLoading ? (
                         <div className="flex items-center gap-2">
                           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -292,14 +292,14 @@ export default function ComprarCreditosPage() {
                         </div>
                       ) : (
                         <div className="flex items-center gap-2">
-                          <RefreshCw className="w-5 h-5" />
+                          <RefreshCw className="w-4 h-4" />
                           Gerenciar assinatura
                         </div>
                       )}
                     </Button>
                   </div>
                 </div>
-                <div className="text-center mt-6 text-base text-muted-foreground">
+                <div className="text-center mt-4 text-base text-muted-foreground">
                   Inclui 30.000 tokens/mês. Excedentes? Compre pacotes avulsos abaixo.
                 </div>
               </CardContent>
