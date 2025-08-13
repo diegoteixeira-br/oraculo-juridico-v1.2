@@ -5,7 +5,8 @@ import UserManager from "@/components/admin/UserManager";
 import DocumentUploader from "@/components/admin/DocumentUploader";
 import DocumentManager from "@/components/admin/DocumentManager";
 import RefundManager from "@/components/admin/RefundManager";
-import { Users, FileText, Upload, Undo2, ArrowLeft } from "lucide-react";
+import TokenManager from "@/components/admin/TokenManager";
+import { Users, FileText, Upload, Undo2, ArrowLeft, Coins } from "lucide-react";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useSEO } from "@/hooks/useSEO";
 import { useNavigate } from "react-router-dom";
@@ -43,7 +44,7 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
               Usuários
@@ -55,6 +56,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="upload" className="flex items-center gap-2">
               <Upload className="h-4 w-4" />
               Upload
+            </TabsTrigger>
+            <TabsTrigger value="tokens" className="flex items-center gap-2">
+              <Coins className="h-4 w-4" />
+              Tokens
             </TabsTrigger>
             <TabsTrigger value="refunds" className="flex items-center gap-2">
               <Undo2 className="h-4 w-4" />
@@ -72,6 +77,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="upload">
             <DocumentUploader />
+          </TabsContent>
+
+          <TabsContent value="tokens">
+            <TokenManager />
           </TabsContent>
 
           <TabsContent value="refunds">
