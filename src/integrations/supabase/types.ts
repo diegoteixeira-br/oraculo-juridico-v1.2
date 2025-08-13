@@ -358,6 +358,48 @@ export type Database = {
         }
         Relationships: []
       }
+      product_types: {
+        Row: {
+          billing_period: string | null
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          price_cents: number
+          price_currency: string
+          tokens_included: number
+          updated_at: string
+        }
+        Insert: {
+          billing_period?: string | null
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          price_cents?: number
+          price_currency?: string
+          tokens_included?: number
+          updated_at?: string
+        }
+        Update: {
+          billing_period?: string | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          price_cents?: number
+          price_currency?: string
+          tokens_included?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -417,6 +459,62 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      purchases: {
+        Row: {
+          amount_cents: number
+          completed_at: string | null
+          created_at: string
+          currency: string
+          id: string
+          notes: string | null
+          payment_method: string | null
+          product_type_id: string
+          status: string
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
+          tokens_granted: number
+          user_id: string
+        }
+        Insert: {
+          amount_cents: number
+          completed_at?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          product_type_id: string
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          tokens_granted: number
+          user_id: string
+        }
+        Update: {
+          amount_cents?: number
+          completed_at?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          product_type_id?: string
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          tokens_granted?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchases_product_type_id_fkey"
+            columns: ["product_type_id"]
+            isOneToOne: false
+            referencedRelation: "product_types"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       query_history: {
         Row: {
@@ -624,6 +722,15 @@ export type Database = {
           p_plan_type: string
           p_transaction_id?: string
           p_description?: string
+        }
+        Returns: boolean
+      }
+      add_tokens_to_user_v2: {
+        Args: {
+          p_user_id: string
+          p_product_type_id: string
+          p_stripe_session_id?: string
+          p_payment_intent_id?: string
         }
         Returns: boolean
       }
