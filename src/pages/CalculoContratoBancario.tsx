@@ -55,14 +55,7 @@ const CalculoContratoBancario = () => {
 
     setLoading(true);
     try {
-      // Verificar e consumir tokens antes do cálculo
-      const tokensRequired = 15000;
-      const tokenSuccess = await useTokens(tokensRequired, 'Cálculo de Contrato Bancário');
-      
-      if (!tokenSuccess) {
-        toast.error("Limite do plano atingido para realizar o cálculo. Assine o Plano Essencial para uso ilimitado.");
-        return;
-      }
+      // Calculadora bancária agora é gratuita - não consome tokens
 
       const { data, error } = await supabase.functions.invoke('calculo-contrato-bancario', {
         body: formData

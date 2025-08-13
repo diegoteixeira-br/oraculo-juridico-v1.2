@@ -84,14 +84,7 @@ const CalculoPensaoAlimenticia = () => {
 
     setLoading(true);
     try {
-      // Verificar e consumir tokens antes do cálculo
-      const tokensRequired = 15000;
-      const tokenSuccess = await useTokens(tokensRequired, 'Cálculo de Pensão Alimentícia');
-      
-      if (!tokenSuccess) {
-        toast.error("Limite do plano atingido para realizar o cálculo. Assine o Plano Essencial para uso ilimitado.");
-        return;
-      }
+      // Calculadora de pensão alimentícia agora é gratuita - não consome tokens
 
       // Preparar dados para envio - converter idades para compatibilidade
       const dadosEnvio = {
