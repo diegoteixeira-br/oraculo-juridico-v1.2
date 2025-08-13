@@ -330,10 +330,10 @@ const LandingPage = () => {
             <div className="p-6 card-signup border border-border">
               <h3 className="text-xl font-semibold text-foreground mb-2">Plano Gratuito </h3>
               <ul className="list-disc ml-6 space-y-2 text-muted-foreground">
-                <li>Chat com IA 15.000 tokens</li>
-                <li>Calculadoras: 7 dias teste</li>
-                <li>Documentos: 7 dias teste</li>
-                <li>Agenda jurídica: compromissos 7 dias teste</li>
+                <li>Chat com IA: 15.000 tokens de teste (válidos por 7 dias)</li>
+                <li>Calculadoras jurídicas: acesso completo por 7 dias</li>
+                <li>Documentos prontos: copiar e gerar modelos por 7 dias</li>
+                <li>Agenda jurídica: criar e acompanhar compromissos por 7 dias</li>
               </ul>
             </div>
             <div className="p-6 card-signup border border-border">
