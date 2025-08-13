@@ -126,6 +126,35 @@ serve(async (req) => {
           console.log("✅ Status de assinatura atualizado no perfil");
         }
         
+        // Buscar dados do usuário para enviar email
+        const { data: userData } = await supabaseClient
+          .from('profiles')
+          .select('full_name')
+          .eq('user_id', user_id)
+          .single();
+
+        const { data: authUser } = await supabaseClient.auth.admin.getUserById(user_id);
+        
+        // Enviar email de confirmação
+        if (authUser?.user?.email) {
+          try {
+            await supabaseClient.functions.invoke('send-purchase-confirmation', {
+              body: {
+                user_id: user_id,
+                user_email: authUser.user.email,
+                user_name: userData?.full_name || authUser.user.email,
+                tokens_added: tokensToAdd,
+                plan_type: plan,
+                transaction_id: session.id,
+                purchase_type: 'subscription'
+              }
+            });
+            console.log("✅ Email de confirmação de assinatura enviado");
+          } catch (emailError) {
+            console.error("❌ Erro ao enviar email de confirmação:", emailError);
+          }
+        }
+        
         return new Response(JSON.stringify({
           success: true,
           message: "Assinatura ativada com sucesso",
@@ -184,6 +213,35 @@ serve(async (req) => {
         }
 
         console.log("✅ Tokens adicionados com sucesso:", addTokensResult);
+
+        // Buscar dados do usuário para enviar email
+        const { data: userData } = await supabaseClient
+          .from('profiles')
+          .select('full_name')
+          .eq('user_id', user_id)
+          .single();
+
+        const { data: authUser } = await supabaseClient.auth.admin.getUserById(user_id);
+        
+        // Enviar email de confirmação
+        if (authUser?.user?.email) {
+          try {
+            await supabaseClient.functions.invoke('send-purchase-confirmation', {
+              body: {
+                user_id: user_id,
+                user_email: authUser.user.email,
+                user_name: userData?.full_name || authUser.user.email,
+                tokens_added: parseInt(tokens),
+                plan_type: plan_type || 'basico',
+                transaction_id: session.id,
+                purchase_type: 'tokens'
+              }
+            });
+            console.log("✅ Email de confirmação de compra de tokens enviado");
+          } catch (emailError) {
+            console.error("❌ Erro ao enviar email de confirmação:", emailError);
+          }
+        }
 
         return new Response(JSON.stringify({
           success: true,
