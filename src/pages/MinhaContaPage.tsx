@@ -399,7 +399,7 @@ export default function MinhaContaPage() {
                       </div>
                       
                       {/* Informações de datas para assinantes pagos */}
-                      {isPaid && profile?.subscription_end_date && (
+                      {isPaid && (
                         <div className="bg-slate-700/30 rounded-lg p-3 space-y-2">
                           <div className="flex justify-between items-center">
                             <span className="text-xs text-slate-400">Data de Ativação:</span>
@@ -407,18 +407,37 @@ export default function MinhaContaPage() {
                               {profile?.trial_start_date ? new Date(profile.trial_start_date).toLocaleDateString('pt-BR') : 'N/A'}
                             </span>
                           </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs text-slate-400">Vencimento:</span>
-                            <span className="text-xs text-white">
-                              {new Date(profile.subscription_end_date).toLocaleDateString('pt-BR')}
-                            </span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs text-slate-400">Próxima Cobrança:</span>
-                            <span className="text-xs text-primary font-medium">
-                              {new Date(profile.subscription_end_date).toLocaleDateString('pt-BR')}
-                            </span>
-                          </div>
+                          
+                          {profile?.subscription_end_date ? (
+                            <>
+                              <div className="flex justify-between items-center">
+                                <span className="text-xs text-slate-400">Vencimento:</span>
+                                <span className="text-xs text-white">
+                                  {new Date(profile.subscription_end_date).toLocaleDateString('pt-BR')}
+                                </span>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <span className="text-xs text-slate-400">Próxima Cobrança:</span>
+                                <span className="text-xs text-primary font-medium">
+                                  {new Date(profile.subscription_end_date).toLocaleDateString('pt-BR')}
+                                </span>
+                              </div>
+                            </>
+                          ) : (
+                            <div className="text-center py-2">
+                              <div className="text-xs text-amber-400 mb-1">
+                                ⏳ Sincronizando dados da assinatura...
+                              </div>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={refreshProfile}
+                                className="text-xs h-6 px-2 border-slate-600 hover:bg-slate-700"
+                              >
+                                Atualizar Status
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       )}
 
