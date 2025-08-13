@@ -46,7 +46,7 @@ const LandingPage = () => {
       <header className="py-6 px-4 border-b border-border bg-slate-800/50 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" alt="Oráculo Jurídico" className="h-8 w-auto" />
+            <img src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" alt="Oráculo Jurídico" className="h-8 w-auto" width="160" height="40" />
             <div className="text-2xl font-bold text-foreground" aria-label="Oráculo Jurídico">
               Oráculo Jurídico
             </div>
@@ -64,7 +64,7 @@ const LandingPage = () => {
       {/* Hero Section */}
       <section className="relative py-20 px-4 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-background/80">
-          <img src={heroBrain} alt="IA jurídica - imagem hero" loading="lazy" decoding="async" className="w-full h-full object-cover object-center opacity-20" />
+          <img src={heroBrain} alt="IA jurídica - imagem hero" loading="lazy" decoding="async" className="w-full h-full object-cover object-center opacity-20" width="1920" height="1080" />
         </div>
         <div className="relative max-w-6xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
@@ -564,7 +564,7 @@ const LandingPage = () => {
             </div>
             
             <div className="relative">
-              <img src={legalOffice} alt="Escritório jurídico moderno - imagem ilustrativa" loading="lazy" decoding="async" className="w-full h-64 sm:h-80 md:h-96 object-cover object-center rounded-lg" />
+              <img src={legalOffice} alt="Escritório jurídico moderno - imagem ilustrativa" loading="lazy" decoding="async" className="w-full h-64 sm:h-80 md:h-96 object-cover object-center rounded-lg" width="1920" height="1080" />
               <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent rounded-lg"></div>
               <div className="absolute bottom-6 left-6 right-6">
                 <div className="flex items-center space-x-4 bg-card/90 backdrop-blur-sm rounded-lg p-4">
