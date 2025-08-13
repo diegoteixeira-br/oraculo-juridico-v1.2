@@ -11,7 +11,7 @@ import { useToast } from '@/components/ui/use-toast';
 interface ProtectedRouteProps {
   children: ReactNode;
   requiresActiveSubscription?: boolean; // legado
-  gate?: 'any' | 'premium' | 'chat';
+  gate?: 'any' | 'premium' | 'chat' | 'dashboard';
 }
 
 export default function ProtectedRoute({ 
@@ -45,6 +45,7 @@ export default function ProtectedRoute({
   const { isTrialExpired, isBlocked, canAccessPremiumTools, canUseChat } = access;
 
   const shouldBlock = (() => {
+    if (gate === 'dashboard') return false;
     if (gate === 'premium') return !canAccessPremiumTools;
     if (gate === 'chat') return !canUseChat;
     return isBlocked;
@@ -71,7 +72,7 @@ export default function ProtectedRoute({
     const description = gate === 'premium'
       ? 'Disponível para assinantes ativos ou durante o período gratuito.'
       : gate === 'chat'
-        ? 'Para usar o Chat, ative sua assinatura ou use tokens disponíveis.'
+        ? 'Para usar o Chat, ative sua assinatura.'
         : 'Seu período gratuito de 7 dias chegou ao fim. Ative uma assinatura para continuar usando a plataforma.';
 
     return (

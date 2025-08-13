@@ -15,7 +15,7 @@ export function useAccessControl() {
   const hasPlanTokens = planTokens > 0;
 
   const canAccessPremiumTools = isSubscriber || isTrialActive;
-  const canUseChat = isSubscriber || isTrialActive || (!isSubscriber && !isTrialActive && hasPlanTokens);
+  const canUseChat = isSubscriber || isTrialActive; // não permite chat por tokens após expirar
   const canPurchaseTokens = isSubscriber; // somente assinante mensal pode comprar tokens
 
   const isBlocked = isTrialExpired && !isSubscriber && !hasPlanTokens; // bloqueio total

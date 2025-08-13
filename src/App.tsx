@@ -52,7 +52,7 @@ function AppContent() {
       <Route path="/contato" element={<PageWrapper><ContatoPage /></PageWrapper>} />
       <Route path="/calculo-contrato-bancario" element={<PageWrapper><ProtectedRoute gate="premium"><CalculoContratoBancario /></ProtectedRoute></PageWrapper>} />
       <Route path="/calculo-pensao-alimenticia" element={<PageWrapper><ProtectedRoute gate="premium"><CalculoPensaoAlimenticia /></ProtectedRoute></PageWrapper>} />
-      <Route path="/dashboard" element={<PageWrapper><ProtectedRoute><Dashboard /></ProtectedRoute></PageWrapper>} />
+      <Route path="/dashboard" element={<PageWrapper><ProtectedRoute gate="dashboard"><Dashboard /></ProtectedRoute></PageWrapper>} />
       <Route path="/chat" element={<PageWrapper><ProtectedRoute gate="chat"><Chat /></ProtectedRoute></PageWrapper>} />
       <Route path="/minha-conta" element={<PageWrapper><ProtectedRoute><MinhaContaPage /></ProtectedRoute></PageWrapper>} />
       <Route path="/historico-transacoes" element={<PageWrapper><ProtectedRoute><HistoricoTransacoesPage /></ProtectedRoute></PageWrapper>} />
