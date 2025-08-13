@@ -161,6 +161,11 @@ export default function ComprarCreditosPage() {
       setPortalLoading(false);
     }
   };
+  const closeReasonModal = () => {
+    setShowReason(false);
+    // Remove query params to evitar reabrir o modal ao navegar para trás
+    navigate('/comprar-creditos', { replace: true });
+  };
 
   return (
     <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col overflow-hidden">
@@ -172,7 +177,7 @@ export default function ComprarCreditosPage() {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => navigate(-1)}
+                onClick={() => navigate('/dashboard')}
                 className="text-white hover:bg-slate-700"
               >
                 <ArrowLeft className="h-5 w-5" />
@@ -200,13 +205,13 @@ export default function ComprarCreditosPage() {
       {/* Aviso de redirecionamento */}
       {showReason && (
         <div className="fixed inset-0 z-50">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowReason(false)} />
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={closeReasonModal} />
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-md">
             <Card className="relative bg-background/95 border-border shadow-lg">
               <button
                 aria-label="Fechar"
                 className="absolute right-3 top-3 rounded-md p-1 text-muted-foreground hover:text-foreground"
-                onClick={() => setShowReason(false)}
+                onClick={closeReasonModal}
               >
                 <X className="w-5 h-5" />
               </button>
