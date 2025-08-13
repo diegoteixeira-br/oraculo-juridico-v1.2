@@ -342,22 +342,6 @@ const openTemplateEditor = async (documentId: string) => {
                       <p className="text-2xl font-bold text-green-400">
                         {Math.floor(dailyCredits).toLocaleString()}
                       </p>
-                      {profile?.trial_start_date && profile?.trial_end_date && (
-                        <div className="mt-2 space-y-1">
-                          <div className="flex justify-between text-xs">
-                            <span className="text-green-300/70">Ativação:</span>
-                            <span className="text-green-200">
-                              {new Date(profile.trial_start_date).toLocaleDateString('pt-BR')}
-                            </span>
-                          </div>
-                          <div className="flex justify-between text-xs">
-                            <span className="text-green-300/70">Vencimento:</span>
-                            <span className="text-green-200 font-medium">
-                              {new Date(profile.trial_end_date).toLocaleDateString('pt-BR')}
-                            </span>
-                          </div>
-                        </div>
-                      )}
                     </div>
                     <div className="p-2 bg-green-600/20 rounded-lg">
                       <Clock className="w-6 h-6 text-green-400" />
@@ -374,10 +358,10 @@ const openTemplateEditor = async (documentId: string) => {
                       <p className="text-2xl font-bold text-emerald-400 capitalize">
                         {planType}
                       </p>
-                      {profile?.subscription_activated_at && (
+                       {profile?.subscription_activated_at && (
                         <div className="mt-2 space-y-1">
                           <div className="flex justify-between text-xs">
-                            <span className="text-emerald-300/70">Ativo desde:</span>
+                            <span className="text-emerald-300/70">Contratado em:</span>
                             <span className="text-emerald-200 font-medium">
                               {new Date(profile.subscription_activated_at).toLocaleDateString('pt-BR')}
                             </span>
