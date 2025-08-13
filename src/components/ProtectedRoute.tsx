@@ -5,6 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Clock, CreditCard } from 'lucide-react';
 import { useAccessControl } from '@/hooks/useAccessControl';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/components/ui/use-toast';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -20,6 +22,7 @@ export default function ProtectedRoute({
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const access = useAccessControl();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!loading && !user) {
@@ -46,6 +49,22 @@ export default function ProtectedRoute({
     if (gate === 'chat') return !canUseChat;
     return isBlocked;
   })();
+
+  const handleSubscribe = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout', { body: {} });
+      if (error) throw new Error(error.message || 'Falha ao iniciar o checkout');
+      const url = (data as any)?.url;
+      if (!url) throw new Error('URL de checkout não recebida');
+      window.open(url, '_blank');
+    } catch (err: any) {
+      console.error('[ProtectedRoute] Erro ao criar checkout:', err);
+      toast({
+        title: 'Não foi possível iniciar a assinatura',
+        description: err?.message || 'Tente novamente em instantes.',
+      });
+    }
+  };
 
   if (shouldBlock) {
     const title = isTrialExpired ? 'Período Gratuito Expirado' : 'Acesso Restrito';
@@ -74,7 +93,7 @@ export default function ProtectedRoute({
               <CardDescription>{description}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Button className="w-full" onClick={() => navigate('/comprar-creditos')}>Assinar agora</Button>
+              <Button className="w-full" onClick={handleSubscribe}>Assinar agora</Button>
               {gate === 'premium' && (
                 <Button variant="outline" className="w-full" onClick={() => navigate('/chat')}>
                   Ir para o Chat Jurídico IA
