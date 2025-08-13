@@ -441,17 +441,24 @@ const openTemplateEditor = async (documentId: string) => {
             <div className="xl:col-span-2 space-y-6">
               
               {/* Chat Jurídico - Destaque principal */}
-              <Card className="bg-gradient-to-r from-primary/20 to-secondary/20 border-primary/30 overflow-hidden">
+              <Card className={`bg-gradient-to-r ${isBlocked ? 'from-red-500/20 to-red-600/20 border-red-500/30' : 'from-primary/20 to-secondary/20 border-primary/30'} overflow-hidden`}>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <div className="p-3 bg-primary/20 rounded-xl">
-                        <MessageSquare className="w-8 h-8 text-primary" />
+                      <div className={`p-3 rounded-xl ${isBlocked ? 'bg-red-500/20' : 'bg-primary/20'}`}>
+                        <MessageSquare className={`w-8 h-8 ${isBlocked ? 'text-red-400' : 'text-primary'}`} />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-white">Chat Jurídico IA</h3>
+                        <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                          Chat Jurídico IA
+                          {isBlocked && (
+                            <Badge variant="destructive" className="text-xs">
+                              Expirado
+                            </Badge>
+                          )}
+                        </h3>
                         <p className="text-sm text-slate-300">
-                          Consulte nossa IA especializada em direito brasileiro
+                          {isBlocked ? 'Renove sua assinatura para continuar usando' : 'Consulte nossa IA especializada em direito brasileiro'}
                         </p>
                       </div>
                     </div>
@@ -465,7 +472,9 @@ const openTemplateEditor = async (documentId: string) => {
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div className="text-center p-3 bg-white/5 rounded-lg">
-                      <div className="text-lg font-bold text-primary">{Math.floor(totalAvailableCredits).toLocaleString()}</div>
+                      <div className={`text-lg font-bold ${isBlocked ? 'text-red-400' : 'text-primary'}`}>
+                        {Math.floor(totalAvailableCredits).toLocaleString()}
+                      </div>
                       <div className="text-xs text-slate-400">Tokens Disponíveis</div>
                     </div>
                     <div className="text-center p-3 bg-white/5 rounded-lg">
@@ -478,17 +487,42 @@ const openTemplateEditor = async (documentId: string) => {
                     </div>
                   </div>
 
-                  <Button 
-                    onClick={() => {
-                      logFeatureUsage('chat_started_from_dashboard');
-                      navigate("/chat?new=true");
-                    }}
-                    className="w-full bg-primary hover:bg-primary/90 py-3 text-lg font-semibold"
-                    size="lg"
-                  >
-                    <MessageSquare className="w-5 h-5 mr-2" />
-                    Iniciar Consulta Jurídica
-                  </Button>
+                  {isBlocked ? (
+                    <div className="space-y-3">
+                      <Button 
+                        className="w-full py-3 text-lg font-semibold"
+                        variant="destructive"
+                        disabled
+                        size="lg"
+                      >
+                        <MessageSquare className="w-5 h-5 mr-2" />
+                        Acesso Bloqueado
+                      </Button>
+                      <div className="text-center">
+                        <p className="text-sm text-red-400 mb-3">
+                          Seu período gratuito expirou. Ative uma assinatura para continuar usando o chat.
+                        </p>
+                        <Button 
+                          onClick={() => navigate('/comprar-creditos?reason=trial_expired&gate=chat')}
+                          className="bg-primary hover:bg-primary/90"
+                        >
+                          Renovar Agora
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <Button 
+                      onClick={() => {
+                        logFeatureUsage('chat_started_from_dashboard');
+                        navigate("/chat?new=true");
+                      }}
+                      className="w-full bg-primary hover:bg-primary/90 py-3 text-lg font-semibold"
+                      size="lg"
+                    >
+                      <MessageSquare className="w-5 h-5 mr-2" />
+                      Iniciar Consulta Jurídica
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
 
