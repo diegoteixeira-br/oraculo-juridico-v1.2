@@ -284,6 +284,8 @@ const openTemplateEditor = async (documentId: string) => {
                 src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
                 alt="Oráculo Jurídico" 
                 className="h-8 w-auto"
+                width="160"
+                height="40"
               />
               <div>
                 <h1 className="text-xl font-bold text-white">Dashboard</h1>
@@ -503,7 +505,7 @@ const openTemplateEditor = async (documentId: string) => {
 
               {/* Documentos Jurídicos */}
               {/* Unlocked: Documentos Jurídicos always visible */}
-                <Card className="relative bg-slate-800/50 border-slate-700">
+                <Card className="relative overflow-hidden bg-slate-800/50 border-slate-700">
                   <CardHeader className="pb-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -648,7 +650,7 @@ const openTemplateEditor = async (documentId: string) => {
 
                   </CardContent>
                   {isTrialExpired && (
-                    <div className="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-xl flex flex-col items-center justify-center gap-2 z-10">
+                    <div className="absolute inset-0 bg-slate-900/70 backdrop-blur-sm flex flex-col items-center justify-center gap-2 z-10">
                       <p className="text-white font-medium">Acesso bloqueado</p>
                       <p className="text-slate-300 text-xs px-6 text-center">Assine para criar e editar Documentos Jurídicos.</p>
                       <Button onClick={() => navigate('/comprar-creditos')} className="bg-primary hover:bg-primary/90">Assinar agora</Button>
