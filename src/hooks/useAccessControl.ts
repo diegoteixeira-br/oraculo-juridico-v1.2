@@ -27,21 +27,21 @@ export function useAccessControl() {
 
   // Informações sobre o plano atual
   const getCurrentPlanInfo = () => {
+    if (isSubscriber) {
+      return {
+        name: planType === 'essencial' ? 'Essencial' : 'Assinante',
+        type: 'subscription',
+        badge: 'Assinante', 
+        badgeColor: 'bg-amber-500/20 text-amber-200 border border-amber-400/30'
+      };
+    }
+    
     if (isTrialActive) {
       return {
         name: 'Gratuito (Teste)',
         type: 'trial',
         badge: 'Gratuito',
         badgeColor: 'bg-green-500/20 text-green-200 border border-green-400/30'
-      };
-    }
-    
-    if (isEssentialSubscriber) {
-      return {
-        name: 'Essencial',
-        type: 'subscription',
-        badge: 'Assinante',
-        badgeColor: 'bg-amber-500/20 text-amber-200 border border-amber-400/30'
       };
     }
     
