@@ -441,25 +441,7 @@ const openTemplateEditor = async (documentId: string) => {
               </Card>
 
               {/* Agenda com Calendário */}
-              {!isBlocked ? (
-                <CalendarAgendaWidget />
-              ) : (
-                <Card className="bg-slate-800/50 border-slate-700">
-                  <CardHeader className="pb-4">
-                    <CardTitle className="flex items-center gap-2 text-white">
-                      <Calendar className="w-5 h-5 text-primary" />
-                      Agenda
-                    </CardTitle>
-                    <CardDescription>
-                      Bloqueado após o fim do teste gratuito
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <p className="text-sm text-slate-300">Ative sua assinatura para ver e gerenciar seus compromissos.</p>
-                    <Button className="w-full" onClick={() => navigate('/comprar-creditos')}>Assinar agora</Button>
-                  </CardContent>
-                </Card>
-              )}
+              <CalendarAgendaWidget />
 
               {/* Calculadoras Jurídicas */}
               <Card className="bg-slate-800/50 border-slate-700">
@@ -521,7 +503,7 @@ const openTemplateEditor = async (documentId: string) => {
 
               {/* Documentos Jurídicos */}
               {/* Unlocked: Documentos Jurídicos always visible */}
-                <Card className="bg-slate-800/50 border-slate-700">
+                <Card className="relative bg-slate-800/50 border-slate-700">
                   <CardHeader className="pb-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -665,6 +647,13 @@ const openTemplateEditor = async (documentId: string) => {
                     )}
 
                   </CardContent>
+                  {isTrialExpired && (
+                    <div className="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-xl flex flex-col items-center justify-center gap-2 z-10">
+                      <p className="text-white font-medium">Acesso bloqueado</p>
+                      <p className="text-slate-300 text-xs px-6 text-center">Assine para criar e editar Documentos Jurídicos.</p>
+                      <Button onClick={() => navigate('/comprar-creditos')} className="bg-primary hover:bg-primary/90">Assinar agora</Button>
+                    </div>
+                  )}
                 </Card>
                {/* end unlocked section */}
             </div>

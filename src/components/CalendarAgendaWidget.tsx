@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { format, parseISO, startOfMonth, endOfMonth, isSameDay, addMonths, subMonths, getDate, getDaysInMonth, startOfWeek, endOfWeek, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAccessControl } from "@/hooks/useAccessControl";
 interface LegalCommitment {
   id: string;
   title: string;
@@ -27,6 +28,7 @@ const CalendarAgendaWidget = () => {
   } = useAuth();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+  const { isTrialExpired } = useAccessControl();
   const [commitments, setCommitments] = useState<LegalCommitment[]>([]);
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -231,7 +233,19 @@ const CalendarAgendaWidget = () => {
                 <p className="text-sm text-blue-300/80">
                   Nenhum compromisso neste dia
                 </p>
-                {commitments.length === 0 && (
+                {isTrialExpired && (
+                  <>
+                    <p className="text-xs text-amber-300/90 mt-2">Seu teste gratuito terminou. Assine agora para ter acesso à agenda.</p>
+                    <Button
+                      onClick={() => navigate('/comprar-creditos')}
+                      size="sm"
+                      className="mt-3 text-white bg-black hover:bg-stone-800"
+                    >
+                      Assinar agora
+                    </Button>
+                  </>
+                )}
+                {commitments.length === 0 && !isTrialExpired && (
                   <Button
                     onClick={() => navigate('/agenda-juridica?new=true')}
                     size="sm"
