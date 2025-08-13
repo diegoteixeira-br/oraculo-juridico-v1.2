@@ -235,18 +235,6 @@ const CalendarAgendaWidget = () => {
                 <p className="text-sm text-blue-300/80">
                   Nenhum compromisso neste dia
                 </p>
-                {isTrialExpired && (
-                  <>
-                    <p className="text-xs text-amber-300/90 mt-2">Seu teste gratuito terminou. Assine agora para ter acesso à agenda.</p>
-                    <Button
-                      onClick={() => navigate('/comprar-creditos')}
-                      size="sm"
-                      className="mt-3 text-white bg-black hover:bg-stone-800"
-                    >
-                      Assinar agora
-                    </Button>
-                  </>
-                )}
                 {commitments.length === 0 && !isTrialExpired && (
                   <Button
                     onClick={() => navigate('/agenda-juridica?new=true')}
