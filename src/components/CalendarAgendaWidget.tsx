@@ -182,7 +182,9 @@ const CalendarAgendaWidget = () => {
         </CardContent>
       </Card>;
   }
-  return <Card className="bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border-blue-500/30">
+  return (
+    <div className="relative">
+      <Card className="bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border-blue-500/30">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg text-blue-200">Seus Próximos Compromissos</CardTitle>
@@ -322,6 +324,16 @@ const CalendarAgendaWidget = () => {
           </div>
         </div>
       </CardContent>
-    </Card>;
+    </Card>
+
+      {isTrialExpired && (
+        <div className="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg flex flex-col items-center justify-center gap-2 z-10">
+          <p className="text-white font-medium">Acesso bloqueado</p>
+          <p className="text-slate-300 text-xs px-6 text-center">Assine para ver e gerenciar seus compromissos.</p>
+          <Button onClick={() => navigate('/comprar-creditos')} className="bg-primary hover:bg-primary/90">Assinar agora</Button>
+        </div>
+      )}
+    </div>
+  );
 };
 export default CalendarAgendaWidget;
