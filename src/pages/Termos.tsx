@@ -1,7 +1,12 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { useSEO } from "@/hooks/useSEO";
 
 const Termos = () => {
+  useSEO({
+    title: "Termos de Uso | Oráculo Jurídico",
+    description: "Termos de Uso do Oráculo Jurídico — teste gratuito de 7 dias com 15.000 tokens.",
+  });
   return (
     <div className="min-h-screen bg-background">
       <header className="py-6 px-4 border-b border-border">
@@ -52,7 +57,7 @@ const Termos = () => {
             <section>
               <h2 className="text-xl font-semibold text-foreground mb-4">3. Sistema de Tokens</h2>
               <p>
-                Tokens são utilizados exclusivamente no chat com a IA para processar consultas. No plano gratuito, cada usuário recebe 3.000 tokens por dia, renovados a cada 24 horas (não cumulativos). No Plano Essencial, o usuário recebe 30.000 tokens por mês.
+                Tokens são utilizados exclusivamente no chat com a IA para processar consultas. No teste gratuito, o usuário recebe 15.000 tokens para utilizar ao longo de 7 dias (não renováveis diariamente). No Plano Essencial, o usuário recebe 30.000 tokens por mês.
               </p>
               <p className="mt-2">
                 Importante: calculadoras, documentos e agenda não consomem tokens. Esses recursos seguem os limites do plano conforme descrito abaixo.
@@ -66,7 +71,7 @@ const Termos = () => {
               </p>
               <ul className="list-disc ml-6 mt-2 space-y-2">
                 <li><strong>Plano Essencial:</strong> R$ 37,90/mês, com 30.000 tokens/mês para o chat e uso ilimitado das calculadoras, documentos (cópia) e agenda.</li>
-                <li><strong>Teste Gratuito:</strong> 7 dias com 3.000 tokens/dia para o chat.</li>
+                <li><strong>Teste Gratuito:</strong> 7 dias grátis: 15.000 tokens no período de teste.</li>
                 <li><strong>Pacotes Opcionais:</strong> 75.000 e 150.000 tokens avulsos (opcionais) para quem desejar ampliar o uso do chat.</li>
               </ul>
             </section>
