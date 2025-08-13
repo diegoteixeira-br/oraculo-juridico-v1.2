@@ -443,18 +443,21 @@ export default function MinhaContaPage() {
 
                       {/* Informações para período trial */}
                       {isTrial && profile?.trial_end_date && (
-                        <div className="bg-slate-700/30 rounded-lg p-3 space-y-2">
+                        <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 space-y-2">
                           <div className="flex justify-between items-center">
-                            <span className="text-xs text-slate-400">Data de Ativação:</span>
+                            <span className="text-xs text-slate-400">Início do Teste:</span>
                             <span className="text-xs text-white">
                               {profile?.trial_start_date ? new Date(profile.trial_start_date).toLocaleDateString('pt-BR') : 'N/A'}
                             </span>
                           </div>
                           <div className="flex justify-between items-center">
-                            <span className="text-xs text-slate-400">Vencimento:</span>
+                            <span className="text-xs text-slate-400">Fim do Teste:</span>
                             <span className="text-xs text-amber-400 font-medium">
                               {new Date(profile.trial_end_date).toLocaleDateString('pt-BR')}
                             </span>
+                          </div>
+                          <div className="text-xs text-amber-300 text-center pt-1 border-t border-amber-500/20">
+                            {daysRemaining} dia{daysRemaining !== 1 ? 's' : ''} restante{daysRemaining !== 1 ? 's' : ''}
                           </div>
                         </div>
                       )}
