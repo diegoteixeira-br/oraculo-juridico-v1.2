@@ -239,7 +239,7 @@ export default function ComprarCreditosPage() {
             </div>
             <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-2 sm:p-3 mt-2 max-w-sm mx-auto">
               <p className="text-xs text-blue-200">
-                🎁 <strong>Plano Gratuito:</strong> 15.000 tokens diários
+                🎁 <strong>Plano Gratuito:</strong> 15.000 tokens
               </p>
             </div>
           </div>
@@ -284,7 +284,7 @@ export default function ComprarCreditosPage() {
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Check className="w-4 h-4 text-primary" />
-                      <span>7 dias grátis: 3.000 tokens/dia no período de teste</span>
+                      <span>7 dias grátis: 15.000 tokens no período de teste</span>
                     </div>
                   </div>
                   <div className="flex flex-col items-center justify-center gap-3">
