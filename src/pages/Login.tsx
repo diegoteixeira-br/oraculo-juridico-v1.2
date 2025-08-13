@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Eye, EyeOff, LogIn, Shield, Zap, Users, Award } from 'lucide-react';
+import { useSEO } from '@/hooks/useSEO';
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -19,6 +20,10 @@ export default function Login() {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  useSEO({
+    title: 'Entrar | Oráculo Jurídico – Teste 7 dias com 15.000 tokens',
+    description: 'Faça login para continuar. Novo aqui? Ative o teste de 7 dias com 15.000 tokens (requer cartão). Cobrança no 8º dia se não cancelar.'
+  });
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -111,12 +116,12 @@ export default function Login() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-green-400">3.000</div>
-                  <div className="text-xs text-slate-400">Tokens Diários</div>
+                  <div className="text-lg font-bold text-green-400">15.000</div>
+                  <div className="text-xs text-slate-400">Tokens no Teste (7 dias)</div>
                 </div>
                 <div className="text-center p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-blue-400">IA</div>
-                  <div className="text-xs text-slate-400">Jurídica Avançada</div>
+                  <div className="text-lg font-bold text-blue-400">Teste 7 dias</div>
+                  <div className="text-xs text-slate-400">Requer Cartão</div>
                 </div>
                 <div className="text-center p-3 bg-white/5 rounded-lg">
                   <div className="text-lg font-bold text-purple-400">24/7</div>
@@ -220,7 +225,7 @@ export default function Login() {
                   
                   <div className="text-center">
                     <p className="text-sm text-slate-400 mb-3">
-                      Não tem uma conta ainda?
+                      Novo por aqui? Ative seu teste de 7 dias.
                     </p>
                     <Button
                       asChild
@@ -228,7 +233,7 @@ export default function Login() {
                       className="w-full border-primary/30 text-primary hover:bg-primary/10"
                     >
                       <Link to="/cadastro">
-                        Criar Conta Gratuita
+                        Iniciar teste de 7 dias
                       </Link>
                     </Button>
                   </div>
@@ -257,8 +262,8 @@ export default function Login() {
                         <Zap className="w-5 h-5 text-green-400" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-green-200">3.000 Tokens Diários</p>
-                        <p className="text-xs text-green-300/80">Renovados automaticamente a cada 24h</p>
+                        <p className="text-sm font-medium text-green-200">Teste 7 dias — 15.000 tokens</p>
+                        <p className="text-xs text-green-300/80">Cobrança no 8º dia se não cancelar</p>
                       </div>
                     </div>
 
