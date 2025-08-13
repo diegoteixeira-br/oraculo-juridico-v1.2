@@ -98,8 +98,8 @@ export default function ComprarCreditosPage() {
 
       if (data?.url) {
         console.log("✅ URL de checkout recebida:", data.url);
-        // Abrir Stripe checkout em nova aba
-        window.open(data.url, '_blank');
+        // Redirecionar para o Stripe Checkout na mesma aba
+        window.location.href = data.url;
       } else {
         throw new Error('URL de pagamento não recebida');
       }
@@ -145,7 +145,8 @@ export default function ComprarCreditosPage() {
       const { data, error } = await supabase.functions.invoke('customer-portal');
       if (error) throw error;
       if (data?.url) {
-        window.open(data.url, '_blank');
+        // Redirecionar para o portal do cliente na mesma aba
+        window.location.href = data.url;
       } else {
         throw new Error('URL do portal do cliente não recebida');
       }
