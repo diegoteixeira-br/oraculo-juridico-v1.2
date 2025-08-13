@@ -116,9 +116,9 @@ export default function HistoricoTransacoesPage() {
       case 'purchase':
         return 'Compra Stripe';
       case 'daily_usage':
-        return 'Uso Diário';
+        return 'Uso do Teste (7 dias)';
       case 'usage':
-        return 'Uso';
+        return 'Uso do Plano Mensal';
       case 'bonus':
         return 'Bônus';
       default:
@@ -181,6 +181,8 @@ export default function HistoricoTransacoesPage() {
                 src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
                 alt="Oráculo Jurídico" 
                 className="h-8 w-auto"
+                width="160"
+                height="40"
               />
               <div>
                 <h1 className="text-xl font-bold text-white flex items-center gap-2">
@@ -188,7 +190,7 @@ export default function HistoricoTransacoesPage() {
                   Histórico de Transações
                 </h1>
                 <p className="text-xs text-slate-300 hidden md:block">
-                  Visualize todas as suas transações de tokens
+                  Visualize todas as transações do seu teste (7 dias) e do plano mensal
                 </p>
               </div>
             </div>
@@ -245,19 +247,19 @@ export default function HistoricoTransacoesPage() {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="text-center p-3 bg-white/5 rounded-lg">
                   <div className="text-lg font-bold text-green-400">Compras</div>
-                  <div className="text-xs text-slate-400">Via Stripe</div>
+                  <div className="text-xs text-slate-400">Assinatura/Stripe</div>
                 </div>
                 <div className="text-center p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-blue-400">Uso Diário</div>
-                  <div className="text-xs text-slate-400">Tokens Gratuitos</div>
+                  <div className="text-lg font-bold text-blue-400">Uso do Teste (7 dias)</div>
+                  <div className="text-xs text-slate-400">Tokens do teste (requer cartão)</div>
                 </div>
                 <div className="text-center p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-orange-400">Uso Plano</div>
-                  <div className="text-xs text-slate-400">Tokens Comprados</div>
+                  <div className="text-lg font-bold text-orange-400">Uso do Plano Mensal</div>
+                  <div className="text-xs text-slate-400">Tokens do plano</div>
                 </div>
                 <div className="text-center p-3 bg-white/5 rounded-lg">
                   <div className="text-lg font-bold text-purple-400">Bônus</div>
-                  <div className="text-xs text-slate-400">Tokens Extras</div>
+                  <div className="text-xs text-slate-400">Tokens extras</div>
                 </div>
               </div>
             </CardContent>
@@ -299,8 +301,8 @@ export default function HistoricoTransacoesPage() {
                     <SelectContent>
                       <SelectItem value="all">Todos os tipos</SelectItem>
                       <SelectItem value="purchase">Compra Stripe</SelectItem>
-                      <SelectItem value="daily_usage">Uso Diário</SelectItem>
-                      <SelectItem value="usage">Uso</SelectItem>
+                      <SelectItem value="daily_usage">Uso do Teste (7 dias)</SelectItem>
+                      <SelectItem value="usage">Uso do Plano Mensal</SelectItem>
                       <SelectItem value="bonus">Bônus</SelectItem>
                     </SelectContent>
                   </Select>
@@ -467,10 +469,10 @@ export default function HistoricoTransacoesPage() {
                 <div>
                   <h4 className="font-semibold text-blue-200 mb-2">Como Funcionam os Tokens</h4>
                   <div className="space-y-1 text-sm text-blue-300/80">
-                    <p>• <strong>Tokens Diários:</strong> 3.000 tokens renovados a cada 24 horas (gratuito)</p>
-                    <p>• <strong>Tokens do Plano:</strong> Tokens comprados que nunca expiram</p>
-                    <p>• <strong>Ordem de Uso:</strong> Tokens diários são usados primeiro, depois os do plano</p>
-                    <p>• <strong>Custo Variável:</strong> Cada consulta consome tokens baseado no tamanho</p>
+                    <p>• <strong>Teste (7 dias):</strong> 15.000 tokens válidos por 7 dias (requer cartão)</p>
+                    <p>• <strong>Plano Mensal:</strong> 30.000 tokens/mês; renovação mensal automática</p>
+                    <p>• <strong>Ordem de Uso:</strong> Durante o teste, usamos primeiro os tokens do teste; depois os do plano</p>
+                    <p>• <strong>Custo Variável:</strong> Cada consulta consome tokens conforme o tamanho</p>
                   </div>
                 </div>
               </div>
