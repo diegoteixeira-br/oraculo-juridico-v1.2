@@ -7,6 +7,7 @@ export function useAccessControl() {
   const trialEnd = profile?.trial_end_date ? new Date(profile.trial_end_date) : null;
   const isTrial = profile?.subscription_status === 'trial';
   const isSubscriber = profile?.subscription_status === 'active';
+  const isCancelled = profile?.subscription_status === 'cancelled';
 
   const isTrialActive = !!(isTrial && trialEnd && now < trialEnd);
   const isTrialExpired = !!(isTrial && trialEnd && now >= trialEnd);
@@ -23,7 +24,7 @@ export function useAccessControl() {
   const canUseChat = isSubscriber || isTrialActive || (!isSubscriber && !isTrialActive && hasPlanTokens);
   const canPurchaseTokens = isEssentialSubscriber; // Apenas assinantes essenciais podem comprar tokens extras
 
-  const isBlocked = isTrialExpired && !isSubscriber && !hasPlanTokens;
+  const isBlocked = (isTrialExpired || isCancelled) && !isSubscriber && !hasPlanTokens;
 
   // Informações sobre o plano atual
   const getCurrentPlanInfo = () => {
@@ -36,12 +37,12 @@ export function useAccessControl() {
       };
     }
     
-    if (isTrialActive) {
+    if (isCancelled) {
       return {
-        name: 'Gratuito (Teste)',
-        type: 'trial',
-        badge: 'Gratuito',
-        badgeColor: 'bg-green-500/20 text-green-200 border border-green-400/30'
+        name: 'Assinatura Cancelada',
+        type: 'cancelled',
+        badge: 'Cancelado',
+        badgeColor: 'bg-red-500/20 text-red-200 border border-red-400/30'
       };
     }
     
@@ -64,6 +65,7 @@ export function useAccessControl() {
     isBlocked,
     isEssentialSubscriber,
     isFreeUser,
+    isCancelled,
     planType,
     getCurrentPlanInfo,
   };
