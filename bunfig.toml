@@ -1,0 +1,14 @@
+# Bun configuration for better performance
+[install]
+# Increase timeout to handle heavy dependencies
+timeout = 120000
+# Use faster registry mirrors
+registry = "https://registry.npmjs.org/"
+# Optimize concurrent downloads
+concurrency = 5
+# Enable cache
+cache = true
+
+[build]
+# Optimize build performance
+target = "browser"
