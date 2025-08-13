@@ -407,6 +407,7 @@ export type Database = {
           full_name: string | null
           id: string
           is_active: boolean
+          last_renewal_date: string | null
           plan_tokens: number | null
           plan_type: string | null
           receber_notificacao_agenda: boolean
@@ -414,6 +415,7 @@ export type Database = {
           subscription_end_date: string | null
           subscription_status: string | null
           token_balance: number | null
+          token_expiry_date: string | null
           tokens: number | null
           trial_end_date: string | null
           trial_start_date: string | null
@@ -426,6 +428,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           is_active?: boolean
+          last_renewal_date?: string | null
           plan_tokens?: number | null
           plan_type?: string | null
           receber_notificacao_agenda?: boolean
@@ -433,6 +436,7 @@ export type Database = {
           subscription_end_date?: string | null
           subscription_status?: string | null
           token_balance?: number | null
+          token_expiry_date?: string | null
           tokens?: number | null
           trial_end_date?: string | null
           trial_start_date?: string | null
@@ -445,6 +449,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           is_active?: boolean
+          last_renewal_date?: string | null
           plan_tokens?: number | null
           plan_type?: string | null
           receber_notificacao_agenda?: boolean
@@ -452,6 +457,7 @@ export type Database = {
           subscription_end_date?: string | null
           subscription_status?: string | null
           token_balance?: number | null
+          token_expiry_date?: string | null
           tokens?: number | null
           trial_end_date?: string | null
           trial_start_date?: string | null
@@ -737,6 +743,10 @@ export type Database = {
       binary_quantize: {
         Args: { "": string } | { "": unknown }
         Returns: unknown
+      }
+      check_and_expire_tokens: {
+        Args: { p_user_id: string }
+        Returns: boolean
       }
       halfvec_avg: {
         Args: { "": number[] }
