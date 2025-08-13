@@ -18,6 +18,7 @@ import { useFeatureUsage } from "@/hooks/useFeatureUsage";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import MarkdownEditor from "@/components/MarkdownEditor";
 import { useAccessControl } from "@/hooks/useAccessControl";
+import { ProductTypesSection } from "@/components/ProductTypesSection";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ export default function Dashboard() {
 const { documents: legalDocuments, loading: documentsLoading } = useDocumentCache();
 const { logFeatureUsage } = useFeatureUsage();
 const access = useAccessControl();
-const { isBlocked, isTrialExpired } = access;
+const { isBlocked, isTrialExpired, getCurrentPlanInfo, canPurchaseTokens, isEssentialSubscriber } = access;
 
 const [userCredits, setUserCredits] = useState(0);
 const [dailyCredits, setDailyCredits] = useState(0);
@@ -46,6 +47,8 @@ const [dailyCredits, setDailyCredits] = useState(0);
   const [templateContent, setTemplateContent] = useState("");
   const [templateLoading, setTemplateLoading] = useState(false);
 
+  // Informações do plano atual
+  const currentPlan = getCurrentPlanInfo();
 
   const totalAvailableCredits = userCredits + dailyCredits;
   const isTrial = profile?.subscription_status === 'trial';
@@ -453,10 +456,10 @@ const openTemplateEditor = async (documentId: string) => {
                       </div>
                     </div>
                     <Badge
-                      className={isTrial ? 'bg-green-500/20 text-green-200 border border-green-400/30' : 'bg-amber-500/20 text-amber-200 border border-amber-400/30'}
-                      aria-label={isTrial ? 'Período Gratuito' : 'Assinante'}
+                      className={currentPlan.badgeColor}
+                      aria-label={currentPlan.badge}
                     >
-                      {isTrial ? 'Gratuito' : 'Assinante'}
+                      {currentPlan.badge}
                     </Badge>
                   </div>
 
@@ -772,13 +775,31 @@ const openTemplateEditor = async (documentId: string) => {
                   </div>
                   
                   <div className="space-y-2 pt-4 border-t border-slate-600">
-                    <Button 
-                      onClick={() => navigate("/comprar-creditos")}
-                      className="w-full bg-primary hover:bg-primary/90"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Comprar Tokens
-                    </Button>
+                    {canPurchaseTokens ? (
+                      <Button 
+                        onClick={() => navigate("/comprar-creditos")}
+                        className="w-full bg-primary hover:bg-primary/90"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Comprar Tokens Extras
+                      </Button>
+                    ) : isEssentialSubscriber ? (
+                      <Button 
+                        onClick={() => navigate("/comprar-creditos")}
+                        className="w-full bg-primary hover:bg-primary/90"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Gerenciar Plano
+                      </Button>
+                    ) : (
+                      <Button 
+                        onClick={() => navigate("/comprar-creditos")}
+                        className="w-full bg-primary hover:bg-primary/90"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Assinar Plano Essencial
+                      </Button>
+                    )}
                     <Button 
                       onClick={() => navigate("/historico-transacoes")}
                       variant="outline"
@@ -886,6 +907,19 @@ const openTemplateEditor = async (documentId: string) => {
                       Suporte
                     </Button>
                   </div>
+                </CardContent>
+              </Card>
+              
+              {/* Seção de Tipos de Produtos */}
+              <Card className="bg-slate-800/50 border-slate-700">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-white">Planos e Pacotes</CardTitle>
+                  <CardDescription>
+                    Gerencie sua assinatura e compre pacotes extras de tokens
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ProductTypesSection />
                 </CardContent>
               </Card>
             </div>
