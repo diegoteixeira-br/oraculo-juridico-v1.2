@@ -218,7 +218,7 @@ export default function ComprarCreditosPage() {
           <div className="text-center">
             <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-2 sm:p-3 max-w-lg mx-auto">
               <p className="text-xs text-muted-foreground">
-                💡 <strong>Como funciona:</strong> Tokens usados na pergunta + resposta + documentos
+                💡 <strong>Como funciona:</strong> Tokens usados no chat e da resposta de áudio (caso utilizado)
               </p>
             </div>
           </div>
