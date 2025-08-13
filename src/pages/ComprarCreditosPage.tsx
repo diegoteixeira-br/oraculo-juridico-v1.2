@@ -221,11 +221,6 @@ export default function ComprarCreditosPage() {
                 💡 <strong>Como funciona:</strong> Tokens usados na pergunta + resposta + documentos
               </p>
             </div>
-            <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-2 sm:p-3 mt-2 max-w-sm mx-auto">
-              <p className="text-xs text-blue-200">
-                🎁 <strong>Plano Gratuito:</strong> 15.000 tokens
-              </p>
-            </div>
           </div>
 
           {/* Planos de Assinatura */}
@@ -234,7 +229,9 @@ export default function ComprarCreditosPage() {
               <div className="animate-pulse bg-slate-800/50 h-64 rounded-lg"></div>
             </div>
           ) : (
-            subscriptions.map((subscription) => (
+            subscriptions
+              .filter(subscription => subscription.price_cents > 0) // Remove o plano gratuito
+              .map((subscription) => (
               <div key={subscription.id} className="max-w-4xl mx-auto">
                 <Card className="relative bg-slate-900/60 border-primary/50 shadow-lg shadow-primary/20 overflow-hidden">
                   <CardHeader className="pt-6 pb-2 text-center">
@@ -276,7 +273,7 @@ export default function ComprarCreditosPage() {
                         </div>
                       </div>
                       <div className="flex flex-col items-center justify-center gap-3">
-                        <Button onClick={handleSubscribe} disabled={subLoading || subscription.price_cents === 0} className="w-full sm:w-auto h-12 px-6">
+                        <Button onClick={handleSubscribe} disabled={subLoading} className="w-full sm:w-auto h-12 px-6">
                           {subLoading ? (
                             <div className="flex items-center gap-2">
                               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -285,7 +282,7 @@ export default function ComprarCreditosPage() {
                           ) : (
                             <div className="flex items-center gap-2">
                               <CreditCard className="w-5 h-5" />
-                              {subscription.price_cents === 0 ? 'Gratuito' : 'Assinar agora'}
+                              Assinar agora
                             </div>
                           )}
                         </Button>
