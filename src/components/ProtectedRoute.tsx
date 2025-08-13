@@ -50,9 +50,10 @@ export default function ProtectedRoute({
 
   useEffect(() => {
     if (shouldBlock) {
-      navigate('/comprar-creditos');
+      const reason = isTrialExpired ? 'trial_expired' : 'blocked';
+      navigate(`/comprar-creditos?reason=${reason}&gate=${gate}`);
     }
-  }, [shouldBlock, navigate]);
+  }, [shouldBlock, navigate, isTrialExpired, gate]);
 
   if (shouldBlock) {
     return (
@@ -63,7 +64,7 @@ export default function ProtectedRoute({
             <CardDescription>Enviando para a página de compra de créditos.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Button className="w-full" onClick={() => navigate('/comprar-creditos')}>Ir agora</Button>
+            <Button className="w-full" onClick={() => { const reason = isTrialExpired ? 'trial_expired' : 'blocked'; navigate(`/comprar-creditos?reason=${reason}&gate=${gate}`); }}>Ir agora</Button>
             <Button variant="ghost" className="w-full" onClick={() => navigate('/dashboard')}>
               Voltar ao Dashboard
             </Button>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CreditCard, Check, Star, Crown, RefreshCw, ArrowLeft } from "lucide-react";
+import { CreditCard, Check, Star, Crown, RefreshCw, ArrowLeft, Clock, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -50,6 +50,9 @@ export default function ComprarCreditosPage() {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const selectedPlan = searchParams.get('plano');
+  const reason = searchParams.get('reason');
+  const gateParam = searchParams.get('gate');
+  const [showReason, setShowReason] = useState(false);
   const [subLoading, setSubLoading] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);
   const navigate = useNavigate();
@@ -68,6 +71,12 @@ export default function ComprarCreditosPage() {
     }
   }, [selectedPlan]);
 
+  // Mostrar motivo do redirecionamento (modal)
+  useEffect(() => {
+    if (reason === 'trial_expired' || reason === 'blocked') {
+      setShowReason(true);
+    }
+  }, [reason]);
   const handlePurchase = async (packageId: string) => {
     if (!canPurchaseTokens) {
       toast({
@@ -190,6 +199,33 @@ export default function ComprarCreditosPage() {
           </div>
         </div>
       </div>
+
+      {/* Aviso de redirecionamento */}
+      {showReason && (
+        <div className="fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowReason(false)} />
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-md">
+            <Card className="relative bg-background/95 border-border shadow-lg">
+              <button
+                aria-label="Fechar"
+                className="absolute right-3 top-3 rounded-md p-1 text-muted-foreground hover:text-foreground"
+                onClick={() => setShowReason(false)}
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <CardHeader className="text-center">
+                <div className="mx-auto mb-3 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Clock className="w-6 h-6 text-primary" />
+                </div>
+                <CardTitle>{reason === 'trial_expired' ? 'Período Gratuito Expirado' : 'Acesso Restrito'}</CardTitle>
+                <CardDescription>
+                  {gateParam === 'chat' ? 'Para usar o Chat, ative sua assinatura.' : 'Você foi redirecionado porque este recurso é exclusivo para assinantes.'}
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
+        </div>
+      )}
 
       {/* Conteúdo principal com scroll interno */}
       <div className="flex-1 overflow-y-auto">
