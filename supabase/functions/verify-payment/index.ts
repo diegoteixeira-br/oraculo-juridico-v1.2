@@ -110,6 +110,22 @@ serve(async (req) => {
 
         console.log("✅ Tokens da assinatura adicionados com sucesso:", addTokensResult);
         
+        // Atualizar status de assinatura no perfil
+        const { error: updateProfileError } = await supabaseClient
+          .from('profiles')
+          .update({
+            subscription_status: 'active',
+            plan_type: 'essencial',
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', user_id);
+
+        if (updateProfileError) {
+          console.error("❌ Erro ao atualizar perfil:", updateProfileError);
+        } else {
+          console.log("✅ Status de assinatura atualizado no perfil");
+        }
+        
         return new Response(JSON.stringify({
           success: true,
           message: "Assinatura ativada com sucesso",
