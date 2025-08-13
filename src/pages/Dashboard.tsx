@@ -453,7 +453,7 @@ const openTemplateEditor = async (documentId: string) => {
                       </div>
                     </div>
                     <Badge
-                      className={isTrial ? 'bg-green-500/20 text-green-200 border border-green-400/30' : 'bg-green-600 text-white'}
+                      className={isTrial ? 'bg-green-500/20 text-green-200 border border-green-400/30' : 'bg-amber-500/20 text-amber-200 border border-amber-400/30'}
                       aria-label={isTrial ? 'Período Gratuito' : 'Assinante'}
                     >
                       {isTrial ? 'Gratuito' : 'Assinante'}
