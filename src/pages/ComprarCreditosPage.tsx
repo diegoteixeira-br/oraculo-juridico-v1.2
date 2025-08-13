@@ -239,7 +239,7 @@ export default function ComprarCreditosPage() {
             </div>
             <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-2 sm:p-3 mt-2 max-w-sm mx-auto">
               <p className="text-xs text-blue-200">
-                🎁 <strong>Plano Gratuito:</strong> 3.000 tokens diários
+                🎁 <strong>Plano Gratuito:</strong> 15.000 tokens diários
               </p>
             </div>
           </div>
