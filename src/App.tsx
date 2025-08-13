@@ -54,7 +54,7 @@ function AppContent() {
       <Route path="/calculo-pensao-alimenticia" element={<PageWrapper><ProtectedRoute gate="premium"><CalculoPensaoAlimenticia /></ProtectedRoute></PageWrapper>} />
       <Route path="/dashboard" element={<PageWrapper><ProtectedRoute gate="dashboard"><Dashboard /></ProtectedRoute></PageWrapper>} />
       <Route path="/chat" element={<PageWrapper><ProtectedRoute gate="chat"><Chat /></ProtectedRoute></PageWrapper>} />
-      <Route path="/minha-conta" element={<PageWrapper><ProtectedRoute><MinhaContaPage /></ProtectedRoute></PageWrapper>} />
+      <Route path="/minha-conta" element={<PageWrapper><ProtectedRoute gate="dashboard"><MinhaContaPage /></ProtectedRoute></PageWrapper>} />
       <Route path="/historico-transacoes" element={<PageWrapper><ProtectedRoute gate="dashboard"><HistoricoTransacoesPage /></ProtectedRoute></PageWrapper>} />
       <Route path="/comprar-creditos" element={<PageWrapper><ComprarCreditosPage /></PageWrapper>} />
       <Route path="/payment-success" element={<PageWrapper><ProtectedRoute><PaymentSuccessPage /></ProtectedRoute></PageWrapper>} />
@@ -63,7 +63,7 @@ function AppContent() {
       <Route path="/admin/documentos" element={<PageWrapper><Navigate to="/admin" replace /></PageWrapper>} />
       <Route path="/admin" element={<PageWrapper><AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute></PageWrapper>} />
       
-      <Route path="/suporte" element={<PageWrapper><ProtectedRoute><SuportePage /></ProtectedRoute></PageWrapper>} />
+      <Route path="/suporte" element={<PageWrapper><ProtectedRoute gate="dashboard"><SuportePage /></ProtectedRoute></PageWrapper>} />
       <Route path="/meus-documentos" element={<PageWrapper><ProtectedRoute gate="premium"><MeusDocumentos /></ProtectedRoute></PageWrapper>} />
       
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

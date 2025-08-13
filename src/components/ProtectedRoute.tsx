@@ -95,7 +95,7 @@ export default function ProtectedRoute({
             </CardHeader>
             <CardContent className="space-y-3">
               <Button className="w-full" onClick={handleSubscribe}>Assinar agora</Button>
-              {gate === 'premium' && (
+              {gate === 'premium' && canUseChat && (
                 <Button variant="outline" className="w-full" onClick={() => navigate('/chat')}>
                   Ir para o Chat Jurídico IA
                 </Button>
