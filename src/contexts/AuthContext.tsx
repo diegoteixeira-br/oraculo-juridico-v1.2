@@ -46,7 +46,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchProfile = async (userId: string) => {
     try {
-      // Tokens são geridos no banco; sem reset manual
+      // Reset trial tokens if expired before reading profile
+      await supabase.rpc('reset_trial_tokens_if_expired', { p_user_id: userId });
 
       const { data, error } = await supabase
         .from('profiles')
@@ -71,7 +72,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!user?.id) return;
     
     try {
-      // Tokens são geridos no banco; sem reset manual
+      // Reset trial tokens if expired before reading profile
+      await supabase.rpc('reset_trial_tokens_if_expired', { p_user_id: user.id });
 
       // Buscar perfil atualizado
       const { data: profile, error } = await supabase
