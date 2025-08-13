@@ -6,7 +6,7 @@ import { useSEO } from "@/hooks/useSEO";
 const Privacidade = () => {
   useSEO({
     title: "Política de Privacidade | Oráculo Jurídico",
-    description: "Política de Privacidade — Stripe, LexML e teste gratuito de 7 dias com 15.000 tokens.",
+    description: "Política de Privacidade — Stripe, LexML e dados de uso para limites e antifraude.",
   });
   return (
     <div className="min-h-screen bg-background">
@@ -50,16 +50,10 @@ const Privacidade = () => {
             <section>
               <h2 className="text-xl font-semibold text-foreground mb-4">2.1 Dados de Uso e Limites por Plano</h2>
               <p>
-                Para garantir o cumprimento dos limites de uso por plano e do teste gratuito, registramos métricas de utilização como consumo de tokens no chat, número de cópias de documentos, quantidade de cálculos realizados e compromissos pendentes. Esses dados são usados exclusivamente para aplicar as regras de limite e melhorar a experiência do usuário, em conformidade com a LGPD.
+                Para garantir o cumprimento dos limites de uso por plano e eventuais períodos de teste, registramos métricas mínimas de utilização como consumo de tokens no chat, número de cópias de documentos, quantidade de cálculos realizados e compromissos pendentes. Esses dados são usados exclusivamente para aplicar regras de limite, prevenir abusos e melhorar a experiência do usuário, em conformidade com a LGPD.
               </p>
             </section>
 
-            <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">2.2 Período de Teste Gratuito</h2>
-              <p>
-                Oferecemos um teste gratuito de 7 dias com 15.000 tokens para uso no chat com a IA. Durante o período de teste, coletamos métricas de consumo de tokens e eventos de uso para aplicar as regras do teste, prevenir abusos e garantir a qualidade do serviço. Não há cobrança durante o teste; dados de faturamento só são processados quando você opta por assinar um plano.
-              </p>
-            </section>
 
             <section>
               <h2 className="text-xl font-semibold text-foreground mb-4">3. Compartilhamento de Dados</h2>
