@@ -122,7 +122,8 @@ export default function ComprarCreditosPage() {
       const { data, error } = await supabase.functions.invoke('create-checkout');
       if (error) throw error;
       if (data?.url) {
-        window.open(data.url, '_blank');
+        // Redirecionar na mesma aba
+        window.location.href = data.url;
       } else {
         throw new Error('URL de assinatura não recebida');
       }
