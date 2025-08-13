@@ -333,7 +333,7 @@ const openTemplateEditor = async (documentId: string) => {
               </CardContent>
             </Card>
 
-            {isTrial && (
+            {isTrial ? (
               <Card className="bg-gradient-to-br from-green-600/20 to-green-600/10 border-green-600/30">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
@@ -361,6 +361,53 @@ const openTemplateEditor = async (documentId: string) => {
                     </div>
                     <div className="p-2 bg-green-600/20 rounded-lg">
                       <Clock className="w-6 h-6 text-green-400" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : isPaid ? (
+              <Card className="bg-gradient-to-br from-emerald-600/20 to-emerald-600/10 border-emerald-600/30">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-emerald-300 font-medium">Plano Ativo</p>
+                      <p className="text-2xl font-bold text-emerald-400 capitalize">
+                        {planType}
+                      </p>
+                      {profile?.subscription_activated_at && (
+                        <div className="mt-2 space-y-1">
+                          <div className="flex justify-between text-xs">
+                            <span className="text-emerald-300/70">Ativo desde:</span>
+                            <span className="text-emerald-200 font-medium">
+                              {new Date(profile.subscription_activated_at).toLocaleDateString('pt-BR')}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-2 bg-emerald-600/20 rounded-lg">
+                      <Users className="w-6 h-6 text-emerald-400" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="bg-gradient-to-br from-amber-600/20 to-amber-600/10 border-amber-600/30">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-amber-300 font-medium">Período Gratuito</p>
+                      <p className="text-2xl font-bold text-amber-400">
+                        Expirado
+                      </p>
+                      <div className="mt-2">
+                        <p className="text-xs text-amber-300/70">
+                          Ative uma assinatura para continuar
+                        </p>
+                      </div>
+                    </div>
+                    <div className="p-2 bg-amber-600/20 rounded-lg">
+                      <Clock className="w-6 h-6 text-amber-400" />
                     </div>
                   </div>
                 </CardContent>
