@@ -20,8 +20,6 @@ const tokenPackages = [
     popular: true,
     features: [
       "75.000 tokens",
-      "Acesso a todos os documentos",
-      "Suporte por email",
       "Sem expiração"
     ]
   },
@@ -36,9 +34,6 @@ const tokenPackages = [
     popular: false,
     features: [
       "150.000 tokens",
-      "Acesso a todos os documentos",
-      "Suporte prioritário",
-      "Chat direto com especialistas",
       "Sem expiração"
     ]
   }
