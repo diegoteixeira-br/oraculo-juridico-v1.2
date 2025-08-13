@@ -55,7 +55,7 @@ function AppContent() {
       <Route path="/dashboard" element={<PageWrapper><ProtectedRoute gate="dashboard"><Dashboard /></ProtectedRoute></PageWrapper>} />
       <Route path="/chat" element={<PageWrapper><ProtectedRoute gate="chat"><Chat /></ProtectedRoute></PageWrapper>} />
       <Route path="/minha-conta" element={<PageWrapper><ProtectedRoute><MinhaContaPage /></ProtectedRoute></PageWrapper>} />
-      <Route path="/historico-transacoes" element={<PageWrapper><ProtectedRoute><HistoricoTransacoesPage /></ProtectedRoute></PageWrapper>} />
+      <Route path="/historico-transacoes" element={<PageWrapper><ProtectedRoute gate="dashboard"><HistoricoTransacoesPage /></ProtectedRoute></PageWrapper>} />
       <Route path="/comprar-creditos" element={<PageWrapper><ComprarCreditosPage /></PageWrapper>} />
       <Route path="/payment-success" element={<PageWrapper><ProtectedRoute><PaymentSuccessPage /></ProtectedRoute></PageWrapper>} />
       <Route path="/agenda-juridica" element={<PageWrapper><ProtectedRoute gate="premium"><AgendaJuridica /></ProtectedRoute></PageWrapper>} />
