@@ -17,6 +17,7 @@ import { useDocumentCache } from "@/hooks/useDocumentCache";
 import { useFeatureUsage } from "@/hooks/useFeatureUsage";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import MarkdownEditor from "@/components/MarkdownEditor";
+import { useAccessControl } from "@/hooks/useAccessControl";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -24,11 +25,13 @@ export default function Dashboard() {
   const { toast } = useToast();
   const { visible: menuVisible } = useScrollDirection();
   const isMobile = useIsMobile();
-  const { documents: legalDocuments, loading: documentsLoading } = useDocumentCache();
-  const { logFeatureUsage } = useFeatureUsage();
-  
-  const [userCredits, setUserCredits] = useState(0);
-  const [dailyCredits, setDailyCredits] = useState(0);
+const { documents: legalDocuments, loading: documentsLoading } = useDocumentCache();
+const { logFeatureUsage } = useFeatureUsage();
+const access = useAccessControl();
+const { isBlocked, isTrialExpired } = access;
+
+const [userCredits, setUserCredits] = useState(0);
+const [dailyCredits, setDailyCredits] = useState(0);
   const [totalCreditsPurchased, setTotalCreditsPurchased] = useState(0);
   const [creditsUsed, setCreditsUsed] = useState(0);
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
@@ -166,9 +169,14 @@ export default function Dashboard() {
       .replace(/$/, '</p>');
   };
 
-  const openTemplateEditor = async (documentId: string) => {
-    setTemplateLoading(true);
-    try {
+const openTemplateEditor = async (documentId: string) => {
+  if (isBlocked) {
+    toast({ title: 'Acesso restrito', description: 'Ative sua assinatura para editar modelos.', variant: 'destructive' });
+    navigate('/comprar-creditos');
+    return;
+  }
+  setTemplateLoading(true);
+  try {
       const { data, error } = await supabase
         .from('legal_documents')
         .select('id, title, content, category')
@@ -433,7 +441,25 @@ export default function Dashboard() {
               </Card>
 
               {/* Agenda com Calendário */}
-              <CalendarAgendaWidget />
+              {!isBlocked ? (
+                <CalendarAgendaWidget />
+              ) : (
+                <Card className="bg-slate-800/50 border-slate-700">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="flex items-center gap-2 text-white">
+                      <Calendar className="w-5 h-5 text-primary" />
+                      Agenda
+                    </CardTitle>
+                    <CardDescription>
+                      Bloqueado após o fim do teste gratuito
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-slate-300">Ative sua assinatura para ver e gerenciar seus compromissos.</p>
+                    <Button className="w-full" onClick={() => navigate('/comprar-creditos')}>Assinar agora</Button>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Calculadoras Jurídicas */}
               <Card className="bg-slate-800/50 border-slate-700">
