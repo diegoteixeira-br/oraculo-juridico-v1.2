@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Minus, Search, User } from "lucide-react";
+import { Plus, Minus, Search, User, Lock, Unlock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface UserProfile {
@@ -16,6 +16,7 @@ interface UserProfile {
   tokens: number;
   plan_type: string;
   subscription_status: string;
+  is_active: boolean;
 }
 
 export default function TokenManager() {
@@ -35,7 +36,7 @@ export default function TokenManager() {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('user_id, full_name, tokens, plan_type, subscription_status')
+        .select('user_id, full_name, tokens, plan_type, subscription_status, is_active')
         .or(`full_name.ilike.%${searchQuery}%,user_id.eq.${searchQuery}`)
         .limit(10);
 
@@ -114,7 +115,7 @@ export default function TokenManager() {
       // Atualizar dados do usuário selecionado
       const { data: updatedUser } = await supabase
         .from('profiles')
-        .select('user_id, full_name, tokens, plan_type, subscription_status')
+        .select('user_id, full_name, tokens, plan_type, subscription_status, is_active')
         .eq('user_id', selectedUser.user_id)
         .single();
 
@@ -136,8 +137,48 @@ export default function TokenManager() {
     }
   };
 
+  const toggleUserAccess = async (block: boolean) => {
+    if (!selectedUser) return;
+
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_active: !block })
+        .eq('user_id', selectedUser.user_id);
+
+      if (error) throw error;
+
+      // Atualizar dados do usuário selecionado
+      const { data: updatedUser } = await supabase
+        .from('profiles')
+        .select('user_id, full_name, tokens, plan_type, subscription_status, is_active')
+        .eq('user_id', selectedUser.user_id)
+        .single();
+
+      if (updatedUser) {
+        setSelectedUser(updatedUser);
+      }
+
+      toast({
+        title: "Sucesso",
+        description: block ? "Usuário bloqueado com sucesso" : "Usuário desbloqueado com sucesso",
+      });
+    } catch (error) {
+      console.error('Erro ao alterar status do usuário:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao alterar status do usuário",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="grid gap-6 md:grid-cols-2">
+    <div className="space-y-6">
+      <div className="grid gap-6 md:grid-cols-2">{/* Grid principal */}
       {/* Buscar Usuário */}
       <Card>
         <CardHeader>
@@ -181,7 +222,12 @@ export default function TokenManager() {
                     </div>
                     <div className="text-right">
                       <p className="font-medium">{user.tokens} tokens</p>
-                      <Badge variant="outline">{user.plan_type}</Badge>
+                      <div className="flex gap-1">
+                        <Badge variant="outline">{user.plan_type}</Badge>
+                        <Badge variant={user.is_active ? "default" : "destructive"}>
+                          {user.is_active ? "Ativo" : "Bloqueado"}
+                        </Badge>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -196,7 +242,8 @@ export default function TokenManager() {
                 <strong>Usuário selecionado:</strong><br />
                 {selectedUser.full_name || "Sem nome"}<br />
                 <strong>Tokens atuais:</strong> {selectedUser.tokens}<br />
-                <strong>Plano:</strong> {selectedUser.plan_type}
+                <strong>Plano:</strong> {selectedUser.plan_type}<br />
+                <strong>Status:</strong> {selectedUser.is_active ? "Ativo" : "Bloqueado"}
               </AlertDescription>
             </Alert>
           )}
@@ -268,6 +315,54 @@ export default function TokenManager() {
           )}
         </CardContent>
       </Card>
+      </div>
+
+      {/* Bloquear/Desbloquear Usuário */}
+      {selectedUser && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              {selectedUser.is_active ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
+              Controle de Acesso
+            </CardTitle>
+            <CardDescription>
+              Bloqueie ou desbloqueie o acesso do usuário às ferramentas
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-4 items-center">
+              <div className="flex-1">
+                <p className="font-medium mb-1">Status atual: </p>
+                <Badge variant={selectedUser.is_active ? "default" : "destructive"} className="text-sm">
+                  {selectedUser.is_active ? "🟢 Ativo - Usuário pode usar as ferramentas" : "🔴 Bloqueado - Usuário não pode usar as ferramentas"}
+                </Badge>
+              </div>
+              <div className="flex gap-2">
+                {selectedUser.is_active ? (
+                  <Button
+                    variant="destructive"
+                    onClick={() => toggleUserAccess(true)}
+                    disabled={loading}
+                    className="flex items-center gap-2"
+                  >
+                    <Lock className="h-4 w-4" />
+                    Bloquear Usuário
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => toggleUserAccess(false)}
+                    disabled={loading}
+                    className="flex items-center gap-2"
+                  >
+                    <Unlock className="h-4 w-4" />
+                    Desbloquear Usuário
+                  </Button>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
