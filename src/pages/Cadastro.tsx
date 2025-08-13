@@ -166,10 +166,10 @@ function CadastroForm() {
                   <div className="text-lg font-bold text-green-400">15.000</div>
                   <div className="text-xs text-slate-400">Tokens no Teste (7 dias)</div>
                 </div>
-                <div className="text-center p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-blue-400">Sem</div>
-                  <div className="text-xs text-slate-400">Cartão de Crédito</div>
-                </div>
+                  <div className="text-center p-3 bg-white/5 rounded-lg">
+                    <div className="text-lg font-bold text-blue-400">Teste 7 dias</div>
+                    <div className="text-xs text-slate-400">Requer Cartão</div>
+                  </div>
                 <div className="text-center p-3 bg-white/5 rounded-lg">
                   <div className="text-lg font-bold text-purple-400">IA</div>
                   <div className="text-xs text-slate-400">Jurídica Completa</div>
@@ -419,7 +419,7 @@ function CadastroForm() {
                     <div>
                       <h4 className="font-semibold text-amber-200 mb-2">Segurança Garantida</h4>
                       <div className="space-y-1 text-sm text-amber-300/80">
-                        <p>• Sem cartão de crédito necessário</p>
+                        <p>• Teste de 7 dias requer cartão (sem cobrança até o 8º dia se não cancelar)</p>
                         <p>• Dados protegidos com SSL</p>
                         <p>• Conformidade total com LGPD</p>
                         <p>• Verificação anti-spam reCAPTCHA</p>
