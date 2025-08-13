@@ -62,6 +62,17 @@ const Termos = () => {
               <p className="mt-2">
                 Importante: calculadoras, documentos e agenda não consomem tokens. Esses recursos seguem os limites do plano conforme descrito abaixo.
               </p>
+              
+              <h3 className="text-lg font-semibold text-foreground mt-6 mb-3">Regras Específicas do Plano Essencial</h3>
+              <p>
+                <strong>Acúmulo de Tokens:</strong> No Plano Essencial, tokens não utilizados são acumulados no próximo período de renovação mensal. Por exemplo, se o usuário utilizar apenas 20.000 tokens no primeiro mês, os 10.000 tokens restantes serão somados aos 30.000 tokens do segundo mês, totalizando 40.000 tokens disponíveis.
+              </p>
+              <p className="mt-2">
+                <strong>Prazo de Renovação:</strong> Para manter o acúmulo de tokens, a renovação deve ser feita em até 7 dias após o vencimento da assinatura. Caso a renovação não seja realizada dentro deste prazo, todos os tokens acumulados não utilizados serão perdidos, e o usuário receberá apenas os 30.000 tokens padrão do novo período.
+              </p>
+              <p className="mt-2">
+                <strong>Exemplo Prático:</strong> Se a assinatura vence no dia 15 e o usuário possui 8.000 tokens não utilizados, ele terá até o dia 22 para renovar e manter esses tokens. Renovando no prazo, receberá 38.000 tokens (8.000 + 30.000). Renovando após o dia 22, receberá apenas 30.000 tokens.
+              </p>
             </section>
 
             <section>
