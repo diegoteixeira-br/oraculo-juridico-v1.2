@@ -27,12 +27,7 @@ serve(async (req) => {
 
     console.log(`Processing PDF file: ${file.name}, size: ${file.size} bytes`);
 
-    // Converter PDF para texto usando OpenAI
-    const openAIFormData = new FormData();
-    openAIFormData.append('file', file);
-    openAIFormData.append('model', 'whisper-1'); // Usando Whisper para extração de texto
-    
-    // Para PDFs, vamos usar a API de chat completion com vision
+    // Converter arquivo para base64 para enviar ao OpenAI
     const arrayBuffer = await file.arrayBuffer();
     const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
 
@@ -41,7 +36,7 @@ serve(async (req) => {
       throw new Error('OpenAI API key not configured');
     }
 
-    // Primeira tentativa: usar prompt para extrair texto
+    // Usar GPT-4o para extrair texto do PDF enviado como base64
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -53,11 +48,23 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'Você é um especialista em extração de texto de documentos jurídicos. Extraia TODO o texto do documento fornecido, mantendo a formatação e estrutura original.'
+            content: 'Você é um especialista em extração de texto de documentos jurídicos brasileiros. Extraia TODO o conteúdo textual do documento fornecido, mantendo a formatação e estrutura original. Retorne apenas o texto extraído, sem comentários adicionais.'
           },
           {
             role: 'user',
-            content: `Por favor, extraia todo o texto deste documento PDF. Mantenha a formatação original e retorne apenas o texto extraído, sem comentários adicionais.`
+            content: [
+              {
+                type: 'text',
+                text: 'Por favor, extraia todo o texto deste documento PDF jurídico. Mantenha toda a informação sobre prazos, datas, partes processuais e decisões. Retorne apenas o texto extraído, preservando quebras de linha e formatação:'
+              },
+              {
+                type: 'image_url',
+                image_url: {
+                  url: `data:application/pdf;base64,${base64}`,
+                  detail: 'high'
+                }
+              }
+            ]
           }
         ],
         temperature: 0.1,

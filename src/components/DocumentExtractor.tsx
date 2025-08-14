@@ -144,58 +144,51 @@ export default function DocumentExtractor({
       return;
     }
 
+    onExtractingChange(true);
     let textToAnalyze = extractText.trim();
 
-    // Verificar se o usuário tem tokens suficientes
-    const tokensNeeded = calculateTokensNeeded(textToAnalyze || (uploadedFiles.length > 0 ? "sample text" : ""));
-    
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('tokens, plan_tokens, token_balance')
-      .eq('user_id', user.id)
-      .single();
-
-    const totalTokens = (profile?.token_balance || 0) + (profile?.plan_tokens || 0);
-
-    if (totalTokens < tokensNeeded) {
-      toast({
-        title: "Tokens insuficientes",
-        description: `Esta operação consome ${tokensNeeded} tokens. Você possui ${totalTokens} tokens. Compre mais tokens para continuar.`,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Se não há texto manual mas há arquivos, extrair texto dos arquivos
-    if (!textToAnalyze && uploadedFiles.length > 0) {
-      onExtractingChange(true);
-      try {
+    try {
+      // Se não há texto manual mas há arquivos, extrair texto dos arquivos primeiro
+      if (!textToAnalyze && uploadedFiles.length > 0) {
         const extractedTexts = await Promise.all(
           uploadedFiles.map(({ file }) => processFile(file))
         );
         textToAnalyze = extractedTexts.join('\n\n');
-      } catch (error: any) {
+      }
+
+      if (!textToAnalyze) {
         toast({
           title: "Erro",
-          description: error.message || "Erro ao processar arquivos.",
+          description: "Digite o texto ou envie um arquivo para análise.",
           variant: "destructive",
         });
         onExtractingChange(false);
         return;
       }
-    }
 
-    if (!textToAnalyze) {
-      toast({
-        title: "Erro",
-        description: "Digite o texto ou envie um arquivo para análise.",
-        variant: "destructive",
-      });
-      return;
-    }
+      // Calcular tokens necessários com base no texto real
+      const tokensNeeded = calculateTokensNeeded(textToAnalyze);
+      
+      // Verificar se o usuário tem tokens suficientes
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('tokens, plan_tokens, token_balance')
+        .eq('user_id', user.id)
+        .single();
 
-    onExtractingChange(true);
-    try {
+      const totalTokens = (profile?.token_balance || 0) + (profile?.plan_tokens || 0);
+
+      if (totalTokens < tokensNeeded) {
+        toast({
+          title: "Tokens insuficientes",
+          description: `Esta operação consome ${tokensNeeded} tokens. Você possui ${totalTokens} tokens. Compre mais tokens para continuar.`,
+          variant: "destructive",
+        });
+        onExtractingChange(false);
+        return;
+      }
+
+      // Fazer a extração de prazos
       const { data, error } = await supabase.functions.invoke('extract-legal-deadlines', {
         body: {
           text: textToAnalyze,
@@ -214,6 +207,7 @@ export default function DocumentExtractor({
         // Limpar formulário
         setExtractText("");
         setUploadedFiles([]);
+        setEstimatedTokens(500);
         onExtractComplete();
       } else {
         throw new Error(data.error);
@@ -221,7 +215,7 @@ export default function DocumentExtractor({
     } catch (error: any) {
       toast({
         title: "Erro",
-        description: "Não foi possível extrair os prazos.",
+        description: error.message || "Não foi possível extrair os prazos.",
         variant: "destructive",
       });
     } finally {
