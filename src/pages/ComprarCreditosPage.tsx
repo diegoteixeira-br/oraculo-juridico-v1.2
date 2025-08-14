@@ -322,133 +322,77 @@ export default function ComprarCreditosPage() {
             )}
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
-              {/* Plano Básico */}
-              <Card className={`relative bg-slate-800 border-slate-700 transition-all duration-300 h-fit border-blue-500 shadow-lg shadow-blue-500/20 ${!canPurchaseTokens ? 'opacity-60' : ''}`}>
-                <div className="absolute -top-2 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-blue-600 text-white px-2 py-1 text-xs">
-                    <Star className="w-3 h-3 mr-1" />
-                    Mais Popular
-                  </Badge>
-                </div>
-                
-                <CardHeader className="text-center pt-4 sm:pt-6 pb-2 sm:pb-3">
-                  <CardTitle className="text-base sm:text-lg lg:text-xl font-bold text-blue-400">
-                    Plano Básico
-                  </CardTitle>
-                  <CardDescription className="text-lg sm:text-xl lg:text-2xl font-bold text-white">
-                    75.000 tokens
-                  </CardDescription>
-                </CardHeader>
-
-                <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-6 pb-4 sm:pb-6">
-                  <div className="text-center">
-                    <div className="flex items-center justify-center gap-2 mb-1 sm:mb-2">
-                      <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-400">
-                        R$ 59,90
-                      </span>
+              {/* Pacotes de Tokens */}
+              {tokenPacks.map((tokenPack, index) => (
+                <Card key={tokenPack.id} className={`relative bg-slate-800 border-slate-700 transition-all duration-300 h-fit ${index === 0 ? 'border-blue-500 shadow-lg shadow-blue-500/20' : ''} ${!canPurchaseTokens ? 'opacity-60' : ''}`}>
+                  {index === 0 && (
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2">
+                      <Badge className="bg-blue-600 text-white px-2 py-1 text-xs">
+                        <Star className="w-3 h-3 mr-1" />
+                        Mais Popular
+                      </Badge>
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      R$ 0,799 por 1k tokens
-                    </p>
-                  </div>
-
-                  <div className="space-y-1 sm:space-y-2">
-                    <div className="flex items-center gap-2 text-xs sm:text-sm">
-                      <Check className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400 flex-shrink-0" />
-                      <span>75.000 tokens</span>
+                  )}
+                  {index === 1 && (
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2">
+                      <Badge className="bg-green-600 text-white px-2 py-1 text-xs">
+                        20% OFF
+                      </Badge>
                     </div>
-                    <div className="flex items-center gap-2 text-xs sm:text-sm">
-                      <Check className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400 flex-shrink-0" />
-                      <span>Sem expiração</span>
-                    </div>
-                  </div>
+                  )}
+                  
+                  <CardHeader className="text-center pt-4 sm:pt-6 pb-2 sm:pb-3">
+                    <CardTitle className={`text-base sm:text-lg lg:text-xl font-bold ${index === 0 ? 'text-blue-400' : 'text-green-400'}`}>
+                      {tokenPack.name}
+                    </CardTitle>
+                    <CardDescription className="text-lg sm:text-xl lg:text-2xl font-bold text-white">
+                      {tokenPack.tokens_included.toLocaleString()} tokens
+                    </CardDescription>
+                  </CardHeader>
 
-                  <Button
-                    onClick={() => {
-                      const basicPack = tokenPacks.find(pack => pack.name === 'Pacote Básico');
-                      if (basicPack) handlePurchase(basicPack.id);
-                    }}
-                    disabled={isLoading || !canPurchaseTokens}
-                    className="w-full mt-3 h-10 sm:h-12 text-sm sm:text-base bg-blue-600 hover:bg-blue-700"
-                  >
-                    {isLoading && tokenPacks.find(pack => pack.name === 'Pacote Básico') && selectedPackage === tokenPacks.find(pack => pack.name === 'Pacote Básico')?.id ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Redirecionando...
+                  <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-6 pb-4 sm:pb-6">
+                    <div className="text-center">
+                      <div className="flex items-center justify-center gap-2 mb-1 sm:mb-2">
+                        <span className={`text-xl sm:text-2xl lg:text-3xl font-bold ${index === 0 ? 'text-blue-400' : 'text-green-400'}`}>
+                          {formatPrice(tokenPack.price_cents)}
+                        </span>
                       </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <CreditCard className="w-4 h-4" />
-                        Comprar Tokens
-                      </div>
-                    )}
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Plano Premium */}
-              <Card className={`relative bg-slate-800 border-slate-700 transition-all duration-300 h-fit ${!canPurchaseTokens ? 'opacity-60' : ''}`}>
-                <div className="absolute -top-2 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-green-600 text-white px-2 py-1 text-xs">
-                    20% OFF
-                  </Badge>
-                </div>
-                
-                <CardHeader className="text-center pt-4 sm:pt-6 pb-2 sm:pb-3">
-                  <CardTitle className="text-base sm:text-lg lg:text-xl font-bold text-green-400">
-                    Plano Premium
-                  </CardTitle>
-                  <CardDescription className="text-lg sm:text-xl lg:text-2xl font-bold text-white">
-                    150.000 tokens
-                  </CardDescription>
-                </CardHeader>
-
-                <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-6 pb-4 sm:pb-6">
-                  <div className="text-center">
-                    <div className="flex items-center justify-center gap-2 mb-1 sm:mb-2">
-                      <span className="line-through text-sm text-muted-foreground">R$ 120,00</span>
-                      <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-400">
-                        R$ 97,00
-                      </span>
+                      <p className="text-xs text-muted-foreground">
+                        {formatPrice(Math.round(tokenPack.price_cents / (tokenPack.tokens_included / 1000)))} por 1k tokens
+                      </p>
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      R$ 0,647 por 1k tokens
-                    </p>
-                  </div>
 
-                  <div className="space-y-1 sm:space-y-2">
-                    <div className="flex items-center gap-2 text-xs sm:text-sm">
-                      <Check className="w-3 h-3 sm:w-4 sm:h-4 text-green-400 flex-shrink-0" />
-                      <span>150.000 tokens</span>
+                    <div className="space-y-1 sm:space-y-2">
+                      <div className="flex items-center gap-2 text-xs sm:text-sm">
+                        <Check className={`w-3 h-3 sm:w-4 sm:h-4 ${index === 0 ? 'text-blue-400' : 'text-green-400'} flex-shrink-0`} />
+                        <span>{tokenPack.tokens_included.toLocaleString()} tokens</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs sm:text-sm">
+                        <Check className={`w-3 h-3 sm:w-4 sm:h-4 ${index === 0 ? 'text-blue-400' : 'text-green-400'} flex-shrink-0`} />
+                        <span>Sem expiração</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 text-xs sm:text-sm">
-                      <Check className="w-3 h-3 sm:w-4 sm:h-4 text-green-400 flex-shrink-0" />
-                      <span>Sem expiração</span>
-                    </div>
-                  </div>
 
-                  <Button
-                    onClick={() => {
-                      const premiumPack = tokenPacks.find(pack => pack.name === 'Pacote Premium');
-                      if (premiumPack) handlePurchase(premiumPack.id);
-                    }}
-                    disabled={isLoading || !canPurchaseTokens}
-                    className="w-full mt-3 h-10 sm:h-12 text-sm sm:text-base bg-green-600 hover:bg-green-700"
-                  >
-                    {isLoading && tokenPacks.find(pack => pack.name === 'Pacote Premium') && selectedPackage === tokenPacks.find(pack => pack.name === 'Pacote Premium')?.id ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Redirecionando...
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <CreditCard className="w-4 h-4" />
-                        Comprar Tokens
-                      </div>
-                    )}
-                  </Button>
-                </CardContent>
-              </Card>
+                    <Button
+                      onClick={() => handlePurchase(tokenPack.id)}
+                      disabled={isLoading || !canPurchaseTokens}
+                      className={`w-full mt-3 h-10 sm:h-12 text-sm sm:text-base ${index === 0 ? 'bg-blue-600 hover:bg-blue-700' : 'bg-green-600 hover:bg-green-700'}`}
+                    >
+                      {isLoading && selectedPackage === tokenPack.id ? (
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          Redirecionando...
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <CreditCard className="w-4 h-4" />
+                          Comprar Tokens
+                        </div>
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
 
