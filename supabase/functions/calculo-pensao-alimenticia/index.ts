@@ -78,20 +78,28 @@ serve(async (req) => {
     let userTimezone = 'America/Sao_Paulo'; // Padrão
 
     if (authHeader) {
-      const token = authHeader.replace('Bearer ', '');
-      const { data: { user } } = await supabase.auth.getUser(token);
-      
-      if (user) {
-        // Buscar timezone do usuário
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('timezone')
-          .eq('user_id', user.id)
-          .single();
+      try {
+        const token = authHeader.replace('Bearer ', '');
+        const { data: { user } } = await supabase.auth.getUser(token);
         
-        if (profile?.timezone) {
-          userTimezone = profile.timezone;
+        if (user) {
+          console.log('Usuário autenticado:', user.id);
+          // Buscar timezone do usuário
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('timezone')
+            .eq('user_id', user.id)
+            .single();
+          
+          if (profile?.timezone) {
+            userTimezone = profile.timezone;
+            console.log('Timezone do usuário encontrado:', userTimezone);
+          } else {
+            console.log('Timezone não encontrado no perfil, usando padrão');
+          }
         }
+      } catch (error) {
+        console.log('Erro ao buscar timezone:', error);
       }
     }
 
