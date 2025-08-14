@@ -551,6 +551,32 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
     }
   };
 
+  const clearOldAudioCache = () => {
+    try {
+      const keys = Object.keys(localStorage);
+      const audioCacheKeys = keys.filter(key => key.startsWith('audio_cache_'));
+      
+      // Se temos muitos caches de áudio, remover os mais antigos
+      if (audioCacheKeys.length > 10) {
+        const cacheData = audioCacheKeys.map(key => {
+          try {
+            const data = JSON.parse(localStorage.getItem(key) || '{}');
+            return { key, createdAt: data.createdAt || 0 };
+          } catch {
+            return { key, createdAt: 0 };
+          }
+        }).sort((a, b) => a.createdAt - b.createdAt);
+        
+        // Remover os 5 mais antigos
+        cacheData.slice(0, 5).forEach(item => {
+          localStorage.removeItem(item.key);
+        });
+      }
+    } catch (error) {
+      console.log('Erro ao limpar cache antigo:', error);
+    }
+  };
+
   const playTextToSpeech = async (id: string, text: string) => {
     try {
       setTtsLoading(true);
@@ -583,10 +609,6 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
             ], { type: 'audio/mpeg' });
             audioUrl = URL.createObjectURL(audioBlob);
             usedCache = true;
-            
-            // Atualizar cache com nova URL
-            audioData.audioUrl = audioUrl;
-            localStorage.setItem(cacheKey, JSON.stringify(audioData));
             
             toast({
               title: "Áudio carregado",
@@ -628,16 +650,46 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
         audioUrl = URL.createObjectURL(audioBlob);
         tokensUsed = data.tokensUsed || Math.ceil(textToProcess.length / 4);
         
-        // Cache o áudio com os dados binários para poder recriar o blob depois
-        const audioData = {
-          text: textToProcess,
-          audioUrl,
-          blobData: data.audioContent, // Salvar os dados base64 também
-          textHash,
-          voice: 'alloy',
-          createdAt: Date.now()
-        };
-        localStorage.setItem(cacheKey, JSON.stringify(audioData));
+        // Tentar salvar no cache com controle de quota
+        try {
+          // Limpar cache antigo primeiro se necessário
+          clearOldAudioCache();
+          
+          const audioData = {
+            text: textToProcess,
+            audioUrl,
+            blobData: data.audioContent, // Salvar os dados base64 também
+            textHash,
+            voice: 'alloy',
+            createdAt: Date.now()
+          };
+          
+          localStorage.setItem(cacheKey, JSON.stringify(audioData));
+        } catch (quotaError) {
+          console.log('Quota do localStorage excedida, limpando cache e tentando novamente...');
+          
+          // Limpar todo o cache de áudio e tentar novamente
+          Object.keys(localStorage).forEach(key => {
+            if (key.startsWith('audio_cache_')) {
+              localStorage.removeItem(key);
+            }
+          });
+          
+          // Tentar salvar novamente após limpeza
+          try {
+            const audioData = {
+              text: textToProcess,
+              audioUrl,
+              blobData: data.audioContent,
+              textHash,
+              voice: 'alloy',
+              createdAt: Date.now()
+            };
+            localStorage.setItem(cacheKey, JSON.stringify(audioData));
+          } catch (secondError) {
+            console.log('Não foi possível salvar no cache devido ao tamanho. Áudio será usado apenas nesta sessão.');
+          }
+        }
         
         toast({
           title: "Áudio gerado!",
