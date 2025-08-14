@@ -103,7 +103,7 @@ const SuportePage = () => {
     },
     {
       question: "A IA pode analisar fotos de documentos?",
-      answer: "Sim! Você pode enviar fotos de documentos jurídicos, contratos ou processos. A IA extrai automaticamente o texto da imagem e pode analisar o conteúdo, identificar prazos e responder suas dúvidas sobre o documento fotografado.",
+      answer: "Sim! Você pode enviar fotos tanto no Chat Jurídico quanto na Agenda Jurídica. A IA extrai automaticamente o texto da imagem. Na Agenda, ela também identifica prazos e datas para criar sua agenda automaticamente.",
     },
     {
       question: "A plataforma funciona em mobile?",
