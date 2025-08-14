@@ -638,8 +638,12 @@ const AgendaJuridica = () => {
                 onClick={() => setShowNotificationDialog(true)}
                 className="text-slate-300 hover:text-white hover:bg-slate-700"
               >
-                <Bell className="h-4 w-4 mr-2" />
-                <span className="hidden md:inline">Notificações</span>
+                <div className="flex items-center gap-2">
+                  <Bell className="h-4 w-4" />
+                  <div className={`w-2 h-2 rounded-full ${notificationSettings.email_enabled ? 'bg-green-400' : 'bg-gray-500'}`} 
+                       title={notificationSettings.email_enabled ? 'Notificações ativas' : 'Notificações desativadas'} />
+                </div>
+                <span className="hidden md:inline ml-2">Notificações</span>
               </Button>
               
               {/* Contador de tokens */}
