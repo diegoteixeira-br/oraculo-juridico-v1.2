@@ -34,7 +34,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import CalendarView from "@/components/CalendarView";
-import { format, parseISO, startOfMonth, endOfMonth, isSameDay, addMonths, subMonths } from "date-fns";
+import { format, parseISO, startOfMonth, endOfMonth, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useIsMobile } from "@/hooks/use-mobile";
 import UserMenu from "@/components/UserMenu";
@@ -580,6 +580,73 @@ const AgendaJuridica = () => {
     }
   };
 
+  // Obter aparência do item
+  const getItemAppearance = (type: string, priority: string) => {
+    if (priority === 'urgente') return 'bg-red-500/15 border-red-500/30';
+    if (priority === 'alta') return 'bg-orange-500/15 border-orange-500/30';
+    switch (type) {
+      case 'prazo_processual':
+        return 'bg-blue-500/15 border-blue-500/30';
+      case 'audiencia':
+        return 'bg-red-500/15 border-red-500/30';
+      case 'reuniao':
+        return 'bg-green-500/15 border-green-500/30';
+      default:
+        return 'bg-slate-700/30 border-slate-600/40';
+    }
+  };
+
+  // Renderizar dias do calendário
+  const renderCalendarDays = () => {
+    const monthStart = startOfMonth(currentMonth);
+    const monthEnd = endOfMonth(currentMonth);
+    const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 });
+    const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
+    
+    const days = [];
+    let currentDate = calendarStart;
+    
+    while (currentDate <= calendarEnd) {
+      const day = currentDate;
+      const dayCommitments = getCommitmentsForDate(day);
+      const isCurrentMonth = day.getMonth() === currentMonth.getMonth();
+      const isToday = isSameDay(day, new Date());
+      const isSelected = isSameDay(day, selectedDate);
+      const hasCommitments = dayCommitments.length > 0;
+      
+      days.push(
+        <button
+          key={day.toISOString()}
+          onClick={() => setSelectedDate(day)}
+          className={`
+            relative p-2 text-sm h-12 w-full border border-slate-600/30 transition-colors
+            ${isCurrentMonth ? 'text-white' : 'text-slate-500'}
+            ${isToday ? 'bg-primary/20 border-primary/50 font-bold' : ''}
+            ${isSelected ? 'bg-blue-600/30 border-blue-500' : 'hover:bg-slate-700/50'}
+            ${!isCurrentMonth ? 'bg-slate-800/30' : ''}
+          `}
+        >
+          <span>{format(day, 'd')}</span>
+          {hasCommitments && (
+            <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 flex gap-1">
+              {dayCommitments.slice(0, 3).map((commitment, index) => (
+                <div
+                  key={commitment.id}
+                  className={`w-1.5 h-1.5 rounded-full ${getCommitmentColor(commitment.commitment_type, commitment.priority)}`}
+                />
+              ))}
+              {dayCommitments.length > 3 && (
+                <div className="w-1.5 h-1.5 rounded-full bg-yellow-500" />
+              )}
+            </div>
+          )}
+        </button>
+      );
+      currentDate = addDays(currentDate, 1);
+    }
+    return days;
+  };
+
   // Obter compromissos do dia
   const getCommitmentsForDate = (date: Date) => {
     return filteredCommitments.filter(c => 
@@ -1101,12 +1168,158 @@ const AgendaJuridica = () => {
 
               <div className="flex-1 overflow-hidden mt-4">
                 <TabsContent value="calendar" className="h-full m-0">
-                  <Card className="h-full flex flex-col bg-slate-800/50 border-slate-700">
+                  <Card className="h-full flex flex-col bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border-blue-500/30">
                     <CardContent className="p-6 h-full">
-                      <CalendarView 
-                        filteredCommitments={filteredCommitments}
-                        onCommitmentSelect={handleEditCommitment}
-                      />
+                      <div className="grid grid-cols-1 lg:grid-cols-[40%_1fr] gap-6 h-full">
+                        
+                        {/* Calendário */}
+                        <div className={`flex flex-col ${isMobile ? 'order-1' : ''}`}>
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                              <CalendarIcon className="w-5 h-5 text-blue-400" />
+                              <h3 className="text-lg font-semibold text-blue-200">
+                                {format(currentMonth, 'MMMM yyyy', { locale: ptBR })}
+                              </h3>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} 
+                                className="text-blue-400 hover:text-blue-300 hover:bg-blue-600/10"
+                              >
+                                <ChevronLeft className="w-4 h-4" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} 
+                                className="text-blue-400 hover:text-blue-300 hover:bg-blue-600/10"
+                              >
+                                <ChevronLeft className="w-4 h-4 rotate-180" />
+                              </Button>
+                            </div>
+                          </div>
+                          
+                          {/* Dias da semana */}
+                          <div className="grid grid-cols-7 mb-2">
+                            {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(day => (
+                              <div key={day} className="text-center text-xs font-medium text-slate-400 p-2">
+                                {day}
+                              </div>
+                            ))}
+                          </div>
+                          
+                          {/* Grade do calendário */}
+                          <div className="grid grid-cols-7 bg-slate-800/30 rounded-lg overflow-hidden flex-1">
+                            {renderCalendarDays()}
+                          </div>
+                          
+                          <div className="mt-4 text-xs text-blue-300/70 text-center">
+                            Clique em um dia para ver os compromissos
+                          </div>
+                        </div>
+
+                        {/* Lista de compromissos do dia selecionado */}
+                        <div className={`space-y-3 overflow-y-auto ${isMobile ? 'order-2' : ''}`}>
+                          <div className="flex items-center gap-2 mb-3">
+                            <h4 className="font-medium text-blue-200">
+                              {format(selectedDate, 'dd/MM/yyyy', { locale: ptBR })}
+                            </h4>
+                            {isSameDay(selectedDate, new Date()) && (
+                              <Badge variant="outline" className="text-xs border-blue-400/30 text-blue-300">
+                                Hoje
+                              </Badge>
+                            )}
+                          </div>
+
+                          {getCommitmentsForDate(selectedDate).length === 0 ? (
+                            <div className="text-center py-6">
+                              <CalendarIcon className="w-8 h-8 text-blue-400/50 mx-auto mb-2" />
+                              <p className="text-sm text-blue-300/80">
+                                Nenhum compromisso neste dia
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="space-y-2">
+                              {getCommitmentsForDate(selectedDate).map((commitment) => (
+                                <div 
+                                  key={commitment.id} 
+                                  className={`p-3 rounded-xl border ${getItemAppearance(commitment.commitment_type, commitment.priority)}`}
+                                >
+                                  <div className="flex items-start gap-2">
+                                    <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${getCommitmentColor(commitment.commitment_type, commitment.priority)}`} />
+                                    <div className="flex-1 min-w-0">
+                                      <h5 className="font-medium text-sm text-blue-200 truncate">
+                                        {commitment.title}
+                                      </h5>
+                                      <p className="text-xs text-blue-300/80 flex items-center gap-1 mt-1">
+                                        <Clock className="h-3 w-3 flex-shrink-0" />
+                                        {format(parseISO(commitment.commitment_date), 'HH:mm', { locale: ptBR })}
+                                      </p>
+                                      <div className="flex gap-1 mt-2">
+                                        <Badge variant="outline" className="text-xs border-blue-400/30 text-blue-300">
+                                          {typeLabels[commitment.commitment_type]}
+                                        </Badge>
+                                        {commitment.priority !== 'normal' && (
+                                          <Badge 
+                                            variant={commitment.priority === 'urgente' ? 'destructive' : 'default'} 
+                                            className="text-xs"
+                                          >
+                                            {priorityLabels[commitment.priority]}
+                                          </Badge>
+                                        )}
+                                      </div>
+                                      {(commitment.process_number || commitment.client_name || commitment.location) && (
+                                        <div className="mt-2 space-y-1 text-xs text-blue-300/70">
+                                          {commitment.process_number && (
+                                            <div className="truncate">Processo: {commitment.process_number}</div>
+                                          )}
+                                          {commitment.client_name && (
+                                            <div className="truncate">Cliente: {commitment.client_name}</div>
+                                          )}
+                                          {commitment.location && (
+                                            <div className="flex items-center gap-1 truncate">
+                                              <MapPin className="h-3 w-3 flex-shrink-0" />
+                                              {commitment.location}
+                                            </div>
+                                          )}
+                                        </div>
+                                      )}
+                                      <div className="flex gap-1 mt-2">
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={() => handleEditCommitment(commitment)}
+                                          className="h-6 px-2 text-xs text-blue-300 hover:bg-blue-600/10"
+                                        >
+                                          <Edit className="h-3 w-3" />
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={() => handleCompleteCommitment(commitment)}
+                                          className="h-6 px-2 text-xs text-green-300 hover:bg-green-600/10"
+                                        >
+                                          <Check className="h-3 w-3" />
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={() => handleCancelCommitment(commitment)}
+                                          className="h-6 px-2 text-xs text-red-300 hover:bg-red-600/10"
+                                        >
+                                          <X className="h-3 w-3" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
                 </TabsContent>
