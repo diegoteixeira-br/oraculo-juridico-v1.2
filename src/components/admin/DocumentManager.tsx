@@ -3,9 +3,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { Trash2 } from "lucide-react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
@@ -110,6 +112,51 @@ export default function DocumentManager() {
     }
   };
 
+  const deleteDocument = async (docId: string, docTitle: string) => {
+    try {
+      // Buscar o documento para verificar se é um arquivo no storage
+      const { data: doc, error: fetchError } = await supabase
+        .from("documents_library")
+        .select("doc_type, object_path, bucket_id")
+        .eq("id", docId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      // Se for um arquivo, deletar do storage primeiro
+      if (doc.doc_type === "file" && doc.object_path) {
+        const { error: storageError } = await supabase.storage
+          .from(doc.bucket_id || "documents")
+          .remove([doc.object_path]);
+        
+        if (storageError) {
+          console.warn("Erro ao deletar arquivo do storage:", storageError);
+          // Continua mesmo com erro no storage
+        }
+      }
+
+      // Deletar compartilhamentos
+      await supabase
+        .from("document_shares")
+        .delete()
+        .eq("document_id", docId);
+
+      // Deletar o documento
+      const { error } = await supabase
+        .from("documents_library")
+        .delete()
+        .eq("id", docId);
+
+      if (error) throw error;
+
+      toast.success(`Documento "${docTitle}" deletado com sucesso`);
+      load(); // Recarregar a lista
+    } catch (e: any) {
+      console.error("Erro ao deletar documento:", e);
+      toast.error("Erro ao deletar documento");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -173,33 +220,61 @@ export default function DocumentManager() {
                 <TableCell>{d.uploaded_by}</TableCell>
                 <TableCell>{new Date(d.created_at).toLocaleString()}</TableCell>
                 <TableCell className="text-right">
-                  <Dialog open={shareOpen === d.id} onOpenChange={(o) => setShareOpen(o ? d.id : null)}>
-                    <DialogTrigger asChild>
-                      <Button variant="secondary">Compartilhar</Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Compartilhar: {d.title}</DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-3">
-                        <Input placeholder="Buscar por nome ou email" value={query} onChange={e => setQuery(e.target.value)} />
-                        <div className="max-h-64 overflow-auto border rounded-md divide-y">
-                          {filtered.map(u => (
-                            <label key={u.id} className="flex items-center gap-2 p-2 cursor-pointer">
-                              <input type="checkbox" checked={selected.includes(u.id)} onChange={(e) => {
-                                setSelected(prev => e.target.checked ? [...prev, u.id] : prev.filter(i => i !== u.id));
-                              }} />
-                              <span className="text-sm">{u.name} {u.email ? (<span className="text-muted-foreground">• {u.email}</span>) : null}</span>
-                            </label>
-                          ))}
+                  <div className="flex gap-2 justify-end">
+                    <Dialog open={shareOpen === d.id} onOpenChange={(o) => setShareOpen(o ? d.id : null)}>
+                      <DialogTrigger asChild>
+                        <Button variant="secondary" size="sm">Compartilhar</Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Compartilhar: {d.title}</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-3">
+                          <Input placeholder="Buscar por nome ou email" value={query} onChange={e => setQuery(e.target.value)} />
+                          <div className="max-h-64 overflow-auto border rounded-md divide-y">
+                            {filtered.map(u => (
+                              <label key={u.id} className="flex items-center gap-2 p-2 cursor-pointer">
+                                <input type="checkbox" checked={selected.includes(u.id)} onChange={(e) => {
+                                  setSelected(prev => e.target.checked ? [...prev, u.id] : prev.filter(i => i !== u.id));
+                                }} />
+                                <span className="text-sm">{u.name} {u.email ? (<span className="text-muted-foreground">• {u.email}</span>) : null}</span>
+                              </label>
+                            ))}
+                          </div>
+                          <div className="flex justify-end gap-2">
+                            <Button variant="secondary" onClick={() => setShareOpen(null)}>Cancelar</Button>
+                            <Button onClick={doShare}>Compartilhar</Button>
+                          </div>
                         </div>
-                        <div className="flex justify-end gap-2">
-                          <Button variant="secondary" onClick={() => setShareOpen(null)}>Cancelar</Button>
-                          <Button onClick={doShare}>Compartilhar</Button>
-                        </div>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
+                      </DialogContent>
+                    </Dialog>
+                    
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="sm">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Tem certeza que deseja deletar o documento "{d.title}"? 
+                            Esta ação não pode ser desfeita.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction 
+                            onClick={() => deleteDocument(d.id, d.title)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Deletar
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </TableCell>
               </TableRow>
             ))
