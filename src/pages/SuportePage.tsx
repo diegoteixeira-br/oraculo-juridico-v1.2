@@ -63,7 +63,7 @@ const SuportePage = () => {
     },
     {
       question: "Como posso comprar mais tokens?",
-      answer: "Acesse 'Comprar Créditos' no menu principal e escolha entre pacotes de tokens ou o plano Essencial com 50.000 tokens mensais.",
+      answer: "Acesse 'Comprar Créditos' no menu principal e escolha entre pacotes de tokens ou o plano Essencial com 30.000 tokens mensais.",
       category: "tokens"
     },
     {
@@ -83,7 +83,7 @@ const SuportePage = () => {
     },
     {
       question: "Como funciona o plano Essencial?",
-      answer: "O plano Essencial oferece 50.000 tokens mensais por R$ 39,90/mês, ideal para uso moderado a intenso da plataforma.",
+      answer: "O plano Essencial oferece 30.000 tokens mensais por R$ 39,90/mês, ideal para uso moderado a intenso da plataforma.",
       category: "tokens"
     },
     {
