@@ -29,7 +29,7 @@ serve(async (req) => {
     const { data: usersPage } = await adminClient.auth.admin.listUsers({ perPage: 1000 });
 
     // buscar perfis para enriquecer
-    const { data: profiles } = await adminClient.from('profiles').select('user_id, full_name, created_at, is_active');
+    const { data: profiles } = await adminClient.from('profiles').select('user_id, full_name, created_at, is_active, tokens, plan_type');
     const roleRows = await adminClient.from('user_roles').select('user_id, role');
 
     const profileMap = new Map((profiles || []).map((p: any) => [p.user_id, p]));
@@ -42,6 +42,8 @@ serve(async (req) => {
       name: profileMap.get(u.id)?.full_name,
       is_active: profileMap.get(u.id)?.is_active ?? true,
       role: roleMap.get(u.id) || 'user',
+      tokens: profileMap.get(u.id)?.tokens || 0,
+      plan_type: profileMap.get(u.id)?.plan_type || 'gratuito',
     }));
 
     return new Response(JSON.stringify({ users }), { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } });

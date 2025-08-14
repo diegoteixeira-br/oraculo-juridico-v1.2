@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
-interface UserRow { id: string; email: string; name?: string; created_at?: string; role?: string; is_active?: boolean }
+interface UserRow { id: string; email: string; name?: string; created_at?: string; role?: string; is_active?: boolean; tokens?: number; plan_type?: string }
 
 export default function UserManager() {
   const [users, setUsers] = useState<UserRow[]>([]);
@@ -85,6 +85,8 @@ export default function UserManager() {
             <TableHead>Nome</TableHead>
             <TableHead>E-mail</TableHead>
             <TableHead>Cadastro</TableHead>
+            <TableHead>Tokens</TableHead>
+            <TableHead>Plano</TableHead>
             <TableHead>Papel</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="text-right">Ações</TableHead>
@@ -92,15 +94,17 @@ export default function UserManager() {
         </TableHeader>
         <TableBody>
           {loading ? (
-            <TableRow><TableCell colSpan={6}>Carregando...</TableCell></TableRow>
+            <TableRow><TableCell colSpan={8}>Carregando...</TableCell></TableRow>
           ) : filtered.length === 0 ? (
-            <TableRow><TableCell colSpan={6}>Nenhum usuário</TableCell></TableRow>
+            <TableRow><TableCell colSpan={8}>Nenhum usuário</TableCell></TableRow>
           ) : (
             filtered.map(u => (
               <TableRow key={u.id}>
                 <TableCell>{u.name || '-'}</TableCell>
                 <TableCell>{u.email}</TableCell>
                 <TableCell>{u.created_at ? new Date(u.created_at).toLocaleDateString() : '-'}</TableCell>
+                <TableCell className="font-medium">{u.tokens || 0}</TableCell>
+                <TableCell className="capitalize">{u.plan_type || 'gratuito'}</TableCell>
                 <TableCell>
                   <Select value={(u.role || 'user')} onValueChange={(v: any) => updateRole(u.id, v)}>
                     <SelectTrigger className="w-[140px]"><SelectValue /></SelectTrigger>

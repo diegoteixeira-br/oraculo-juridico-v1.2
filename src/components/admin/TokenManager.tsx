@@ -34,23 +34,11 @@ export default function TokenManager() {
     
     setSearching(true);
     try {
-      // Verificar se é um UUID válido
-      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(searchQuery.trim());
-      
-      let query = supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('user_id, full_name, tokens, plan_type, subscription_status, is_active')
+        .ilike('full_name', `%${searchQuery}%`)
         .limit(10);
-
-      if (isUUID) {
-        // Se for UUID, buscar por user_id ou nome
-        query = query.or(`full_name.ilike.%${searchQuery}%,user_id.eq.${searchQuery}`);
-      } else {
-        // Se não for UUID, buscar apenas por nome
-        query = query.ilike('full_name', `%${searchQuery}%`);
-      }
-
-      const { data, error } = await query;
 
       if (error) throw error;
       setSearchResults(data || []);
@@ -199,13 +187,13 @@ export default function TokenManager() {
             Buscar Usuário
           </CardTitle>
           <CardDescription>
-            Busque por nome ou ID do usuário
+            Busque pelo nome do usuário
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex gap-2">
             <Input
-              placeholder="Nome ou ID do usuário"
+              placeholder="Nome do usuário"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && searchUsers()}
