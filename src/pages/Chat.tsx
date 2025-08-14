@@ -1060,7 +1060,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
                             <div className="mt-3 border-t border-current/20 pt-3">
                               <div className="flex items-center gap-2 mb-2 text-xs text-current/70">
                                 <Volume2 className="w-3 h-3" />
-                                <span>Resposta em áudio (salva por 7 dias)</span>
+                                <span>Resposta em áudio</span>
                               </div>
                               <AudioPlayer
                                 audioSrc={msg.audioUrl || messageAudios.get(msg.id)?.audioUrl || ''}
