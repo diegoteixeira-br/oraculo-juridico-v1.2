@@ -81,9 +81,9 @@ const Termos = () => {
                 Oferecemos um plano de assinatura mensal e pacotes opcionais de tokens:
               </p>
               <ul className="list-disc ml-6 mt-2 space-y-2">
-                <li><strong>Plano Essencial:</strong> R$ 37,90/mês, com 30.000 tokens/mês para as funcionalidades de IA (chat, áudio e extração de prazos) e uso ilimitado das calculadoras, documentos (cópia) e agenda.</li>
-                <li><strong>Teste Gratuito:</strong> 7 dias grátis com acesso completo a todas as ferramentas: 15.000 tokens para usar nas funcionalidades de IA (chat, áudio e extração de prazos), uso ilimitado das calculadoras, documentos e agenda.</li>
-                <li><strong>Pacotes Opcionais:</strong> 75.000 e 150.000 tokens avulsos (opcionais) para quem desejar ampliar o uso das funcionalidades de IA.</li>
+                <li><strong>Plano Essencial:</strong> R$ 37,90/mês, com 30.000 tokens mensais para funcionalidades de IA (chat jurídico, conversão de áudio em texto, extração automática de prazos de documentos) e uso ilimitado das calculadoras, documentos (cópia) e agenda.</li>
+                <li><strong>Teste Gratuito:</strong> 7 dias grátis com acesso completo: 15.000 tokens para funcionalidades de IA (chat jurídico, conversão de áudio em texto, extração automática de prazos) e uso ilimitado das calculadoras, documentos e agenda.</li>
+                <li><strong>Pacotes Opcionais:</strong> 75.000 e 150.000 tokens avulsos para ampliar o uso das funcionalidades de IA conforme necessidade.</li>
               </ul>
             </section>
 
