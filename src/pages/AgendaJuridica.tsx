@@ -247,7 +247,7 @@ const AgendaJuridica = () => {
           hours_before_commitment: 24,
           whatsapp_enabled: false,
           push_enabled: true,
-          agenda_timezone: (profile as any)?.timezone || 'America/Sao_Paulo'
+          agenda_timezone: 'America/Sao_Paulo'
         }, {
           onConflict: 'user_id'
         });

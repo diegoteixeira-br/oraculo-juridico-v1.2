@@ -108,7 +108,7 @@ serve(async (req) => {
     const userIds = Array.from(new Set(commitments.map((c) => c.user_id)));
     const { data: profiles, error: profilesError } = await supabase
       .from("profiles")
-      .select("user_id, full_name, receber_notificacao_agenda, timezone")
+      .select("user_id, full_name, receber_notificacao_agenda")
       .in("user_id", userIds)
       .eq("receber_notificacao_agenda", true);
 
@@ -126,17 +126,8 @@ serve(async (req) => {
     // Get notification settings for users who have commitments
     const { data: notificationSettings } = await supabase
       .from("notification_settings") 
-      .select("user_id, agenda_email_time, agenda_timezone")
+      .select("user_id, agenda_email_time")
       .in("user_id", Array.from(allowedUserIds));
-
-    // Create timezone mapping for users
-    const userTimezones = new Map<string, { emailTime: string; timezone: string }>();
-    profiles?.forEach(profile => {
-      const timezone = profile.timezone || 'America/Sao_Paulo';
-      const settings = notificationSettings?.find(s => s.user_id === profile.user_id);
-      const emailTime = settings?.agenda_email_time || '09:00';
-      userTimezones.set(profile.user_id, { emailTime, timezone });
-    });
 
     // Group by user
     const grouped = groupBy(filtered, "user_id");
@@ -148,20 +139,8 @@ serve(async (req) => {
     for (const [userId, items] of Object.entries(grouped)) {
       try {
         const profile = profiles?.find(p => p.user_id === userId);
-        const userTimeInfo = userTimezones.get(userId);
-        const timezone = userTimeInfo?.timezone || 'America/Sao_Paulo';
-        const emailTime = userTimeInfo?.emailTime || '09:00';
+        const settings = notificationSettings?.find(s => s.user_id === userId);
         
-        // Format current time in user's timezone for display
-        const userCurrentTime = new Intl.DateTimeFormat('pt-BR', {
-          timeZone: timezone,
-          hour: '2-digit',
-          minute: '2-digit',
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric'
-        }).format(now);
-
         const { data: user } = await supabase.auth.admin.getUserById(userId);
         if (!user.user?.email) continue;
 
@@ -170,7 +149,7 @@ serve(async (req) => {
         const { data, error } = await resend.emails.send({
           from: "Oráculo Jurídico <agenda@oracurojuridico.com.br>",
           to: [user.user.email],
-          subject: `📅 Resumo da Agenda - ${userCurrentTime.split(' ')[0]} (${timezone.replace('America/', '').replace('_', ' ')})`,
+          subject: "📅 Resumo da Agenda Jurídica",
           html,
         });
 
