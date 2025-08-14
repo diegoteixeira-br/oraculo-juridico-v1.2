@@ -73,6 +73,7 @@ const AgendaJuridica = () => {
   const [filteredCommitments, setFilteredCommitments] = useState<LegalCommitment[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+  const [activeTab, setActiveTab] = useState("list");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
@@ -150,17 +151,22 @@ const AgendaJuridica = () => {
     
     setIsLoading(true);
     try {
-      // Query otimizada com filtros e índices
-      const monthStart = startOfMonth(currentMonth);
-      const monthEnd = endOfMonth(currentMonth);
-      
-      const { data, error } = await supabase
+      let query = supabase
         .from('legal_commitments' as any)
         .select('*')
-        .eq('user_id', user.id)
-        .gte('commitment_date', monthStart.toISOString())
-        .lte('commitment_date', monthEnd.toISOString())
-        .order('commitment_date', { ascending: true });
+        .eq('user_id', user.id);
+
+      // Se estivermos na aba Calendário, filtrar por mês
+      // Se estivermos na aba Lista, mostrar todos os compromissos
+      if (activeTab === 'calendar') {
+        const monthStart = startOfMonth(currentMonth);
+        const monthEnd = endOfMonth(currentMonth);
+        query = query
+          .gte('commitment_date', monthStart.toISOString())
+          .lte('commitment_date', monthEnd.toISOString());
+      }
+      
+      const { data, error } = await query.order('commitment_date', { ascending: true });
 
       if (error) throw error;
       setCommitments((data as unknown as LegalCommitment[]) || []);
@@ -270,7 +276,7 @@ const AgendaJuridica = () => {
   useEffect(() => {
     loadCommitments();
     loadNotificationSettings();
-  }, [user, currentMonth]);
+  }, [user, currentMonth, activeTab]);
 
   // Criar novo compromisso
   const handleCreateCommitment = async () => {
@@ -1165,7 +1171,7 @@ const AgendaJuridica = () => {
 
           {/* Conteúdo Principal com Tabs */}
           <div className="flex-1 overflow-hidden">
-            <Tabs defaultValue="list" className="h-full flex flex-col">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
               <TabsList className="grid w-full grid-cols-3 flex-shrink-0 bg-slate-800/50 border border-slate-700">
                 <TabsTrigger value="calendar" className="gap-2 text-xs md:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                   <CalendarIcon className="h-4 w-4" />
