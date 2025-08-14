@@ -15,6 +15,7 @@ import ReactMarkdown from "react-markdown";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAccessControl } from "@/hooks/useAccessControl";
 import InlineWordUnderlineOverlay from "@/components/InlineWordUnderlineOverlay";
+import { useUserTimezone } from "@/hooks/useUserTimezone";
 
 interface Message {
   id: string;
@@ -70,6 +71,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   const messageContainerRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [pendingNewSession, setPendingNewSession] = useState(false);
+  const { formatDateInUserTimezone } = useUserTimezone();
 
   const currentSession = sessions.find(s => s.id === currentSessionId);
   const messages = currentSession?.messages || [];
@@ -713,7 +715,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
     if (!currentSession) return;
 
     const chatContent = currentSession.messages.map(msg => 
-      `[${msg.type.toUpperCase()}] ${msg.timestamp.toLocaleString()}\n${msg.content}\n\n`
+      `[${msg.type.toUpperCase()}] ${formatDateInUserTimezone(msg.timestamp, 'dd/MM/yyyy HH:mm:ss')}\n${msg.content}\n\n`
     ).join('');
 
     const blob = new Blob([chatContent], { type: 'text/plain' });
@@ -899,7 +901,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
                           {session.lastMessage}
                         </p>
                         <p className="text-xs text-slate-500 mt-1">
-                          {session.timestamp.toLocaleDateString('pt-BR')}
+                          {formatDateInUserTimezone(session.timestamp, 'dd/MM/yyyy')}
                         </p>
                       </div>
                       
@@ -1086,10 +1088,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
                           {/* Footer da mensagem */}
                           <div className="flex items-center justify-between mt-3 pt-2 border-t border-current/20">
                             <span className="text-xs opacity-70">
-                              {msg.timestamp.toLocaleTimeString('pt-BR', { 
-                                hour: '2-digit', 
-                                minute: '2-digit' 
-                              })}
+                              {formatDateInUserTimezone(msg.timestamp, 'HH:mm')}
                             </span>
                             
                             <div className="flex items-center gap-2">
