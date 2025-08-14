@@ -235,15 +235,20 @@ const AgendaJuridica = () => {
         .upsert({
           user_id: user.id,
           email_enabled: notificationSettings.email_enabled,
-          agenda_email_time: notificationSettings.agenda_email_time,
+          agenda_email_time: notificationSettings.agenda_email_time || '09:00',
           days_before_deadline: 3,
           hours_before_commitment: 24,
           whatsapp_enabled: false,
           push_enabled: true,
           agenda_timezone: 'America/Sao_Paulo'
+        }, {
+          onConflict: 'user_id'
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erro detalhado:', error);
+        throw error;
+      }
 
       toast({
         title: "Sucesso",
