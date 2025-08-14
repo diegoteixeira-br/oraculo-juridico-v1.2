@@ -304,23 +304,23 @@ const SuportePage = () => {
                   <span className="text-xs sm:text-sm">Respostas para as dúvidas mais comuns</span>
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3 sm:space-y-4">
-                <div className="max-h-[450px] sm:max-h-[500px] overflow-y-auto space-y-3 sm:space-y-4">
+              <CardContent className="space-y-2">
+                <div className="space-y-2">
                 {faqItems.map((item, index) => (
-                  <div key={index} className="p-3 sm:p-4 bg-slate-700/30 rounded-lg border border-slate-600/50">
-                    <div className="flex items-start gap-3">
-                      <div className="p-1 bg-primary/20 rounded-full flex-shrink-0 mt-1">
-                        <Info className="w-3 h-3 text-primary" />
+                  <div key={index} className="p-2.5 bg-slate-700/30 rounded-lg border border-slate-600/50">
+                    <div className="flex items-start gap-2">
+                      <div className="p-1 bg-primary/20 rounded-full flex-shrink-0 mt-0.5">
+                        <Info className="w-2.5 h-2.5 text-primary" />
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-medium text-white mb-2 text-xs sm:text-sm">
+                        <h4 className="font-medium text-white mb-1.5 text-xs">
                           {item.question}
                         </h4>
                         <p className="text-xs text-slate-300 leading-relaxed">
                           {item.answer}
                         </p>
-                        <div className="mt-2">
-                          <span className="text-xs text-primary bg-primary/10 px-2 py-1 rounded-full">
+                        <div className="mt-1.5">
+                          <span className="text-xs text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">
                             {supportCategories.find(c => c.id === item.category)?.title}
                           </span>
                         </div>
