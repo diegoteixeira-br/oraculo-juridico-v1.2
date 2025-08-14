@@ -53,6 +53,9 @@ export default function Chat() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [readingMsgId, setReadingMsgId] = useState<string | null>(null);
   const [readingProgress, setReadingProgress] = useState(0);
+  
+  // Estado para áudios salvos de cada mensagem (7 dias de cache)
+  const [messageAudios, setMessageAudios] = useState<Map<string, { audioUrl: string; text: string }>>(new Map());
   const [pendingShowHistory, setPendingShowHistory] = useState(false);
   const [pendingMessageId, setPendingMessageId] = useState<string | null>(null);
   
@@ -229,6 +232,44 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
         
         return merged;
       });
+      
+      // Carregar áudios salvos para as mensagens carregadas
+      setTimeout(() => {
+        const savedAudios = new Map<string, { audioUrl: string; text: string }>();
+        
+        sessionsArray.forEach(session => {
+          session.messages.forEach(message => {
+            if (message.type === 'assistant') {
+              const textToProcess = message.content.substring(0, 4000);
+              const textHash = textToProcess.split('').reduce((a, b) => {
+                a = ((a << 5) - a) + b.charCodeAt(0);
+                return a & a;
+              }, 0).toString(36).replace('-', '0').substring(0, 20);
+              const cacheKey = `audio_cache_${textHash}_alloy`;
+              const cached = localStorage.getItem(cacheKey);
+              
+              if (cached) {
+                try {
+                  const audioData = JSON.parse(cached);
+                  const sevenDays = 7 * 24 * 60 * 60 * 1000;
+                  if (Date.now() - audioData.createdAt < sevenDays) {
+                    savedAudios.set(message.id, {
+                      audioUrl: audioData.audioUrl,
+                      text: message.content
+                    });
+                  } else {
+                    localStorage.removeItem(cacheKey);
+                  }
+                } catch (e) {
+                  localStorage.removeItem(cacheKey);
+                }
+              }
+            }
+          });
+        });
+        
+        setMessageAudios(savedAudios);
+      }, 100);
     } catch (error) {
       console.error('Erro ao carregar sessões:', error);
     }
@@ -580,6 +621,9 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
         }
         return updatedSessions;
       });
+      
+      // Adicionar também ao estado de áudios salvos
+      setMessageAudios(prev => new Map(prev.set(id, { audioUrl, text: textToProcess })));
     } catch (error: any) {
       console.error('Erro no text-to-speech:', error);
       toast({
@@ -904,11 +948,15 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
                             )}
                           </div>
 
-                          {/* Player de áudio se houver audioUrl */}
-                          {msg.audioUrl && (
-                            <div className="mt-3">
+                          {/* Player de áudio - exibir se houver áudio salvo ou no cache */}
+                          {(msg.audioUrl || messageAudios.has(msg.id)) && (
+                            <div className="mt-3 border-t border-current/20 pt-3">
+                              <div className="flex items-center gap-2 mb-2 text-xs text-current/70">
+                                <Volume2 className="w-3 h-3" />
+                                <span>Resposta em áudio (salva por 7 dias)</span>
+                              </div>
                               <AudioPlayer
-                                audioSrc={msg.audioUrl}
+                                audioSrc={msg.audioUrl || messageAudios.get(msg.id)?.audioUrl || ''}
                                 onProgress={(_, __, percent, isPlaying) => {
                                   if (readingMsgId === msg.id) setReadingProgress(percent);
                                   if (!isPlaying && readingMsgId === msg.id && percent >= 0.99) {
@@ -944,17 +992,17 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
                                 </Badge>
                               )}
                               
-                              {msg.type === 'assistant' && (
+                              {/* Só mostrar botão se não houver áudio salvo */}
+                              {msg.type === 'assistant' && !msg.audioUrl && !messageAudios.has(msg.id) && (
                                 <Button
                                   variant="ghost"
                                   size="sm"
                                   className="h-6 w-6 p-0 opacity-70 hover:opacity-100"
                                   onClick={() => playTextToSpeech(msg.id, msg.content)}
+                                  title="Gerar áudio desta resposta"
                                 >
-                                  {ttsLoading ? (
+                                  {ttsLoading && readingMsgId === msg.id ? (
                                     <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                                  ) : isPlayingAudio ? (
-                                    <VolumeX className="w-3 h-3" />
                                   ) : (
                                     <Volume2 className="w-3 h-3" />
                                   )}
