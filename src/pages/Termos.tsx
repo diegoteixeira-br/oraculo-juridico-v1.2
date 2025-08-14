@@ -82,7 +82,7 @@ const Termos = () => {
               </p>
               <ul className="list-disc ml-6 mt-2 space-y-2">
                 <li><strong>Plano Essencial:</strong> R$ 37,90/mês, com 30.000 tokens/mês para o chat e uso ilimitado das calculadoras, documentos (cópia) e agenda.</li>
-                <li><strong>Teste Gratuito:</strong> 7 dias grátis: 15.000 tokens no período de teste.</li>
+                <li><strong>Teste Gratuito:</strong> 7 dias grátis com acesso completo a todas as ferramentas: 15.000 tokens para o chat, uso ilimitado das calculadoras, documentos e agenda.</li>
                 <li><strong>Pacotes Opcionais:</strong> 75.000 e 150.000 tokens avulsos (opcionais) para quem desejar ampliar o uso do chat.</li>
               </ul>
             </section>
@@ -115,7 +115,7 @@ const Termos = () => {
                 <li><strong>Cálculo de Pensão Alimentícia:</strong> Cálculo de valores em atraso com juros, correção monetária e relatórios detalhados</li>
               </ul>
               <p className="mt-2">
-                <strong>Limites por Plano:</strong> No Plano Essencial o uso é ilimitado. No plano gratuito, o usuário pode realizar até 2 cálculos por dia (somados entre as calculadoras).
+                <strong>Limites por Plano:</strong> No Plano Essencial o uso é ilimitado. No teste gratuito de 7 dias, o uso também é ilimitado.
               </p>
             </section>
 
@@ -131,7 +131,7 @@ const Termos = () => {
                 <li>Declarações</li>
               </ul>
               <p className="mt-2">
-                <strong>Limites por Plano:</strong> No Plano Essencial, a cópia de documentos é ilimitada. No plano gratuito, o usuário pode copiar 1 documento por dia. A cópia de documentos não consome tokens.
+                <strong>Limites por Plano:</strong> No Plano Essencial, a cópia de documentos é ilimitada. No teste gratuito de 7 dias, a cópia também é ilimitada. A cópia de documentos não consome tokens.
               </p>
             </section>
 
@@ -159,7 +159,7 @@ const Termos = () => {
                 A Agenda Jurídica permite organizar prazos processuais, audiências, reuniões e compromissos personalizados.
               </p>
               <p className="mt-2">
-                <strong>Limites por Plano:</strong> No Plano Essencial, o uso é ilimitado. No plano gratuito, o usuário pode manter até 20 compromissos com status pendente simultaneamente.
+                <strong>Limites por Plano:</strong> No Plano Essencial, o uso é ilimitado. No teste gratuito de 7 dias, o uso também é ilimitado.
               </p>
               <p className="mt-2">
                 <strong>Extração Automática de Prazos:</strong> A funcionalidade de extração automática de prazos via IA consome um mínimo de 500 tokens por uso, com custo variável baseado no tamanho do texto analisado. Esta função analisa documentos jurídicos (texto, PDF ou imagem) e identifica automaticamente prazos processuais, criando compromissos na agenda.
