@@ -53,22 +53,8 @@ serve(async (req) => {
   const source = payload?.source ?? "manual";
   const testEmail = payload?.test_email; // Email específico para teste
 
-  // Authorization strategy:
-  // - Prefer DAILY_AGENDA_SECRET via header, body or query param
-  // - Allow pg_cron scheduled calls (they set source="pg_cron" in the body via migration)
-  // - Allow manual tests from authenticated admin users
-  const authorized = (AGENDA_SECRET && providedSecret === AGENDA_SECRET) || 
-                    source === "pg_cron" || 
-                    source === "manual_test";
-
   // Preview endpoint: returns the HTML template for quick visual check
   if (isPreview) {
-    if (!authorized) {
-      return new Response("Unauthorized preview", {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "text/plain" },
-      });
-    }
     const now = new Date();
     const sampleItems = [
       { title: "Audiência de conciliação", commitment_date: new Date(now.getTime() + 2*60*60*1000), location: "Fórum Central", process_number: "0001234-56.2025.8.26.0000", client_name: "Maria Silva" },
@@ -80,6 +66,14 @@ serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "text/html" },
     });
   }
+
+  // Authorization strategy:
+  // - Prefer DAILY_AGENDA_SECRET via header, body or query param
+  // - Allow pg_cron scheduled calls (they set source="pg_cron" in the body via migration)
+  // - Allow manual tests from authenticated admin users
+  const authorized = (AGENDA_SECRET && providedSecret === AGENDA_SECRET) || 
+                    source === "pg_cron" || 
+                    source === "manual_test";
 
   if (!authorized) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
