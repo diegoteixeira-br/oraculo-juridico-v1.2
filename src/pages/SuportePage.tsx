@@ -93,17 +93,13 @@ const SuportePage = () => {
     },
     {
       question: "Como usar a IA da Agenda Jurídica?",
-      answer: "Acesse 'Agenda Jurídica' no menu principal. Envie arquivos ou cole informações de decisões, sentenças ou documentos jurídicos. A IA extrairá automaticamente datas, horários e prazos importantes, criando sua agenda de compromissos de forma inteligente.",
+      answer: "Acesse 'Agenda Jurídica' no menu principal. Envie fotos, PDFs ou cole informações de decisões e documentos jurídicos. A IA busca automaticamente prazos e datas importantes, criando sua agenda de compromissos. Não faz análise de conteúdo, apenas extração de prazos.",
       category: "geral"
     },
     {
-      question: "Como a IA analisa documentos PDF no chat?",
-      answer: "No Chat Jurídico, você pode enviar PDFs de processos, contratos e outros documentos. A IA extrai automaticamente o texto e fornece análises especializadas sobre conteúdo jurídico, identifica cláusulas importantes e responde suas dúvidas específicas sobre o documento.",
+      question: "Como a IA analisa documentos no Chat Jurídico?",
+      answer: "No Chat Jurídico, você pode enviar PDFs e fotos de processos, contratos e outros documentos. A IA extrai o texto e fornece análises especializadas sobre conteúdo jurídico, identifica cláusulas importantes e responde suas dúvidas. Não extrai prazos para agendamento.",
       category: "geral"
-    },
-    {
-      question: "A IA pode analisar fotos de documentos?",
-      answer: "Sim! Você pode enviar fotos tanto no Chat Jurídico quanto na Agenda Jurídica. A IA extrai automaticamente o texto da imagem. Na Agenda, ela também identifica prazos e datas para criar sua agenda automaticamente.",
     },
     {
       question: "A plataforma funciona em mobile?",
