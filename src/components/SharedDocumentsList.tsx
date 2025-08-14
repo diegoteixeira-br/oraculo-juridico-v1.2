@@ -165,17 +165,17 @@ export default function SharedDocumentsList() {
                   <div className="flex gap-2 mt-3">
                     <Button 
                       size="sm" 
-                      variant="outline"
                       onClick={() => setPreviewDoc({ id: d.id, title: d.title, docType: d.doc_type })} 
-                      className="border-slate-600 text-slate-200 hover:bg-slate-600 text-xs flex-1"
+                      className="bg-primary hover:bg-primary/90 text-xs flex-1"
                     >
                       <Eye className="w-4 h-4 mr-1" /> Visualizar
                     </Button>
                     {d.doc_type === 'text' && (
                       <Button 
                         size="sm" 
+                        variant="outline"
                         onClick={() => createCopy(d)} 
-                        className="bg-primary hover:bg-primary/90 text-xs"
+                        className="border-slate-600 text-slate-200 hover:bg-slate-600 text-xs"
                       >
                         <Copy className="w-4 h-4 mr-1" /> Copiar
                       </Button>

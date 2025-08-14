@@ -84,7 +84,14 @@ export default function DocumentPreview({ documentId, title, docType, isOpen, on
 
   const downloadFile = () => {
     if (document?.file_url) {
-      window.open(document.file_url, '_blank');
+      // Faz download direto do URL
+      const link = globalThis.document.createElement('a');
+      link.href = document.file_url;
+      link.download = document.title;
+      link.target = '_blank';
+      globalThis.document.body.appendChild(link);
+      link.click();
+      globalThis.document.body.removeChild(link);
     } else if (document?.content) {
       const blob = new Blob([document.content], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
@@ -159,24 +166,30 @@ export default function DocumentPreview({ documentId, title, docType, isOpen, on
             <div className="space-y-4">
               {document.doc_type === 'text' && document.content ? (
                 <div className="bg-slate-700/30 p-4 rounded-lg border border-slate-600">
-                  <pre className="whitespace-pre-wrap text-slate-200 text-sm">
+                  <pre className="whitespace-pre-wrap text-slate-200 text-sm leading-relaxed">
                     {document.content}
                   </pre>
                 </div>
               ) : document.file_url ? (
                 <div className="bg-slate-700/30 p-4 rounded-lg border border-slate-600">
                   {document.file_url.toLowerCase().includes('.pdf') ? (
-                    <iframe
-                      src={document.file_url}
-                      className="w-full h-96 border-0"
-                      title={document.title}
-                    />
+                    <div className="w-full">
+                      <iframe
+                        src={`${document.file_url}#view=FitH`}
+                        className="w-full h-[80vh] border-0 rounded"
+                        title={document.title}
+                        style={{ minHeight: '600px' }}
+                      />
+                    </div>
                   ) : document.file_url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
-                    <img
-                      src={document.file_url}
-                      alt={document.title}
-                      className="max-w-full h-auto rounded"
-                    />
+                    <div className="text-center">
+                      <img
+                        src={document.file_url}
+                        alt={document.title}
+                        className="max-w-full h-auto rounded mx-auto"
+                        style={{ maxHeight: '80vh' }}
+                      />
+                    </div>
                   ) : (
                     <div className="text-center py-8">
                       <FileText className="w-12 h-12 mx-auto text-slate-400 mb-2" />
@@ -197,19 +210,19 @@ export default function DocumentPreview({ documentId, title, docType, isOpen, on
           )}
         </div>
 
-        <div className="flex gap-2 pt-4 border-t border-slate-700">
+        <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-700">
           {document?.content && (
             <Button onClick={copyToClipboard} className="bg-primary hover:bg-primary/90">
               <Copy className="w-4 h-4 mr-2" />
-              Copiar
+              Copiar Texto
             </Button>
           )}
-          <Button onClick={downloadFile} variant="outline" className="border-slate-600 text-slate-200">
+          <Button onClick={downloadFile} variant="outline" className="border-slate-600 text-slate-200 hover:bg-slate-600">
             <Download className="w-4 h-4 mr-2" />
             Download
           </Button>
           {document?.doc_type === 'text' && (
-            <Button onClick={createCopy} variant="outline" className="border-slate-600 text-slate-200">
+            <Button onClick={createCopy} variant="outline" className="border-slate-600 text-slate-200 hover:bg-slate-600">
               <Copy className="w-4 h-4 mr-2" />
               Criar cópia para editar
             </Button>

@@ -13,7 +13,8 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import UserMenu from "@/components/UserMenu";
 import MarkdownEditor from "@/components/MarkdownEditor";
 import SharedDocumentsList from "@/components/SharedDocumentsList";
-import { FileText, Plus, Search, Trash2, Pencil, ArrowLeft } from "lucide-react";
+import { FileText, Plus, Search, Trash2, Pencil, ArrowLeft, Eye } from "lucide-react";
+import DocumentPreview from "@/components/DocumentPreview";
 
 function cleanEditorHtml(html: string): string {
   try {
@@ -49,6 +50,7 @@ export default function MeusDocumentos() {
   const [tagsFilter, setTagsFilter] = useState<string>("");
   const [paperId, setPaperId] = useState<"A4" | "OFICIO" | "LEGAL">("A4");
   const [margins, setMargins] = useState({ top: 25, right: 25, bottom: 25, left: 25 });
+  const [previewDoc, setPreviewDoc] = useState<{ id: string; title: string; docType: string } | null>(null);
 
   const folders = useMemo(
     () => Array.from(new Set(docs.map((d) => d.folder).filter(Boolean))) as string[],
@@ -254,14 +256,21 @@ export default function MeusDocumentos() {
                           ))}
                         </div>
                       )}
-                      <div className="flex gap-2 mt-3">
-                        <Button size="sm" onClick={() => startEdit(d)} className="bg-primary hover:bg-primary/90 text-xs">
-                          <Pencil className="w-4 h-4 mr-1" /> Editar
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={() => remove(d.id)} className="text-red-400 border-slate-600 hover:bg-slate-700 text-xs">
-                          <Trash2 className="w-4 h-4 mr-1" /> Excluir
-                        </Button>
-                      </div>
+                       <div className="flex gap-2 mt-3">
+                         <Button 
+                           size="sm" 
+                           onClick={() => setPreviewDoc({ id: d.id, title: d.title, docType: 'text' })} 
+                           className="bg-primary hover:bg-primary/90 text-xs"
+                         >
+                           <Eye className="w-4 h-4 mr-1" /> Visualizar
+                         </Button>
+                         <Button size="sm" variant="outline" onClick={() => startEdit(d)} className="border-slate-600 text-slate-200 hover:bg-slate-600 text-xs">
+                           <Pencil className="w-4 h-4 mr-1" /> Editar
+                         </Button>
+                         <Button size="sm" variant="outline" onClick={() => remove(d.id)} className="text-red-400 border-slate-600 hover:bg-slate-700 text-xs">
+                           <Trash2 className="w-4 h-4 mr-1" /> Excluir
+                         </Button>
+                       </div>
                     </div>
                   ))}
                   {filtered.length === 0 && (
@@ -310,6 +319,17 @@ export default function MeusDocumentos() {
           />
         </DialogContent>
       </Dialog>
+
+      {/* Preview Modal */}
+      {previewDoc && (
+        <DocumentPreview
+          documentId={previewDoc.id}
+          title={previewDoc.title}
+          docType={previewDoc.docType}
+          isOpen={!!previewDoc}
+          onClose={() => setPreviewDoc(null)}
+        />
+      )}
     </div>
   );
 }
