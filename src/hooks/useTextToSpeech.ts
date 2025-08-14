@@ -47,8 +47,47 @@ export const useTextToSpeech = () => {
     return null;
   };
 
+  const cleanOldCache = () => {
+    try {
+      const keys = Object.keys(localStorage).filter(key => key.startsWith('audio_cache_'));
+      
+      // Se temos mais de 5 áudios, remover os mais antigos
+      if (keys.length >= 5) {
+        const cachedItems: Array<{key: string, createdAt: number}> = [];
+        
+        keys.forEach(key => {
+          try {
+            const cached = localStorage.getItem(key);
+            if (cached) {
+              const audioData: CachedAudio = JSON.parse(cached);
+              cachedItems.push({ key, createdAt: audioData.createdAt });
+            }
+          } catch (error) {
+            // Remove item inválido
+            localStorage.removeItem(key);
+          }
+        });
+        
+        // Ordenar por data (mais antigo primeiro)
+        cachedItems.sort((a, b) => a.createdAt - b.createdAt);
+        
+        // Remover os mais antigos até ficar com 3 (para dar espaço)
+        const itemsToRemove = cachedItems.slice(0, cachedItems.length - 3);
+        itemsToRemove.forEach(item => {
+          localStorage.removeItem(item.key);
+          console.log('Removido áudio antigo do cache:', item.key);
+        });
+      }
+    } catch (error) {
+      console.error('Error cleaning old cache:', error);
+    }
+  };
+
   const cacheAudio = (text: string, audioUrl: string, voice: string = 'alloy') => {
     try {
+      // Limpar cache antigo se necessário antes de adicionar novo
+      cleanOldCache();
+      
       const cacheKey = getCacheKey(text, voice);
       // Usar o mesmo método de hash para consistência
       const textHash = text.split('').reduce((a, b) => {
@@ -62,7 +101,16 @@ export const useTextToSpeech = () => {
         voice,
         createdAt: Date.now()
       };
-      localStorage.setItem(cacheKey, JSON.stringify(audioData));
+      
+      try {
+        localStorage.setItem(cacheKey, JSON.stringify(audioData));
+      } catch (storageError) {
+        // Se mesmo assim deu erro de quota, forçar limpeza mais agressiva
+        console.warn('Storage quota exceeded, forcing aggressive cleanup');
+        const keys = Object.keys(localStorage).filter(key => key.startsWith('audio_cache_'));
+        keys.forEach(key => localStorage.removeItem(key));
+        localStorage.setItem(cacheKey, JSON.stringify(audioData));
+      }
     } catch (error) {
       console.error('Error caching audio:', error);
     }
