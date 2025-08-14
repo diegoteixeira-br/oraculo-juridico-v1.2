@@ -188,7 +188,7 @@ const LandingPage = () => {
               <Calendar className="w-12 h-12 text-primary mb-4" />
               <h3 className="text-xl font-semibold mb-4 text-foreground">Agenda Jurídica</h3>
               <p className="text-muted-foreground">
-                Registre e organize manualmente prazos e compromissos; receba lembretes por e-mail às 08h (Brasília) nos dias com eventos. Extração automática de prazos via IA disponível (mínimo 500 tokens, varia com tamanho).
+                Registre e organize manualmente prazos e compromissos; receba lembretes por e-mail às 08h (Brasília) nos dias com eventos.
               </p>
             </div>
             
