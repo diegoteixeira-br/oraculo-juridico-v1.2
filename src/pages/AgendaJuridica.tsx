@@ -87,8 +87,7 @@ const AgendaJuridica = () => {
   // Estados para configurações de notificação
   const [notificationSettings, setNotificationSettings] = useState({
     email_enabled: true,
-    agenda_email_time: '09:00',
-    agenda_timezone: 'America/Sao_Paulo'
+    agenda_email_time: '09:00'
   });
   const [isLoadingNotifications, setIsLoadingNotifications] = useState(false);
 
@@ -209,7 +208,7 @@ const AgendaJuridica = () => {
     try {
       const { data, error } = await supabase
         .from('notification_settings')
-        .select('email_enabled, agenda_email_time, agenda_timezone')
+        .select('email_enabled, agenda_email_time')
         .eq('user_id', user.id)
         .single();
 
@@ -220,8 +219,7 @@ const AgendaJuridica = () => {
       if (data) {
         setNotificationSettings({
           email_enabled: data.email_enabled ?? true,
-          agenda_email_time: data.agenda_email_time || '09:00',
-          agenda_timezone: data.agenda_timezone || 'America/Sao_Paulo'
+          agenda_email_time: data.agenda_email_time || '09:00'
         });
       }
     } catch (error: any) {
@@ -240,8 +238,7 @@ const AgendaJuridica = () => {
         .upsert({
           user_id: user.id,
           email_enabled: notificationSettings.email_enabled,
-          agenda_email_time: notificationSettings.agenda_email_time,
-          agenda_timezone: notificationSettings.agenda_timezone
+          agenda_email_time: notificationSettings.agenda_email_time
         });
 
       if (error) throw error;
@@ -1386,29 +1383,8 @@ const AgendaJuridica = () => {
                     className="w-full"
                   />
                   <p className="text-xs text-muted-foreground">
-                    Você receberá o resumo diário neste horário
+                    Você receberá o resumo diário neste horário (no seu fuso horário configurado)
                   </p>
-                </div>
-
-                {/* Fuso horário */}
-                <div className="space-y-2">
-                  <Label htmlFor="timezone">Fuso Horário</Label>
-                  <Select 
-                    value={notificationSettings.agenda_timezone} 
-                    onValueChange={(value) => 
-                      setNotificationSettings({...notificationSettings, agenda_timezone: value})
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="America/Sao_Paulo">São Paulo (GMT-3)</SelectItem>
-                      <SelectItem value="America/Fortaleza">Fortaleza (GMT-3)</SelectItem>
-                      <SelectItem value="America/Manaus">Manaus (GMT-4)</SelectItem>
-                      <SelectItem value="America/Rio_Branco">Rio Branco (GMT-5)</SelectItem>
-                    </SelectContent>
-                  </Select>
                 </div>
               </>
             )}
