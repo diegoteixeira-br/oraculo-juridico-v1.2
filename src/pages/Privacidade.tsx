@@ -34,23 +34,21 @@ const Privacidade = () => {
             <section>
               <h2 className="text-xl font-semibold text-foreground mb-4">1. Coleta de Informações</h2>
               <p>
-                Coletamos informações que você nos fornece diretamente, como nome, e-mail e dados 
-                de pagamento, necessários para o funcionamento adequado da plataforma.
+                Coletamos informações que você nos fornece diretamente ao se cadastrar na plataforma, incluindo: nome completo, endereço de e-mail, dados de pagamento (processados pela Stripe), documentos enviados para análise, consultas realizadas no chat com IA, e dados de uso da plataforma (consumo de tokens, funcionalidades utilizadas). Todas as informações são coletadas com sua autorização expressa e são essenciais para o funcionamento dos nossos serviços jurídicos especializados.
               </p>
             </section>
 
             <section>
               <h2 className="text-xl font-semibold text-foreground mb-4">2. Uso das Informações</h2>
               <p>
-                Utilizamos suas informações para fornecer e melhorar nossos serviços, processar 
-                pagamentos, enviar comunicações importantes e personalizar sua experiência.
+                Utilizamos suas informações para: (i) fornecer serviços de inteligência artificial jurídica, incluindo análise de documentos, consultas à jurisprudência e cálculos especializados, (ii) processar pagamentos de assinaturas e pacotes de tokens via Stripe, (iii) enviar comunicações essenciais sobre sua conta e atualizações dos serviços, (iv) personalizar sua experiência na plataforma conforme seu perfil de uso, (v) cumprir obrigações legais e regulamentares, e (vi) melhorar continuamente nossos algoritmos e funcionalidades. IMPORTANTE: As informações jurídicas geradas pela IA devem sempre ser revisadas por um advogado qualificado.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">2.1 Dados de Uso e Limites por Plano</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-4">2.1 Sistema de Tokens e Controle de Uso</h2>
               <p>
-                Para garantir o cumprimento dos limites de uso por plano e eventuais períodos de teste, registramos métricas mínimas de utilização como consumo de tokens no chat, número de cópias de documentos, quantidade de cálculos realizados e compromissos pendentes. Esses dados são usados exclusivamente para aplicar regras de limite, prevenir abusos e melhorar a experiência do usuário, em conformidade com a LGPD.
+                Para garantir o funcionamento adequado dos planos de assinatura (Essencial - R$ 37,90/mês com 30.000 tokens mensais) e pacotes avulsos de tokens, registramos automaticamente o consumo de tokens nas seguintes funcionalidades: chat com IA jurídica, extração de texto de documentos, geração de cálculos jurídicos, e consultas à base LexML. Esses dados de utilização são processados exclusivamente para: (i) aplicar os limites contratuais de cada plano, (ii) prevenir uso indevido da plataforma, (iii) gerar relatórios de consumo para o usuário, e (iv) melhorar a performance dos serviços, sempre em conformidade com a LGPD.
               </p>
             </section>
 
@@ -73,7 +71,7 @@ const Privacidade = () => {
             <section>
               <h2 className="text-xl font-semibold text-foreground mb-4">3.2 Integrações e Fontes Oficiais (LexML)</h2>
               <p>
-                Para consultas de jurisprudência, integramos com a LexML, base oficial do governo brasileiro. As consultas utilizam termos de busca e não compartilhamos seus dados pessoais com essa base. Coletamos logs técnicos mínimos (como termo de busca e horário) para auditoria e melhoria contínua.
+                Para consultas de jurisprudência, integramos com a LexML, base oficial do governo brasileiro. As consultas utilizam apenas termos de busca técnicos e não compartilhamos dados pessoais dos usuários com essa base. Coletamos logs técnicos mínimos (termo de busca, horário da consulta, tokens consumidos) exclusivamente para auditoria, controle de uso e melhoria dos serviços. IMPORTANTE: As informações obtidas da LexML podem não estar 100% atualizadas e devem sempre ser verificadas e adaptadas pelo advogado responsável para cada caso específico.
               </p>
             </section>
 
