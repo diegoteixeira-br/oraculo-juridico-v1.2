@@ -102,7 +102,7 @@ export default function ComprarCreditosPage() {
       setSubLoading(true);
       
       // Link direto do Stripe para a assinatura Essencial
-      const stripeUrl = 'https://buy.stripe.com/SEU_STRIPE_LINK_AQUI';
+      const stripeUrl = 'https://buy.stripe.com/cNi00k4Hf2lE1xZbwy5AQ02';
       
       console.log("✅ Redirecionando para assinatura:", stripeUrl);
       // Redirecionar para o link do Stripe na mesma aba
