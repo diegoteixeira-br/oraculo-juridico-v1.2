@@ -235,63 +235,8 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
         return merged;
       });
       
-      // Carregar áudios salvos para as mensagens carregadas imediatamente
+      // Sistema simples de cache só para a sessão atual
       const savedAudios = new Map<string, { audioUrl: string; text: string }>();
-      
-      sessionsArray.forEach(session => {
-        session.messages.forEach(message => {
-          if (message.type === 'assistant') {
-            const textToProcess = message.content.substring(0, 4000);
-            const textHash = textToProcess.split('').reduce((a, b) => {
-              a = ((a << 5) - a) + b.charCodeAt(0);
-              return a & a;
-            }, 0).toString(36).replace('-', '0').substring(0, 20);
-            const cacheKey = `audio_cache_${textHash}_alloy`;
-            const cached = localStorage.getItem(cacheKey);
-            
-            if (cached) {
-              try {
-                const audioData = JSON.parse(cached);
-                const sevenDays = 7 * 24 * 60 * 60 * 1000;
-                if (Date.now() - audioData.createdAt < sevenDays && audioData.audioUrl) {
-                  // Verificar se o blob URL ainda é válido
-                  try {
-                    if (audioData.audioUrl.startsWith('blob:')) {
-                      // Se for blob URL, precisamos recriar
-                      if (audioData.blobData) {
-                        const audioBlob = new Blob([
-                          Uint8Array.from(atob(audioData.blobData), c => c.charCodeAt(0))
-                        ], { type: 'audio/mpeg' });
-                        const newAudioUrl = URL.createObjectURL(audioBlob);
-                        savedAudios.set(message.id, {
-                          audioUrl: newAudioUrl,
-                          text: message.content
-                        });
-                        
-                        // Atualizar cache com nova URL
-                        audioData.audioUrl = newAudioUrl;
-                        localStorage.setItem(cacheKey, JSON.stringify(audioData));
-                      }
-                    } else {
-                      savedAudios.set(message.id, {
-                        audioUrl: audioData.audioUrl,
-                        text: message.content
-                      });
-                    }
-                  } catch (e) {
-                    localStorage.removeItem(cacheKey);
-                  }
-                } else {
-                  localStorage.removeItem(cacheKey);
-                }
-              } catch (e) {
-                localStorage.removeItem(cacheKey);
-              }
-            }
-          }
-        });
-      });
-      
       setMessageAudios(savedAudios);
     } catch (error) {
       console.error('Erro ao carregar sessões:', error);
