@@ -57,10 +57,10 @@ const Termos = () => {
             <section>
               <h2 className="text-xl font-semibold text-foreground mb-4">3. Sistema de Tokens</h2>
               <p>
-                Tokens são utilizados exclusivamente no chat com a IA para processar consultas. No teste gratuito, o usuário recebe 15.000 tokens para utilizar ao longo de 7 dias (não renováveis diariamente). No Plano Essencial, o usuário recebe 30.000 tokens por mês.
+                Tokens são utilizados para TODAS as funcionalidades com Inteligência Artificial: chat jurídico, conversão de texto em áudio (text-to-speech) e extração automática de prazos da agenda. No teste gratuito, o usuário recebe 15.000 tokens para utilizar ao longo de 7 dias (não renováveis diariamente). No Plano Essencial, o usuário recebe 30.000 tokens por mês.
               </p>
               <p className="mt-2">
-                Importante: calculadoras, documentos e agenda não consomem tokens. Esses recursos seguem os limites do plano conforme descrito abaixo.
+                Importante: calculadoras e cópia de documentos não consomem tokens. Esses recursos seguem os limites do plano conforme descrito abaixo.
               </p>
               
               <h3 className="text-lg font-semibold text-foreground mt-6 mb-3">Regras Específicas do Plano Essencial</h3>
@@ -81,9 +81,9 @@ const Termos = () => {
                 Oferecemos um plano de assinatura mensal e pacotes opcionais de tokens:
               </p>
               <ul className="list-disc ml-6 mt-2 space-y-2">
-                <li><strong>Plano Essencial:</strong> R$ 37,90/mês, com 30.000 tokens/mês para o chat e uso ilimitado das calculadoras, documentos (cópia) e agenda.</li>
-                <li><strong>Teste Gratuito:</strong> 7 dias grátis com acesso completo a todas as ferramentas: 15.000 tokens para o chat, uso ilimitado das calculadoras, documentos e agenda.</li>
-                <li><strong>Pacotes Opcionais:</strong> 75.000 e 150.000 tokens avulsos (opcionais) para quem desejar ampliar o uso do chat.</li>
+                <li><strong>Plano Essencial:</strong> R$ 37,90/mês, com 30.000 tokens/mês para as funcionalidades de IA (chat, áudio e extração de prazos) e uso ilimitado das calculadoras, documentos (cópia) e agenda.</li>
+                <li><strong>Teste Gratuito:</strong> 7 dias grátis com acesso completo a todas as ferramentas: 15.000 tokens para usar nas funcionalidades de IA (chat, áudio e extração de prazos), uso ilimitado das calculadoras, documentos e agenda.</li>
+                <li><strong>Pacotes Opcionais:</strong> 75.000 e 150.000 tokens avulsos (opcionais) para quem desejar ampliar o uso das funcionalidades de IA.</li>
               </ul>
             </section>
 
@@ -146,7 +146,7 @@ const Termos = () => {
                 <li><strong>Gerenciamento Automático:</strong> Quando o limite de 10 áudios é atingido, os 3 mais antigos são removidos automaticamente para dar espaço aos novos</li>
                 <li><strong>Disponibilidade:</strong> O áudio permanece disponível ao navegar entre páginas da plataforma durante a mesma sessão</li>
                 <li><strong>Expiração:</strong> Todo o áudio é automaticamente removido quando você desloga da conta ou fecha o navegador</li>
-                <li><strong>Cobrança:</strong> Tokens são cobrados apenas na primeira geração do áudio. Reproduções subsequentes do mesmo áudio durante a sessão não consomem tokens adicionais</li>
+                <li><strong>Cobrança:</strong> Tokens são cobrados apenas na primeira geração do áudio. O consumo varia de acordo com o tamanho do texto (aproximadamente 1 token por caractere). Reproduções subsequentes do mesmo áudio durante a sessão não consomem tokens adicionais</li>
               </ul>
               <p className="mt-2">
                 <strong>Benefício:</strong> Este sistema evita cobranças desnecessárias de tokens quando você reproduz o mesmo áudio múltiplas vezes durante sua sessão de uso.
@@ -162,7 +162,7 @@ const Termos = () => {
                 <strong>Limites por Plano:</strong> No Plano Essencial, o uso é ilimitado. No teste gratuito de 7 dias, o uso também é ilimitado.
               </p>
               <p className="mt-2">
-                <strong>Extração Automática de Prazos:</strong> A funcionalidade de extração automática de prazos via IA consome um mínimo de 500 tokens por uso, com custo variável baseado no tamanho do texto analisado. Esta função analisa documentos jurídicos (texto, PDF ou imagem) e identifica automaticamente prazos processuais, criando compromissos na agenda.
+                <strong>Extração Automática de Prazos:</strong> A funcionalidade de extração automática de prazos via IA consome um mínimo de 500 tokens por uso, com custo variável baseado no tamanho do texto analisado. Esta função analiza documentos jurídicos (texto, PDF ou imagem) e identifica automaticamente prazos processuais, criando compromissos na agenda.
               </p>
             </section>
 
