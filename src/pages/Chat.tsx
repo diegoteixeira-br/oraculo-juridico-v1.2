@@ -13,6 +13,7 @@ import UserMenu from "@/components/UserMenu";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 import ReactMarkdown from "react-markdown";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAccessControl } from "@/hooks/useAccessControl";
 import InlineWordUnderlineOverlay from "@/components/InlineWordUnderlineOverlay";
 
 interface Message {
@@ -60,6 +61,7 @@ export default function Chat() {
   const [pendingMessageId, setPendingMessageId] = useState<string | null>(null);
   
   const { user, profile, refreshProfile } = useAuth();
+  const access = useAccessControl();
   const { toast } = useToast();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -654,8 +656,42 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const totalTokens = (profile?.token_balance || 0) + (profile?.plan_tokens || 0);
 
+  // Verificar acesso e mostrar modal apenas se necessário
+  const shouldShowAccessDialog = !access.canUseChat && user && profile;
+
   return (
     <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex overflow-hidden relative">
+      {/* Modal de Acesso Restrito */}
+      {shouldShowAccessDialog && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <Card className="max-w-md w-full">
+            <CardHeader className="text-center">
+              <div className="mx-auto mb-4 w-12 h-12 bg-destructive/20 rounded-full flex items-center justify-center">
+                <X className="w-6 h-6 text-destructive" />
+              </div>
+              <CardTitle>Acesso Restrito</CardTitle>
+              <p className="text-sm text-muted-foreground mt-2">
+                Para usar o Chat, ative sua assinatura.
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button 
+                className="w-full" 
+                onClick={() => navigate('/comprar-creditos?reason=blocked&gate=chat')}
+              >
+                Ir para Assinatura
+              </Button>
+              <Button 
+                variant="ghost" 
+                className="w-full" 
+                onClick={() => navigate('/dashboard')}
+              >
+                Voltar ao Dashboard
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
       {/* Menu fixo no topo para mobile */}
       {isMobile && (
         <div className="fixed top-0 left-0 right-0 z-50 bg-slate-800/95 backdrop-blur-sm border-b border-slate-700 p-3">
