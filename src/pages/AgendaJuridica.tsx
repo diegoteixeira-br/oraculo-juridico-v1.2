@@ -37,6 +37,7 @@ import { useAccessControl } from "@/hooks/useAccessControl";
 import CalendarView from "@/components/CalendarView";
 import { format, parseISO, startOfMonth, endOfMonth, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { formatInTimeZone } from "date-fns-tz";
 import { useIsMobile } from "@/hooks/use-mobile";
 import UserMenu from "@/components/UserMenu";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
@@ -70,6 +71,9 @@ const AgendaJuridica = () => {
   const { visible: menuVisible } = useScrollDirection();
   const { logFeatureUsage } = useFeatureUsage();
   const { canAccessPremiumTools } = useAccessControl();
+  
+  // Timezone do usuário
+  const userTimezone = (profile as any)?.timezone || 'America/Sao_Paulo';
   
   const [commitments, setCommitments] = useState<LegalCommitment[]>([]);
   const [filteredCommitments, setFilteredCommitments] = useState<LegalCommitment[]>([]);
@@ -1277,7 +1281,7 @@ const AgendaJuridica = () => {
                                       </h5>
                                       <p className="text-xs text-blue-300/80 flex items-center gap-1 mt-1">
                                         <Clock className="h-3 w-3 flex-shrink-0" />
-                                        {format(parseISO(commitment.commitment_date), 'HH:mm', { locale: ptBR })}
+                                        {formatInTimeZone(parseISO(commitment.commitment_date), userTimezone, 'HH:mm', { locale: ptBR })}
                                       </p>
                                       <div className="flex gap-1 mt-2">
                                         <Badge variant="outline" className="text-xs border-blue-400/30 text-blue-300">
@@ -1397,7 +1401,7 @@ const AgendaJuridica = () => {
                                    <h4 className="font-medium text-sm text-white leading-tight mb-1">{commitment.title}</h4>
                                    <p className="text-xs text-slate-400 flex items-center gap-1">
                                      <Clock className="h-3 w-3 flex-shrink-0" />
-                                     {format(parseISO(commitment.commitment_date), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                                      {formatInTimeZone(parseISO(commitment.commitment_date), userTimezone, 'dd/MM/yyyy HH:mm', { locale: ptBR })}
                                    </p>
                                  </div>
                                </div>
@@ -1526,7 +1530,7 @@ const AgendaJuridica = () => {
                                  <h4 className="font-medium text-sm text-white">{commitment.title}</h4>
                                  <p className="text-xs text-slate-400 flex items-center gap-1">
                                    <Clock className="h-3 w-3 flex-shrink-0" />
-                                   {format(parseISO(commitment.commitment_date), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                                   {formatInTimeZone(parseISO(commitment.commitment_date), userTimezone, 'dd/MM/yyyy HH:mm', { locale: ptBR })}
                                  </p>
                                  {commitment.process_number && (
                                    <p className="text-xs text-slate-500">

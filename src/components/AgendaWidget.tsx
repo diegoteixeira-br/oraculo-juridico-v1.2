@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { format, parseISO, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { formatInTimeZone } from "date-fns-tz";
 
 interface LegalCommitment {
   id: string;
@@ -21,10 +22,11 @@ interface LegalCommitment {
 }
 
 const AgendaWidget = () => {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [weekCommitments, setWeekCommitments] = useState<LegalCommitment[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const userTimezone = (profile as any)?.timezone || 'America/Sao_Paulo';
 
   useEffect(() => {
     if (user?.id) {
@@ -158,7 +160,7 @@ const AgendaWidget = () => {
                 <h4 className="font-medium text-sm text-blue-200 truncate">{commitment.title}</h4>
                 <p className="text-xs text-blue-300/80 flex items-center gap-1 mt-1">
                   <Clock className="h-3 w-3 flex-shrink-0" />
-                  {format(parseISO(commitment.commitment_date), 'dd/MM - HH:mm', { locale: ptBR })}
+                  {formatInTimeZone(parseISO(commitment.commitment_date), userTimezone, 'dd/MM - HH:mm', { locale: ptBR })}
                 </p>
               </div>
               <div className="flex gap-1 flex-shrink-0">

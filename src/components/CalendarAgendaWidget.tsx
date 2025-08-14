@@ -10,6 +10,7 @@ import { format, parseISO, startOfMonth, endOfMonth, isSameDay, addMonths, subMo
 import { ptBR } from "date-fns/locale";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAccessControl } from "@/hooks/useAccessControl";
+import { formatInTimeZone } from "date-fns-tz";
 interface LegalCommitment {
   id: string;
   title: string;
@@ -24,11 +25,12 @@ interface LegalCommitment {
 }
 const CalendarAgendaWidget = () => {
   const {
-    user
+    user, profile
   } = useAuth();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const { isTrialExpired } = useAccessControl();
+  const userTimezone = (profile as any)?.timezone || 'America/Sao_Paulo';
   const [commitments, setCommitments] = useState<LegalCommitment[]>([]);
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -291,7 +293,7 @@ const CalendarAgendaWidget = () => {
                           <h5 className="font-medium text-sm text-blue-200 truncate">{commitment.title}</h5>
                           <p className="text-xs text-blue-300/80 flex items-center gap-1 mt-1">
                             <Clock className="h-3 w-3 flex-shrink-0" />
-                            {format(parseISO(commitment.commitment_date), 'HH:mm', { locale: ptBR })}
+                            {formatInTimeZone(parseISO(commitment.commitment_date), userTimezone, 'HH:mm', { locale: ptBR })}
                           </p>
                           <div className="flex gap-1 mt-2">
                             <Badge variant="outline" className="text-xs border-blue-400/30 text-blue-300">
