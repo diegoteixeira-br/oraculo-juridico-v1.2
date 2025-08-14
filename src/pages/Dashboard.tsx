@@ -338,7 +338,7 @@ const openTemplateEditor = async (documentId: string) => {
                 <span className="text-xs text-slate-300">tokens</span>
               </div>
               
-              <UserMenu hideOptions={["dashboard"]} />
+              <UserMenu hideOptions={["dashboard", "historico"]} />
             </div>
           </div>
         </div>

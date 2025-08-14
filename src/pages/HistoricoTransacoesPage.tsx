@@ -216,7 +216,7 @@ export default function HistoricoTransacoesPage() {
                 Exportar CSV
               </Button>
               
-              <UserMenu />
+              <UserMenu hideOptions={["historico"]} />
             </div>
           </div>
         </div>
