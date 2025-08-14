@@ -85,15 +85,16 @@ serve(async (req) => {
     // Verificar se o usuário tem tokens suficientes
     const { data: profile, error: profileError } = await supabaseClient
       .from('profiles')
-      .select('daily_tokens, plan_tokens')
+      .select('plan_tokens, tokens')
       .eq('user_id', userId)
       .single()
 
     if (profileError || !profile) {
+      console.error('Profile fetch error:', profileError)
       throw new Error('Unable to fetch user profile')
     }
 
-    const totalTokens = (profile.daily_tokens || 0) + (profile.plan_tokens || 0)
+    const totalTokens = (profile.tokens || 0) + (profile.plan_tokens || 0)
     if (totalTokens < tokensNeeded) {
       throw new Error(`Insufficient tokens. Need ${tokensNeeded}, have ${totalTokens}`)
     }

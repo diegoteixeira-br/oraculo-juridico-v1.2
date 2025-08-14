@@ -493,46 +493,89 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
       setReadingMsgId(id);
       setReadingProgress(0);
 
-      const { data, error } = await supabase.functions.invoke('text-to-speech', {
-        body: {
-          text: text.substring(0, 4000), // Limitar texto para evitar arquivos muito grandes
-          voice: 'alloy',
-          speed: 1.0
-        }
-      });
-
-      if (error) throw error;
-
-      // Converter base64 para blob e criar URL
-      const audioBlob = new Blob([
-        Uint8Array.from(atob(data.audioContent), c => c.charCodeAt(0))
-      ], { type: 'audio/mpeg' });
+      // Verificar cache primeiro usando hash do texto
+      const textToProcess = text.substring(0, 4000);
+      const textHash = btoa(textToProcess).replace(/[/+=]/g, '').substring(0, 20);
+      const cacheKey = `audio_cache_${textHash}_alloy`;
+      const cached = localStorage.getItem(cacheKey);
       
-      const audioUrl = URL.createObjectURL(audioBlob);
+      let audioUrl: string;
+      let tokensUsed = 0;
       
-      // Adicionar o áudio à última mensagem do assistente na sessão atual
-      if (currentSession && messages.length > 0 && messages[messages.length - 1].type === 'assistant') {
-        setSessions(prev => {
-          const updatedSessions = [...prev];
-          const sessionIndex = updatedSessions.findIndex(s => s.id === currentSessionId);
-          if (sessionIndex >= 0) {
-            const updatedMessages = [...updatedSessions[sessionIndex].messages];
-            const lastMessageIndex = updatedMessages.length - 1;
-            if (lastMessageIndex >= 0 && updatedMessages[lastMessageIndex].type === 'assistant') {
-              updatedMessages[lastMessageIndex] = {
-                ...updatedMessages[lastMessageIndex],
-                audioUrl: audioUrl
-              };
-              updatedSessions[sessionIndex].messages = updatedMessages;
-            }
+      if (cached) {
+        try {
+          const audioData = JSON.parse(cached);
+          const sevenDays = 7 * 24 * 60 * 60 * 1000;
+          if (Date.now() - audioData.createdAt < sevenDays) {
+            audioUrl = audioData.audioUrl;
+            toast({
+              title: "Áudio carregado",
+              description: "Áudio carregado do cache (sem cobrança de tokens)",
+            });
+          } else {
+            localStorage.removeItem(cacheKey);
+            throw new Error('Cache expirado');
           }
-          return updatedSessions;
+        } catch (e) {
+          localStorage.removeItem(cacheKey);
+          throw new Error('Cache inválido');
+        }
+      } else {
+        throw new Error('Não há cache, gerar novo');
+      }
+      
+      // Se não conseguiu usar o cache, gerar novo áudio
+      if (!audioUrl) {
+        const { data, error } = await supabase.functions.invoke('text-to-speech', {
+          body: {
+            text: textToProcess,
+            voice: 'alloy',
+            speed: 1.0
+          }
+        });
+
+        if (error) throw error;
+
+        // Converter base64 para blob e criar URL
+        const audioBlob = new Blob([
+          Uint8Array.from(atob(data.audioContent), c => c.charCodeAt(0))
+        ], { type: 'audio/mpeg' });
+        
+        audioUrl = URL.createObjectURL(audioBlob);
+        tokensUsed = data.tokensUsed || Math.ceil(textToProcess.length / 4);
+        
+        // Cache o áudio
+        const audioData = {
+          text: textToProcess,
+          audioUrl,
+          textHash,
+          voice: 'alloy',
+          createdAt: Date.now()
+        };
+        localStorage.setItem(cacheKey, JSON.stringify(audioData));
+        
+        toast({
+          title: "Áudio gerado!",
+          description: `${tokensUsed} tokens utilizados para síntese de voz.`
         });
       }
       
-      toast({
-        title: "Áudio gerado!",
-        description: `${data.tokensUsed} tokens utilizados para síntese de voz.`
+      // Adicionar o áudio à mensagem correspondente na sessão atual
+      setSessions(prev => {
+        const updatedSessions = [...prev];
+        const sessionIndex = updatedSessions.findIndex(s => s.id === currentSessionId);
+        if (sessionIndex >= 0) {
+          const updatedMessages = [...updatedSessions[sessionIndex].messages];
+          const messageIndex = updatedMessages.findIndex(msg => msg.id === id);
+          if (messageIndex >= 0) {
+            updatedMessages[messageIndex] = {
+              ...updatedMessages[messageIndex],
+              audioUrl: audioUrl
+            };
+            updatedSessions[sessionIndex].messages = updatedMessages;
+          }
+        }
+        return updatedSessions;
       });
     } catch (error: any) {
       console.error('Erro no text-to-speech:', error);
