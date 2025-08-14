@@ -19,7 +19,11 @@ export const useTextToSpeech = () => {
 
   // Cache no localStorage com hash do texto
   const getCacheKey = (text: string, voice: string = 'alloy') => {
-    const hash = btoa(text).replace(/[/+=]/g, '').substring(0, 20);
+    // Usar uma função de hash simples que funciona com Unicode
+    const hash = text.split('').reduce((a, b) => {
+      a = ((a << 5) - a) + b.charCodeAt(0);
+      return a & a; // Convert to 32bit integer
+    }, 0).toString(36).replace('-', '0');
     return `audio_cache_${hash}_${voice}`;
   };
 
@@ -46,7 +50,11 @@ export const useTextToSpeech = () => {
   const cacheAudio = (text: string, audioUrl: string, voice: string = 'alloy') => {
     try {
       const cacheKey = getCacheKey(text, voice);
-      const textHash = btoa(text).replace(/[/+=]/g, '').substring(0, 20);
+      // Usar o mesmo método de hash para consistência
+      const textHash = text.split('').reduce((a, b) => {
+        a = ((a << 5) - a) + b.charCodeAt(0);
+        return a & a;
+      }, 0).toString(36).replace('-', '0').substring(0, 20);
       const audioData: CachedAudio = {
         text,
         audioUrl,
