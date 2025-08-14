@@ -40,6 +40,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import UserMenu from "@/components/UserMenu";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 import { useFeatureUsage } from "@/hooks/useFeatureUsage";
+import { Bell, Settings } from "lucide-react";
 
 interface LegalCommitment {
   id: string;
@@ -81,6 +82,15 @@ const AgendaJuridica = () => {
   const [isExtracting, setIsExtracting] = useState(false);
   const [selectedCommitment, setSelectedCommitment] = useState<LegalCommitment | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showNotificationDialog, setShowNotificationDialog] = useState(false);
+  
+  // Estados para configurações de notificação
+  const [notificationSettings, setNotificationSettings] = useState({
+    email_enabled: true,
+    agenda_email_time: '09:00',
+    agenda_timezone: 'America/Sao_Paulo'
+  });
+  const [isLoadingNotifications, setIsLoadingNotifications] = useState(false);
 
   // Estados para formulário de novo compromisso
   const [newCommitment, setNewCommitment] = useState({
@@ -192,8 +202,69 @@ const AgendaJuridica = () => {
     setFilteredCommitments(filtered);
   }, [commitments, searchTerm, filterType, filterStatus]);
 
+  // Carregar configurações de notificação
+  const loadNotificationSettings = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('notification_settings')
+        .select('email_enabled, agenda_email_time, agenda_timezone')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+
+      if (data) {
+        setNotificationSettings({
+          email_enabled: data.email_enabled ?? true,
+          agenda_email_time: data.agenda_email_time || '09:00',
+          agenda_timezone: data.agenda_timezone || 'America/Sao_Paulo'
+        });
+      }
+    } catch (error: any) {
+      console.error('Erro ao carregar configurações:', error);
+    }
+  };
+
+  // Salvar configurações de notificação
+  const saveNotificationSettings = async () => {
+    if (!user) return;
+    
+    setIsLoadingNotifications(true);
+    try {
+      const { error } = await supabase
+        .from('notification_settings')
+        .upsert({
+          user_id: user.id,
+          email_enabled: notificationSettings.email_enabled,
+          agenda_email_time: notificationSettings.agenda_email_time,
+          agenda_timezone: notificationSettings.agenda_timezone
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Sucesso",
+        description: "Configurações de notificação salvas com sucesso!",
+      });
+      setShowNotificationDialog(false);
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível salvar as configurações.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingNotifications(false);
+    }
+  };
+
   useEffect(() => {
     loadCommitments();
+    loadNotificationSettings();
   }, [user, currentMonth]);
 
   // Criar novo compromisso
@@ -575,6 +646,17 @@ const AgendaJuridica = () => {
             </div>
 
             <div className="flex items-center gap-3">
+              {/* Botão de configurações de notificação */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowNotificationDialog(true)}
+                className="text-slate-300 hover:text-white hover:bg-slate-700"
+              >
+                <Bell className="h-4 w-4 mr-2" />
+                <span className="hidden md:inline">Notificações</span>
+              </Button>
+              
               {/* Contador de tokens */}
               <div className="hidden md:flex items-center gap-2 bg-slate-700/50 rounded-lg px-3 py-2">
                 <Zap className="w-4 h-4 text-primary" />
@@ -1250,6 +1332,7 @@ const AgendaJuridica = () => {
                     <p>• <strong>Prioridades:</strong> Use urgente para prazos críticos e alta para importantes</p>
                     <p>• <strong>Calendário:</strong> Visualize seus compromissos de forma organizada</p>
                     <p>• <strong>Filtros:</strong> Use a busca para encontrar rapidamente processos específicos</p>
+                    <p>• <strong>Notificações:</strong> Configure alertas por email para não perder prazos importantes</p>
                   </div>
                 </div>
               </div>
@@ -1257,6 +1340,90 @@ const AgendaJuridica = () => {
           </Card>
         </div>
       </div>
+
+      {/* Dialog de Configurações de Notificação */}
+      <Dialog open={showNotificationDialog} onOpenChange={setShowNotificationDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Bell className="h-5 w-5" />
+              Configurações de Notificação
+            </DialogTitle>
+            <DialogDescription>
+              Configure como você quer receber lembretes sobre seus compromissos jurídicos.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6">
+            {/* Ativar notificações por email */}
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-base font-medium">Notificações por Email</Label>
+                <p className="text-sm text-muted-foreground">
+                  Receber resumo diário da agenda por email
+                </p>
+              </div>
+              <Switch
+                checked={notificationSettings.email_enabled}
+                onCheckedChange={(checked) => 
+                  setNotificationSettings({...notificationSettings, email_enabled: checked})
+                }
+              />
+            </div>
+
+            {notificationSettings.email_enabled && (
+              <>
+                {/* Horário de envio */}
+                <div className="space-y-2">
+                  <Label htmlFor="email-time">Horário de Envio</Label>
+                  <Input
+                    id="email-time"
+                    type="time"
+                    value={notificationSettings.agenda_email_time}
+                    onChange={(e) => 
+                      setNotificationSettings({...notificationSettings, agenda_email_time: e.target.value})
+                    }
+                    className="w-full"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Você receberá o resumo diário neste horário
+                  </p>
+                </div>
+
+                {/* Fuso horário */}
+                <div className="space-y-2">
+                  <Label htmlFor="timezone">Fuso Horário</Label>
+                  <Select 
+                    value={notificationSettings.agenda_timezone} 
+                    onValueChange={(value) => 
+                      setNotificationSettings({...notificationSettings, agenda_timezone: value})
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="America/Sao_Paulo">São Paulo (GMT-3)</SelectItem>
+                      <SelectItem value="America/Fortaleza">Fortaleza (GMT-3)</SelectItem>
+                      <SelectItem value="America/Manaus">Manaus (GMT-4)</SelectItem>
+                      <SelectItem value="America/Rio_Branco">Rio Branco (GMT-5)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setShowNotificationDialog(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={saveNotificationSettings} disabled={isLoadingNotifications}>
+              {isLoadingNotifications ? "Salvando..." : "Salvar"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

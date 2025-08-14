@@ -291,6 +291,8 @@ export type Database = {
       }
       notification_settings: {
         Row: {
+          agenda_email_time: string | null
+          agenda_timezone: string | null
           created_at: string
           days_before_deadline: number | null
           email_enabled: boolean | null
@@ -303,6 +305,8 @@ export type Database = {
           whatsapp_number: string | null
         }
         Insert: {
+          agenda_email_time?: string | null
+          agenda_timezone?: string | null
           created_at?: string
           days_before_deadline?: number | null
           email_enabled?: boolean | null
@@ -315,6 +319,8 @@ export type Database = {
           whatsapp_number?: string | null
         }
         Update: {
+          agenda_email_time?: string | null
+          agenda_timezone?: string | null
           created_at?: string
           days_before_deadline?: number | null
           email_enabled?: boolean | null
