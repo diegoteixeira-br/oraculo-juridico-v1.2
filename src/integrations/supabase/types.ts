@@ -740,6 +740,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      admin_add_tokens_to_user: {
+        Args: { p_user_id: string; p_tokens: number; p_description?: string }
+        Returns: boolean
+      }
+      admin_remove_tokens_from_user: {
+        Args: { p_user_id: string; p_tokens: number; p_description?: string }
+        Returns: boolean
+      }
       binary_quantize: {
         Args: { "": string } | { "": unknown }
         Returns: unknown

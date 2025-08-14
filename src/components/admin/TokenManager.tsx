@@ -152,10 +152,10 @@ export default function TokenManager() {
     setLoading(true);
     try {
       if (operation === 'add') {
-        const { error } = await supabase.rpc('add_tokens_to_user', {
+        // Usar função administrativa específica para adicionar
+        const { data, error } = await supabase.rpc('admin_add_tokens_to_user', {
           p_user_id: selectedUser.user_id,
           p_tokens: tokens,
-          p_plan_type: selectedUser.plan_type,
           p_description: `Admin: ${description}`
         });
 
@@ -166,26 +166,14 @@ export default function TokenManager() {
           description: `${tokens} tokens adicionados ao usuário`,
         });
       } else {
-        // Para remover tokens, atualizar diretamente a tabela profiles
-        const { error } = await supabase
-          .from('profiles')
-          .update({ 
-            tokens: Math.max(0, selectedUser.tokens - tokens),
-            plan_tokens: Math.max(0, selectedUser.tokens - tokens),
-            updated_at: new Date().toISOString()
-          })
-          .eq('user_id', selectedUser.user_id);
+        // Usar função administrativa específica para remover
+        const { data, error } = await supabase.rpc('admin_remove_tokens_from_user', {
+          p_user_id: selectedUser.user_id,
+          p_tokens: tokens,
+          p_description: `Admin: ${description}`
+        });
 
         if (error) throw error;
-
-        // Registrar a transação
-        await supabase.from('credit_transactions').insert({
-          user_id: selectedUser.user_id,
-          transaction_type: 'admin_removal',
-          amount: -tokens,
-          description: `Admin: ${description}`,
-          status: 'completed'
-        });
         
         toast({
           title: "Sucesso",
