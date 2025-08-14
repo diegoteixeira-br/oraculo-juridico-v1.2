@@ -80,6 +80,31 @@ const SuportePage = () => {
       question: "Como reportar um bug?",
       answer: "Use o suporte técnico via WhatsApp ou email descrevendo detalhadamente o problema encontrado.",
       category: "tecnico"
+    },
+    {
+      question: "Como funciona o plano Essencial?",
+      answer: "O plano Essencial oferece 50.000 tokens mensais por R$ 39,90/mês, ideal para uso moderado a intenso da plataforma.",
+      category: "tokens"
+    },
+    {
+      question: "Posso cancelar minha assinatura?",
+      answer: "Sim! Você pode cancelar sua assinatura a qualquer momento através da página 'Minha Conta' ou entrando em contato conosco.",
+      category: "tokens"
+    },
+    {
+      question: "Como adicionar documentos para análise?",
+      answer: "Acesse 'Meus Documentos' no menu principal e clique em 'Adicionar Documento' para fazer upload de PDFs ou inserir texto diretamente.",
+      category: "geral"
+    },
+    {
+      question: "A plataforma funciona em mobile?",
+      answer: "Sim! Nossa plataforma é totalmente responsiva e funciona perfeitamente em smartphones, tablets e computadores.",
+      category: "tecnico"
+    },
+    {
+      question: "Meus dados estão seguros?",
+      answer: "Absolutamente! Utilizamos criptografia de ponta, conformidade com LGPD e não compartilhamos seus dados com terceiros.",
+      category: "geral"
     }
   ];
 
