@@ -364,11 +364,14 @@ export default function ComprarCreditosPage() {
                   </div>
 
                   <Button
-                    onClick={() => handlePurchase('75000')}
+                    onClick={() => {
+                      const basicPack = tokenPacks.find(pack => pack.name === 'Pacote Básico');
+                      if (basicPack) handlePurchase(basicPack.id);
+                    }}
                     disabled={isLoading || !canPurchaseTokens}
                     className="w-full mt-3 h-10 sm:h-12 text-sm sm:text-base bg-blue-600 hover:bg-blue-700"
                   >
-                    {isLoading && selectedPackage === '75000' ? (
+                    {isLoading && tokenPacks.find(pack => pack.name === 'Pacote Básico') && selectedPackage === tokenPacks.find(pack => pack.name === 'Pacote Básico')?.id ? (
                       <div className="flex items-center gap-2">
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         Redirecionando...
@@ -425,11 +428,14 @@ export default function ComprarCreditosPage() {
                   </div>
 
                   <Button
-                    onClick={() => handlePurchase('150000')}
+                    onClick={() => {
+                      const premiumPack = tokenPacks.find(pack => pack.name === 'Pacote Premium');
+                      if (premiumPack) handlePurchase(premiumPack.id);
+                    }}
                     disabled={isLoading || !canPurchaseTokens}
                     className="w-full mt-3 h-10 sm:h-12 text-sm sm:text-base bg-green-600 hover:bg-green-700"
                   >
-                    {isLoading && selectedPackage === '150000' ? (
+                    {isLoading && tokenPacks.find(pack => pack.name === 'Pacote Premium') && selectedPackage === tokenPacks.find(pack => pack.name === 'Pacote Premium')?.id ? (
                       <div className="flex items-center gap-2">
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         Redirecionando...

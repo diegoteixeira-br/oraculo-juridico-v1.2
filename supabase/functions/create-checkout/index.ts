@@ -27,6 +27,19 @@ serve(async (req) => {
     const user = userData.user;
     if (!user?.email) throw new Error("User not authenticated or email not available");
 
+    const { product_type_id } = await req.json();
+    if (!product_type_id) throw new Error("product_type_id is required");
+
+    // Buscar informações do produto
+    const { data: productType, error: productError } = await supabaseClient
+      .from('product_types')
+      .select('*')
+      .eq('id', product_type_id)
+      .eq('is_active', true)
+      .single();
+
+    if (productError || !productType) throw new Error("Product type not found or inactive");
+
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
 
@@ -40,28 +53,44 @@ serve(async (req) => {
 
     const origin = req.headers.get("origin") || "https://oraculojuridico.com.br";
 
-    const session = await stripe.checkout.sessions.create({
+    // Configurar sessão baseada no tipo de produto
+    let sessionConfig: any = {
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
       line_items: [
         {
           price_data: {
-            currency: "brl",
-            product_data: { name: "Plano Essencial - Assinatura Mensal" },
-            unit_amount: 3790, // R$ 37,90 em centavos
-            recurring: { interval: "month" },
+            currency: productType.price_currency.toLowerCase(),
+            product_data: { 
+              name: productType.name,
+              description: productType.description
+            },
+            unit_amount: productType.price_cents,
           },
           quantity: 1,
         },
       ],
-      mode: "subscription",
-      success_url: `${origin}/payment-success?subscription=1&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/comprar-creditos`,
       metadata: {
         user_id: user.id,
-        plan: "essencial",
+        product_type_id: product_type_id,
+        tokens: productType.tokens_included.toString(),
       },
-    });
+    };
+
+    // Configurar baseado na categoria do produto
+    if (productType.category === 'subscription') {
+      sessionConfig.mode = "subscription";
+      sessionConfig.line_items[0].price_data.recurring = { interval: productType.billing_period };
+      sessionConfig.success_url = `${origin}/payment-success?subscription=1&session_id={CHECKOUT_SESSION_ID}`;
+      sessionConfig.metadata.plan = productType.name.toLowerCase();
+    } else {
+      sessionConfig.mode = "payment";
+      sessionConfig.success_url = `${origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`;
+      sessionConfig.metadata.package_type = productType.name.toLowerCase();
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionConfig);
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
