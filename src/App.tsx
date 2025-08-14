@@ -33,7 +33,6 @@ import AgendaJuridica from "./pages/AgendaJuridica";
 import SuportePage from "./pages/SuportePage";
 import MeusDocumentos from "./pages/MeusDocumentos";
 import AdminDashboard from "./pages/AdminDashboard";
-import TesteAgenda from "./pages/TesteAgenda";
 
 const queryClient = new QueryClient();
 
@@ -66,7 +65,6 @@ function AppContent() {
       
       <Route path="/suporte" element={<PageWrapper><ProtectedRoute gate="dashboard"><SuportePage /></ProtectedRoute></PageWrapper>} />
       <Route path="/meus-documentos" element={<PageWrapper><ProtectedRoute gate="premium"><MeusDocumentos /></ProtectedRoute></PageWrapper>} />
-      <Route path="/teste-agenda" element={<PageWrapper><ProtectedRoute gate="dashboard"><TesteAgenda /></ProtectedRoute></PageWrapper>} />
       
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
