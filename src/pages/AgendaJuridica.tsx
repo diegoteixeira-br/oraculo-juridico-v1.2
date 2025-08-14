@@ -69,6 +69,7 @@ const AgendaJuridica = () => {
   const isMobile = useIsMobile();
   const { visible: menuVisible } = useScrollDirection();
   const { logFeatureUsage } = useFeatureUsage();
+  const { canAccessPremiumTools } = useAccessControl();
   
   const [commitments, setCommitments] = useState<LegalCommitment[]>([]);
   const [filteredCommitments, setFilteredCommitments] = useState<LegalCommitment[]>([]);
@@ -291,7 +292,6 @@ const AgendaJuridica = () => {
     }
 
     try {
-      const { canAccessPremiumTools } = useAccessControl();
       if (!canAccessPremiumTools) {
         const { count, error: countError } = await supabase
           .from('legal_commitments' as any)
