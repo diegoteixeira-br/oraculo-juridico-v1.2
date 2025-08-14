@@ -551,13 +551,56 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
     }
   };
 
+  const saveAudioToStorage = async (textHash: string, audioBlob: Blob) => {
+    try {
+      if (!user?.id) return null;
+      
+      const fileName = `${user.id}/audio_${textHash}.mp3`;
+      const { data, error } = await supabase.storage
+        .from('audio-cache')
+        .upload(fileName, audioBlob, {
+          upsert: true,
+          contentType: 'audio/mpeg'
+        });
+      
+      if (error) {
+        console.log('Erro ao salvar áudio no storage:', error);
+        return null;
+      }
+      
+      return fileName;
+    } catch (error) {
+      console.log('Erro ao salvar áudio:', error);
+      return null;
+    }
+  };
+
+  const loadAudioFromStorage = async (textHash: string) => {
+    try {
+      if (!user?.id) return null;
+      
+      const fileName = `${user.id}/audio_${textHash}.mp3`;
+      const { data, error } = await supabase.storage
+        .from('audio-cache')
+        .download(fileName);
+      
+      if (error) {
+        return null;
+      }
+      
+      return URL.createObjectURL(data);
+    } catch (error) {
+      return null;
+    }
+  };
+
   const clearOldAudioCache = () => {
     try {
       const keys = Object.keys(localStorage);
       const audioCacheKeys = keys.filter(key => key.startsWith('audio_cache_'));
       
       // Se temos muitos caches de áudio, remover os mais antigos
-      if (audioCacheKeys.length > 10) {
+      if (audioCacheKeys.length > 5) {
         const cacheData = audioCacheKeys.map(key => {
           try {
             const data = JSON.parse(localStorage.getItem(key) || '{}');
@@ -567,8 +610,8 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
           }
         }).sort((a, b) => a.createdAt - b.createdAt);
         
-        // Remover os 5 mais antigos
-        cacheData.slice(0, 5).forEach(item => {
+        // Remover os 3 mais antigos
+        cacheData.slice(0, 3).forEach(item => {
           localStorage.removeItem(item.key);
         });
       }
@@ -590,40 +633,53 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
         a = ((a << 5) - a) + b.charCodeAt(0);
         return a & a; // Convert to 32bit integer
       }, 0).toString(36).replace('-', '0').substring(0, 20);
-      const cacheKey = `audio_cache_${textHash}_alloy`;
-      const cached = localStorage.getItem(cacheKey);
       
       let audioUrl: string;
       let tokensUsed = 0;
       let usedCache = false;
       
-      // Tentar usar cache se existir
-      if (cached) {
-        try {
-          const audioData = JSON.parse(cached);
-          const sevenDays = 7 * 24 * 60 * 60 * 1000;
-          if (Date.now() - audioData.createdAt < sevenDays && audioData.blobData) {
-            // Sempre recriar o blob URL a partir dos dados salvos
-            const audioBlob = new Blob([
-              Uint8Array.from(atob(audioData.blobData), c => c.charCodeAt(0))
-            ], { type: 'audio/mpeg' });
-            audioUrl = URL.createObjectURL(audioBlob);
-            usedCache = true;
-            
-            toast({
-              title: "Áudio carregado",
-              description: "Áudio carregado do cache (sem cobrança de tokens)",
-            });
-          } else {
+      // 1. Primeiro tentar carregar do Supabase Storage
+      audioUrl = await loadAudioFromStorage(textHash);
+      if (audioUrl) {
+        usedCache = true;
+        toast({
+          title: "Áudio carregado",
+          description: "Áudio carregado do armazenamento (sem cobrança de tokens)",
+        });
+      }
+      
+      // 2. Se não encontrou no Storage, tentar localStorage
+      if (!audioUrl) {
+        const cacheKey = `audio_cache_${textHash}_alloy`;
+        const cached = localStorage.getItem(cacheKey);
+        
+        if (cached) {
+          try {
+            const audioData = JSON.parse(cached);
+            const sevenDays = 7 * 24 * 60 * 60 * 1000;
+            if (Date.now() - audioData.createdAt < sevenDays && audioData.blobData) {
+              // Sempre recriar o blob URL a partir dos dados salvos
+              const audioBlob = new Blob([
+                Uint8Array.from(atob(audioData.blobData), c => c.charCodeAt(0))
+              ], { type: 'audio/mpeg' });
+              audioUrl = URL.createObjectURL(audioBlob);
+              usedCache = true;
+              
+              toast({
+                title: "Áudio carregado",
+                description: "Áudio carregado do cache local (sem cobrança de tokens)",
+              });
+            } else {
+              localStorage.removeItem(cacheKey);
+            }
+          } catch (e) {
+            console.error('Erro ao processar cache de áudio:', e);
             localStorage.removeItem(cacheKey);
           }
-        } catch (e) {
-          console.error('Erro ao processar cache de áudio:', e);
-          localStorage.removeItem(cacheKey);
         }
       }
       
-      // Se não conseguiu usar o cache, gerar novo áudio
+      // 3. Se não conseguiu usar nenhum cache, gerar novo áudio
       if (!audioUrl) {
         const { data, error } = await supabase.functions.invoke('text-to-speech', {
           body: {
@@ -650,45 +706,24 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
         audioUrl = URL.createObjectURL(audioBlob);
         tokensUsed = data.tokensUsed || Math.ceil(textToProcess.length / 4);
         
-        // Tentar salvar no cache com controle de quota
+        // Salvar no Supabase Storage para persistência
+        await saveAudioToStorage(textHash, audioBlob);
+        
+        // Tentar salvar também no localStorage como backup (sem bloquear em caso de quota)
         try {
-          // Limpar cache antigo primeiro se necessário
           clearOldAudioCache();
           
           const audioData = {
             text: textToProcess,
             audioUrl,
-            blobData: data.audioContent, // Salvar os dados base64 também
             textHash,
             voice: 'alloy',
             createdAt: Date.now()
           };
           
-          localStorage.setItem(cacheKey, JSON.stringify(audioData));
+          localStorage.setItem(`audio_cache_${textHash}_alloy`, JSON.stringify(audioData));
         } catch (quotaError) {
-          console.log('Quota do localStorage excedida, limpando cache e tentando novamente...');
-          
-          // Limpar todo o cache de áudio e tentar novamente
-          Object.keys(localStorage).forEach(key => {
-            if (key.startsWith('audio_cache_')) {
-              localStorage.removeItem(key);
-            }
-          });
-          
-          // Tentar salvar novamente após limpeza
-          try {
-            const audioData = {
-              text: textToProcess,
-              audioUrl,
-              blobData: data.audioContent,
-              textHash,
-              voice: 'alloy',
-              createdAt: Date.now()
-            };
-            localStorage.setItem(cacheKey, JSON.stringify(audioData));
-          } catch (secondError) {
-            console.log('Não foi possível salvar no cache devido ao tamanho. Áudio será usado apenas nesta sessão.');
-          }
+          console.log('Não foi possível salvar no localStorage (quota excedida), mas áudio foi salvo no servidor.');
         }
         
         toast({
