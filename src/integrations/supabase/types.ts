@@ -875,6 +875,10 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: boolean
       }
+      schedule_daily_agenda_emails: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       sparsevec_out: {
         Args: { "": unknown }
         Returns: unknown
