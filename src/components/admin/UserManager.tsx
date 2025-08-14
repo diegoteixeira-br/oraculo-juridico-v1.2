@@ -63,6 +63,22 @@ export default function UserManager() {
     }
   };
 
+  const updateCreatedAt = async (userId: string, newDate: string) => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ created_at: newDate })
+        .eq('user_id', userId);
+      
+      if (error) throw error;
+      toast.success('Data de cadastro atualizada');
+      load();
+    } catch (e: any) {
+      console.error(e);
+      toast.error('Erro ao atualizar data de cadastro');
+    }
+  };
+
   const resetPassword = async (email: string) => {
     try {
       const { error } = await supabase.functions.invoke('admin-reset-password', { body: { email } });
@@ -102,7 +118,18 @@ export default function UserManager() {
               <TableRow key={u.id}>
                 <TableCell>{u.name || '-'}</TableCell>
                 <TableCell>{u.email}</TableCell>
-                <TableCell>{u.created_at ? new Date(u.created_at).toLocaleDateString() : '-'}</TableCell>
+                <TableCell>
+                  <Input 
+                    type="date" 
+                    defaultValue={u.created_at ? new Date(u.created_at).toISOString().split('T')[0] : ''} 
+                    onBlur={(e) => {
+                      if (e.target.value && e.target.value !== (u.created_at ? new Date(u.created_at).toISOString().split('T')[0] : '')) {
+                        updateCreatedAt(u.id, e.target.value + 'T00:00:00.000Z');
+                      }
+                    }}
+                    className="w-36 text-sm"
+                  />
+                </TableCell>
                 <TableCell className="font-medium">{u.tokens || 0}</TableCell>
                 <TableCell className="capitalize">{u.plan_type || 'gratuito'}</TableCell>
                 <TableCell>
