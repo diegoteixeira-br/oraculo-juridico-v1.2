@@ -100,22 +100,14 @@ export default function ComprarCreditosPage() {
   const handleSubscribe = async () => {
     try {
       setSubLoading(true);
-      // Buscar o produto de assinatura Essencial
-      const essentialPlan = subscriptions.find(sub => sub.name === 'Essencial');
-      if (!essentialPlan) {
-        throw new Error('Plano Essencial não encontrado');
-      }
       
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { product_type_id: essentialPlan.id }
-      });
-      if (error) throw error;
-      if (data?.url) {
-        // Redirecionar na mesma aba
-        window.location.href = data.url;
-      } else {
-        throw new Error('URL de assinatura não recebida');
-      }
+      // Link direto do Stripe para a assinatura Essencial
+      const stripeUrl = 'https://buy.stripe.com/SEU_STRIPE_LINK_AQUI';
+      
+      console.log("✅ Redirecionando para assinatura:", stripeUrl);
+      // Redirecionar para o link do Stripe na mesma aba
+      window.location.href = stripeUrl;
+      
     } catch (error) {
       console.error('❌ Erro ao iniciar assinatura:', error);
       toast({

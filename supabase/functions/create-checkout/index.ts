@@ -28,6 +28,7 @@ serve(async (req) => {
     if (!user?.email) throw new Error("User not authenticated or email not available");
 
     const { product_type_id } = await req.json();
+    console.log("[create-checkout] Received product_type_id:", product_type_id);
     if (!product_type_id) throw new Error("product_type_id is required");
 
     // Buscar informações do produto
@@ -38,7 +39,8 @@ serve(async (req) => {
       .eq('is_active', true)
       .single();
 
-    if (productError || !productType) throw new Error("Product type not found or inactive");
+    console.log("[create-checkout] Product query result:", { productType, productError });
+    if (productError || !productType) throw new Error(`Product type not found or inactive: ${productError?.message || 'No product found'}`);
 
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
