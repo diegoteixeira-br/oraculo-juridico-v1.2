@@ -102,6 +102,10 @@ const SuportePage = () => {
       category: "geral"
     },
     {
+      question: "A IA pode analisar fotos de documentos?",
+      answer: "Sim! Você pode enviar fotos de documentos jurídicos, contratos ou processos. A IA extrai automaticamente o texto da imagem e pode analisar o conteúdo, identificar prazos e responder suas dúvidas sobre o documento fotografado.",
+    },
+    {
       question: "A plataforma funciona em mobile?",
       answer: "Sim! Nossa plataforma é totalmente responsiva e funciona perfeitamente em smartphones, tablets e computadores.",
       category: "tecnico"
