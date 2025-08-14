@@ -33,6 +33,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAccessControl } from "@/hooks/useAccessControl";
 import CalendarView from "@/components/CalendarView";
 import { format, parseISO, startOfMonth, endOfMonth, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -290,8 +291,8 @@ const AgendaJuridica = () => {
     }
 
     try {
-      const isSubscriber = (profile?.plan_type && profile.plan_type !== 'gratuito');
-      if (!isSubscriber) {
+      const { canAccessPremiumTools } = useAccessControl();
+      if (!canAccessPremiumTools) {
         const { count, error: countError } = await supabase
           .from('legal_commitments' as any)
           .select('id', { count: 'exact', head: true })
@@ -301,7 +302,7 @@ const AgendaJuridica = () => {
         if ((count ?? 0) >= 20) {
           toast({
             title: 'Limite atingido',
-            description: 'No plano gratuito, você pode manter até 20 compromissos pendentes simultaneamente. Assine o Plano Essencial para ilimitado.',
+            description: 'Seu período gratuito expirou. Assine o Plano Essencial para usar a agenda de forma ilimitada.',
             variant: 'destructive',
           });
           return;

@@ -5,6 +5,7 @@ import { Copy, Check, Save, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAccessControl } from "@/hooks/useAccessControl";
 
 interface DocumentViewerProps {
   documentId: string | null;
@@ -80,8 +81,8 @@ export default function DocumentViewer({ documentId, isOpen, onClose }: Document
   const copyToClipboard = async () => {
     if (!document || !user?.id) return;
     try {
-      const isSubscriber = (profile?.plan_type && profile.plan_type !== 'gratuito');
-      if (!isSubscriber) {
+      const { canAccessPremiumTools } = useAccessControl();
+      if (!canAccessPremiumTools) {
         const startOfToday = new Date();
         startOfToday.setHours(0, 0, 0, 0);
         const { count, error: countError } = await supabase
@@ -92,7 +93,7 @@ export default function DocumentViewer({ documentId, isOpen, onClose }: Document
           .gte('created_at', startOfToday.toISOString());
         if (countError) throw countError;
         if ((count ?? 0) >= 1) {
-          toast({ title: 'Limite diário atingido', description: 'No plano gratuito, 1 cópia/dia. Assine para ilimitado.', variant: 'destructive' });
+          toast({ title: 'Limite atingido', description: 'Seu período gratuito expirou. Assine para copiar documentos ilimitados.', variant: 'destructive' });
           return;
         }
       }
