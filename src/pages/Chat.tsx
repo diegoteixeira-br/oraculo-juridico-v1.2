@@ -495,7 +495,11 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
 
       // Verificar cache primeiro usando hash do texto
       const textToProcess = text.substring(0, 4000);
-      const textHash = btoa(textToProcess).replace(/[/+=]/g, '').substring(0, 20);
+      // Usar função de hash que funciona com Unicode
+      const textHash = textToProcess.split('').reduce((a, b) => {
+        a = ((a << 5) - a) + b.charCodeAt(0);
+        return a & a; // Convert to 32bit integer
+      }, 0).toString(36).replace('-', '0').substring(0, 20);
       const cacheKey = `audio_cache_${textHash}_alloy`;
       const cached = localStorage.getItem(cacheKey);
       
