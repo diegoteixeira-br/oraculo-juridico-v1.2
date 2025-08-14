@@ -44,6 +44,21 @@ serve(async (req) => {
 
     console.log('Extracting deadlines from text for user:', userId);
 
+    // Buscar o fuso horário do usuário
+    const supabase = createClient(supabaseUrl!, supabaseServiceKey!);
+    const { data: userProfile, error: profileError } = await supabase
+      .from('profiles')
+      .select('timezone')
+      .eq('user_id', userId)
+      .single();
+
+    if (profileError) {
+      console.error('Error fetching user profile:', profileError);
+      throw new Error('Failed to fetch user profile');
+    }
+
+    const userTimezone = userProfile?.timezone || 'America/Sao_Paulo';
+
     // Criar thread para o Assistant
     const threadResponse = await fetch('https://api.openai.com/v1/threads', {
       method: 'POST',
@@ -62,11 +77,16 @@ serve(async (req) => {
     const thread = await threadResponse.json();
     console.log('Thread created:', thread.id);
 
-    // Obter data atual no fuso horário do Brasil
+    // Obter data atual no fuso horário do usuário
     const now = new Date();
-    const brasiliaOffset = -3; // UTC-3
-    const brasiliaTime = new Date(now.getTime() + (brasiliaOffset * 60 * 60 * 1000));
-    const currentDateBrasilia = brasiliaTime.toISOString().split('T')[0];
+    const userCurrentDate = new Intl.DateTimeFormat('pt-BR', {
+      timeZone: userTimezone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).format(now).split('/').reverse().join('-'); // Converter de DD/MM/YYYY para YYYY-MM-DD
+
+    console.log(`Using timezone: ${userTimezone}, current date: ${userCurrentDate}`);
 
     // Adicionar a mensagem ao thread
     const messageResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/messages`, {
@@ -78,12 +98,13 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         role: 'user',
-        content: `Data atual para cálculo de prazos (horário de Brasília): ${currentDateBrasilia}
+        content: `Data atual para cálculo de prazos (fuso horário: ${userTimezone}): ${userCurrentDate}
 Instruções importantes:
 - Use SEMPRE o formato ISO 8601 para datas: YYYY-MM-DD
 - Para audiências/reuniões com horário específico, use: YYYY-MM-DDTHH:MM:SS
 - Calcule prazos considerando dias úteis quando aplicável
 - Use a data atual como referência para cálculos de prazo
+- Considere o fuso horário ${userTimezone} para todos os cálculos de data e hora
 
 Texto jurídico para análise:
 
@@ -195,7 +216,6 @@ ${text}`,
     console.log(`Found ${validDeadlines.length} valid deadlines`);
 
     // Salvar no banco de dados se houver prazos válidos
-    const supabase = createClient(supabaseUrl!, supabaseServiceKey!);
     const savedDeadlines = [];
 
     for (const deadline of validDeadlines) {
