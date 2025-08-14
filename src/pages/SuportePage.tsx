@@ -93,7 +93,7 @@ const SuportePage = () => {
     },
     {
       question: "Como usar a IA da Agenda Jurídica?",
-      answer: "Acesse 'Agenda Jurídica' no menu principal. Digite sua consulta jurídica ou solicite análise de prazos e a IA fornecerá orientações especializadas baseadas na legislação brasileira atualizada.",
+      answer: "Acesse 'Agenda Jurídica' no menu principal. Envie arquivos ou cole informações de decisões, sentenças ou documentos jurídicos. A IA extrairá automaticamente datas, horários e prazos importantes, criando sua agenda de compromissos de forma inteligente.",
       category: "geral"
     },
     {
