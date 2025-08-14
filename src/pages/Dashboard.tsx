@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CreditCard, History, Plus, MessageSquare, FileText, Calculator, Heart, DollarSign, Calendar, TrendingUp, Zap, Clock, Users, Award, Bell, BellOff } from "lucide-react";
+import { CreditCard, History, Plus, MessageSquare, FileText, Calculator, Heart, DollarSign, Calendar, TrendingUp, Zap, Clock, Users, Award, Bell, BellOff, Wrench, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +19,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import MarkdownEditor from "@/components/MarkdownEditor";
 import { useAccessControl } from "@/hooks/useAccessControl";
 
+
+// CONFIGURAÇÃO DE MANUTENÇÃO PARA SEÇÃO MEUS DOCUMENTOS - Altere para false quando quiser reativar
+const DOCS_MAINTENANCE_MODE = true;
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -709,7 +712,61 @@ const openTemplateEditor = async (documentId: string) => {
                       </p>
                     </div>
 
-                    {savedDocs.length > 0 && (
+                    {DOCS_MAINTENANCE_MODE ? (
+                      // Seção em manutenção com efeito borrado
+                      <div className="mt-6 relative">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="text-sm font-semibold text-white flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-primary" />
+                            Meus Documentos
+                          </h4>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="border-slate-600 hover:bg-slate-700 text-xs"
+                            disabled
+                          >
+                            Ver todos
+                          </Button>
+                        </div>
+                        
+                        {/* Conteúdo borrado */}
+                        <div className="space-y-2 blur-sm grayscale opacity-50">
+                          {[1,2,3,4].map((i) => (
+                            <div
+                              key={i}
+                              className="w-full p-2 rounded-md bg-slate-900/50 border border-slate-600"
+                            >
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm text-white truncate">Documento {i}</span>
+                                <span className="text-[10px] text-slate-400">12/08/2025</span>
+                              </div>
+                              <div className="mt-1 flex items-center gap-3 text-[11px]">
+                                <span className="text-primary">Renomear</span>
+                                <span className="text-slate-600">•</span>
+                                <span className="text-blue-300">Duplicar</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        
+                        {/* Overlay de manutenção */}
+                        <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 rounded-lg">
+                          <div className="p-3 bg-amber-500/20 rounded-full">
+                            <Wrench className="w-8 h-8 text-amber-400" />
+                          </div>
+                          <div className="text-center">
+                            <h3 className="text-white font-semibold mb-1">Seção em Manutenção</h3>
+                            <p className="text-slate-300 text-sm mb-3 px-4">
+                              Estamos aprimorando esta funcionalidade. Estará disponível em breve.
+                            </p>
+                            <p className="text-xs text-slate-400">
+                              Obrigado pela compreensão.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : savedDocs.length > 0 ? (
                       <div className="mt-6">
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="text-sm font-semibold text-white flex items-center gap-2">
@@ -756,7 +813,7 @@ const openTemplateEditor = async (documentId: string) => {
                           ))}
                         </div>
                       </div>
-                    )}
+                    ) : null}
 
                   </CardContent>
                   {isTrialExpired && (
@@ -943,12 +1000,16 @@ const openTemplateEditor = async (documentId: string) => {
                 <CardContent>
                   <div className="grid grid-cols-1 gap-3">
                     <Button 
-                      onClick={() => navigate("/meus-documentos")}
+                      onClick={() => DOCS_MAINTENANCE_MODE ? null : navigate("/meus-documentos")}
                       variant="outline"
-                      className="justify-start border-slate-600 hover:bg-slate-700"
+                      className={`justify-start border-slate-600 ${DOCS_MAINTENANCE_MODE ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-700'}`}
+                      disabled={DOCS_MAINTENANCE_MODE}
                     >
                       <FileText className="w-4 h-4 mr-2" />
                       Meus Documentos
+                      {DOCS_MAINTENANCE_MODE && (
+                        <Badge variant="outline" className="ml-2 text-xs">Em Manutenção</Badge>
+                      )}
                     </Button>
                     <Button 
                       onClick={() => navigate("/minha-conta")}
