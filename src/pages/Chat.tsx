@@ -505,27 +505,26 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
       
       let audioUrl: string;
       let tokensUsed = 0;
+      let usedCache = false;
       
+      // Tentar usar cache se existir
       if (cached) {
         try {
           const audioData = JSON.parse(cached);
           const sevenDays = 7 * 24 * 60 * 60 * 1000;
           if (Date.now() - audioData.createdAt < sevenDays) {
             audioUrl = audioData.audioUrl;
+            usedCache = true;
             toast({
               title: "Áudio carregado",
               description: "Áudio carregado do cache (sem cobrança de tokens)",
             });
           } else {
             localStorage.removeItem(cacheKey);
-            throw new Error('Cache expirado');
           }
         } catch (e) {
           localStorage.removeItem(cacheKey);
-          throw new Error('Cache inválido');
         }
-      } else {
-        throw new Error('Não há cache, gerar novo');
       }
       
       // Se não conseguiu usar o cache, gerar novo áudio
