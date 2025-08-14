@@ -34,14 +34,49 @@ export default function TokenManager() {
     
     setSearching(true);
     try {
+      console.log('Buscando por:', searchQuery);
+      
+      // Busca mais flexível - remove acentos e normaliza
+      const normalizedQuery = searchQuery
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, ""); // Remove diacríticos
+      
       const { data, error } = await supabase
         .from('profiles')
         .select('user_id, full_name, tokens, plan_type, subscription_status, is_active')
-        .ilike('full_name', `%${searchQuery}%`)
-        .limit(10);
+        .not('full_name', 'is', null)
+        .limit(50); // Aumentar limite para buscar mais registros
 
       if (error) throw error;
-      setSearchResults(data || []);
+      
+      console.log('Dados retornados:', data);
+      
+      // Filtrar localmente para busca mais flexível
+      const filtered = (data || []).filter(user => {
+        if (!user.full_name) return false;
+        
+        const normalizedName = user.full_name
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+        
+        // Busca por partes do nome
+        const queryParts = normalizedQuery.split(' ').filter(part => part.length > 0);
+        return queryParts.every(part => normalizedName.includes(part));
+      });
+      
+      console.log('Resultados filtrados:', filtered);
+      setSearchResults(filtered.slice(0, 10)); // Limitar a 10 resultados
+      
+      if (filtered.length === 0) {
+        toast({
+          title: "Nenhum resultado",
+          description: "Nenhum usuário encontrado com esse nome",
+          variant: "default",
+        });
+      }
     } catch (error) {
       console.error('Erro ao buscar usuários:', error);
       toast({
