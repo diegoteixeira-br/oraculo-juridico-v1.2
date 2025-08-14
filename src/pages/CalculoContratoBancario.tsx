@@ -353,57 +353,60 @@ const CalculoContratoBancario = () => {
                       Valores calculados conforme os dados informados
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-6">
-                    {/* Cards de resultados principais */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="p-6 bg-gradient-to-br from-green-600/20 to-green-600/10 border border-green-500/30 rounded-lg">
+                  <CardContent className="space-y-4">
+                    {/* Cards de resultados principais - reduzidos */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="p-4 bg-gradient-to-br from-green-600/20 to-green-600/10 border border-green-500/30 rounded-lg">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-sm text-green-300 font-medium">Valor Total Devido</p>
-                            <p className="text-3xl font-bold text-green-400 mt-2">
+                            <p className="text-xs text-green-300 font-medium">Valor Total Devido</p>
+                            <p className="text-xl font-bold text-green-400 mt-1">
                               R$ {result.valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                             </p>
                           </div>
-                          <DollarSign className="w-10 h-10 text-green-400" />
+                          <DollarSign className="w-7 h-7 text-green-400" />
                         </div>
                       </div>
 
-                      <div className="p-6 bg-gradient-to-br from-orange-600/20 to-orange-600/10 border border-orange-500/30 rounded-lg">
+                      <div className="p-4 bg-gradient-to-br from-orange-600/20 to-orange-600/10 border border-orange-500/30 rounded-lg">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-sm text-orange-300 font-medium">Juros Total</p>
-                            <p className="text-3xl font-bold text-orange-400 mt-2">
+                            <p className="text-xs text-orange-300 font-medium">Juros Total</p>
+                            <p className="text-xl font-bold text-orange-400 mt-1">
                               R$ {result.jurosTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                             </p>
                           </div>
-                          <TrendingUp className="w-10 h-10 text-orange-400" />
+                          <TrendingUp className="w-7 h-7 text-orange-400" />
                         </div>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="p-4 bg-slate-700/30 rounded-lg border border-slate-600">
-                        <p className="text-sm text-slate-400">Valor Corrigido</p>
-                        <p className="text-xl font-semibold text-blue-400 mt-1">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="p-3 bg-slate-700/30 rounded-lg border border-slate-600">
+                        <p className="text-xs text-slate-400">Valor Corrigido</p>
+                        <p className="text-lg font-semibold text-blue-400 mt-1">
                           R$ {result.valorCorrigido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </p>
                       </div>
-                      <div className="p-4 bg-slate-700/30 rounded-lg border border-slate-600">
-                        <p className="text-sm text-slate-400">Diferença</p>
-                        <p className="text-xl font-semibold text-red-400 mt-1">
+                      <div className="p-3 bg-slate-700/30 rounded-lg border border-slate-600">
+                        <p className="text-xs text-slate-400">Diferença</p>
+                        <p className="text-lg font-semibold text-red-400 mt-1">
                           R$ {result.diferenca.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </p>
                       </div>
                     </div>
 
-                    {/* Detalhamento */}
-                    <div className="bg-slate-900/50 rounded-lg border border-slate-600 p-6">
-                      <h4 className="text-lg font-semibold mb-4 text-white flex items-center gap-2">
-                        <FileText className="w-5 h-5 text-primary" />
+                    {/* Detalhamento - DESTAQUE PRINCIPAL */}
+                    <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg border-2 border-primary/30 p-6 mt-6">
+                      <h4 className="text-xl font-bold mb-4 text-white flex items-center gap-3">
+                        <FileText className="w-6 h-6 text-primary" />
                         Detalhamento do Cálculo
+                        <Badge variant="secondary" className="text-xs bg-primary/20 text-primary border-primary/30">
+                          Relatório Completo
+                        </Badge>
                       </h4>
-                      <div className="max-h-80 overflow-y-auto">
-                        <pre className="text-sm whitespace-pre-wrap text-slate-300 leading-relaxed">
+                      <div className="max-h-96 overflow-y-auto bg-slate-900/50 rounded-lg border border-slate-600 p-4">
+                        <pre className="text-sm whitespace-pre-wrap text-slate-200 leading-relaxed font-mono">
                           {result.detalhamento}
                         </pre>
                       </div>
