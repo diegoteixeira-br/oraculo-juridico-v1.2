@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
-interface UserRow { id: string; email: string; name?: string; created_at?: string; role?: string; is_active?: boolean; tokens?: number; plan_type?: string }
+interface UserRow { id: string; email: string; name?: string; created_at?: string; role?: string; is_active?: boolean; tokens?: number; plan_type?: string; subscription_activated_at?: string }
 
 export default function UserManager() {
   const [users, setUsers] = useState<UserRow[]>([]);
@@ -79,6 +79,38 @@ export default function UserManager() {
     }
   };
 
+  const updateSubscriptionActivatedAt = async (userId: string, newDate: string) => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ subscription_activated_at: newDate })
+        .eq('user_id', userId);
+      
+      if (error) throw error;
+      toast.success('Data de contratação atualizada');
+      load();
+    } catch (e: any) {
+      console.error(e);
+      toast.error('Erro ao atualizar data de contratação');
+    }
+  };
+
+  const updatePlanType = async (userId: string, planType: string) => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ plan_type: planType })
+        .eq('user_id', userId);
+      
+      if (error) throw error;
+      toast.success('Plano atualizado');
+      load();
+    } catch (e: any) {
+      console.error(e);
+      toast.error('Erro ao atualizar plano');
+    }
+  };
+
   const resetPassword = async (email: string) => {
     try {
       const { error } = await supabase.functions.invoke('admin-reset-password', { body: { email } });
@@ -103,6 +135,7 @@ export default function UserManager() {
             <TableHead>Cadastro</TableHead>
             <TableHead>Tokens</TableHead>
             <TableHead>Plano</TableHead>
+            <TableHead>Contratação</TableHead>
             <TableHead>Papel</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="text-right">Ações</TableHead>
@@ -110,9 +143,9 @@ export default function UserManager() {
         </TableHeader>
         <TableBody>
           {loading ? (
-            <TableRow><TableCell colSpan={8}>Carregando...</TableCell></TableRow>
+            <TableRow><TableCell colSpan={9}>Carregando...</TableCell></TableRow>
           ) : filtered.length === 0 ? (
-            <TableRow><TableCell colSpan={8}>Nenhum usuário</TableCell></TableRow>
+            <TableRow><TableCell colSpan={9}>Nenhum usuário</TableCell></TableRow>
           ) : (
             filtered.map(u => (
               <TableRow key={u.id}>
@@ -131,7 +164,29 @@ export default function UserManager() {
                   />
                 </TableCell>
                 <TableCell className="font-medium">{u.tokens || 0}</TableCell>
-                <TableCell className="capitalize">{u.plan_type || 'gratuito'}</TableCell>
+                <TableCell>
+                  <Select value={u.plan_type || 'gratuito'} onValueChange={(v: string) => updatePlanType(u.id, v)}>
+                    <SelectTrigger className="w-[120px]"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="gratuito">Gratuito</SelectItem>
+                      <SelectItem value="essencial">Essencial</SelectItem>
+                      <SelectItem value="premium">Premium</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </TableCell>
+                <TableCell>
+                  <Input 
+                    type="date" 
+                    defaultValue={u.subscription_activated_at ? new Date(u.subscription_activated_at).toISOString().split('T')[0] : ''} 
+                    onBlur={(e) => {
+                      if (e.target.value && e.target.value !== (u.subscription_activated_at ? new Date(u.subscription_activated_at).toISOString().split('T')[0] : '')) {
+                        updateSubscriptionActivatedAt(u.id, e.target.value + 'T00:00:00.000Z');
+                      }
+                    }}
+                    className="w-36 text-sm"
+                    placeholder="Sem contratação"
+                  />
+                </TableCell>
                 <TableCell>
                   <Select value={(u.role || 'user')} onValueChange={(v: any) => updateRole(u.id, v)}>
                     <SelectTrigger className="w-[140px]"><SelectValue /></SelectTrigger>
