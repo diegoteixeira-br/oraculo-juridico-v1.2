@@ -372,19 +372,107 @@ const HistoricoPensaoModal: React.FC<HistoricoPensaoModalProps> = ({
                       </CardContent>
                     </Card>
 
+                    {/* Valores calculados */}
+                    <Card className="bg-slate-800/30 border-slate-600">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-sm text-white">Breakdown do Cálculo</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3 text-sm">
+                        <div className="grid grid-cols-3 gap-3">
+                          <div className="bg-purple-600/10 border border-purple-600/30 rounded-lg p-3">
+                            <span className="text-purple-300 text-xs">Base Mensal</span>
+                            <div className="text-purple-400 font-semibold">
+                              {formatCurrency(selectedCalculation.valor_pensao)}
+                            </div>
+                          </div>
+                          <div className="bg-blue-600/10 border border-blue-600/30 rounded-lg p-3">
+                            <span className="text-blue-300 text-xs">% da Renda</span>
+                            <div className="text-blue-400 font-semibold">
+                              {selectedCalculation.percentual_renda.toFixed(1)}%
+                            </div>
+                          </div>
+                          <div className="bg-green-600/10 border border-green-600/30 rounded-lg p-3">
+                            <span className="text-green-300 text-xs">Total Final</span>
+                            <div className="text-green-400 font-semibold">
+                              {formatCurrency(selectedCalculation.valor_corrigido)}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {selectedCalculation.valor_total_atrasado > 0 && (
+                          <div className="grid grid-cols-3 gap-3 pt-2 border-t border-slate-700">
+                            <div className="bg-red-600/10 border border-red-600/30 rounded-lg p-3">
+                              <span className="text-red-300 text-xs">Em Atraso</span>
+                              <div className="text-red-400 font-semibold">
+                                {formatCurrency(selectedCalculation.valor_total_atrasado)}
+                              </div>
+                            </div>
+                            <div className="bg-yellow-600/10 border border-yellow-600/30 rounded-lg p-3">
+                              <span className="text-yellow-300 text-xs">Multa</span>
+                              <div className="text-yellow-400 font-semibold">
+                                {formatCurrency(selectedCalculation.multa)}
+                              </div>
+                            </div>
+                            <div className="bg-orange-600/10 border border-orange-600/30 rounded-lg p-3">
+                              <span className="text-orange-300 text-xs">Juros</span>
+                              <div className="text-orange-400 font-semibold">
+                                {formatCurrency(selectedCalculation.juros)}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+
                     {/* Detalhamento completo */}
                     <Card className="bg-slate-800/30 border-slate-600">
                       <CardHeader className="pb-3">
                         <CardTitle className="text-sm text-white flex items-center gap-2">
                           <FileText className="w-4 h-4 text-primary" />
-                          Relatório Completo
+                          Relatório Detalhado
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="bg-slate-900/50 rounded-lg p-4 max-h-80 overflow-y-auto">
-                          <pre className="text-xs whitespace-pre-wrap text-slate-200 leading-relaxed font-mono">
-                            {selectedCalculation.detalhamento}
-                          </pre>
+                          <div className="text-xs text-slate-200 leading-relaxed">
+                            {selectedCalculation.detalhamento.split('\n').map((linha, index) => {
+                              // Destacar títulos e seções
+                              if (linha.includes('CÁLCULO DE PENSÃO ALIMENTÍCIA')) {
+                                return <div key={index} className="text-primary text-sm font-bold mb-3">{linha}</div>;
+                              }
+                              if (linha.includes('Dados da Pensão:') || linha.includes('Cálculos:') || linha.includes('Valores em Atraso:')) {
+                                return <div key={index} className="text-purple-400 font-semibold text-sm mt-3 mb-2">{linha}</div>;
+                              }
+                              if (linha.includes('Observações Legais:') || linha.includes('Observações Adicionais:')) {
+                                return <div key={index} className="text-green-400 font-semibold text-sm mt-3 mb-2">{linha}</div>;
+                              }
+                              if (linha.startsWith('-') && linha.includes(':')) {
+                                const [label, value] = linha.split(':');
+                                return (
+                                  <div key={index} className="flex justify-between items-center my-1">
+                                    <span className="text-slate-400">{label.replace('-', '').trim()}:</span>
+                                    <span className="text-slate-200 font-medium">{value}</span>
+                                  </div>
+                                );
+                              }
+                              if (linha.match(/^\d+\./)) {
+                                const [number, ...rest] = linha.split('.');
+                                return (
+                                  <div key={index} className="flex items-start gap-2 my-1">
+                                    <span className="text-blue-400 font-semibold min-w-[20px]">{number}.</span>
+                                    <span className="text-slate-200">{rest.join('.').trim()}</span>
+                                  </div>
+                                );
+                              }
+                              if (linha.includes('R$')) {
+                                return <div key={index} className="text-green-400 font-medium ml-4">{linha}</div>;
+                              }
+                              if (linha.trim().startsWith('-')) {
+                                return <div key={index} className="text-slate-300 ml-2 text-xs">{linha}</div>;
+                              }
+                              return <div key={index} className="text-slate-300">{linha}</div>;
+                            })}
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
