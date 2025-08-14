@@ -81,10 +81,21 @@ export default function DocumentUploader({ onUploaded }: DocumentUploaderProps) 
         <p className="text-sm text-muted-foreground">Arraste e solte arquivos aqui</p>
         <p className="text-xs text-muted-foreground mt-1">ou</p>
         <div className="mt-4">
-          <label className="inline-block">
-            <input type="file" multiple className="hidden" onChange={e => handleFiles(e.target.files)} />
-            <Button disabled={uploading}>{uploading ? "Enviando..." : "Selecionar arquivos"}</Button>
-          </label>
+          <input 
+            type="file" 
+            multiple 
+            className="hidden" 
+            id="file-upload"
+            onChange={e => handleFiles(e.target.files)} 
+          />
+          <Button 
+            asChild 
+            disabled={uploading}
+          >
+            <label htmlFor="file-upload" className="cursor-pointer">
+              {uploading ? "Enviando..." : "Selecionar arquivos"}
+            </label>
+          </Button>
         </div>
       </div>
     </div>
