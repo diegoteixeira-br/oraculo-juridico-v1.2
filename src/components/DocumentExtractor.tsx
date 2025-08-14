@@ -397,7 +397,7 @@ export default function DocumentExtractor({
           ) : (
             <>
               <FileText className="h-4 w-4 mr-2" />
-              Extrair Prazos {extractText.trim() && `(${estimatedTokens} tokens)`}
+              Extrair Prazos {(extractText.trim() || uploadedFiles.length > 0) && `(${extractText.trim() ? estimatedTokens : 500} tokens)`}
             </>
           )}
         </Button>
