@@ -81,8 +81,8 @@ export default function ComprarCreditosPage() {
       }
 
       console.log("✅ Redirecionando para:", stripeUrl);
-      // Redirecionar para o link do Stripe
-      window.open(stripeUrl, '_blank');
+      // Redirecionar para o link do Stripe na mesma aba
+      window.location.href = stripeUrl;
       
     } catch (error) {
       console.error('❌ Erro ao processar pagamento:', error);
