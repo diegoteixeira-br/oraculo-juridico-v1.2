@@ -576,9 +576,18 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
         try {
           const audioData = JSON.parse(cached);
           const sevenDays = 7 * 24 * 60 * 60 * 1000;
-          if (Date.now() - audioData.createdAt < sevenDays) {
-            audioUrl = audioData.audioUrl;
+          if (Date.now() - audioData.createdAt < sevenDays && audioData.blobData) {
+            // Sempre recriar o blob URL a partir dos dados salvos
+            const audioBlob = new Blob([
+              Uint8Array.from(atob(audioData.blobData), c => c.charCodeAt(0))
+            ], { type: 'audio/mpeg' });
+            audioUrl = URL.createObjectURL(audioBlob);
             usedCache = true;
+            
+            // Atualizar cache com nova URL
+            audioData.audioUrl = audioUrl;
+            localStorage.setItem(cacheKey, JSON.stringify(audioData));
+            
             toast({
               title: "Áudio carregado",
               description: "Áudio carregado do cache (sem cobrança de tokens)",
@@ -587,6 +596,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
             localStorage.removeItem(cacheKey);
           }
         } catch (e) {
+          console.error('Erro ao processar cache de áudio:', e);
           localStorage.removeItem(cacheKey);
         }
       }
@@ -601,7 +611,14 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
           }
         });
 
-        if (error) throw error;
+        if (error) {
+          console.error('Erro na função text-to-speech:', error);
+          throw new Error(error.message || 'Erro ao gerar áudio');
+        }
+
+        if (!data?.audioContent) {
+          throw new Error('Nenhum conteúdo de áudio retornado');
+        }
 
         // Converter base64 para blob e criar URL
         const audioBlob = new Blob([
