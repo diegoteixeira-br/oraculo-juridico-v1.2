@@ -159,7 +159,7 @@ const Termos = () => {
                 A Agenda Jurídica permite organizar prazos processuais, audiências, reuniões e compromissos personalizados.
               </p>
               <p className="mt-2">
-                <strong>Limites por Plano:</strong> No Plano Essencial, o uso é ilimitado. No plano gratuito, o usuário pode manter até 5 compromissos com status pendente simultaneamente.
+                <strong>Limites por Plano:</strong> No Plano Essencial, o uso é ilimitado. No plano gratuito, o usuário pode manter até 20 compromissos com status pendente simultaneamente.
               </p>
             </section>
 

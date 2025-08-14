@@ -298,10 +298,10 @@ const AgendaJuridica = () => {
           .eq('user_id', user.id)
           .eq('status', 'pendente');
         if (countError) throw countError;
-        if ((count ?? 0) >= 5) {
+        if ((count ?? 0) >= 20) {
           toast({
             title: 'Limite atingido',
-            description: 'No plano gratuito, você pode manter até 5 compromissos pendentes simultaneamente. Assine o Plano Essencial para ilimitado.',
+            description: 'No plano gratuito, você pode manter até 20 compromissos pendentes simultaneamente. Assine o Plano Essencial para ilimitado.',
             variant: 'destructive',
           });
           return;
