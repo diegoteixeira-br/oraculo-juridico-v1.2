@@ -367,7 +367,7 @@ const ContatoForm = () => {
                       </h4>
                       <p className="text-xs text-slate-400">
                         Cada consulta consome tokens baseado no tamanho da pergunta e resposta. 
-                        Você ganha 3.000 tokens diários gratuitos.
+                        Você tem acesso a tokens através de pacotes ou assinatura mensal.
                       </p>
                     </div>
 

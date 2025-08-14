@@ -58,12 +58,12 @@ const SuportePage = () => {
   const faqItems = [
     {
       question: "Como funcionam os tokens?",
-      answer: "Você recebe 3.000 tokens diários gratuitos que se renovam a cada 24 horas. Também pode comprar tokens de planos que nunca expiram.",
+      answer: "Cada consulta consome tokens baseado no tamanho da pergunta e resposta. Você pode adquirir tokens através de pacotes ou assinatura mensal.",
       category: "tokens"
     },
     {
-      question: "Meus tokens gratuitos se acumulam?",
-      answer: "Não. Os 3.000 tokens gratuitos são renovados diariamente e não são cumulativos. Para tokens ilimitados, adquira um plano pago.",
+      question: "Como posso comprar mais tokens?",
+      answer: "Acesse 'Comprar Créditos' no menu principal e escolha entre pacotes de tokens ou o plano Essencial com 50.000 tokens mensais.",
       category: "tokens"
     },
     {
