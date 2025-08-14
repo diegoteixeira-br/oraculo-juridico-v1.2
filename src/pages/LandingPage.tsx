@@ -39,7 +39,7 @@ const LandingPage = () => {
     answer: "Você pode assinar o Plano Essencial: de R$ 75,80/mês por R$ 37,90/mês (50% OFF) para liberar uso ilimitado de calculadoras, documentos e agenda (além de 30.000 tokens/mês para o chat). Pacotes avulsos de 75k e 150k tokens permanecem disponíveis de forma opcional."
   }, {
     question: "O que é a Agenda Jurídica?",
-    answer: "É uma ferramenta para registrar manualmente prazos, audiências e compromissos. Quando houver itens agendados, você recebe um e-mail de lembrete diariamente às 08h (horário de Brasília). Possui também extração automática de prazos via IA que consome 500 tokens por uso."
+    answer: "É uma ferramenta para registrar manualmente prazos, audiências e compromissos. Quando houver itens agendados, você recebe um e-mail de lembrete diariamente às 08h (horário de Brasília). Possui também extração automática de prazos via IA que consome mínimo 500 tokens, variando conforme o tamanho do texto."
   }];
   return <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
@@ -188,7 +188,7 @@ const LandingPage = () => {
               <Calendar className="w-12 h-12 text-primary mb-4" />
               <h3 className="text-xl font-semibold mb-4 text-foreground">Agenda Jurídica</h3>
               <p className="text-muted-foreground">
-                Registre e organize manualmente prazos e compromissos; receba lembretes por e-mail às 08h (Brasília) nos dias com eventos. Extração automática de prazos via IA disponível (500 tokens por uso).
+                Registre e organize manualmente prazos e compromissos; receba lembretes por e-mail às 08h (Brasília) nos dias com eventos. Extração automática de prazos via IA disponível (mínimo 500 tokens, varia com tamanho).
               </p>
             </div>
             
@@ -284,7 +284,7 @@ const LandingPage = () => {
                 <div>
                   <h3 className="text-xl font-semibold mb-2 text-foreground">Extração Automática de Prazos</h3>
                   <p className="text-muted-foreground">
-                    IA analisa documentos (texto, PDF ou imagem) e identifica prazos automaticamente. <strong className="text-yellow-400">Consome 500 tokens por uso.</strong>
+                    IA analisa documentos (texto, PDF ou imagem) e identifica prazos automaticamente. <strong className="text-yellow-400">Mínimo 500 tokens, custo varia com o tamanho do texto.</strong>
                   </p>
                 </div>
               </div>

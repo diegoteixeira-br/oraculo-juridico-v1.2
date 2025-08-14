@@ -30,6 +30,21 @@ interface ExtractedDeadline {
   priority: 'baixa' | 'normal' | 'alta' | 'urgente';
 }
 
+// Função para calcular tokens baseado no tamanho do texto
+function calculateTokensNeeded(text: string): number {
+  const baseTokens = 500; // Mínimo de 500 tokens
+  const textLength = text.length;
+  
+  // Aproximadamente 4 caracteres por token
+  const estimatedTokens = Math.ceil(textLength / 4);
+  
+  // Calcular tokens necessários (base + custo do processamento)
+  const processingTokens = Math.max(baseTokens, estimatedTokens * 0.5);
+  
+  // Arredondar para cima em incrementos de 100
+  return Math.ceil(processingTokens / 100) * 100;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -47,17 +62,20 @@ serve(async (req) => {
     // Inicializar cliente Supabase
     const supabase = createClient(supabaseUrl!, supabaseServiceKey!);
 
+    // Calcular tokens necessários baseado no tamanho do texto
+    const tokensNeeded = calculateTokensNeeded(text);
+    console.log(`Text length: ${text.length}, Tokens needed: ${tokensNeeded}`);
+
     // Verificar e usar tokens do usuário antes de processar
-    const tokensNeeded = 500; // Custo para extração de prazos
     const { data: tokenResult, error: tokenError } = await supabase.rpc('use_tokens', {
       p_user_id: userId,
       p_tokens: tokensNeeded,
-      p_description: 'Extração automática de prazos jurídicos'
+      p_description: `Extração automática de prazos jurídicos (${tokensNeeded} tokens)`
     });
 
     if (tokenError || !tokenResult) {
       console.error('Token usage error:', tokenError);
-      throw new Error('Tokens insuficientes para esta operação. São necessários 500 tokens.');
+      throw new Error(`Tokens insuficientes para esta operação. São necessários ${tokensNeeded} tokens.`);
     }
 
     // Buscar o fuso horário do usuário

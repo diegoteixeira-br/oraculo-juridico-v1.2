@@ -6,7 +6,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/components/ui/use-toast";
-import { FileText, Upload, Camera, File, Image, X, Loader2 } from "lucide-react";
+import { FileText, Upload, Camera, File, Image, X, Loader2, Info } from "lucide-react";
+
+// Função para calcular tokens necessários
+function calculateTokensNeeded(text: string): number {
+  const baseTokens = 500; // Mínimo de 500 tokens
+  const textLength = text.length;
+  
+  // Aproximadamente 4 caracteres por token
+  const estimatedTokens = Math.ceil(textLength / 4);
+  
+  // Calcular tokens necessários (base + custo do processamento)
+  const processingTokens = Math.max(baseTokens, estimatedTokens * 0.5);
+  
+  // Arredondar para cima em incrementos de 100
+  return Math.ceil(processingTokens / 100) * 100;
+}
 
 interface DocumentExtractorProps {
   onExtractComplete: () => void;
@@ -31,6 +46,7 @@ export default function DocumentExtractor({
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+  const [estimatedTokens, setEstimatedTokens] = useState(500);
 
   // Processar arquivo para extração de texto
   const processFile = async (file: File): Promise<string> => {
@@ -128,7 +144,11 @@ export default function DocumentExtractor({
       return;
     }
 
+    let textToAnalyze = extractText.trim();
+
     // Verificar se o usuário tem tokens suficientes
+    const tokensNeeded = calculateTokensNeeded(textToAnalyze || (uploadedFiles.length > 0 ? "sample text" : ""));
+    
     const { data: profile } = await supabase
       .from('profiles')
       .select('tokens, plan_tokens, token_balance')
@@ -136,18 +156,15 @@ export default function DocumentExtractor({
       .single();
 
     const totalTokens = (profile?.token_balance || 0) + (profile?.plan_tokens || 0);
-    const tokensNeeded = 500;
 
     if (totalTokens < tokensNeeded) {
       toast({
         title: "Tokens insuficientes",
-        description: `Esta operação consome 500 tokens. Você possui ${totalTokens} tokens. Compre mais tokens para continuar.`,
+        description: `Esta operação consome ${tokensNeeded} tokens. Você possui ${totalTokens} tokens. Compre mais tokens para continuar.`,
         variant: "destructive",
       });
       return;
     }
-
-    let textToAnalyze = extractText.trim();
 
     // Se não há texto manual mas há arquivos, extrair texto dos arquivos
     if (!textToAnalyze && uploadedFiles.length > 0) {
@@ -222,9 +239,20 @@ export default function DocumentExtractor({
         <Textarea
           placeholder="Cole aqui o texto da decisão, despacho ou intimação..."
           value={extractText}
-          onChange={(e) => setExtractText(e.target.value)}
+          onChange={(e) => {
+            setExtractText(e.target.value);
+            setEstimatedTokens(calculateTokensNeeded(e.target.value));
+          }}
           className="min-h-[120px] bg-slate-700 border-slate-600 text-white"
         />
+        
+        {/* Indicador de tokens estimados */}
+        {extractText.trim() && (
+          <div className="flex items-center gap-2 text-sm text-slate-400 bg-slate-800/50 p-2 rounded border border-slate-600">
+            <Info className="h-4 w-4" />
+            <span>Tokens estimados para esta operação: <strong className="text-white">{estimatedTokens}</strong></span>
+          </div>
+        )}
       </div>
 
       <div className="flex items-center gap-4">
@@ -375,7 +403,7 @@ export default function DocumentExtractor({
           ) : (
             <>
               <FileText className="h-4 w-4 mr-2" />
-              Extrair Prazos
+              Extrair Prazos {extractText.trim() && `(${estimatedTokens} tokens)`}
             </>
           )}
         </Button>
