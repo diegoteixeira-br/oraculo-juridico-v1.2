@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 interface AudioPlayerProps {
   audioSrc: string;
   className?: string;
-  onProgress?: (current: number, duration: number, percent: number, isPlaying: boolean) => void;
+  onProgress?: (current: number, duration: number, percent: number, isPlaying: boolean, playbackRate: number) => void;
   onPlayChange?: (playing: boolean) => void;
   onLoadingChange?: (loading: boolean) => void;
 }
@@ -28,7 +28,7 @@ export const AudioPlayer = ({ audioSrc, className = '', onProgress, onPlayChange
       setCurrentTime(audio.currentTime);
       const d = audio.duration || 0;
       if (d > 0) {
-        onProgress?.(audio.currentTime, d, audio.currentTime / d, isPlaying);
+        onProgress?.(audio.currentTime, d, audio.currentTime / d, isPlaying, playbackRate);
       }
     };
     const updateDuration = () => {
@@ -77,7 +77,7 @@ export const AudioPlayer = ({ audioSrc, className = '', onProgress, onPlayChange
       audio.removeEventListener('pause', handlePause);
       audio.removeEventListener('ended', handleEnded);
     };
-  }, [audioSrc, isPlaying, onProgress, onPlayChange, onLoadingChange]);
+  }, [audioSrc, isPlaying, onProgress, onPlayChange, onLoadingChange, playbackRate]);
 
   const togglePlayPause = () => {
     const audio = audioRef.current;
