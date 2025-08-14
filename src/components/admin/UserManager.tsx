@@ -174,8 +174,13 @@ export default function UserManager() {
                  </TableCell>
                 <TableCell className="font-medium">{u.tokens || 0}</TableCell>
                 <TableCell>
-                  <Select value={u.plan_type || 'gratuito'} onValueChange={(v: string) => updatePlanType(u.id, v)}>
-                    <SelectTrigger className="w-[120px]"><SelectValue /></SelectTrigger>
+                  <Select 
+                    value={u.plan_type === 'Essencial' ? 'Essencial' : 'gratuito'} 
+                    onValueChange={(v: string) => updatePlanType(u.id, v)}
+                  >
+                    <SelectTrigger className="w-[120px]">
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="gratuito">Gratuito</SelectItem>
                       <SelectItem value="Essencial">Essencial</SelectItem>
