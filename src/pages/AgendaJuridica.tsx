@@ -516,6 +516,78 @@ const AgendaJuridica = () => {
     }
   };
 
+  // Verificar se compromisso pode ser excluído (concluído, cancelado ou expirado)
+  const canDeleteCommitment = (commitment: LegalCommitment) => {
+    if (commitment.status === 'concluido' || commitment.status === 'cancelado') {
+      return true;
+    }
+    
+    // Verificar se passou da data/hora
+    const commitmentDate = new Date(commitment.commitment_date);
+    const now = new Date();
+    return commitmentDate < now;
+  };
+
+  // Excluir compromisso
+  const handleDeleteCommitment = async (commitment: LegalCommitment) => {
+    try {
+      const { error } = await supabase
+        .from('legal_commitments' as any)
+        .delete()
+        .eq('id', commitment.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Sucesso", 
+        description: "Compromisso excluído com sucesso!",
+      });
+
+      loadCommitments();
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível excluir o compromisso.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Excluir compromissos elegíveis em lote
+  const handleBulkDelete = async () => {
+    const eligibleCommitments = commitments.filter(canDeleteCommitment);
+    
+    if (eligibleCommitments.length === 0) {
+      toast({
+        title: "Nada para excluir",
+        description: "Não há compromissos concluídos, cancelados ou expirados.",
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('legal_commitments' as any)
+        .delete()
+        .in('id', eligibleCommitments.map(c => c.id));
+
+      if (error) throw error;
+
+      toast({
+        title: "Sucesso",
+        description: `${eligibleCommitments.length} compromissos excluídos com sucesso!`,
+      });
+
+      loadCommitments();
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível excluir os compromissos.",
+        variant: "destructive",
+      });
+    }
+  };
+
   // Extrair prazos automaticamente
   const handleExtractDeadlines = async () => {
     if (!user || !extractText.trim()) {
@@ -1419,38 +1491,52 @@ const AgendaJuridica = () => {
                                  </div>
                                )}
                                  
-                               {/* Ações do compromisso - sempre visível no mobile para pendentes */}
-                               {commitment.status === 'pendente' && (
-                                  <div className={`flex flex-wrap gap-2 ${isMobile ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity`}>
+                                {/* Ações do compromisso */}
+                                <div className={`flex flex-wrap gap-2 ${isMobile ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity`}>
+                                  {commitment.status === 'pendente' && (
+                                    <>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleEditCommitment(commitment)}
+                                        className="h-8 px-3 text-xs border-slate-600 hover:bg-slate-600 flex-1 min-w-0"
+                                      >
+                                        <Edit className="w-3 h-3 mr-1 flex-shrink-0" />
+                                        <span className="truncate">Editar</span>
+                                      </Button>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleCompleteCommitment(commitment)}
+                                        className="h-8 px-3 text-xs border-green-600 text-green-400 hover:bg-green-600/10 flex-1 min-w-0"
+                                      >
+                                        <Check className="w-3 h-3 mr-1 flex-shrink-0" />
+                                        <span className="truncate">Concluir</span>
+                                      </Button>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleCancelCommitment(commitment)}
+                                        className="h-8 px-3 text-xs border-red-600 text-red-400 hover:bg-red-600/10 flex-1 min-w-0"
+                                      >
+                                        <X className="w-3 h-3 mr-1 flex-shrink-0" />
+                                        <span className="truncate">Cancelar</span>
+                                      </Button>
+                                    </>
+                                  )}
+                                  
+                                  {canDeleteCommitment(commitment) && (
                                     <Button
                                       variant="outline"
                                       size="sm"
-                                      onClick={() => handleEditCommitment(commitment)}
-                                      className="h-8 px-3 text-xs border-slate-600 hover:bg-slate-600 flex-1 min-w-0"
+                                      onClick={() => handleDeleteCommitment(commitment)}
+                                      className="h-8 px-3 text-xs border-red-600 text-red-400 hover:bg-red-600/10"
                                     >
-                                      <Edit className="w-3 h-3 mr-1 flex-shrink-0" />
-                                      <span className="truncate">Editar</span>
+                                      <Trash2 className="w-3 h-3 mr-1 flex-shrink-0" />
+                                      <span className="truncate">Excluir</span>
                                     </Button>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => handleCompleteCommitment(commitment)}
-                                      className="h-8 px-3 text-xs border-green-600 text-green-400 hover:bg-green-600/10 flex-1 min-w-0"
-                                    >
-                                      <Check className="w-3 h-3 mr-1 flex-shrink-0" />
-                                      <span className="truncate">Concluir</span>
-                                    </Button>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => handleCancelCommitment(commitment)}
-                                      className="h-8 px-3 text-xs border-red-600 text-red-400 hover:bg-red-600/10 flex-1 min-w-0"
-                                    >
-                                      <X className="w-3 h-3 mr-1 flex-shrink-0" />
-                                      <span className="truncate">Cancelar</span>
-                                     </Button>
-                                   </div>
-                                 )}
+                                  )}
+                                </div>
                                </div>
                           ))
                         )}
@@ -1537,14 +1623,26 @@ const AgendaJuridica = () => {
                 <div className="p-2 bg-blue-500/20 rounded-lg flex-shrink-0">
                   <Target className="w-5 h-5 text-blue-400" />
                 </div>
-                <div>
-                  <h4 className="font-semibold text-blue-200 mb-2">Dicas para Organização</h4>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-semibold text-blue-200">Dicas para Organização</h4>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleBulkDelete}
+                      className="text-red-400 border-red-500/30 hover:bg-red-500/10 text-xs"
+                    >
+                      <Trash2 className="h-3 w-3 mr-1" />
+                      Limpar Concluídos
+                    </Button>
+                  </div>
                   <div className="space-y-1 text-sm text-blue-300/80">
-                    <p>• <strong>Extração IA:</strong> Cole textos de decisões para detectar prazos automaticamente</p>
-                    <p>• <strong>Prioridades:</strong> Use urgente para prazos críticos e alta para importantes</p>
-                    <p>• <strong>Calendário:</strong> Visualize seus compromissos de forma organizada</p>
-                    <p>• <strong>Filtros:</strong> Use a busca para encontrar rapidamente processos específicos</p>
-                    <p>• <strong>Notificações:</strong> Configure alertas por email para não perder prazos importantes</p>
+                    <p>• <strong>Calendário:</strong> Clique em uma data no calendário para ver compromissos específicos do dia</p>
+                    <p>• <strong>Status:</strong> Marque como concluído (✓) ou cancele (✗) compromissos usando os botões de ação</p>
+                    <p>• <strong>Filtros:</strong> Use os filtros por tipo, status e busca para encontrar rapidamente o que precisa</p>
+                    <p>• <strong>Prioridades:</strong> Defina urgência correta - compromissos urgentes aparecem destacados</p>
+                    <p>• <strong>Notificações:</strong> Configure horário do resumo diário e ative/desative via ⚙️</p>
+                    <p>• <strong>Limpeza:</strong> Use "Limpar Concluídos" para remover compromissos finalizados ou expirados</p>
                   </div>
                 </div>
               </div>
