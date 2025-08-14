@@ -26,16 +26,6 @@ export function useAccessControl() {
 
   const isBlocked = (isTrialExpired || isCancelled) && !isSubscriber && !hasPlanTokens;
 
-  // Debug para chat
-  console.log('Access Control Debug:', {
-    isSubscriber,
-    isTrialActive,
-    hasPlanTokens,
-    planTokens,
-    canUseChat,
-    subscriptionStatus: profile?.subscription_status,
-    planType
-  });
 
   // Informações sobre o plano atual
   const getCurrentPlanInfo = () => {
