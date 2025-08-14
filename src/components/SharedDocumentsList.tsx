@@ -107,8 +107,8 @@ export default function SharedDocumentsList() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map((d) => (
               <div key={d.id} className="bg-slate-700/30 rounded-lg border border-slate-600/50 overflow-hidden hover:border-slate-500/50 transition-colors">
-                {/* Thumbnail */}
-                <div className="aspect-video bg-slate-800/50 border-b border-slate-600/50 flex items-center justify-center relative group cursor-pointer"
+                {/* Thumbnail Preview */}
+                <div className="aspect-[4/3] bg-slate-800/50 border-b border-slate-600/50 relative group cursor-pointer overflow-hidden"
                      onClick={() => setPreviewDoc({ id: d.id, title: d.title, docType: d.doc_type })}>
                   {d.file_url ? (
                     d.file_url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
@@ -118,29 +118,43 @@ export default function SharedDocumentsList() {
                         className="w-full h-full object-cover"
                       />
                     ) : d.file_url.toLowerCase().includes('.pdf') ? (
-                      <div className="flex flex-col items-center text-slate-400">
-                        <FileText className="w-12 h-12 mb-2" />
-                        <span className="text-xs">PDF</span>
+                      <div className="w-full h-full relative bg-white">
+                        <iframe
+                          src={`${d.file_url}#toolbar=0&navpanes=0&scrollbar=0&page=1&zoom=50`}
+                          className="w-full h-full border-0 pointer-events-none scale-150 origin-top-left"
+                          style={{ transform: 'scale(0.67)', transformOrigin: 'top left' }}
+                          title={`Preview of ${d.title}`}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent"></div>
                       </div>
                     ) : (
-                      <div className="flex flex-col items-center text-slate-400">
-                        <FileText className="w-12 h-12 mb-2" />
-                        <span className="text-xs">Arquivo</span>
+                      <div className="flex flex-col items-center justify-center h-full text-slate-400 bg-gradient-to-br from-slate-700 to-slate-800">
+                        <FileText className="w-16 h-16 mb-2 text-slate-300" />
+                        <span className="text-sm font-medium">Arquivo</span>
+                        <span className="text-xs opacity-70">{d.file_url.split('.').pop()?.toUpperCase()}</span>
                       </div>
                     )
                   ) : (
-                    <div className="flex flex-col items-center text-slate-400">
-                      <FileText className="w-12 h-12 mb-2" />
-                      <span className="text-xs">Texto</span>
+                    <div className="flex flex-col items-center justify-center h-full text-slate-400 bg-gradient-to-br from-primary/10 to-primary/5">
+                      <div className="bg-primary/20 rounded-full p-4 mb-2">
+                        <FileText className="w-12 h-12 text-primary" />
+                      </div>
+                      <span className="text-sm font-medium text-slate-300">Documento de Texto</span>
+                      <span className="text-xs opacity-70">Markdown</span>
                     </div>
                   )}
                   
                   {/* Overlay com botão de visualizar */}
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Button size="sm" className="bg-primary hover:bg-primary/90">
-                      <Eye className="w-4 h-4 mr-1" />
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center justify-center">
+                    <Button size="sm" className="bg-primary hover:bg-primary/90 shadow-lg transform group-hover:scale-105 transition-transform">
+                      <Eye className="w-4 h-4 mr-2" />
                       Visualizar
                     </Button>
+                  </div>
+                  
+                  {/* Badge de tipo no canto superior direito */}
+                  <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-md backdrop-blur-sm">
+                    {d.doc_type === 'text' ? 'MD' : d.file_url?.split('.').pop()?.toUpperCase() || 'DOC'}
                   </div>
                 </div>
 
