@@ -184,7 +184,7 @@ ${data.dataPagamentoParcial ? `• Data do Pagamento: ${new Date(data.dataPagame
 
 ${mesesAtraso > 0 ? `
 ═══════════════════════════════════════════════════════════════
-CÁLCULO DE ATRASO (${new Date(data.dataVencimento).toLocaleDateString('pt-BR')} até ${new Date().toLocaleDateString('pt-BR')})
+CÁLCULO DE ATRASO (${new Date(data.dataVencimento).toLocaleDateString('pt-BR')} até ${new Date().toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })})
 ═══════════════════════════════════════════════════════════════
 • Período em Atraso: ${diasAtraso} dias (${mesesAtraso.toFixed(1)} meses)
 • Saldo Devedor no Vencimento: R$ ${saldoDevedor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
@@ -218,7 +218,7 @@ ${data.observacoes}
 ` : ''}
 
 ═══════════════════════════════════════════════════════════════
-Cálculo realizado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
+Cálculo realizado em ${new Date().toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })} às ${new Date().toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo' })}
 Ferramenta: Oráculo Jurídico - Calculadora de Contrato Bancário
 ═══════════════════════════════════════════════════════════════`;
 

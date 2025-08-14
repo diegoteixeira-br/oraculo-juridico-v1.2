@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { History, CreditCard, Download, Filter, Calendar, ArrowLeft, TrendingUp, Zap, FileText, Search, MessageSquare } from "lucide-react";
+import { toZonedTime } from "date-fns-tz";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -145,7 +146,7 @@ export default function HistoricoTransacoesPage() {
     const csvContent = [
       ['Data', 'Tipo', 'Descrição', 'Valor', 'Status'],
       ...filteredTransactions.map(transaction => [
-        new Date(transaction.created_at).toLocaleDateString('pt-BR'),
+        toZonedTime(new Date(transaction.created_at), 'America/Sao_Paulo').toLocaleDateString('pt-BR'),
         getTransactionTypeLabel(transaction.transaction_type),
         transaction.description,
         transaction.amount.toString(),
@@ -383,19 +384,19 @@ export default function HistoricoTransacoesPage() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-sm text-slate-400 mb-1">
-                            {new Date(transaction.created_at).toLocaleDateString('pt-BR', {
-                              day: '2-digit',
-                              month: '2-digit',
-                              year: 'numeric'
-                            })}
-                          </div>
-                          <div className="text-xs text-slate-500">
-                            {new Date(transaction.created_at).toLocaleTimeString('pt-BR', {
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                          </div>
+                           <div className="text-sm text-slate-400 mb-1">
+                             {toZonedTime(new Date(transaction.created_at), 'America/Sao_Paulo').toLocaleDateString('pt-BR', {
+                               day: '2-digit',
+                               month: '2-digit',
+                               year: 'numeric'
+                             })}
+                           </div>
+                           <div className="text-xs text-slate-500">
+                             {toZonedTime(new Date(transaction.created_at), 'America/Sao_Paulo').toLocaleTimeString('pt-BR', {
+                               hour: '2-digit',
+                               minute: '2-digit'
+                             })}
+                           </div>
                         </div>
                       </div>
                       

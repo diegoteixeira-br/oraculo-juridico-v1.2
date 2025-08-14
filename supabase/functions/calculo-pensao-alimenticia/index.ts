@@ -147,7 +147,7 @@ Observações Legais:
 
 ${data.observacoes ? `Observações Adicionais: ${data.observacoes}` : ''}
 
-Cálculo realizado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}`;
+Cálculo realizado em ${new Date().toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })} às ${new Date().toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo' })}`;
 
     const result = {
       valorPensao,

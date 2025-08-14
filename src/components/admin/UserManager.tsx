@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { toZonedTime, fromZonedTime } from "date-fns-tz";
 
 interface UserRow { id: string; email: string; name?: string; created_at?: string; role?: string; is_active?: boolean; tokens?: number; plan_type?: string; subscription_activated_at?: string }
 
@@ -65,9 +66,13 @@ export default function UserManager() {
 
   const updateCreatedAt = async (userId: string, newDate: string) => {
     try {
+      // Converter a data local brasileira para UTC
+      const localDate = new Date(newDate + 'T12:00:00');
+      const utcDate = fromZonedTime(localDate, 'America/Sao_Paulo');
+      
       const { error } = await supabase
         .from('profiles')
-        .update({ created_at: newDate })
+        .update({ created_at: utcDate.toISOString() })
         .eq('user_id', userId);
       
       if (error) throw error;
@@ -81,9 +86,13 @@ export default function UserManager() {
 
   const updateSubscriptionActivatedAt = async (userId: string, newDate: string) => {
     try {
+      // Converter a data local brasileira para UTC
+      const localDate = new Date(newDate + 'T12:00:00');
+      const utcDate = fromZonedTime(localDate, 'America/Sao_Paulo');
+      
       const { error } = await supabase
         .from('profiles')
-        .update({ subscription_activated_at: newDate })
+        .update({ subscription_activated_at: utcDate.toISOString() })
         .eq('user_id', userId);
       
       if (error) throw error;
@@ -151,18 +160,18 @@ export default function UserManager() {
               <TableRow key={u.id}>
                 <TableCell>{u.name || '-'}</TableCell>
                 <TableCell>{u.email}</TableCell>
-                <TableCell>
-                  <Input 
-                    type="date" 
-                    defaultValue={u.created_at ? new Date(u.created_at).toISOString().split('T')[0] : ''} 
-                    onBlur={(e) => {
-                      if (e.target.value && e.target.value !== (u.created_at ? new Date(u.created_at).toISOString().split('T')[0] : '')) {
-                        updateCreatedAt(u.id, e.target.value + 'T00:00:00.000Z');
-                      }
-                    }}
-                    className="w-36 text-sm"
-                  />
-                </TableCell>
+                 <TableCell>
+                   <Input 
+                     type="date" 
+                     defaultValue={u.created_at ? toZonedTime(new Date(u.created_at), 'America/Sao_Paulo').toISOString().split('T')[0] : ''} 
+                     onBlur={(e) => {
+                       if (e.target.value && e.target.value !== (u.created_at ? toZonedTime(new Date(u.created_at), 'America/Sao_Paulo').toISOString().split('T')[0] : '')) {
+                         updateCreatedAt(u.id, e.target.value);
+                       }
+                     }}
+                     className="w-36 text-sm"
+                   />
+                 </TableCell>
                 <TableCell className="font-medium">{u.tokens || 0}</TableCell>
                 <TableCell>
                   <Select value={u.plan_type || 'gratuito'} onValueChange={(v: string) => updatePlanType(u.id, v)}>
@@ -174,19 +183,19 @@ export default function UserManager() {
                     </SelectContent>
                   </Select>
                 </TableCell>
-                <TableCell>
-                  <Input 
-                    type="date" 
-                    defaultValue={u.subscription_activated_at ? new Date(u.subscription_activated_at).toISOString().split('T')[0] : ''} 
-                    onBlur={(e) => {
-                      if (e.target.value && e.target.value !== (u.subscription_activated_at ? new Date(u.subscription_activated_at).toISOString().split('T')[0] : '')) {
-                        updateSubscriptionActivatedAt(u.id, e.target.value + 'T00:00:00.000Z');
-                      }
-                    }}
-                    className="w-36 text-sm"
-                    placeholder="Sem contratação"
-                  />
-                </TableCell>
+                 <TableCell>
+                   <Input 
+                     type="date" 
+                     defaultValue={u.subscription_activated_at ? toZonedTime(new Date(u.subscription_activated_at), 'America/Sao_Paulo').toISOString().split('T')[0] : ''} 
+                     onBlur={(e) => {
+                       if (e.target.value && e.target.value !== (u.subscription_activated_at ? toZonedTime(new Date(u.subscription_activated_at), 'America/Sao_Paulo').toISOString().split('T')[0] : '')) {
+                         updateSubscriptionActivatedAt(u.id, e.target.value);
+                       }
+                     }}
+                     className="w-36 text-sm"
+                     placeholder="Sem contratação"
+                   />
+                 </TableCell>
                 <TableCell>
                   <Select value={(u.role || 'user')} onValueChange={(v: any) => updateRole(u.id, v)}>
                     <SelectTrigger className="w-[140px]"><SelectValue /></SelectTrigger>
