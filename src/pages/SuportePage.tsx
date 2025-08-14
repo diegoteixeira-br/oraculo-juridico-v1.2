@@ -107,6 +107,11 @@ const SuportePage = () => {
       category: "tecnico"
     },
     {
+      question: "Como funcionam as notificações por email da agenda?",
+      answer: "O sistema envia automaticamente emails diários resumindo seus compromissos e prazos importantes. Você pode configurar o horário e frequência das notificações em suas configurações de conta.",
+      category: "geral"
+    },
+    {
       question: "Meus dados estão seguros?",
       answer: "Absolutamente! Utilizamos criptografia de ponta, conformidade com LGPD e não compartilhamos seus dados com terceiros.",
       category: "geral"
