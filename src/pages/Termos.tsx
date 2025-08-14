@@ -142,9 +142,10 @@ const Termos = () => {
               </p>
               <ul className="list-disc ml-6 mt-2 space-y-2">
                 <li><strong>Funcionamento:</strong> As respostas podem ser convertidas em áudio de alta qualidade usando vozes naturais</li>
-                <li><strong>Armazenamento Temporário:</strong> O áudio fica salvo temporariamente durante sua sessão (enquanto estiver logado e com o navegador aberto)</li>
+                <li><strong>Armazenamento Temporário:</strong> O sistema mantém até 10 áudios salvos durante sua sessão ativa</li>
+                <li><strong>Gerenciamento Automático:</strong> Quando o limite de 10 áudios é atingido, os 3 mais antigos são removidos automaticamente para dar espaço aos novos</li>
                 <li><strong>Disponibilidade:</strong> O áudio permanece disponível ao navegar entre páginas da plataforma durante a mesma sessão</li>
-                <li><strong>Expiração:</strong> O áudio é automaticamente removido quando você desloga da conta ou fecha o navegador</li>
+                <li><strong>Expiração:</strong> Todo o áudio é automaticamente removido quando você desloga da conta ou fecha o navegador</li>
                 <li><strong>Cobrança:</strong> Tokens são cobrados apenas na primeira geração do áudio. Reproduções subsequentes do mesmo áudio durante a sessão não consomem tokens adicionais</li>
               </ul>
               <p className="mt-2">
