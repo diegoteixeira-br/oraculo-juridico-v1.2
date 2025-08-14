@@ -41,6 +41,7 @@ import UserMenu from "@/components/UserMenu";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 import { useFeatureUsage } from "@/hooks/useFeatureUsage";
 import { Bell, BellOff, Settings } from "lucide-react";
+import DocumentExtractor from "@/components/DocumentExtractor";
 
 interface LegalCommitment {
   id: string;
@@ -78,7 +79,7 @@ const AgendaJuridica = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showExtractDialog, setShowExtractDialog] = useState(false);
-  const [extractText, setExtractText] = useState("");
+  
   const [isExtracting, setIsExtracting] = useState(false);
   const [selectedCommitment, setSelectedCommitment] = useState<LegalCommitment | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
@@ -588,56 +589,6 @@ const AgendaJuridica = () => {
     }
   };
 
-  // Extrair prazos automaticamente
-  const handleExtractDeadlines = async () => {
-    if (!user || !extractText.trim()) {
-      toast({
-        title: "Erro",
-        description: "Digite o texto para análise.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsExtracting(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('extract-legal-deadlines', {
-        body: {
-          text: extractText,
-          userId: user.id,
-        },
-      });
-
-      if (error) throw error;
-
-      if (data.success) {
-      toast({
-        title: "Sucesso",
-        description: `${data.deadlinesSaved} prazos detectados e salvos automaticamente!`,
-      });
-      
-      // Log feature usage
-      logFeatureUsage('deadline_extraction_used', {
-        deadlines_found: data.deadlinesSaved,
-        text_length: extractText.length
-      });
-      
-      setShowExtractDialog(false);
-      setExtractText("");
-        loadCommitments();
-      } else {
-        throw new Error(data.error);
-      }
-    } catch (error: any) {
-      toast({
-        title: "Erro",
-        description: "Não foi possível extrair os prazos.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsExtracting(false);
-    }
-  };
 
   // Obter cor do compromisso
   const getCommitmentColor = (type: string, priority: string) => {
@@ -908,29 +859,21 @@ const AgendaJuridica = () => {
                         Extrair IA
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                       <DialogHeader>
                         <DialogTitle>Extrair Prazos Automaticamente</DialogTitle>
                         <DialogDescription>
-                          Cole o texto de uma decisão, despacho ou intimação para extrair prazos automaticamente.
+                          Cole texto, envie um PDF ou tire uma foto para extrair prazos automaticamente usando IA.
                         </DialogDescription>
                       </DialogHeader>
-                      <div className="space-y-4">
-                        <Textarea
-                          placeholder="Cole aqui o texto da decisão, despacho ou intimação..."
-                          value={extractText}
-                          onChange={(e) => setExtractText(e.target.value)}
-                          className="min-h-[200px]"
-                        />
-                        <div className="flex justify-end gap-2">
-                          <Button variant="outline" onClick={() => setShowExtractDialog(false)}>
-                            Cancelar
-                          </Button>
-                          <Button onClick={handleExtractDeadlines} disabled={isExtracting}>
-                            {isExtracting ? "Analisando..." : "Extrair Prazos"}
-                          </Button>
-                        </div>
-                      </div>
+                      <DocumentExtractor
+                        onExtractComplete={() => {
+                          setShowExtractDialog(false);
+                          loadCommitments();
+                        }}
+                        isExtracting={isExtracting}
+                        onExtractingChange={setIsExtracting}
+                      />
                     </DialogContent>
                   </Dialog>
 
