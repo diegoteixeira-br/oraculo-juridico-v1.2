@@ -8,6 +8,7 @@ const corsHeaders = {
 };
 
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+const openAIAssistantId = Deno.env.get('OPENAI_DEADLINE_ASSISTANT_ID');
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
@@ -37,84 +38,120 @@ serve(async (req) => {
   try {
     const { text, userId }: DeadlineExtractRequest = await req.json();
 
-    if (!openAIApiKey) {
-      throw new Error('OpenAI API key not configured');
+    if (!openAIApiKey || !openAIAssistantId) {
+      throw new Error('OpenAI API key or Assistant ID not configured');
     }
 
     console.log('Extracting deadlines from text for user:', userId);
 
-    // Prompt especializado para extração de prazos jurídicos brasileiros
-    const prompt = `
-Você é um especialista em direito processual civil brasileiro. Analise o texto fornecido e extraia TODOS os prazos processuais, audiências e compromissos jurídicos mencionados.
-
-REGRAS CRÍTICAS PARA EXTRAÇÃO:
-1. DATAS ESPECÍFICAS: Se o texto menciona uma data específica (ex: "15/09/2025"), use exatamente essa data
-2. HORÁRIOS: Se menciona horário específico (ex: "às 14h00"), inclua no formato YYYY-MM-DDTHH:MM:SS
-3. LOCAIS: Extraia SEMPRE o local mencionado (ex: "sala 201 deste Fórum", "por videoconferência")
-4. PRAZOS RELATIVOS: Para prazos como "15 dias úteis", calcule a partir da data de hoje: ${new Date().toISOString().split('T')[0]}
-5. NÚMEROS DE PROCESSO: Sempre extraia se mencionado
-
-INSTRUÇÕES ESPECÍFICAS:
-- Para audiências: SEMPRE extrair data completa com horário se mencionado
-- Para locais: Copiar exatamente como está no texto (sala, andar, endereço)
-- Para prazos: Se não há data base específica, usar a data atual como início
-- Prioridade: "urgente" para audiências, "alta" para recursos, "normal" para outros
-
-TIPOS DE PRAZOS (Novo CPC):
-- Contestação: 15 dias úteis
-- Recursal: 15 dias úteis 
-- Tréplica: 15 dias úteis
-- Manifestação: 15 dias úteis
-- Cumprimento: conforme determinado
-
-FORMATO DE RETORNO - JSON válido:
-{
-  "deadlines": [
-    {
-      "title": "Nome claro do compromisso",
-      "description": "Texto original extraído",
-      "commitmentType": "prazo_processual" | "audiencia" | "reuniao" | "personalizado",
-      "deadlineType": "recursal" | "contestacao" | "replicas" | "outras",
-      "commitmentDate": "YYYY-MM-DD" ou "YYYY-MM-DDTHH:MM:SS",
-      "endDate": "YYYY-MM-DD" (opcional),
-      "location": "Local exato mencionado",
-      "isVirtual": true/false,
-      "processNumber": "Número extraído",
-      "priority": "baixa" | "normal" | "alta" | "urgente"
-    }
-  ]
-}
-
-TEXTO JURÍDICO PARA ANÁLISE:
-${text}
-`;
-
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    // Criar thread para o Assistant
+    const threadResponse = await fetch('https://api.openai.com/v1/threads', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
+        'OpenAI-Beta': 'assistants=v2',
+      },
+      body: JSON.stringify({}),
+    });
+
+    if (!threadResponse.ok) {
+      throw new Error(`Failed to create thread: ${threadResponse.statusText}`);
+    }
+
+    const thread = await threadResponse.json();
+    console.log('Thread created:', thread.id);
+
+    // Adicionar a mensagem ao thread
+    const messageResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/messages`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+        'OpenAI-Beta': 'assistants=v2',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { 
-            role: 'system', 
-            content: 'Você é um especialista em direito processual civil brasileiro. Sempre retorne JSON válido.'
-          },
-          { role: 'user', content: prompt }
-        ],
-        temperature: 0.1,
-        max_tokens: 2000,
+        role: 'user',
+        content: `Data atual para cálculo de prazos: ${new Date().toISOString().split('T')[0]}\n\nTexto jurídico para análise:\n\n${text}`,
       }),
     });
 
-    if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.statusText}`);
+    if (!messageResponse.ok) {
+      throw new Error(`Failed to add message: ${messageResponse.statusText}`);
     }
 
-    const data = await response.json();
-    const aiResponse = data.choices[0].message.content;
+    // Executar o Assistant
+    const runResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/runs`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+        'OpenAI-Beta': 'assistants=v2',
+      },
+      body: JSON.stringify({
+        assistant_id: openAIAssistantId,
+      }),
+    });
+
+    if (!runResponse.ok) {
+      throw new Error(`Failed to run assistant: ${runResponse.statusText}`);
+    }
+
+    const run = await runResponse.json();
+    console.log('Run started:', run.id);
+
+    // Aguardar conclusão da execução
+    let runStatus = run.status;
+    let attempts = 0;
+    const maxAttempts = 30; // 30 segundos timeout
+
+    while (runStatus === 'queued' || runStatus === 'in_progress') {
+      if (attempts >= maxAttempts) {
+        throw new Error('Assistant run timeout');
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Esperar 1 segundo
+      
+      const statusResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/runs/${run.id}`, {
+        headers: {
+          'Authorization': `Bearer ${openAIApiKey}`,
+          'OpenAI-Beta': 'assistants=v2',
+        },
+      });
+
+      if (statusResponse.ok) {
+        const statusData = await statusResponse.json();
+        runStatus = statusData.status;
+        console.log('Run status:', runStatus);
+      }
+      
+      attempts++;
+    }
+
+    if (runStatus !== 'completed') {
+      throw new Error(`Assistant run failed with status: ${runStatus}`);
+    }
+
+    // Buscar mensagens do thread
+    const messagesResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/messages`, {
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'OpenAI-Beta': 'assistants=v2',
+      },
+    });
+
+    if (!messagesResponse.ok) {
+      throw new Error(`Failed to get messages: ${messagesResponse.statusText}`);
+    }
+
+    const messages = await messagesResponse.json();
+    const assistantMessage = messages.data.find((msg: any) => msg.role === 'assistant');
+    
+    if (!assistantMessage || !assistantMessage.content || !assistantMessage.content[0]) {
+      throw new Error('No response from assistant');
+    }
+
+    const aiResponse = assistantMessage.content[0].text.value;
 
     console.log('AI Response:', aiResponse);
 
