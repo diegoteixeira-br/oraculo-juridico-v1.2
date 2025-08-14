@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Calendar as CalendarIcon, Clock, MapPin, ChevronLeft, ChevronRight, RefreshCw, Plus } from "lucide-react";
+import { Calendar as CalendarIcon, Clock, MapPin, ChevronLeft, ChevronRight, RefreshCw, Plus, Bell, BellOff } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,12 +35,38 @@ const CalendarAgendaWidget = () => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [showAll, setShowAll] = useState(false);
+  const [notificationSettings, setNotificationSettings] = useState({
+    email_enabled: false,
+    email_time: '09:00'
+  });
   const MAX_ITEMS = 5;
   useEffect(() => {
     if (user?.id) {
-      loadCommitments();
+    loadCommitments();
+    loadNotificationSettings();
     }
   }, [user?.id, currentMonth]);
+
+  const loadNotificationSettings = async () => {
+    if (!user?.id) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('notification_settings' as any)
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (data && !error) {
+        setNotificationSettings({
+          email_enabled: (data as any).email_enabled || false,
+          email_time: (data as any).email_time || '09:00'
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao carregar configurações de notificação:', error);
+    }
+  };
   const loadCommitments = async () => {
     if (!user) return;
     const isRefresh = refreshing;
@@ -187,7 +213,18 @@ const CalendarAgendaWidget = () => {
       <Card className="relative overflow-hidden bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border-blue-500/30">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg text-blue-200">Seus Próximos Compromissos</CardTitle>
+          <div className="flex items-center gap-2">
+            <CardTitle className="text-lg text-blue-200">Seus Próximos Compromissos</CardTitle>
+            {notificationSettings.email_enabled ? (
+              <div title="Notificações ativas">
+                <Bell className="h-4 w-4 text-blue-300 fill-current" />
+              </div>
+            ) : (
+              <div title="Notificações desativadas">
+                <BellOff className="h-4 w-4 text-blue-400" />
+              </div>
+            )}
+          </div>
           <Button onClick={() => navigate('/agenda-juridica')} size="sm" className="text-white bg-black hover:bg-stone-800 px-[3px] mx-[10px]">
             Ver Agenda Completa
           </Button>

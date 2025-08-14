@@ -325,22 +325,6 @@ const openTemplateEditor = async (documentId: string) => {
             </div>
 
             <div className="flex items-center gap-3">
-              {/* Botão de notificações */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate('/agenda-juridica')}
-                className="text-slate-300 hover:text-white hover:bg-slate-700"
-                title={notificationSettings.email_enabled ? 'Notificações ativas - Clique para configurar' : 'Notificações desativadas - Clique para configurar'}
-              >
-                {notificationSettings.email_enabled ? (
-                  <Bell className="h-4 w-4 mr-2 fill-current" />
-                ) : (
-                  <BellOff className="h-4 w-4 mr-2" />
-                )}
-                <span className="hidden md:inline">Agenda</span>
-              </Button>
-              
               {/* Contador de tokens compacto */}
               <div className="hidden md:flex items-center gap-2 bg-slate-700/50 rounded-lg px-3 py-2">
                 <Zap className="w-4 h-4 text-primary" />
