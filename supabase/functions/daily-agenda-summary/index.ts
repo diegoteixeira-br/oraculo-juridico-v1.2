@@ -26,9 +26,8 @@ function groupBy<T extends Record<string, any>>(rows: T[], key: keyof T) {
 }
 
 async function renderEmailHTML(fullName: string, items: any[], timezone: string = 'America/Sao_Paulo') {
-  return await renderAsync(
-    React.createElement(AgendaSummaryEmail, { fullName, items, timezone })
-  );
+  // Chama a função diretamente já que agora retorna HTML string
+  return AgendaSummaryEmail({ fullName, items, timezone });
 }
 
 serve(async (req) => {

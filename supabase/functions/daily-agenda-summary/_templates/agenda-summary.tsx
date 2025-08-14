@@ -19,52 +19,138 @@ export const AgendaSummaryEmail = ({ fullName = '', items, timezone = 'America/S
     (a, b) => new Date(a.commitment_date as any).getTime() - new Date(b.commitment_date as any).getTime()
   )
 
-  return React.createElement('html', { lang: 'pt-BR' }, 
-    React.createElement('head', {},
-      React.createElement('meta', { charSet: 'utf-8' }),
-      React.createElement('meta', { name: 'viewport', content: 'width=device-width, initial-scale=1' }),
-      React.createElement('title', {}, 'Resumo da Agenda Jurídica')
-    ),
-    React.createElement('body', { style: { backgroundColor: '#f8fafc', margin: 0, padding: '24px', fontFamily: 'system-ui, -apple-system, sans-serif' } },
-      React.createElement('div', { style: { maxWidth: '640px', margin: '0 auto', backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '12px', overflow: 'hidden' } },
-        // Header
-        React.createElement('div', { style: { background: 'linear-gradient(135deg, #1e3a8a, #312e81)', color: '#ffffff', padding: '16px 20px' } },
-          React.createElement('h1', { style: { fontSize: '18px', fontWeight: '700', margin: 0 } }, 'Cakto'),
-          React.createElement('p', { style: { fontSize: '12px', opacity: 0.9, margin: 0 } }, 'Resumo diário da sua agenda')
-        ),
-        // Content
-        React.createElement('div', { style: { padding: '20px', color: '#0f172a' } },
-          React.createElement('p', { style: { margin: '0 0 16px' } }, 
-            `Olá${fullName ? `, ${fullName}` : ''}! Aqui está o seu resumo de compromissos nas próximas 24 horas.`
-          ),
-          React.createElement('ul', { style: { paddingLeft: '18px', margin: '16px 0', listStyle: 'disc' } },
-            ...sorted.map((c, idx) => {
-              const dt = new Date(c.commitment_date as any)
-              const when = dt.toLocaleString('pt-BR', { 
-                dateStyle: 'short', 
-                timeStyle: 'short',
-                timeZone: timezone 
-              })
-              const extra: string[] = []
-              if (c.process_number) extra.push(`Processo: ${c.process_number}`)
-              if (c.client_name) extra.push(`Cliente: ${c.client_name}`)
-              if (c.location) extra.push(`Local: ${c.location}`)
+  const htmlContent = `
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Resumo da Agenda Jurídica</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 24px;
+            background-color: #f8fafc;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3a8a, #312e81);
+            color: #ffffff;
+            padding: 24px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            letter-spacing: 0.5px;
+        }
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin: 0;
+        }
+        .content {
+            padding: 32px 24px;
+            color: #0f172a;
+        }
+        .greeting {
+            font-size: 16px;
+            margin: 0 0 24px 0;
+            line-height: 1.6;
+        }
+        .commitments {
+            margin: 24px 0;
+        }
+        .commitment {
+            background: #f8fafc;
+            border-left: 4px solid #1e3a8a;
+            padding: 16px;
+            margin: 12px 0;
+            border-radius: 8px;
+        }
+        .commitment-title {
+            font-weight: 600;
+            color: #1e3a8a;
+            font-size: 16px;
+            margin: 0 0 8px 0;
+        }
+        .commitment-time {
+            color: #374151;
+            font-size: 14px;
+            margin: 4px 0;
+        }
+        .commitment-details {
+            color: #6b7280;
+            font-size: 13px;
+            margin: 8px 0 0 0;
+        }
+        .footer {
+            border-top: 1px solid #e5e7eb;
+            padding: 20px 24px;
+            background: #f9fafb;
+            color: #6b7280;
+            font-size: 12px;
+            text-align: center;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Cakto</h1>
+            <p>Resumo da Agenda Jurídica</p>
+        </div>
+        
+        <div class="content">
+            <p class="greeting">
+                Olá${fullName ? `, <strong>${fullName}</strong>` : ''}! 
+                Aqui está o seu resumo de compromissos nas próximas 24 horas:
+            </p>
+            
+            <div class="commitments">
+                ${sorted.map(c => {
+                  const dt = new Date(c.commitment_date as any)
+                  const when = dt.toLocaleString('pt-BR', { 
+                    dateStyle: 'short', 
+                    timeStyle: 'short',
+                    timeZone: timezone 
+                  })
+                  const extra: string[] = []
+                  if (c.process_number) extra.push(`Processo: ${c.process_number}`)
+                  if (c.client_name) extra.push(`Cliente: ${c.client_name}`)
+                  if (c.location) extra.push(`Local: ${c.location}`)
 
-              return React.createElement('li', { key: idx, style: { margin: '12px 0', padding: '0 4px' } },
-                React.createElement('strong', {}, c.title),
-                React.createElement('div', {}, when),
-                extra.length > 0 && React.createElement('div', { style: { color: '#4b5563', marginTop: '2px' } }, extra.join(' | '))
-              )
-            })
-          ),
-          React.createElement('hr', { style: { borderColor: '#e5e7eb', margin: '20px 0' } }),
-          React.createElement('p', { style: { color: '#64748b', fontSize: '12px', margin: 0 } },
-            'Você está recebendo este e-mail porque ativou notificações de agenda no Cakto. Para desativar, acesse sua conta.'
-          )
-        )
-      )
-    )
-  )
+                  return `
+                    <div class="commitment">
+                        <div class="commitment-title">${c.title}</div>
+                        <div class="commitment-time">📅 ${when}</div>
+                        ${extra.length > 0 ? `<div class="commitment-details">${extra.join(' • ')}</div>` : ''}
+                    </div>
+                  `
+                }).join('')}
+            </div>
+        </div>
+        
+        <div class="footer">
+            Você está recebendo este e-mail porque ativou notificações de agenda no Cakto.<br>
+            Para gerenciar suas notificações, acesse sua conta.
+        </div>
+    </div>
+</body>
+</html>`
+
+  return htmlContent
 }
 
 export default AgendaSummaryEmail
