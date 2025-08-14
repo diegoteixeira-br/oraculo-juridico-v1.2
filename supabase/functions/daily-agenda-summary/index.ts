@@ -63,7 +63,11 @@ serve(async (req) => {
     const html = await renderEmailHTML("Exemplo", sampleItems, "America/Sao_Paulo");
     return new Response(html, {
       status: 200,
-      headers: { ...corsHeaders, "Content-Type": "text/html" },
+      headers: { 
+        ...corsHeaders, 
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "no-cache"
+      },
     });
   }
 
