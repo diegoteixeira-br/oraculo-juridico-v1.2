@@ -184,17 +184,25 @@ export default function UserManager() {
                   </Select>
                 </TableCell>
                  <TableCell>
-                   <Input 
-                     type="date" 
-                     defaultValue={u.subscription_activated_at ? toZonedTime(new Date(u.subscription_activated_at), 'America/Sao_Paulo').toISOString().split('T')[0] : ''} 
-                     onBlur={(e) => {
-                       if (e.target.value && e.target.value !== (u.subscription_activated_at ? toZonedTime(new Date(u.subscription_activated_at), 'America/Sao_Paulo').toISOString().split('T')[0] : '')) {
-                         updateSubscriptionActivatedAt(u.id, e.target.value);
-                       }
-                     }}
-                     className="w-36 text-sm"
-                     placeholder="Sem contratação"
-                   />
+                   {u.plan_type === 'Essencial' ? (
+                     <Input 
+                       type="date" 
+                       defaultValue={u.subscription_activated_at ? toZonedTime(new Date(u.subscription_activated_at), 'America/Sao_Paulo').toISOString().split('T')[0] : ''} 
+                       onBlur={(e) => {
+                         if (e.target.value && e.target.value !== (u.subscription_activated_at ? toZonedTime(new Date(u.subscription_activated_at), 'America/Sao_Paulo').toISOString().split('T')[0] : '')) {
+                           updateSubscriptionActivatedAt(u.id, e.target.value);
+                         }
+                       }}
+                       className="w-36 text-sm"
+                       placeholder="Selecionar data"
+                     />
+                   ) : (
+                     <Input 
+                       value="dd/mm/aaaa"
+                       disabled
+                       className="w-36 text-sm bg-slate-800 text-slate-500 cursor-not-allowed"
+                     />
+                   )}
                  </TableCell>
                 <TableCell>
                   <Select value={(u.role || 'user')} onValueChange={(v: any) => updateRole(u.id, v)}>
