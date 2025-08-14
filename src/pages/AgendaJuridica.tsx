@@ -235,7 +235,12 @@ const AgendaJuridica = () => {
         .upsert({
           user_id: user.id,
           email_enabled: notificationSettings.email_enabled,
-          agenda_email_time: notificationSettings.agenda_email_time
+          agenda_email_time: notificationSettings.agenda_email_time,
+          days_before_deadline: 3,
+          hours_before_commitment: 24,
+          whatsapp_enabled: false,
+          push_enabled: true,
+          agenda_timezone: 'America/Sao_Paulo'
         });
 
       if (error) throw error;
