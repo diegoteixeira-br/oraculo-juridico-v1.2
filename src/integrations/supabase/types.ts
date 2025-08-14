@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -717,44 +717,44 @@ export type Database = {
       add_credits_to_user: {
         Args:
           | {
-              p_user_id: string
               p_credits: number
-              p_transaction_id?: string
               p_description?: string
+              p_transaction_id?: string
+              p_user_id: string
             }
           | {
-              p_user_id: string
               p_credits: number
-              p_transaction_id?: string
               p_description?: string
+              p_transaction_id?: string
+              p_user_id: string
             }
         Returns: boolean
       }
       add_tokens_to_user: {
         Args: {
-          p_user_id: string
-          p_tokens: number
-          p_plan_type: string
-          p_transaction_id?: string
           p_description?: string
+          p_plan_type: string
+          p_tokens: number
+          p_transaction_id?: string
+          p_user_id: string
         }
         Returns: boolean
       }
       add_tokens_to_user_v2: {
         Args: {
-          p_user_id: string
+          p_payment_intent_id?: string
           p_product_type_id: string
           p_stripe_session_id?: string
-          p_payment_intent_id?: string
+          p_user_id: string
         }
         Returns: boolean
       }
       admin_add_tokens_to_user: {
-        Args: { p_user_id: string; p_tokens: number; p_description?: string }
+        Args: { p_description?: string; p_tokens: number; p_user_id: string }
         Returns: boolean
       }
       admin_remove_tokens_from_user: {
-        Args: { p_user_id: string; p_tokens: number; p_description?: string }
+        Args: { p_description?: string; p_tokens: number; p_user_id: string }
         Returns: boolean
       }
       binary_quantize: {
@@ -787,8 +787,8 @@ export type Database = {
       }
       has_role: {
         Args: {
-          _user_id: string
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
         }
         Returns: boolean
       }
@@ -838,33 +838,33 @@ export type Database = {
       }
       log_feature_usage: {
         Args: {
-          p_user_id: string
-          p_feature_name: string
           p_feature_data?: Json
+          p_feature_name: string
           p_tokens_consumed?: number
+          p_user_id: string
         }
         Returns: boolean
       }
       match_documents: {
-        Args: { query_embedding: string; match_count?: number; filter?: Json }
+        Args: { filter?: Json; match_count?: number; query_embedding: string }
         Returns: {
-          id: number
           content: string
+          id: number
           metadata: Json
           similarity: number
         }[]
       }
       process_refund: {
         Args: {
-          p_user_id: string
+          p_description?: string
           p_refunded_credits: number
           p_transaction_id?: string
-          p_description?: string
+          p_user_id: string
         }
         Returns: boolean
       }
       renew_monthly_subscription: {
-        Args: { p_user_id: string; p_tokens: number; p_transaction_id: string }
+        Args: { p_tokens: number; p_transaction_id: string; p_user_id: string }
         Returns: boolean
       }
       reset_daily_credits_if_needed: {
@@ -889,12 +889,12 @@ export type Database = {
       }
       use_credits: {
         Args:
-          | { p_user_id: string; p_credits: number; p_description?: string }
-          | { p_user_id: string; p_credits: number; p_description?: string }
+          | { p_credits: number; p_description?: string; p_user_id: string }
+          | { p_credits: number; p_description?: string; p_user_id: string }
         Returns: boolean
       }
       use_tokens: {
-        Args: { p_user_id: string; p_tokens: number; p_description?: string }
+        Args: { p_description?: string; p_tokens: number; p_user_id: string }
         Returns: boolean
       }
       vector_avg: {
