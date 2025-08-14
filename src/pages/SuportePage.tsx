@@ -92,8 +92,8 @@ const SuportePage = () => {
       category: "tokens"
     },
     {
-      question: "Como adicionar documentos para análise?",
-      answer: "Acesse 'Meus Documentos' no menu principal e clique em 'Adicionar Documento' para fazer upload de PDFs ou inserir texto diretamente.",
+      question: "Como usar a IA da Agenda Jurídica?",
+      answer: "Acesse 'Agenda Jurídica' no menu principal. Digite sua consulta jurídica ou solicite análise de prazos e a IA fornecerá orientações especializadas baseadas na legislação brasileira atualizada.",
       category: "geral"
     },
     {
