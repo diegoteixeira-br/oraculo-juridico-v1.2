@@ -12,9 +12,10 @@ export type CommitmentItem = {
 export interface AgendaSummaryEmailProps {
   fullName?: string
   items: CommitmentItem[]
+  timezone?: string
 }
 
-export const AgendaSummaryEmail = ({ fullName = '', items }: AgendaSummaryEmailProps) => {
+export const AgendaSummaryEmail = ({ fullName = '', items, timezone = 'America/Sao_Paulo' }: AgendaSummaryEmailProps) => {
   const sorted = [...items].sort(
     (a, b) => new Date(a.commitment_date as any).getTime() - new Date(b.commitment_date as any).getTime()
   )
@@ -37,7 +38,11 @@ export const AgendaSummaryEmail = ({ fullName = '', items }: AgendaSummaryEmailP
             <ul style={{ paddingLeft: 18, margin: '12px 0 16px', listStyle: 'disc' } as any}>
               {sorted.map((c, idx) => {
                 const dt = new Date(c.commitment_date as any)
-                const when = dt.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
+                const when = dt.toLocaleString('pt-BR', { 
+                  dateStyle: 'short', 
+                  timeStyle: 'short',
+                  timeZone: timezone 
+                })
                 const extra: string[] = []
                 if (c.process_number) extra.push(`Processo: ${c.process_number}`)
                 if (c.client_name) extra.push(`Cliente: ${c.client_name}`)

@@ -25,9 +25,9 @@ function groupBy<T extends Record<string, any>>(rows: T[], key: keyof T) {
   }, {});
 }
 
-async function renderEmailHTML(fullName: string, items: any[]) {
+async function renderEmailHTML(fullName: string, items: any[], timezone: string = 'America/Sao_Paulo') {
   return await renderAsync(
-    React.createElement(AgendaSummaryEmail, { fullName, items })
+    React.createElement(AgendaSummaryEmail, { fullName, items, timezone })
   );
 }
 
@@ -70,7 +70,7 @@ serve(async (req) => {
       { title: "Audiência de conciliação", commitment_date: new Date(now.getTime() + 2*60*60*1000), location: "Fórum Central", process_number: "0001234-56.2025.8.26.0000", client_name: "Maria Silva" },
       { title: "Prazo: contestação", commitment_date: new Date(now.getTime() + 6*60*60*1000), location: "", process_number: "0009876-54.2025.8.26.0000", client_name: "João Souza" },
     ];
-    const html = await renderEmailHTML("Exemplo", sampleItems);
+    const html = await renderEmailHTML("Exemplo", sampleItems, "America/Sao_Paulo");
     return new Response(html, {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "text/html" },
@@ -104,11 +104,11 @@ serve(async (req) => {
       });
     }
 
-    // Filter users by profile flag and get timezone info
+    // Filter users by profile flag and get notification settings
     const userIds = Array.from(new Set(commitments.map((c) => c.user_id)));
     const { data: profiles, error: profilesError } = await supabase
       .from("profiles")
-      .select("user_id, full_name, receber_notificacao_agenda")
+      .select("user_id, full_name, receber_notificacao_agenda, timezone")
       .in("user_id", userIds)
       .eq("receber_notificacao_agenda", true);
 
@@ -123,10 +123,10 @@ serve(async (req) => {
       });
     }
 
-    // Get notification settings for users who have commitments
+    // Get notification settings including timezone and preferred time
     const { data: notificationSettings } = await supabase
       .from("notification_settings") 
-      .select("user_id, agenda_email_time")
+      .select("user_id, agenda_email_time, agenda_timezone")
       .in("user_id", Array.from(allowedUserIds));
 
     // Group by user
@@ -141,20 +141,29 @@ serve(async (req) => {
         const profile = profiles?.find(p => p.user_id === userId);
         const settings = notificationSettings?.find(s => s.user_id === userId);
         
+        // Usar timezone do usuário (perfil > configuração de notificação > padrão Brasil)
+        const userTimezone = profile?.timezone || settings?.agenda_timezone || 'America/Sao_Paulo';
+        
         const { data: user } = await supabase.auth.admin.getUserById(userId);
         if (!user.user?.email) continue;
 
-        const html = await renderEmailHTML(profile?.full_name || "", items as any[]);
+        // Passar timezone para o template de email
+        const html = await renderEmailHTML(profile?.full_name || "", items as any[], userTimezone);
 
         const { data, error } = await resend.emails.send({
           from: "Oráculo Jurídico <agenda@oracurojuridico.com.br>",
           to: [user.user.email],
-          subject: "📅 Resumo da Agenda Jurídica",
+          subject: "📅 Resumo da Agenda Jurídica - Próximas 24h",
           html,
         });
 
         if (error) throw error;
-        results[userId] = { status: "sent", email_id: data?.id };
+        results[userId] = { 
+          status: "sent", 
+          email_id: data?.id, 
+          timezone: userTimezone,
+          preferred_time: settings?.agenda_email_time 
+        };
         sent++;
       } catch (e) {
         console.error("Error sending email to user", userId, e);
