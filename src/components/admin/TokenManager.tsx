@@ -98,10 +98,35 @@ export default function TokenManager() {
     }
   };
 
+  const updateSelectedUserData = async () => {
+    if (!selectedUser) return;
+    
+    try {
+      const { data: userData } = await supabase.functions.invoke('admin-list-users');
+      if (userData?.users) {
+        const updatedUser = userData.users.find((user: any) => user.id === selectedUser.user_id);
+        if (updatedUser) {
+          const formattedUser = {
+            user_id: updatedUser.id,
+            full_name: updatedUser.name,
+            tokens: updatedUser.tokens || 0,
+            plan_type: updatedUser.plan_type || 'gratuito',
+            subscription_status: 'active',
+            is_active: updatedUser.is_active ?? true
+          };
+          setSelectedUser(formattedUser);
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar dados do usuário:', error);
+    }
+  };
+
   const handleUserSelect = (user: UserProfile) => {
     setSelectedUser(user);
     setSearchResults([]);
     setSearchQuery(user.full_name || user.user_id);
+    console.log('Usuário selecionado:', user);
   };
 
   const processTokens = async (operation: 'add' | 'remove') => {
@@ -156,16 +181,8 @@ export default function TokenManager() {
         });
       }
 
-      // Atualizar dados do usuário selecionado
-      const { data: updatedUser } = await supabase
-        .from('profiles')
-        .select('user_id, full_name, tokens, plan_type, subscription_status, is_active')
-        .eq('user_id', selectedUser.user_id)
-        .single();
-
-      if (updatedUser) {
-        setSelectedUser(updatedUser);
-      }
+      // Atualizar dados do usuário selecionado buscando novamente na função admin-list-users
+      await updateSelectedUserData();
 
       setTokenAmount("");
       setDescription("");
@@ -193,16 +210,8 @@ export default function TokenManager() {
 
       if (error) throw error;
 
-      // Atualizar dados do usuário selecionado
-      const { data: updatedUser } = await supabase
-        .from('profiles')
-        .select('user_id, full_name, tokens, plan_type, subscription_status, is_active')
-        .eq('user_id', selectedUser.user_id)
-        .single();
-
-      if (updatedUser) {
-        setSelectedUser(updatedUser);
-      }
+      // Atualizar dados do usuário selecionado usando a mesma fonte de dados
+      await updateSelectedUserData();
 
       toast({
         title: "Sucesso",
@@ -239,7 +248,12 @@ export default function TokenManager() {
             <Input
               placeholder="Nome do usuário"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                if (!e.target.value.trim()) {
+                  setSearchResults([]);
+                }
+              }}
               onKeyPress={(e) => e.key === 'Enter' && searchUsers()}
             />
             <Button 
@@ -256,7 +270,11 @@ export default function TokenManager() {
               {searchResults.map((user) => (
                 <div
                   key={user.user_id}
-                  className="p-3 border rounded cursor-pointer hover:bg-muted"
+                  className={`p-3 border rounded cursor-pointer transition-colors ${
+                    selectedUser?.user_id === user.user_id 
+                      ? 'bg-primary/10 border-primary' 
+                      : 'hover:bg-muted'
+                  }`}
                   onClick={() => handleUserSelect(user)}
                 >
                   <div className="flex items-center justify-between">
