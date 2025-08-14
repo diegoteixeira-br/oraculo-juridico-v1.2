@@ -188,7 +188,7 @@ const LandingPage = () => {
               <Calendar className="w-12 h-12 text-primary mb-4" />
               <h3 className="text-xl font-semibold mb-4 text-foreground">Agenda Jurídica</h3>
               <p className="text-muted-foreground">
-                Registre e organize manualmente prazos e compromissos; receba lembretes por e-mail às 08h (Brasília) nos dias com eventos.
+                Registre e organize manualmente prazos e compromissos; receba lembretes por e-mail no horário configurado na sua conta.
               </p>
             </div>
             
@@ -621,7 +621,7 @@ const LandingPage = () => {
               </div>
               <h3 className="text-lg font-semibold mb-2 text-foreground">Agenda Inteligente</h3>
               <p className="text-sm text-muted-foreground">
-                Cadastro manual e organização de compromissos com lembretes por e-mail às 08h (Brasília)
+                Cadastro manual e organização de compromissos com lembretes por e-mail no horário que você configurar
               </p>
             </div>
             
