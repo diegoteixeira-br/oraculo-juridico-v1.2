@@ -51,8 +51,8 @@ export const useTextToSpeech = () => {
     try {
       const keys = Object.keys(localStorage).filter(key => key.startsWith('audio_cache_'));
       
-      // Se temos mais de 5 áudios, remover os mais antigos
-      if (keys.length >= 5) {
+      // Se temos mais de 10 áudios, remover os mais antigos
+      if (keys.length >= 10) {
         const cachedItems: Array<{key: string, createdAt: number}> = [];
         
         keys.forEach(key => {
@@ -71,8 +71,8 @@ export const useTextToSpeech = () => {
         // Ordenar por data (mais antigo primeiro)
         cachedItems.sort((a, b) => a.createdAt - b.createdAt);
         
-        // Remover os mais antigos até ficar com 3 (para dar espaço)
-        const itemsToRemove = cachedItems.slice(0, cachedItems.length - 3);
+        // Remover os mais antigos até ficar com 7 (para dar espaço)
+        const itemsToRemove = cachedItems.slice(0, cachedItems.length - 7);
         itemsToRemove.forEach(item => {
           localStorage.removeItem(item.key);
           console.log('Removido áudio antigo do cache:', item.key);
