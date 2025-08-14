@@ -13,6 +13,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import UserMenu from "@/components/UserMenu";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
+import { useUserTimezone } from "@/hooks/useUserTimezone";
+import HistoricoCalculosModal from "@/components/HistoricoCalculosModal";
 
 interface CalculoResult {
   valorTotal: number;
@@ -27,7 +29,9 @@ const CalculoContratoBancario = () => {
   const { useTokens, profile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<CalculoResult | null>(null);
+  const [historicoModalOpen, setHistoricoModalOpen] = useState(false);
   const { visible: menuVisible } = useScrollDirection();
+  const { formatDateInUserTimezone } = useUserTimezone();
   
   const [formData, setFormData] = useState({
     valorContrato: '',
@@ -116,6 +120,19 @@ const CalculoContratoBancario = () => {
                 <span className="text-xs text-slate-300">tokens</span>
               </div>
               
+              {/* Histórico Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setHistoricoModalOpen(true)}
+                className="hidden md:flex items-center gap-2 bg-slate-700/50 border-slate-600 text-white hover:bg-slate-600"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Histórico
+              </Button>
+              
               <UserMenu />
             </div>
           </div>
@@ -164,8 +181,8 @@ const CalculoContratoBancario = () => {
             </CardContent>
           </Card>
 
-          {/* Grid principal - Formulário e Resultado */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          {/* Grid principal - Layout alinhado */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">{/* Resultado sempre alinhado ao topo */}
             
             {/* Formulário */}
             <Card className="bg-slate-800/50 border-slate-700">
@@ -463,6 +480,29 @@ const CalculoContratoBancario = () => {
           </Card>
         </div>
       </div>
+
+      {/* Modal de Histórico */}
+      <HistoricoCalculosModal
+        isOpen={historicoModalOpen}
+        onClose={() => setHistoricoModalOpen(false)}
+        onSelectCalculation={(calculo) => {
+          // Preencher formulário com dados do histórico
+          setFormData({
+            valorContrato: calculo.valor_contrato.toString(),
+            dataContrato: calculo.data_contrato,
+            dataVencimento: calculo.data_vencimento,
+            taxaJuros: calculo.taxa_juros.toString(),
+            tipoJuros: calculo.tipo_juros,
+            indiceCorrecao: calculo.indice_correcao,
+            valorPago: calculo.valor_pago?.toString() || '',
+            dataPagamentoParcial: calculo.data_pagamento_parcial || '',
+            multaAtraso: calculo.multa_atraso.toString(),
+            jurosMora: calculo.juros_mora.toString(),
+            observacoes: calculo.observacoes || ''
+          });
+          toast.success('Dados do histórico carregados!');
+        }}
+      />
     </div>
   );
 };

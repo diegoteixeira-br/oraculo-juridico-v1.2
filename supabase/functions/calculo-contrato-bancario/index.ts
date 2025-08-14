@@ -88,6 +88,7 @@ serve(async (req) => {
     // Obter token de autenticação do header
     const authHeader = req.headers.get('Authorization');
     let userTimezone = 'America/Sao_Paulo'; // Padrão
+    let userId = null;
 
     if (authHeader) {
       try {
@@ -95,7 +96,8 @@ serve(async (req) => {
         const { data: { user } } = await supabase.auth.getUser(token);
         
         if (user) {
-          console.log('Usuário autenticado:', user.id);
+          userId = user.id;
+          console.log('Usuário autenticado:', userId);
           // Buscar timezone do usuário
           const { data: profile } = await supabase
             .from('profiles')
@@ -273,6 +275,36 @@ Ferramenta: Oráculo Jurídico - Calculadora de Contrato Bancário
       mesesAtraso: Math.max(0, mesesAtraso),
       diasAtraso: Math.max(0, diasAtraso)
     };
+
+    // Salvar no histórico se usuário autenticado
+    if (userId) {
+      try {
+        await supabase
+          .from('calculo_contrato_historico')
+          .insert({
+            user_id: userId,
+            valor_contrato: parseFloat(data.valorContrato),
+            data_contrato: data.dataContrato,
+            data_vencimento: data.dataVencimento,
+            taxa_juros: parseFloat(data.taxaJuros),
+            tipo_juros: data.tipoJuros,
+            indice_correcao: data.indiceCorrecao,
+            valor_pago: data.valorPago ? parseFloat(data.valorPago) : null,
+            data_pagamento_parcial: data.dataPagamentoParcial || null,
+            multa_atraso: parseFloat(data.multaAtraso || '2'),
+            juros_mora: parseFloat(data.jurosMora || '1'),
+            observacoes: data.observacoes || null,
+            valor_total: valorTotal,
+            juros_total: jurosTotal,
+            valor_corrigido: valorCorrigido,
+            diferenca: diferenca,
+            detalhamento: detalhamento
+          });
+        console.log('Cálculo salvo no histórico com sucesso');
+      } catch (error) {
+        console.log('Erro ao salvar histórico:', error);
+      }
+    }
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

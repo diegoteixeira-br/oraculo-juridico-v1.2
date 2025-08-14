@@ -29,6 +29,75 @@ export type Database = {
         }
         Relationships: []
       }
+      calculo_contrato_historico: {
+        Row: {
+          created_at: string
+          data_contrato: string
+          data_pagamento_parcial: string | null
+          data_vencimento: string
+          detalhamento: string
+          diferenca: number
+          id: string
+          indice_correcao: string
+          juros_mora: number | null
+          juros_total: number
+          multa_atraso: number | null
+          observacoes: string | null
+          taxa_juros: number
+          tipo_juros: string
+          updated_at: string
+          user_id: string
+          valor_contrato: number
+          valor_corrigido: number
+          valor_pago: number | null
+          valor_total: number
+        }
+        Insert: {
+          created_at?: string
+          data_contrato: string
+          data_pagamento_parcial?: string | null
+          data_vencimento: string
+          detalhamento: string
+          diferenca: number
+          id?: string
+          indice_correcao: string
+          juros_mora?: number | null
+          juros_total: number
+          multa_atraso?: number | null
+          observacoes?: string | null
+          taxa_juros: number
+          tipo_juros: string
+          updated_at?: string
+          user_id: string
+          valor_contrato: number
+          valor_corrigido: number
+          valor_pago?: number | null
+          valor_total: number
+        }
+        Update: {
+          created_at?: string
+          data_contrato?: string
+          data_pagamento_parcial?: string | null
+          data_vencimento?: string
+          detalhamento?: string
+          diferenca?: number
+          id?: string
+          indice_correcao?: string
+          juros_mora?: number | null
+          juros_total?: number
+          multa_atraso?: number | null
+          observacoes?: string | null
+          taxa_juros?: number
+          tipo_juros?: string
+          updated_at?: string
+          user_id?: string
+          valor_contrato?: number
+          valor_corrigido?: number
+          valor_pago?: number | null
+          valor_total?: number
+        }
+        Relationships: []
+      }
       credit_transactions: {
         Row: {
           amount: number
