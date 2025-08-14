@@ -341,100 +341,102 @@ const CalculoContratoBancario = () => {
             </Card>
 
             {/* Resultado */}
-            {result ? (
-              <Card className="bg-slate-800/50 border-slate-700">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-white">
-                    <TrendingUp className="w-5 h-5 text-green-400" />
-                    Resultado do Cálculo
-                  </CardTitle>
-                  <CardDescription>
-                    Valores calculados conforme os dados informados
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Cards de resultados principais */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-4 bg-gradient-to-br from-green-600/20 to-green-600/10 border border-green-500/30 rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-xs text-green-300 font-medium">Valor Total Devido</p>
-                          <p className="text-2xl font-bold text-green-400">
-                            R$ {result.valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                          </p>
+            <div className="flex flex-col justify-start min-h-full">
+              {result ? (
+                <Card className="bg-slate-800/50 border-slate-700">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-white">
+                      <TrendingUp className="w-5 h-5 text-green-400" />
+                      Resultado do Cálculo
+                    </CardTitle>
+                    <CardDescription>
+                      Valores calculados conforme os dados informados
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Cards de resultados principais */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="p-6 bg-gradient-to-br from-green-600/20 to-green-600/10 border border-green-500/30 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-green-300 font-medium">Valor Total Devido</p>
+                            <p className="text-3xl font-bold text-green-400 mt-2">
+                              R$ {result.valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                            </p>
+                          </div>
+                          <DollarSign className="w-10 h-10 text-green-400" />
                         </div>
-                        <DollarSign className="w-8 h-8 text-green-400" />
+                      </div>
+
+                      <div className="p-6 bg-gradient-to-br from-orange-600/20 to-orange-600/10 border border-orange-500/30 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-orange-300 font-medium">Juros Total</p>
+                            <p className="text-3xl font-bold text-orange-400 mt-2">
+                              R$ {result.jurosTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                            </p>
+                          </div>
+                          <TrendingUp className="w-10 h-10 text-orange-400" />
+                        </div>
                       </div>
                     </div>
 
-                    <div className="p-4 bg-gradient-to-br from-orange-600/20 to-orange-600/10 border border-orange-500/30 rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-xs text-orange-300 font-medium">Juros Total</p>
-                          <p className="text-2xl font-bold text-orange-400">
-                            R$ {result.jurosTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                          </p>
-                        </div>
-                        <TrendingUp className="w-8 h-8 text-orange-400" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="p-4 bg-slate-700/30 rounded-lg border border-slate-600">
+                        <p className="text-sm text-slate-400">Valor Corrigido</p>
+                        <p className="text-xl font-semibold text-blue-400 mt-1">
+                          R$ {result.valorCorrigido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        </p>
+                      </div>
+                      <div className="p-4 bg-slate-700/30 rounded-lg border border-slate-600">
+                        <p className="text-sm text-slate-400">Diferença</p>
+                        <p className="text-xl font-semibold text-red-400 mt-1">
+                          R$ {result.diferenca.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        </p>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-3 bg-slate-700/30 rounded-lg border border-slate-600">
-                      <p className="text-xs text-slate-400">Valor Corrigido</p>
-                      <p className="text-lg font-semibold text-blue-400">
-                        R$ {result.valorCorrigido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                      </p>
+                    {/* Detalhamento */}
+                    <div className="bg-slate-900/50 rounded-lg border border-slate-600 p-6">
+                      <h4 className="text-lg font-semibold mb-4 text-white flex items-center gap-2">
+                        <FileText className="w-5 h-5 text-primary" />
+                        Detalhamento do Cálculo
+                      </h4>
+                      <div className="max-h-80 overflow-y-auto">
+                        <pre className="text-sm whitespace-pre-wrap text-slate-300 leading-relaxed">
+                          {result.detalhamento}
+                        </pre>
+                      </div>
                     </div>
-                    <div className="p-3 bg-slate-700/30 rounded-lg border border-slate-600">
-                      <p className="text-xs text-slate-400">Diferença</p>
-                      <p className="text-lg font-semibold text-red-400">
-                        R$ {result.diferenca.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                      </p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <Card className="bg-slate-800/50 border-slate-700 mt-8">
+                  <CardContent className="p-12 text-center">
+                    <Calculator className="w-20 h-20 text-slate-500 mx-auto mb-6" />
+                    <h3 className="text-xl font-semibold text-white mb-3">
+                      Aguardando Dados
+                    </h3>
+                    <p className="text-base text-slate-400 max-w-lg mx-auto mb-8">
+                      Preencha os dados do contrato ao lado para realizar o cálculo 
+                      de juros, correção monetária e análise de cláusulas.
+                    </p>
+                    
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-center gap-2 text-sm text-slate-500">
+                        <span>✓ Juros simples e compostos</span>
+                      </div>
+                      <div className="flex items-center justify-center gap-2 text-sm text-slate-500">
+                        <span>✓ Correção por IPCA, IGP-M, SELIC</span>
+                      </div>
+                      <div className="flex items-center justify-center gap-2 text-sm text-slate-500">
+                        <span>✓ Relatório detalhado</span>
+                      </div>
                     </div>
-                  </div>
-
-                  {/* Detalhamento */}
-                  <div className="bg-slate-900/50 rounded-lg border border-slate-600 p-4">
-                    <h4 className="text-sm font-semibold mb-3 text-white flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-primary" />
-                      Detalhamento do Cálculo
-                    </h4>
-                    <div className="max-h-64 overflow-y-auto">
-                      <pre className="text-xs whitespace-pre-wrap text-slate-300 leading-relaxed">
-                        {result.detalhamento}
-                      </pre>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ) : (
-              <Card className="bg-slate-800/50 border-slate-700">
-                <CardContent className="p-8 text-center">
-                  <Calculator className="w-16 h-16 text-slate-500 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-white mb-2">
-                    Aguardando Dados
-                  </h3>
-                  <p className="text-sm text-slate-400 max-w-md mx-auto">
-                    Preencha os dados do contrato ao lado para realizar o cálculo 
-                    de juros, correção monetária e análise de cláusulas.
-                  </p>
-                  
-                  <div className="mt-6 space-y-2">
-                    <div className="flex items-center justify-center gap-2 text-xs text-slate-500">
-                      <span>✓ Juros simples e compostos</span>
-                    </div>
-                    <div className="flex items-center justify-center gap-2 text-xs text-slate-500">
-                      <span>✓ Correção por IPCA, IGP-M, SELIC</span>
-                    </div>
-                    <div className="flex items-center justify-center gap-2 text-xs text-slate-500">
-                      <span>✓ Relatório detalhado</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           </div>
 
           {/* Informações importantes */}
