@@ -33,7 +33,7 @@ const LandingPage = () => {
     answer: "Sim. Para ativar o teste de 7 dias é necessário cadastrar um cartão de crédito. Não haverá cobrança até o 8º dia caso você não cancele.",
   }, {
     question: "As informações da IA são confiáveis?",
-    answer: "Sim! Nossa IA integra-se diretamente com a LexML, base oficial de jurisprudência do governo brasileiro, garantindo acesso a dados atualizados e confiáveis dos tribunais superiores e estaduais. Mesmo assim, recomendamos sempre consultar um advogado para casos específicos e complexos."
+    answer: "Nossa IA integra-se com a LexML, base oficial de jurisprudência do governo brasileiro. IMPORTANTE: As informações sempre precisam ser revisadas e adaptadas às necessidades específicas de cada caso pelo advogado responsável, pois a base LexML pode não estar 100% atualizada e cada situação jurídica é única."
   }, {
     question: "Como posso adquirir mais tokens?",
     answer: "Você pode assinar o Plano Essencial: de R$ 75,80/mês por R$ 37,90/mês (50% OFF) para liberar uso ilimitado de calculadoras, documentos e agenda (além de 30.000 tokens/mês para o chat). Pacotes avulsos de 75k e 150k tokens permanecem disponíveis de forma opcional."
@@ -545,7 +545,7 @@ const LandingPage = () => {
                 <div>
                   <h3 className="text-xl font-semibold mb-2 text-foreground">Jurisprudência Oficial Integrada</h3>
                   <p className="text-muted-foreground">
-                    Acesso direto à base oficial LexML do governo brasileiro com jurisprudência atualizada dos principais tribunais (STF, STJ, TJs). Informações confiáveis diretamente da fonte oficial.
+                    Acesso direto à base oficial LexML do governo brasileiro com jurisprudência dos principais tribunais (STF, STJ, TJs). IMPORTANTE: As informações sempre devem ser revisadas e verificadas pelo advogado responsável.
                   </p>
                 </div>
               </div>

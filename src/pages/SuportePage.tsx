@@ -73,7 +73,7 @@ const SuportePage = () => {
     },
     {
       question: "A IA é confiável?",
-      answer: "Sim! Nossa IA integra-se com a LexML, base oficial de jurisprudência do governo brasileiro, garantindo informações atualizadas e confiáveis.",
+      answer: "Nossa IA integra-se com a LexML, base oficial de jurisprudência do governo brasileiro. IMPORTANTE: As informações sempre precisam ser revisadas e adaptadas pelo advogado responsável, pois a base pode não estar 100% atualizada e cada caso é único.",
       category: "geral"
     },
     {
