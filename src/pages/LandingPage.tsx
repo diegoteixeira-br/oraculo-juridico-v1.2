@@ -39,7 +39,7 @@ const LandingPage = () => {
     answer: "Você pode assinar o Plano Essencial: de R$ 75,80/mês por R$ 37,90/mês (50% OFF) para liberar uso ilimitado de calculadoras, documentos e agenda (além de 30.000 tokens/mês para o chat). Pacotes avulsos de 75k e 150k tokens permanecem disponíveis de forma opcional."
   }, {
     question: "O que é a Agenda Jurídica?",
-    answer: "É uma ferramenta para registrar manualmente prazos, audiências e compromissos. Quando houver itens agendados, você recebe um e-mail de lembrete diariamente às 08h (horário de Brasília)."
+    answer: "É uma ferramenta para registrar manualmente prazos, audiências e compromissos. Quando houver itens agendados, você recebe um e-mail de lembrete diariamente às 08h (horário de Brasília). Possui também extração automática de prazos via IA que consome 500 tokens por uso."
   }];
   return <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
@@ -188,7 +188,7 @@ const LandingPage = () => {
               <Calendar className="w-12 h-12 text-primary mb-4" />
               <h3 className="text-xl font-semibold mb-4 text-foreground">Agenda Jurídica</h3>
               <p className="text-muted-foreground">
-                Registre e organize manualmente prazos e compromissos; receba lembretes por e-mail às 08h (Brasília) nos dias com eventos.
+                Registre e organize manualmente prazos e compromissos; receba lembretes por e-mail às 08h (Brasília) nos dias com eventos. Extração automática de prazos via IA disponível (500 tokens por uso).
               </p>
             </div>
             
@@ -273,6 +273,18 @@ const LandingPage = () => {
                   <h3 className="text-xl font-semibold mb-2 text-foreground">Organização Completa</h3>
                   <p className="text-muted-foreground">
                     Gerencie prazos processuais, audiências, reuniões com clientes e compromissos personalizados em um só lugar.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-4">
+                <div className="w-12 h-12 bg-yellow-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Brain className="w-6 h-6 text-yellow-400" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2 text-foreground">Extração Automática de Prazos</h3>
+                  <p className="text-muted-foreground">
+                    IA analisa documentos (texto, PDF ou imagem) e identifica prazos automaticamente. <strong className="text-yellow-400">Consome 500 tokens por uso.</strong>
                   </p>
                 </div>
               </div>
