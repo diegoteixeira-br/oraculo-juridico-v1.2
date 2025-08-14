@@ -1405,7 +1405,7 @@ const AgendaJuridica = () => {
                           <CardTitle className="text-lg text-white">Todos os Compromissos</CardTitle>
                         </div>
                         <CardDescription className="text-sm">
-                          {filteredCommitments.length} compromisso(s) encontrado(s)
+                          {filteredCommitments.length} {filteredCommitments.length === 1 ? 'compromisso encontrado' : 'compromissos encontrados'}
                         </CardDescription>
                       </div>
                     </CardHeader>
