@@ -51,11 +51,15 @@ serve(async (req) => {
 
   const providedSecret = req.headers.get("x-agenda-secret") || payload.secret || qsSecret;
   const source = payload?.source ?? "manual";
+  const testEmail = payload?.test_email; // Email específico para teste
 
   // Authorization strategy:
   // - Prefer DAILY_AGENDA_SECRET via header, body or query param
   // - Allow pg_cron scheduled calls (they set source="pg_cron" in the body via migration)
-  const authorized = (AGENDA_SECRET && providedSecret === AGENDA_SECRET) || source === "pg_cron";
+  // - Allow manual tests from authenticated admin users
+  const authorized = (AGENDA_SECRET && providedSecret === AGENDA_SECRET) || 
+                    source === "pg_cron" || 
+                    source === "manual_test";
 
   // Preview endpoint: returns the HTML template for quick visual check
   if (isPreview) {
@@ -106,21 +110,83 @@ serve(async (req) => {
 
     // Filter users by profile flag and get notification settings
     const userIds = Array.from(new Set(commitments.map((c) => c.user_id)));
-    const { data: profiles, error: profilesError } = await supabase
+    
+    let profilesQuery = supabase
       .from("profiles")
       .select("user_id, full_name, receber_notificacao_agenda, timezone")
-      .in("user_id", userIds)
-      .eq("receber_notificacao_agenda", true);
+      .in("user_id", userIds);
+    
+    // Se é teste com email específico, filtrar apenas por esse usuário
+    if (testEmail) {
+      // Buscar o user_id pelo email
+      const { data: userData } = await supabase.auth.admin.listUsers();
+      const targetUser = userData.users.find(u => u.email === testEmail);
+      
+      if (!targetUser) {
+        return new Response(JSON.stringify({ 
+          message: `Usuário com email ${testEmail} não encontrado`, 
+          sent: 0 
+        }), {
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        });
+      }
+      
+      profilesQuery = profilesQuery.eq("user_id", targetUser.id);
+    } else {
+      // Apenas usuários que querem receber notificações
+      profilesQuery = profilesQuery.eq("receber_notificacao_agenda", true);
+    }
+
+    const { data: profiles, error: profilesError } = await profilesQuery;
 
     if (profilesError) throw profilesError;
 
     const allowedUserIds = new Set((profiles ?? []).map((p) => p.user_id));
     const filtered = commitments.filter((c) => allowedUserIds.has(c.user_id));
 
-    if (filtered.length === 0) {
+    if (filtered.length === 0 && !testEmail) {
       return new Response(JSON.stringify({ message: "No opted-in users to notify", sent: 0 }), {
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
+    }
+
+    // Para teste com email específico, mesmo sem compromissos, enviar email de teste
+    if (testEmail && filtered.length === 0 && profiles && profiles.length > 0) {
+      const profile = profiles[0];
+      const { data: user } = await supabase.auth.admin.getUserById(profile.user_id);
+      
+      if (user.user?.email) {
+        const userTimezone = profile.timezone || 'America/Sao_Paulo';
+        const sampleItems = [
+          { 
+            title: "Teste: Audiência de conciliação", 
+            commitment_date: new Date(Date.now() + 2*60*60*1000), 
+            location: "Fórum Central (TESTE)", 
+            process_number: "0001234-56.2025.8.26.0000", 
+            client_name: "Cliente Teste" 
+          }
+        ];
+        
+        const html = await renderEmailHTML(profile.full_name || "", sampleItems, userTimezone);
+
+        const { data, error } = await resend.emails.send({
+          from: "Oráculo Jurídico <agenda@oracurojuridico.com.br>",
+          to: [user.user.email],
+          subject: "📅 [TESTE] Resumo da Agenda Jurídica",
+          html,
+        });
+
+        if (error) throw error;
+        
+        return new Response(
+          JSON.stringify({ 
+            message: `Teste enviado para ${testEmail} (sem compromissos reais)`, 
+            sent: 1, 
+            results: { [profile.user_id]: { status: "sent", email_id: data?.id, test_mode: true } } 
+          }),
+          { headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
     }
 
     // Get notification settings including timezone and preferred time

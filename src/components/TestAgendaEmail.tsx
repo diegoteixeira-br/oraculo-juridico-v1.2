@@ -1,21 +1,28 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, Send, CheckCircle, AlertCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Mail, Send, CheckCircle, AlertCircle, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const TestAgendaEmail = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
+  const [testEmail, setTestEmail] = useState('');
 
-  const testEmailNotification = async () => {
+  const testEmailNotification = async (specificEmail?: string) => {
     setLoading(true);
     setResult(null);
     
     try {
+      const body = specificEmail 
+        ? { source: 'manual_test', test_email: specificEmail }
+        : { source: 'manual_test' };
+        
       const { data, error } = await supabase.functions.invoke('daily-agenda-summary', {
-        body: { source: 'manual_test' }
+        body
       });
 
       if (error) throw error;
@@ -23,9 +30,10 @@ const TestAgendaEmail = () => {
       setResult(data);
       
       if (data.sent > 0) {
-        toast.success(`✅ ${data.sent} email(s) enviado(s) com sucesso!`);
+        const target = specificEmail ? `para ${specificEmail}` : '';
+        toast.success(`✅ ${data.sent} email(s) enviado(s) ${target} com sucesso!`);
       } else {
-        toast.info("ℹ️ Nenhum email enviado (sem compromissos ou usuários sem notificação ativa)");
+        toast.info("ℹ️ Nenhum email enviado (sem compromissos ou usuário sem notificação ativa)");
       }
     } catch (error) {
       console.error('Erro ao testar notificação:', error);
@@ -34,6 +42,14 @@ const TestAgendaEmail = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleTestSpecificEmail = () => {
+    if (!testEmail.trim()) {
+      toast.error("Digite um email válido");
+      return;
+    }
+    testEmailNotification(testEmail.trim());
   };
 
   const openPreview = () => {
@@ -50,35 +66,75 @@ const TestAgendaEmail = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Teste para email específico */}
+        <div className="space-y-3 p-4 bg-slate-50 rounded-lg border">
+          <div className="flex items-center gap-2 mb-2">
+            <Mail className="w-4 h-4 text-primary" />
+            <Label className="font-medium">Teste para usuário específico</Label>
+          </div>
+          <div className="space-y-2">
+            <Input
+              type="email"
+              placeholder="Digite o email do usuário"
+              value={testEmail}
+              onChange={(e) => setTestEmail(e.target.value)}
+              className="w-full"
+            />
+            <Button 
+              onClick={handleTestSpecificEmail} 
+              disabled={loading}
+              className="w-full"
+              variant="default"
+            >
+              {loading ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Enviando...
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Send className="w-4 h-4" />
+                  Testar para Este Email
+                </div>
+              )}
+            </Button>
+          </div>
+        </div>
+
+        {/* Teste para todos os usuários */}
         <div className="space-y-2">
+          <div className="flex items-center gap-2 mb-2">
+            <Users className="w-4 h-4 text-primary" />
+            <Label className="font-medium">Teste para todos os usuários</Label>
+          </div>
           <Button 
-            onClick={testEmailNotification} 
+            onClick={() => testEmailNotification()} 
             disabled={loading}
             className="w-full"
-            variant="default"
+            variant="outline"
           >
             {loading ? (
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                 Enviando...
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <Send className="w-4 h-4" />
-                Enviar Teste Agora
+                <Users className="w-4 h-4" />
+                Enviar para Todos
               </div>
             )}
           </Button>
-          
-          <Button 
-            onClick={openPreview} 
-            variant="outline"
-            className="w-full"
-          >
-            <Mail className="w-4 h-4 mr-2" />
-            Ver Preview do Email
-          </Button>
         </div>
+
+        <Button 
+          onClick={openPreview} 
+          variant="secondary"
+          className="w-full"
+        >
+          <Mail className="w-4 h-4 mr-2" />
+          Ver Preview do Email
+        </Button>
 
         {result && (
           <div className="mt-4 p-3 bg-slate-50 rounded-lg border">
