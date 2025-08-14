@@ -13,8 +13,11 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import UserMenu from "@/components/UserMenu";
 import MarkdownEditor from "@/components/MarkdownEditor";
 import SharedDocumentsList from "@/components/SharedDocumentsList";
-import { FileText, Plus, Search, Trash2, Pencil, ArrowLeft, Eye } from "lucide-react";
+import { FileText, Plus, Search, Trash2, Pencil, ArrowLeft, Eye, Wrench, Home } from "lucide-react";
 import DocumentPreview from "@/components/DocumentPreview";
+
+// CONFIGURAÇÃO DE MANUTENÇÃO - Altere para false quando quiser reativar a página
+const MAINTENANCE_MODE = true;
 
 function cleanEditorHtml(html: string): string {
   try {
@@ -36,6 +39,38 @@ export default function MeusDocumentos() {
   const navigate = useNavigate();
   const { toast } = useToast();
   usePageTitle();
+
+  // Se estiver em manutenção, mostrar tela de manutenção
+  if (MAINTENANCE_MODE) {
+    return (
+      <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+        <Card className="max-w-md mx-4 bg-slate-800/50 border-slate-700">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 p-3 bg-amber-500/20 rounded-full w-fit">
+              <Wrench className="w-8 h-8 text-amber-400" />
+            </div>
+            <CardTitle className="text-white">Página em Manutenção</CardTitle>
+            <CardDescription className="text-slate-300">
+              Estamos trabalhando para melhorar a experiência da página de documentos. 
+              Esta funcionalidade estará disponível em breve.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Button 
+              onClick={() => navigate('/dashboard')} 
+              className="w-full bg-primary hover:bg-primary/90"
+            >
+              <Home className="w-4 h-4 mr-2" />
+              Voltar ao Dashboard
+            </Button>
+            <p className="text-xs text-slate-400 text-center">
+              Desculpe pelo inconveniente. Agradecemos a sua compreensão.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const [docs, setDocs] = useState<UserDoc[]>([]);
   const [loading, setLoading] = useState(true);
