@@ -166,14 +166,26 @@ export default function TokenManager() {
           description: `${tokens} tokens adicionados ao usuário`,
         });
       } else {
-        // Para remover tokens, usamos a função de reembolso
-        const { error } = await supabase.rpc('process_refund', {
-          p_user_id: selectedUser.user_id,
-          p_refunded_credits: tokens,
-          p_description: `Admin: ${description}`
-        });
+        // Para remover tokens, atualizar diretamente a tabela profiles
+        const { error } = await supabase
+          .from('profiles')
+          .update({ 
+            tokens: Math.max(0, selectedUser.tokens - tokens),
+            plan_tokens: Math.max(0, selectedUser.tokens - tokens),
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', selectedUser.user_id);
 
         if (error) throw error;
+
+        // Registrar a transação
+        await supabase.from('credit_transactions').insert({
+          user_id: selectedUser.user_id,
+          transaction_type: 'admin_removal',
+          amount: -tokens,
+          description: `Admin: ${description}`,
+          status: 'completed'
+        });
         
         toast({
           title: "Sucesso",
