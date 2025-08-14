@@ -44,8 +44,23 @@ serve(async (req) => {
 
     console.log('Extracting deadlines from text for user:', userId);
 
-    // Buscar o fuso horário do usuário
+    // Inicializar cliente Supabase
     const supabase = createClient(supabaseUrl!, supabaseServiceKey!);
+
+    // Verificar e usar tokens do usuário antes de processar
+    const tokensNeeded = 500; // Custo para extração de prazos
+    const { data: tokenResult, error: tokenError } = await supabase.rpc('use_tokens', {
+      p_user_id: userId,
+      p_tokens: tokensNeeded,
+      p_description: 'Extração automática de prazos jurídicos'
+    });
+
+    if (tokenError || !tokenResult) {
+      console.error('Token usage error:', tokenError);
+      throw new Error('Tokens insuficientes para esta operação. São necessários 500 tokens.');
+    }
+
+    // Buscar o fuso horário do usuário
     const { data: userProfile, error: profileError } = await supabase
       .from('profiles')
       .select('timezone')

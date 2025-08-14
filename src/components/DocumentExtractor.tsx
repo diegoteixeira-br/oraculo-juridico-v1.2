@@ -128,6 +128,25 @@ export default function DocumentExtractor({
       return;
     }
 
+    // Verificar se o usuário tem tokens suficientes
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('tokens, plan_tokens, token_balance')
+      .eq('user_id', user.id)
+      .single();
+
+    const totalTokens = (profile?.token_balance || 0) + (profile?.plan_tokens || 0);
+    const tokensNeeded = 500;
+
+    if (totalTokens < tokensNeeded) {
+      toast({
+        title: "Tokens insuficientes",
+        description: `Esta operação consome 500 tokens. Você possui ${totalTokens} tokens. Compre mais tokens para continuar.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     let textToAnalyze = extractText.trim();
 
     // Se não há texto manual mas há arquivos, extrair texto dos arquivos

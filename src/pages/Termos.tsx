@@ -161,6 +161,9 @@ const Termos = () => {
               <p className="mt-2">
                 <strong>Limites por Plano:</strong> No Plano Essencial, o uso é ilimitado. No plano gratuito, o usuário pode manter até 20 compromissos com status pendente simultaneamente.
               </p>
+              <p className="mt-2">
+                <strong>Extração Automática de Prazos:</strong> A funcionalidade de extração automática de prazos via IA consome 500 tokens por uso. Esta função analiza documentos jurídicos (texto, PDF ou imagem) e identifica automaticamente prazos processuais, criando compromissos na agenda.
+              </p>
             </section>
 
             <section>
