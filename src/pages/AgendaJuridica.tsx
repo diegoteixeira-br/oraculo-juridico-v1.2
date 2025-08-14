@@ -103,8 +103,7 @@ const AgendaJuridica = () => {
     is_virtual: false,
     process_number: "",
     client_name: "",
-    priority: "normal" as const,
-    duration_hours: 1 as number,
+    priority: "normal" as const
   });
 
   // Estados para editar compromisso
@@ -119,8 +118,7 @@ const AgendaJuridica = () => {
     is_virtual: boolean;
     process_number: string;
     client_name: string;
-    priority: 'baixa' | 'normal' | 'alta' | 'urgente';
-    duration_hours: number;
+    priority: 'baixa' | 'normal' | 'alta' | 'urgente'
   }>({
     title: "",
     description: "",
@@ -132,8 +130,7 @@ const AgendaJuridica = () => {
     is_virtual: false,
     process_number: "",
     client_name: "",
-    priority: "normal",
-    duration_hours: 1,
+    priority: "normal"
   });
 
   // Converte 'datetime-local' (local) para ISO UTC
@@ -296,7 +293,7 @@ const AgendaJuridica = () => {
 
       // Verificar conflito de horário (mesmo horário já agendado)
       const desiredStart = toIsoUtc(newCommitment.commitment_date);
-      const desiredEnd = endIsoFromLocal(newCommitment.commitment_date, newCommitment.duration_hours || 1);
+      const desiredEnd = endIsoFromLocal(newCommitment.commitment_date, 1);
       if (!desiredStart || !desiredEnd) {
         throw new Error('Data/Hora inválida');
       }
@@ -368,8 +365,7 @@ const AgendaJuridica = () => {
         is_virtual: false,
         process_number: "",
         client_name: "",
-        priority: "normal",
-        duration_hours: 1,
+        priority: "normal"
       });
       loadCommitments();
     } catch (error: any) {
@@ -395,15 +391,7 @@ const AgendaJuridica = () => {
       is_virtual: commitment.is_virtual || false,
       process_number: commitment.process_number || "",
       client_name: commitment.client_name || "",
-      priority: commitment.priority,
-      duration_hours: commitment.end_date
-        ? Math.max(
-            1,
-            Math.ceil(
-              (new Date(commitment.end_date).getTime() - new Date(commitment.commitment_date).getTime()) / 3600000
-            )
-          )
-        : 1,
+      priority: commitment.priority
     });
     setShowEditDialog(true);
   };
