@@ -98,6 +98,78 @@ export type Database = {
         }
         Relationships: []
       }
+      calculo_pensao_historico: {
+        Row: {
+          created_at: string
+          data_fim: string | null
+          data_inicio: string
+          detalhamento: string
+          id: string
+          idades_filhos: Json
+          juros: number
+          meses_atraso: number | null
+          multa: number
+          numero_filhos: number
+          observacoes: string | null
+          percentual_pensao: number | null
+          percentual_renda: number
+          renda_alimentante: number | null
+          tipo_calculo: string
+          updated_at: string
+          user_id: string
+          valor_corrigido: number
+          valor_fixo: number | null
+          valor_pensao: number
+          valor_total_atrasado: number
+        }
+        Insert: {
+          created_at?: string
+          data_fim?: string | null
+          data_inicio: string
+          detalhamento: string
+          id?: string
+          idades_filhos?: Json
+          juros: number
+          meses_atraso?: number | null
+          multa: number
+          numero_filhos: number
+          observacoes?: string | null
+          percentual_pensao?: number | null
+          percentual_renda: number
+          renda_alimentante?: number | null
+          tipo_calculo: string
+          updated_at?: string
+          user_id: string
+          valor_corrigido: number
+          valor_fixo?: number | null
+          valor_pensao: number
+          valor_total_atrasado: number
+        }
+        Update: {
+          created_at?: string
+          data_fim?: string | null
+          data_inicio?: string
+          detalhamento?: string
+          id?: string
+          idades_filhos?: Json
+          juros?: number
+          meses_atraso?: number | null
+          multa?: number
+          numero_filhos?: number
+          observacoes?: string | null
+          percentual_pensao?: number | null
+          percentual_renda?: number
+          renda_alimentante?: number | null
+          tipo_calculo?: string
+          updated_at?: string
+          user_id?: string
+          valor_corrigido?: number
+          valor_fixo?: number | null
+          valor_pensao?: number
+          valor_total_atrasado?: number
+        }
+        Relationships: []
+      }
       credit_transactions: {
         Row: {
           amount: number

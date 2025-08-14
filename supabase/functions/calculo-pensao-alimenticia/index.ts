@@ -11,6 +11,7 @@ interface PensaoAlimenticiaData {
   rendaAlimentante: string;
   numeroFilhos: string;
   idadeFilho: string;
+  idadesFilhos: string[];
   percentualPensao: string;
   dataInicio: string;
   dataFim: string;
@@ -76,6 +77,7 @@ serve(async (req) => {
     // Obter token de autenticação do header
     const authHeader = req.headers.get('Authorization');
     let userTimezone = 'America/Sao_Paulo'; // Padrão
+    let userId = null;
 
     if (authHeader) {
       try {
@@ -83,7 +85,8 @@ serve(async (req) => {
         const { data: { user } } = await supabase.auth.getUser(token);
         
         if (user) {
-          console.log('Usuário autenticado:', user.id);
+          userId = user.id;
+          console.log('Usuário autenticado:', userId);
           // Buscar timezone do usuário
           const { data: profile } = await supabase
             .from('profiles')
@@ -183,7 +186,8 @@ Observações Legais:
 
 ${data.observacoes ? `Observações Adicionais: ${data.observacoes}` : ''}
 
-Cálculo realizado em ${new Date().toLocaleDateString('pt-BR', { timeZone: userTimezone })} às ${new Date().toLocaleTimeString('pt-BR', { timeZone: userTimezone })}`;
+Cálculo realizado em ${new Date().toLocaleDateString('pt-BR', { timeZone: userTimezone, year: 'numeric', month: '2-digit', day: '2-digit' })} às ${new Date().toLocaleTimeString('pt-BR', { timeZone: userTimezone, hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+Ferramenta: Oráculo Jurídico - Calculadora de Pensão Alimentícia`;
 
     const result = {
       valorPensao,
@@ -194,6 +198,37 @@ Cálculo realizado em ${new Date().toLocaleDateString('pt-BR', { timeZone: userT
       valorCorrigido,
       detalhamento
     };
+
+    // Salvar no histórico se usuário autenticado
+    if (userId) {
+      try {
+        await supabase
+          .from('calculo_pensao_historico')
+          .insert({
+            user_id: userId,
+            tipo_calculo: data.tipoCalculo,
+            renda_alimentante: data.rendaAlimentante ? parseFloat(data.rendaAlimentante) : null,
+            percentual_pensao: data.percentualPensao ? parseFloat(data.percentualPensao) : null,
+            valor_fixo: data.valorFixo ? parseFloat(data.valorFixo) : null,
+            numero_filhos: parseInt(data.numeroFilhos),
+            idades_filhos: (data.idadesFilhos || []).map((idade: string) => parseInt(idade)).filter((idade: number) => !isNaN(idade)),
+            data_inicio: data.dataInicio,
+            data_fim: data.dataFim || null,
+            meses_atraso: data.mesesAtraso ? parseInt(data.mesesAtraso) : null,
+            observacoes: data.observacoes || null,
+            valor_pensao: valorPensao,
+            percentual_renda: percentualRenda,
+            valor_total_atrasado: valorTotalAtrasado,
+            multa: multa,
+            juros: juros,
+            valor_corrigido: valorCorrigido,
+            detalhamento: detalhamento
+          });
+        console.log('Cálculo de pensão salvo no histórico com sucesso');
+      } catch (error) {
+        console.log('Erro ao salvar histórico de pensão:', error);
+      }
+    }
 
     console.log('Cálculo concluído com sucesso:', { 
       valorPensao, 

@@ -13,6 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import UserMenu from "@/components/UserMenu";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
+import HistoricoPensaoModal from "@/components/HistoricoPensaoModal";
 
 interface CalculoResult {
   valorPensao: number;
@@ -29,6 +30,7 @@ const CalculoPensaoAlimenticia = () => {
   const { useTokens, profile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<CalculoResult | null>(null);
+  const [historicoModalOpen, setHistoricoModalOpen] = useState(false);
   const { visible: menuVisible } = useScrollDirection();
   
   const [formData, setFormData] = useState({
@@ -151,6 +153,19 @@ const CalculoPensaoAlimenticia = () => {
                 </span>
                 <span className="text-xs text-slate-300">tokens</span>
               </div>
+              
+              {/* Histórico Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setHistoricoModalOpen(true)}
+                className="hidden md:flex items-center gap-2 bg-slate-700/50 border-slate-600 text-white hover:bg-slate-600"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Histórico
+              </Button>
               
               <UserMenu />
             </div>
@@ -502,6 +517,28 @@ const CalculoPensaoAlimenticia = () => {
           </Card>
         </div>
       </div>
+
+      {/* Modal de Histórico */}
+      <HistoricoPensaoModal
+        isOpen={historicoModalOpen}
+        onClose={() => setHistoricoModalOpen(false)}
+        onSelectCalculation={(calculo) => {
+          // Preencher formulário com dados do histórico
+          setFormData({
+            tipoCalculo: calculo.tipo_calculo,
+            rendaAlimentante: calculo.renda_alimentante?.toString() || '',
+            percentualPensao: calculo.percentual_pensao?.toString() || '',
+            valorFixo: calculo.valor_fixo?.toString() || '',
+            numeroFilhos: calculo.numero_filhos.toString(),
+            idadesFilhos: calculo.idades_filhos.map(idade => idade.toString()),
+            dataInicio: calculo.data_inicio,
+            dataFim: calculo.data_fim || '',
+            mesesAtraso: calculo.meses_atraso?.toString() || '',
+            observacoes: calculo.observacoes || ''
+          });
+          toast.success('Dados do histórico carregados!');
+        }}
+      />
     </div>
   );
 };
