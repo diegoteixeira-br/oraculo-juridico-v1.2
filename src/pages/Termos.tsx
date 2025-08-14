@@ -136,7 +136,24 @@ const Termos = () => {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">8. Agenda Jurídica</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-4">8. Sistema de Áudio do Chat</h2>
+              <p>
+                O Oráculo Jurídico oferece conversão das respostas da IA em áudio para melhorar a experiência do usuário:
+              </p>
+              <ul className="list-disc ml-6 mt-2 space-y-2">
+                <li><strong>Funcionamento:</strong> As respostas podem ser convertidas em áudio de alta qualidade usando vozes naturais</li>
+                <li><strong>Armazenamento Temporário:</strong> O áudio fica salvo temporariamente durante sua sessão (enquanto estiver logado e com o navegador aberto)</li>
+                <li><strong>Disponibilidade:</strong> O áudio permanece disponível ao navegar entre páginas da plataforma durante a mesma sessão</li>
+                <li><strong>Expiração:</strong> O áudio é automaticamente removido quando você desloga da conta ou fecha o navegador</li>
+                <li><strong>Cobrança:</strong> Tokens são cobrados apenas na primeira geração do áudio. Reproduções subsequentes do mesmo áudio durante a sessão não consomem tokens adicionais</li>
+              </ul>
+              <p className="mt-2">
+                <strong>Benefício:</strong> Este sistema evita cobranças desnecessárias de tokens quando você reproduz o mesmo áudio múltiplas vezes durante sua sessão de uso.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold text-foreground mb-4">9. Agenda Jurídica</h2>
               <p>
                 A Agenda Jurídica permite organizar prazos processuais, audiências, reuniões e compromissos personalizados.
               </p>
@@ -146,7 +163,7 @@ const Termos = () => {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">8. Responsabilidades do Usuário</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-4">10. Responsabilidades do Usuário</h2>
               <p>
                 O usuário compromete-se a:
               </p>
@@ -160,7 +177,7 @@ const Termos = () => {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">9. Confiabilidade e Limitações</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-4">11. Confiabilidade e Limitações</h2>
               <p>
                 O Oráculo Jurídico utiliza fontes oficiais confiáveis e é uma ferramenta de apoio profissional. 
                 O usuário reconhece que:
@@ -176,7 +193,7 @@ const Termos = () => {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">10. Política de Reembolso</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-4">12. Política de Reembolso</h2>
               <p>
                 Os tokens adquiridos não são reembolsáveis, exceto em casos de:
               </p>
@@ -192,7 +209,7 @@ const Termos = () => {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">11. Modificações dos Termos</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-4">13. Modificações dos Termos</h2>
               <p>
                 Reservamo-nos o direito de modificar estes termos a qualquer momento. As alterações 
                 entrarão em vigor imediatamente após a publicação na plataforma. Recomendamos a 
@@ -201,7 +218,7 @@ const Termos = () => {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">12. Contato</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-4">14. Contato</h2>
               <p>
                 Para dúvidas sobre estes termos, suporte técnico ou solicitações relacionadas à sua conta, 
                 entre em contato conosco através do e-mail contato@oraculojuridico.com.br ou utilize 
