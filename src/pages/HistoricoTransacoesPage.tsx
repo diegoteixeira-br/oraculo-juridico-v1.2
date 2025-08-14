@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { History, CreditCard, Download, Filter, Calendar, ArrowLeft, TrendingUp, Zap, FileText, Search, MessageSquare } from "lucide-react";
-import { toZonedTime } from "date-fns-tz";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import UserMenu from "@/components/UserMenu";
+import { useUserTimezone } from "@/hooks/useUserTimezone";
 
 interface CreditTransaction {
   id: string;
@@ -33,6 +33,7 @@ export default function HistoricoTransacoesPage() {
   const { user, profile } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { formatDateInUserTimezone } = useUserTimezone();
 
   // Carregar todas as transações
   useEffect(() => {
@@ -146,7 +147,7 @@ export default function HistoricoTransacoesPage() {
     const csvContent = [
       ['Data', 'Tipo', 'Descrição', 'Valor', 'Status'],
       ...filteredTransactions.map(transaction => [
-        toZonedTime(new Date(transaction.created_at), 'America/Sao_Paulo').toLocaleDateString('pt-BR'),
+        formatDateInUserTimezone(new Date(transaction.created_at), 'dd/MM/yyyy'),
         getTransactionTypeLabel(transaction.transaction_type),
         transaction.description,
         transaction.amount.toString(),
@@ -385,17 +386,10 @@ export default function HistoricoTransacoesPage() {
                         </div>
                         <div className="text-right">
                            <div className="text-sm text-slate-400 mb-1">
-                             {toZonedTime(new Date(transaction.created_at), 'America/Sao_Paulo').toLocaleDateString('pt-BR', {
-                               day: '2-digit',
-                               month: '2-digit',
-                               year: 'numeric'
-                             })}
+                             {formatDateInUserTimezone(new Date(transaction.created_at), 'dd/MM/yyyy')}
                            </div>
                            <div className="text-xs text-slate-500">
-                             {toZonedTime(new Date(transaction.created_at), 'America/Sao_Paulo').toLocaleTimeString('pt-BR', {
-                               hour: '2-digit',
-                               minute: '2-digit'
-                             })}
+                             {formatDateInUserTimezone(new Date(transaction.created_at), 'HH:mm')}
                            </div>
                         </div>
                       </div>
