@@ -47,40 +47,45 @@ serve(async (req) => {
     const prompt = `
 Você é um especialista em direito processual civil brasileiro. Analise o texto fornecido e extraia TODOS os prazos processuais, audiências e compromissos jurídicos mencionados.
 
-REGRAS IMPORTANTES:
-1. Considere APENAS o Novo CPC (Lei 13.105/2015)
-2. Para prazos em dias úteis, conte apenas os dias de segunda a sexta-feira, excluindo feriados
-3. Identifique o tipo exato do prazo (recursal, contestação, tréplica, etc.)
-4. Para audiências, extraia data, hora e tipo
-5. Se não houver data específica, calcule baseado na data atual: ${new Date().toISOString().split('T')[0]}
+REGRAS CRÍTICAS PARA EXTRAÇÃO:
+1. DATAS ESPECÍFICAS: Se o texto menciona uma data específica (ex: "15/09/2025"), use exatamente essa data
+2. HORÁRIOS: Se menciona horário específico (ex: "às 14h00"), inclua no formato YYYY-MM-DDTHH:MM:SS
+3. LOCAIS: Extraia SEMPRE o local mencionado (ex: "sala 201 deste Fórum", "por videoconferência")
+4. PRAZOS RELATIVOS: Para prazos como "15 dias úteis", calcule a partir da data de hoje: ${new Date().toISOString().split('T')[0]}
+5. NÚMEROS DE PROCESSO: Sempre extraia se mencionado
 
-TIPOS DE PRAZOS COMUNS:
+INSTRUÇÕES ESPECÍFICAS:
+- Para audiências: SEMPRE extrair data completa com horário se mencionado
+- Para locais: Copiar exatamente como está no texto (sala, andar, endereço)
+- Para prazos: Se não há data base específica, usar a data atual como início
+- Prioridade: "urgente" para audiências, "alta" para recursos, "normal" para outros
+
+TIPOS DE PRAZOS (Novo CPC):
 - Contestação: 15 dias úteis
 - Recursal: 15 dias úteis 
 - Tréplica: 15 dias úteis
-- Manifestação sobre documentos: 15 dias úteis
-- Impugnação ao valor da causa: 15 dias úteis
-- Cumprimento de sentença: conforme determinado
+- Manifestação: 15 dias úteis
+- Cumprimento: conforme determinado
 
-Retorne um JSON válido com array de objetos contendo:
+FORMATO DE RETORNO - JSON válido:
 {
   "deadlines": [
     {
-      "title": "Título claro do compromisso",
-      "description": "Descrição detalhada extraída do texto",
+      "title": "Nome claro do compromisso",
+      "description": "Texto original extraído",
       "commitmentType": "prazo_processual" | "audiencia" | "reuniao" | "personalizado",
-      "deadlineType": "recursal" | "contestacao" | "replicas" | "outras" (apenas para prazos processuais),
-      "commitmentDate": "YYYY-MM-DD" | "YYYY-MM-DDTHH:MM:SS",
-      "endDate": "YYYY-MM-DD" (opcional, para audiências com duração),
-      "location": "Local da audiência" (opcional),
-      "isVirtual": true/false (opcional),
-      "processNumber": "Número do processo se mencionado",
+      "deadlineType": "recursal" | "contestacao" | "replicas" | "outras",
+      "commitmentDate": "YYYY-MM-DD" ou "YYYY-MM-DDTHH:MM:SS",
+      "endDate": "YYYY-MM-DD" (opcional),
+      "location": "Local exato mencionado",
+      "isVirtual": true/false,
+      "processNumber": "Número extraído",
       "priority": "baixa" | "normal" | "alta" | "urgente"
     }
   ]
 }
 
-TEXTO PARA ANÁLISE:
+TEXTO JURÍDICO PARA ANÁLISE:
 ${text}
 `;
 
