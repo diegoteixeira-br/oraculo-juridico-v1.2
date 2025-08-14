@@ -20,8 +20,9 @@ import MarkdownEditor from "@/components/MarkdownEditor";
 import { useAccessControl } from "@/hooks/useAccessControl";
 
 
-// CONFIGURAÇÃO DE MANUTENÇÃO PARA SEÇÃO MEUS DOCUMENTOS - Altere para false quando quiser reativar
+// CONFIGURAÇÃO DE MANUTENÇÃO - Altere para false quando quiser reativar
 const DOCS_MAINTENANCE_MODE = true;
+const LEGAL_DOCS_MAINTENANCE_MODE = true;
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -634,83 +635,141 @@ const openTemplateEditor = async (documentId: string) => {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                      {legalDocuments.slice(0, 8).map((doc) => (
-                        <div 
-                          key={doc.id}
-                          className="group cursor-pointer"
-                          onClick={() => openTemplateEditor(doc.id)}
-                        >
-                          <div className="bg-white rounded-lg p-3 h-32 relative overflow-hidden shadow-lg group-hover:shadow-xl transition-all group-hover:scale-105">
-                            <div className="text-center border-b border-gray-300 pb-1 mb-2">
-                              <h1 className="font-bold text-[8px] text-gray-800 uppercase tracking-wide leading-tight">
-                                {doc.title}
-                              </h1>
-                            </div>
-                            
-                            <div className="text-[6px] leading-tight text-gray-700 space-y-1">
-                              {doc.category === 'contrato' && (
-                                <>
+                    {LEGAL_DOCS_MAINTENANCE_MODE ? (
+                      // Seção de documentos jurídicos em manutenção
+                      <div className="relative">
+                        {/* Conteúdo borrado */}
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 blur-sm grayscale opacity-30">
+                          {[1,2,3,4,5,6,7,8].map((i) => (
+                            <div key={i} className="group cursor-pointer">
+                              <div className="bg-white rounded-lg p-3 h-32 relative overflow-hidden shadow-lg">
+                                <div className="text-center border-b border-gray-300 pb-1 mb-2">
+                                  <h1 className="font-bold text-[8px] text-gray-800 uppercase tracking-wide leading-tight">
+                                    DOCUMENTO {i}
+                                  </h1>
+                                </div>
+                                <div className="text-[6px] leading-tight text-gray-700 space-y-1">
                                   <div className="font-semibold">CONTRATANTE:</div>
                                   <div className="border-b border-gray-200 h-1"></div>
                                   <div className="font-semibold">CONTRATADO:</div>
                                   <div className="border-b border-gray-200 h-1"></div>
                                   <div className="font-semibold">OBJETO:</div>
                                   <div className="text-gray-500">O presente contrato...</div>
-                                </>
-                              )}
-                              {doc.category === 'peticao' && (
-                                <>
-                                  <div className="text-center font-semibold">PETIÇÃO INICIAL</div>
-                                  <div className="font-semibold">Requerente:</div>
-                                  <div className="border-b border-gray-200 h-1"></div>
-                                  <div className="font-semibold">DOS FATOS:</div>
-                                  <div className="text-gray-500">Vem o requerente...</div>
-                                </>
-                              )}
-                              {doc.category === 'procuracao' && (
-                                <>
-                                  <div className="text-center font-bold">PROCURAÇÃO</div>
-                                  <div className="font-semibold">OUTORGANTE:</div>
-                                  <div className="border-b border-gray-200 h-1"></div>
-                                  <div className="font-semibold">PODERES:</div>
-                                  <div className="text-gray-500">☐ Representar</div>
-                                </>
-                              )}
-                              {doc.category === 'documento' && (
-                                <>
-                                  <div className="text-center font-bold">DECLARAÇÃO</div>
-                                  <div className="mt-2 text-gray-600">
-                                    <div>Eu, _____________,</div>
-                                    <div>declaro que</div>
-                                    <div className="border-b border-gray-200 h-1"></div>
+                                </div>
+                                <div className="absolute bottom-1 left-1 right-1">
+                                  <div className="bg-slate-800 text-white px-1 py-0.5 rounded text-[6px] flex justify-between items-center">
+                                    <span>contrato</span>
+                                    <span>3.000</span>
                                   </div>
-                                </>
-                              )}
-                            </div>
-                            
-                            <div className="absolute bottom-1 left-1 right-1">
-                              <div className="bg-slate-800 text-white px-1 py-0.5 rounded text-[6px] flex justify-between items-center">
-                                <span className="capitalize">{doc.category}</span>
-                                <span>{(doc.min_tokens_required || 3000).toLocaleString()}</span>
+                                </div>
+                              </div>
+                              <div className="mt-2 text-center">
+                                <h3 className="font-medium text-xs text-white truncate">
+                                  Documento Exemplo
+                                </h3>
                               </div>
                             </div>
+                          ))}
+                        </div>
+                        
+                        {/* Overlay de manutenção */}
+                        <div className="absolute inset-0 bg-slate-900/85 backdrop-blur-sm flex flex-col items-center justify-center gap-4 rounded-lg min-h-[200px]">
+                          <div className="p-4 bg-amber-500/20 rounded-full">
+                            <Wrench className="w-10 h-10 text-amber-400" />
                           </div>
-                          
-                          <div className="mt-2 text-center">
-                            <h3 className="font-medium text-xs text-white truncate">
-                              {doc.title}
-                            </h3>
+                          <div className="text-center">
+                            <h3 className="text-white font-bold text-lg mb-2">Seção em Manutenção</h3>
+                            <p className="text-slate-300 text-sm mb-3 px-6 max-w-md">
+                              Estamos trabalhando para melhorar esta funcionalidade. Os documentos jurídicos estarão disponíveis em breve.
+                            </p>
+                            <p className="text-xs text-slate-400">
+                              Obrigado pela paciência e compreensão.
+                            </p>
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ) : (
+                      // Conteúdo normal dos documentos jurídicos
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                        {legalDocuments.slice(0, 8).map((doc) => (
+                          <div 
+                            key={doc.id}
+                            className="group cursor-pointer"
+                            onClick={() => openTemplateEditor(doc.id)}
+                          >
+                            <div className="bg-white rounded-lg p-3 h-32 relative overflow-hidden shadow-lg group-hover:shadow-xl transition-all group-hover:scale-105">
+                              <div className="text-center border-b border-gray-300 pb-1 mb-2">
+                                <h1 className="font-bold text-[8px] text-gray-800 uppercase tracking-wide leading-tight">
+                                  {doc.title}
+                                </h1>
+                              </div>
+                              
+                              <div className="text-[6px] leading-tight text-gray-700 space-y-1">
+                                {doc.category === 'contrato' && (
+                                  <>
+                                    <div className="font-semibold">CONTRATANTE:</div>
+                                    <div className="border-b border-gray-200 h-1"></div>
+                                    <div className="font-semibold">CONTRATADO:</div>
+                                    <div className="border-b border-gray-200 h-1"></div>
+                                    <div className="font-semibold">OBJETO:</div>
+                                    <div className="text-gray-500">O presente contrato...</div>
+                                  </>
+                                )}
+                                {doc.category === 'peticao' && (
+                                  <>
+                                    <div className="text-center font-semibold">PETIÇÃO INICIAL</div>
+                                    <div className="font-semibold">Requerente:</div>
+                                    <div className="border-b border-gray-200 h-1"></div>
+                                    <div className="font-semibold">DOS FATOS:</div>
+                                    <div className="text-gray-500">Vem o requerente...</div>
+                                  </>
+                                )}
+                                {doc.category === 'procuracao' && (
+                                  <>
+                                    <div className="text-center font-bold">PROCURAÇÃO</div>
+                                    <div className="font-semibold">OUTORGANTE:</div>
+                                    <div className="border-b border-gray-200 h-1"></div>
+                                    <div className="font-semibold">PODERES:</div>
+                                    <div className="text-gray-500">☐ Representar</div>
+                                  </>
+                                )}
+                                {doc.category === 'documento' && (
+                                  <>
+                                    <div className="text-center font-bold">DECLARAÇÃO</div>
+                                    <div className="mt-2 text-gray-600">
+                                      <div>Eu, _____________,</div>
+                                      <div>declaro que</div>
+                                      <div className="border-b border-gray-200 h-1"></div>
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                              
+                              <div className="absolute bottom-1 left-1 right-1">
+                                <div className="bg-slate-800 text-white px-1 py-0.5 rounded text-[6px] flex justify-between items-center">
+                                  <span className="capitalize">{doc.category}</span>
+                                  <span>{(doc.min_tokens_required || 3000).toLocaleString()}</span>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="mt-2 text-center">
+                              <h3 className="font-medium text-xs text-white truncate">
+                                {doc.title}
+                              </h3>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     
-                    <div className="mt-4 p-3 bg-slate-900/50 rounded-lg border border-slate-600">
-                      <p className="text-xs text-slate-400 text-center">
-                        💡 <strong>Dica:</strong> Clique em qualquer documento para personalizar e baixar
-                      </p>
-                    </div>
+                    {!LEGAL_DOCS_MAINTENANCE_MODE && (
+                      <div className="mt-4 p-3 bg-slate-900/50 rounded-lg border border-slate-600">
+                        <p className="text-xs text-slate-400 text-center">
+                          💡 <strong>Dica:</strong> Clique em qualquer documento para personalizar e baixar
+                        </p>
+                      </div>
+                    )}
 
                     {DOCS_MAINTENANCE_MODE ? (
                       // Seção em manutenção com efeito borrado
