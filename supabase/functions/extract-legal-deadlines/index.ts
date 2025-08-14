@@ -62,6 +62,12 @@ serve(async (req) => {
     const thread = await threadResponse.json();
     console.log('Thread created:', thread.id);
 
+    // Obter data atual no fuso horário do Brasil
+    const now = new Date();
+    const brasiliaOffset = -3; // UTC-3
+    const brasiliaTime = new Date(now.getTime() + (brasiliaOffset * 60 * 60 * 1000));
+    const currentDateBrasilia = brasiliaTime.toISOString().split('T')[0];
+
     // Adicionar a mensagem ao thread
     const messageResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/messages`, {
       method: 'POST',
@@ -72,7 +78,16 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         role: 'user',
-        content: `Data atual para cálculo de prazos: ${new Date().toISOString().split('T')[0]}\n\nTexto jurídico para análise:\n\n${text}`,
+        content: `Data atual para cálculo de prazos (horário de Brasília): ${currentDateBrasilia}
+Instruções importantes:
+- Use SEMPRE o formato ISO 8601 para datas: YYYY-MM-DD
+- Para audiências/reuniões com horário específico, use: YYYY-MM-DDTHH:MM:SS
+- Calcule prazos considerando dias úteis quando aplicável
+- Use a data atual como referência para cálculos de prazo
+
+Texto jurídico para análise:
+
+${text}`,
       }),
     });
 
