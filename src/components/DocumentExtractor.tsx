@@ -50,27 +50,50 @@ export default function DocumentExtractor({
 
   // Processar arquivo para extração de texto
   const processFile = async (file: File): Promise<string> => {
+    console.log('Processing file:', file.name, 'type:', file.type);
+    
     if (file.type === 'application/pdf') {
       // Para PDF, vamos enviar para uma função que extraia texto
       const formData = new FormData();
       formData.append('file', file);
       
+      console.log('Calling extract-text-from-pdf function');
+      
       const { data, error } = await supabase.functions.invoke('extract-text-from-pdf', {
         body: formData,
       });
       
-      if (error) throw new Error('Erro ao extrair texto do PDF');
+      console.log('PDF extraction response:', data, 'error:', error);
+      
+      if (error) {
+        console.error('PDF extraction error:', error);
+        throw new Error('Erro ao extrair texto do PDF: ' + error.message);
+      }
+      
+      if (!data.success) {
+        console.error('PDF extraction failed:', data);
+        throw new Error('Erro ao extrair texto do PDF: ' + (data.error || 'Falha na extração'));
+      }
+      
       return data.text || '';
     } else if (file.type.startsWith('image/')) {
       // Para imagens, usar OCR
       const formData = new FormData();
       formData.append('image', file);
       
+      console.log('Calling extract-text-from-image function');
+      
       const { data, error } = await supabase.functions.invoke('extract-text-from-image', {
         body: formData,
       });
       
-      if (error) throw new Error('Erro ao extrair texto da imagem');
+      console.log('Image extraction response:', data, 'error:', error);
+      
+      if (error) {
+        console.error('Image extraction error:', error);
+        throw new Error('Erro ao extrair texto da imagem: ' + error.message);
+      }
+      
       return data.text || '';
     } else {
       // Para arquivos de texto
