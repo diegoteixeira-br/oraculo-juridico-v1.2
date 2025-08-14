@@ -97,6 +97,11 @@ const SuportePage = () => {
       category: "geral"
     },
     {
+      question: "Como a IA analisa documentos PDF no chat?",
+      answer: "No Chat Jurídico, você pode enviar PDFs de processos, contratos e outros documentos. A IA extrai automaticamente o texto e fornece análises especializadas sobre conteúdo jurídico, identifica cláusulas importantes e responde suas dúvidas específicas sobre o documento.",
+      category: "geral"
+    },
+    {
       question: "A plataforma funciona em mobile?",
       answer: "Sim! Nossa plataforma é totalmente responsiva e funciona perfeitamente em smartphones, tablets e computadores.",
       category: "tecnico"
