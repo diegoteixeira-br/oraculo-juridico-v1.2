@@ -30,6 +30,7 @@ async function renderEmailHTML(fullName: string, items: any[]) {
     React.createElement(AgendaSummaryEmail, { fullName, items })
   );
 }
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -103,11 +104,11 @@ serve(async (req) => {
       });
     }
 
-    // Filter users by profile flag
+    // Filter users by profile flag and get timezone info
     const userIds = Array.from(new Set(commitments.map((c) => c.user_id)));
     const { data: profiles, error: profilesError } = await supabase
       .from("profiles")
-      .select("user_id, full_name, receber_notificacao_agenda")
+      .select("user_id, full_name, receber_notificacao_agenda, timezone")
       .in("user_id", userIds)
       .eq("receber_notificacao_agenda", true);
 
@@ -122,46 +123,62 @@ serve(async (req) => {
       });
     }
 
+    // Get notification settings for users who have commitments
+    const { data: notificationSettings } = await supabase
+      .from("notification_settings") 
+      .select("user_id, agenda_email_time, agenda_timezone")
+      .in("user_id", Array.from(allowedUserIds));
+
+    // Create timezone mapping for users
+    const userTimezones = new Map<string, { emailTime: string; timezone: string }>();
+    profiles?.forEach(profile => {
+      const timezone = profile.timezone || 'America/Sao_Paulo';
+      const settings = notificationSettings?.find(s => s.user_id === profile.user_id);
+      const emailTime = settings?.agenda_email_time || '09:00';
+      userTimezones.set(profile.user_id, { emailTime, timezone });
+    });
+
+    // Group by user
     const grouped = groupBy(filtered, "user_id");
 
-    // Helper to get user email via Admin API
-    async function getUserEmail(userId: string): Promise<string | null> {
-      try {
-        const { data, error } = await supabase.auth.admin.getUserById(userId);
-        if (error) return null;
-        return data.user?.email ?? null;
-      } catch (_) {
-        return null;
-      }
-    }
-
-    let sent = 0;
+    // Send emails
     const results: Record<string, any> = {};
+    let sent = 0;
 
     for (const [userId, items] of Object.entries(grouped)) {
-      const profile = profiles?.find((p) => p.user_id === userId);
-      const email = await getUserEmail(userId);
-      if (!email) {
-        results[userId] = { status: "skipped_no_email", count: items.length };
-        continue;
-      }
-
-      const html = await renderEmailHTML(profile?.full_name || "", items as any[]);
-
       try {
-        const { error: emailError } = await resend.emails.send({
-          from: "Cakto Agenda <onboarding@resend.dev>",
-          to: [email],
-          subject: "Resumo diário da sua agenda",
+        const profile = profiles?.find(p => p.user_id === userId);
+        const userTimeInfo = userTimezones.get(userId);
+        const timezone = userTimeInfo?.timezone || 'America/Sao_Paulo';
+        const emailTime = userTimeInfo?.emailTime || '09:00';
+        
+        // Format current time in user's timezone for display
+        const userCurrentTime = new Intl.DateTimeFormat('pt-BR', {
+          timeZone: timezone,
+          hour: '2-digit',
+          minute: '2-digit',
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        }).format(now);
+
+        const { data: user } = await supabase.auth.admin.getUserById(userId);
+        if (!user.user?.email) continue;
+
+        const html = await renderEmailHTML(profile?.full_name || "", items as any[]);
+
+        const { data, error } = await resend.emails.send({
+          from: "Oráculo Jurídico <agenda@oracurojuridico.com.br>",
+          to: [user.user.email],
+          subject: `📅 Resumo da Agenda - ${userCurrentTime.split(' ')[0]} (${timezone.replace('America/', '').replace('_', ' ')})`,
           html,
         });
-        if (emailError) {
-          results[userId] = { status: "email_error", error: String(emailError) };
-        } else {
-          sent += 1;
-          results[userId] = { status: "sent", count: (items as any[]).length };
-        }
+
+        if (error) throw error;
+        results[userId] = { status: "sent", email_id: data?.id };
+        sent++;
       } catch (e) {
+        console.error("Error sending email to user", userId, e);
         results[userId] = { status: "email_exception", error: String(e) };
       }
     }
