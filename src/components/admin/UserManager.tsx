@@ -178,8 +178,7 @@ export default function UserManager() {
                     <SelectTrigger className="w-[120px]"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="gratuito">Gratuito</SelectItem>
-                      <SelectItem value="essencial">Essencial</SelectItem>
-                      <SelectItem value="premium">Premium</SelectItem>
+                      <SelectItem value="Essencial">Essencial</SelectItem>
                     </SelectContent>
                   </Select>
                 </TableCell>
