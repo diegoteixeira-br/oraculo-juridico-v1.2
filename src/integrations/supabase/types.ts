@@ -414,6 +414,7 @@ export type Database = {
           subscription_activated_at: string | null
           subscription_end_date: string | null
           subscription_status: string | null
+          timezone: string | null
           token_balance: number | null
           token_expiry_date: string | null
           tokens: number | null
@@ -435,6 +436,7 @@ export type Database = {
           subscription_activated_at?: string | null
           subscription_end_date?: string | null
           subscription_status?: string | null
+          timezone?: string | null
           token_balance?: number | null
           token_expiry_date?: string | null
           tokens?: number | null
@@ -456,6 +458,7 @@ export type Database = {
           subscription_activated_at?: string | null
           subscription_end_date?: string | null
           subscription_status?: string | null
+          timezone?: string | null
           token_balance?: number | null
           token_expiry_date?: string | null
           tokens?: number | null

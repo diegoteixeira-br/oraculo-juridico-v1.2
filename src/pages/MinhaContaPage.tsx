@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from "react";
-import { Eye, EyeOff, Save, User, Lock, Camera, Trash, ArrowLeft, Zap, Shield, Mail, Calendar, Award } from "lucide-react";
+import { Eye, EyeOff, Save, User, Lock, Camera, Trash, ArrowLeft, Zap, Shield, Mail, Calendar, Award, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
@@ -24,6 +25,8 @@ export default function MinhaContaPage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [selectedTimezone, setSelectedTimezone] = useState("");
+  const [isUpdatingTimezone, setIsUpdatingTimezone] = useState(false);
   
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -31,10 +34,53 @@ export default function MinhaContaPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { visible: menuVisible } = useScrollDirection();
 
-  // Atualizar avatar quando profile mudar
+  // Fusos horários brasileiros
+  const brazilianTimezones = [
+    { value: 'America/Sao_Paulo', label: 'Brasília (GMT-3) - SP, RJ, MG, ES, GO, DF, PR, SC, RS, BA, SE, AL, PE, PB, RN, CE, PI, MA, TO' },
+    { value: 'America/Cuiaba', label: 'Cuiabá (GMT-4) - MT, MS' },
+    { value: 'America/Manaus', label: 'Manaus (GMT-4) - AM, RR, RO, AC' },
+    { value: 'America/Fortaleza', label: 'Fortaleza (GMT-3) - Alternativo para Nordeste' },
+    { value: 'America/Recife', label: 'Recife (GMT-3) - Alternativo para Nordeste' },
+    { value: 'America/Bahia', label: 'Salvador (GMT-3) - Alternativo para Bahia' },
+  ];
+
+  // Atualizar avatar e timezone quando profile mudar
   useEffect(() => {
     setAvatarUrl(profile?.avatar_url || null);
-  }, [profile?.avatar_url]);
+    setSelectedTimezone((profile as any)?.timezone || 'America/Sao_Paulo');
+  }, [profile?.avatar_url, (profile as any)?.timezone]);
+
+  // Função para atualizar timezone
+  const handleTimezoneUpdate = async (newTimezone: string) => {
+    if (!user?.id) return;
+    
+    setIsUpdatingTimezone(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ timezone: newTimezone })
+        .eq('user_id', user.id);
+        
+      if (error) throw error;
+      
+      setSelectedTimezone(newTimezone);
+      await refreshProfile();
+      
+      toast({
+        title: "Fuso horário atualizado!",
+        description: "Suas datas e horários agora seguem o fuso selecionado.",
+      });
+    } catch (error) {
+      console.error('Error updating timezone:', error);
+      toast({
+        title: "Erro ao atualizar",
+        description: "Não foi possível atualizar o fuso horário. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdatingTimezone(false);
+    }
+  };
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -480,6 +526,37 @@ export default function MinhaContaPage() {
                         </span>
                       )}
                     </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="timezone" className="text-sm text-slate-300 flex items-center gap-2">
+                      <Globe className="w-4 h-4 text-primary" />
+                      Fuso Horário
+                    </Label>
+                    <Select 
+                      value={selectedTimezone} 
+                      onValueChange={handleTimezoneUpdate}
+                      disabled={isUpdatingTimezone}
+                    >
+                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                        <SelectValue placeholder="Selecione seu fuso horário" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-700 border-slate-600">
+                        {brazilianTimezones.map((tz) => (
+                          <SelectItem 
+                            key={tz.value} 
+                            value={tz.value}
+                            className="text-white hover:bg-slate-600 focus:bg-slate-600"
+                          >
+                            {tz.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-slate-400">
+                      Este fuso horário será usado para exibir todas as datas e horários do sistema,
+                      incluindo agenda e emails de notificação.
+                    </p>
                   </div>
                 </div>
 

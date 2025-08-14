@@ -1,5 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -79,6 +80,33 @@ serve(async (req) => {
   console.log('Iniciando cálculo de contrato bancário');
   
   try {
+    // Inicializar cliente Supabase
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Obter token de autenticação do header
+    const authHeader = req.headers.get('Authorization');
+    let userTimezone = 'America/Sao_Paulo'; // Padrão
+
+    if (authHeader) {
+      const token = authHeader.replace('Bearer ', '');
+      const { data: { user } } = await supabase.auth.getUser(token);
+      
+      if (user) {
+        // Buscar timezone do usuário
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('timezone')
+          .eq('user_id', user.id)
+          .single();
+        
+        if (profile?.timezone) {
+          userTimezone = profile.timezone;
+        }
+      }
+    }
+
     const data: ContratoBancarioData = await req.json();
     
     const valorContrato = parseFloat(data.valorContrato);
@@ -184,7 +212,7 @@ ${data.dataPagamentoParcial ? `• Data do Pagamento: ${new Date(data.dataPagame
 
 ${mesesAtraso > 0 ? `
 ═══════════════════════════════════════════════════════════════
-CÁLCULO DE ATRASO (${new Date(data.dataVencimento).toLocaleDateString('pt-BR')} até ${new Date().toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })})
+CÁLCULO DE ATRASO (${new Date(data.dataVencimento).toLocaleDateString('pt-BR')} até ${new Date().toLocaleDateString('pt-BR', { timeZone: userTimezone })})
 ═══════════════════════════════════════════════════════════════
 • Período em Atraso: ${diasAtraso} dias (${mesesAtraso.toFixed(1)} meses)
 • Saldo Devedor no Vencimento: R$ ${saldoDevedor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
@@ -218,7 +246,7 @@ ${data.observacoes}
 ` : ''}
 
 ═══════════════════════════════════════════════════════════════
-Cálculo realizado em ${new Date().toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })} às ${new Date().toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo' })}
+Cálculo realizado em ${new Date().toLocaleDateString('pt-BR', { timeZone: userTimezone })} às ${new Date().toLocaleTimeString('pt-BR', { timeZone: userTimezone })}
 Ferramenta: Oráculo Jurídico - Calculadora de Contrato Bancário
 ═══════════════════════════════════════════════════════════════`;
 
