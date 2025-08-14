@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { User, LogOut, Settings, MessageSquare, CreditCard, Calculator, Heart, Shield } from "lucide-react";
+import { User, LogOut, Settings, MessageSquare, CreditCard, Calculator, Heart, Shield, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -84,6 +84,13 @@ export default function UserMenu({ hideOptions = [] }: UserMenuProps) {
       icon: Heart,
       onClick: () => navigate("/calculo-pensao-alimenticia"),
       show: !hideOptions.includes("calc-pensao"),
+    },
+    {
+      key: "historico",
+      label: "Histórico",
+      icon: History,
+      onClick: () => navigate("/historico-transacoes"),
+      show: !hideOptions.includes("historico"),
     },
     {
       key: "admin",
