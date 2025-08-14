@@ -83,7 +83,7 @@ const SuportePage = () => {
     },
     {
       question: "Como funciona o plano Essencial?",
-      answer: "O plano Essencial oferece 30.000 tokens mensais por R$ 39,90/mês, ideal para uso moderado a intenso da plataforma.",
+      answer: "O plano Essencial oferece 30.000 tokens mensais por R$ 37,90/mês, ideal para uso moderado a intenso da plataforma.",
       category: "tokens"
     },
     {
