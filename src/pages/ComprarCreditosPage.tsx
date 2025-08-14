@@ -55,28 +55,35 @@ export default function ComprarCreditosPage() {
       });
       return;
     }
+
     try {
       setIsLoading(true);
       setSelectedPackage(productTypeId);
 
       console.log("🚀 Iniciando compra de tokens:", productTypeId);
       
-      // Chamar a função create-checkout com o novo product_type_id
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { product_type_id: productTypeId }
-      });
-
-      if (error) {
-        throw error;
+      // Encontrar o produto para determinar qual link usar
+      const selectedProduct = tokenPacks.find(pack => pack.id === productTypeId);
+      
+      if (!selectedProduct) {
+        throw new Error('Produto não encontrado');
       }
 
-      if (data?.url) {
-        console.log("✅ URL de checkout recebida:", data.url);
-        // Redirecionar para o Stripe Checkout na mesma aba
-        window.location.href = data.url;
+      let stripeUrl = '';
+      
+      // Links diretos do Stripe baseados no nome do produto
+      if (selectedProduct.name === 'Pacote Básico') {
+        stripeUrl = 'https://buy.stripe.com/4gMfZia1z1hAccD1VY5AQ00';
+      } else if (selectedProduct.name === 'Pacote Premium') {
+        stripeUrl = 'https://buy.stripe.com/4gMfZi5Lj5xQ1xZ8km5AQ01';
       } else {
-        throw new Error('URL de pagamento não recebida');
+        throw new Error('Link de pagamento não configurado para este produto');
       }
+
+      console.log("✅ Redirecionando para:", stripeUrl);
+      // Redirecionar para o link do Stripe
+      window.open(stripeUrl, '_blank');
+      
     } catch (error) {
       console.error('❌ Erro ao processar pagamento:', error);
       toast({
