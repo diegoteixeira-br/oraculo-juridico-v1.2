@@ -7,7 +7,7 @@ import DocumentManager from "@/components/admin/DocumentManager";
 import RefundManager from "@/components/admin/RefundManager";
 import TokenManager from "@/components/admin/TokenManager";
 import TestAgendaEmail from "@/components/TestAgendaEmail";
-import { Users, FileText, Upload, Undo2, ArrowLeft, Coins, TestTube } from "lucide-react";
+import { Users, FileText, Upload, Undo2, ArrowLeft, Coins, Mail } from "lucide-react";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useSEO } from "@/hooks/useSEO";
 import { useNavigate } from "react-router-dom";
@@ -67,8 +67,8 @@ export default function AdminDashboard() {
               Estornos
             </TabsTrigger>
             <TabsTrigger value="teste-agenda" className="flex items-center gap-2">
-              <TestTube className="h-4 w-4" />
-              Teste Agenda
+              <Mail className="h-4 w-4" />
+              Templates Email
             </TabsTrigger>
           </TabsList>
 
@@ -95,40 +95,13 @@ export default function AdminDashboard() {
           <TabsContent value="teste-agenda">
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-bold mb-2">Teste de Notificações da Agenda</h2>
+                <h2 className="text-2xl font-bold mb-2">Templates de Email Agenda</h2>
                 <p className="text-muted-foreground">
                   Teste o sistema de envio automático de emails da agenda jurídica
                 </p>
               </div>
               
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div>
-                  <TestAgendaEmail />
-                </div>
-                
-                <div className="space-y-4">
-                  <div className="bg-muted/50 p-4 rounded-lg">
-                    <h3 className="font-semibold mb-2">Como funciona:</h3>
-                    <ul className="text-sm space-y-1 text-muted-foreground">
-                      <li>• Busca compromissos das próximas 24 horas</li>
-                      <li>• Filtra usuários com notificações ativas</li>
-                      <li>• Aplica timezone correto para cada usuário</li>
-                      <li>• Envia via Resend (mesmo sistema do app)</li>
-                      <li>• Executa automaticamente no horário configurado</li>
-                    </ul>
-                  </div>
-                  
-                  <div className="bg-muted/50 p-4 rounded-lg">
-                    <h3 className="font-semibold mb-2">Configuração automática:</h3>
-                    <ul className="text-sm space-y-1 text-muted-foreground">
-                      <li>• Cron jobs individuais por usuário</li>
-                      <li>• Triggers automáticos para mudanças</li>
-                      <li>• Horário personalizado por usuário</li>
-                      <li>• Timezone respeitado nos emails</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
+              <TestAgendaEmail />
             </div>
           </TabsContent>
         </Tabs>
