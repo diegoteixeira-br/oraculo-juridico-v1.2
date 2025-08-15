@@ -16,7 +16,7 @@ import { useScrollDirection } from "@/hooks/useScrollDirection";
 import { useUserTimezone } from "@/hooks/useUserTimezone";
 import { useExportDocument } from "@/hooks/useExportDocument";
 import HistoricoCalculosModal from "@/components/HistoricoCalculosModal";
-import TimezoneInfo from "@/components/TimezoneInfo";
+
 
 interface CalculoResult {
   valorTotal: number;
@@ -477,31 +477,25 @@ const CalculoContratoBancario = () => {
             )}
           </div>
 
-          {/* Grid com informações importantes e timezone */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Informações importantes */}
-            <Card className="bg-amber-900/20 border-amber-500/30 lg:col-span-2">
-              <CardContent className="p-4">
-                <div className="flex items-start gap-3">
-                  <div className="p-2 bg-amber-500/20 rounded-lg flex-shrink-0">
-                    <FileText className="w-5 h-5 text-amber-400" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-amber-200 mb-2">Informações Importantes</h4>
-                    <div className="space-y-1 text-sm text-amber-300/80">
-                      <p>• Este cálculo é uma ferramenta auxiliar baseada em parâmetros legais</p>
-                      <p>• Para casos complexos, consulte sempre um advogado especializado</p>
-                      <p>• Os índices de correção são atualizados conforme fontes oficiais</p>
-                      <p>• O relatório pode ser usado como base para análise jurídica</p>
-                    </div>
+          {/* Informações importantes */}
+          <Card className="bg-amber-900/20 border-amber-500/30">
+            <CardContent className="p-4">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-amber-500/20 rounded-lg flex-shrink-0">
+                  <FileText className="w-5 h-5 text-amber-400" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-amber-200 mb-2">Informações Importantes</h4>
+                  <div className="space-y-1 text-sm text-amber-300/80">
+                    <p>• Este cálculo é uma ferramenta auxiliar baseada em parâmetros legais</p>
+                    <p>• Para casos complexos, consulte sempre um advogado especializado</p>
+                    <p>• Os índices de correção são atualizados conforme fontes oficiais</p>
+                    <p>• O relatório pode ser usado como base para análise jurídica</p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Informações de Timezone */}
-            <TimezoneInfo />
-          </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
