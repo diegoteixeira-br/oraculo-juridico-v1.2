@@ -30,12 +30,10 @@ export const useExportDocument = () => {
       const dataHoraFormatada = formatDateInUserTimezone(new Date(), 'dd/MM/yyyy HH:mm:ss');
 
       const textoFormatado = `
-═══════════════════════════════════════════════════════════════════════════════
-                     RELATÓRIO DE CÁLCULO DE CONTRATO BANCÁRIO
-                            Oráculo Jurídico - Sistema Especializado
-═══════════════════════════════════════════════════════════════════════════════
+RELATÓRIO DE CÁLCULO DE CONTRATO BANCÁRIO
+Oráculo Jurídico - Sistema Especializado
 
-📋 DADOS DO CONTRATO
+DADOS DO CONTRATO
 ──────────────────────────────────────────────────────────────────────────────
 • Valor do Contrato:        R$ ${parseFloat(formData.valorContrato).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
 • Data do Contrato:         ${new Date(formData.dataContrato).toLocaleDateString('pt-BR')}
@@ -48,7 +46,7 @@ export const useExportDocument = () => {
 ${formData.valorPago ? `• Valor Pago:               R$ ${parseFloat(formData.valorPago).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : ''}
 ${formData.dataPagamentoParcial ? `• Data do Pagamento:        ${new Date(formData.dataPagamentoParcial).toLocaleDateString('pt-BR')}` : ''}
 
-💰 RESULTADOS DO CÁLCULO
+RESULTADOS DO CÁLCULO
 ──────────────────────────────────────────────────────────────────────────────
 • VALOR TOTAL DEVIDO:       R$ ${calculo.valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
 • Valor Corrigido:          R$ ${calculo.valorCorrigido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
@@ -56,14 +54,14 @@ ${formData.dataPagamentoParcial ? `• Data do Pagamento:        ${new Date(form
 • Diferença Detectada:      R$ ${Math.abs(calculo.diferenca).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
 • Status: ${calculo.valorCorrigido > calculo.valorTotal ? 'COBRANÇA EXCESSIVA DETECTADA' : 'VALORES DENTRO DOS PARÂMETROS LEGAIS'}
 
-📄 DETALHAMENTO TÉCNICO E JURÍDICO
+DETALHAMENTO TÉCNICO E JURÍDICO
 ──────────────────────────────────────────────────────────────────────────────
 ${calculo.detalhamento}
 
-═══════════════════════════════════════════════════════════════════════════════
+──────────────────────────────────────────────────────────────────────────────
 Documento gerado em: ${dataHoraFormatada}
 Sistema: Oráculo Jurídico - Calculadora Especializada em Contratos Bancários
-═══════════════════════════════════════════════════════════════════════════════
+──────────────────────────────────────────────────────────────────────────────
 `.trim();
 
       await navigator.clipboard.writeText(textoFormatado);
@@ -82,12 +80,10 @@ Sistema: Oráculo Jurídico - Calculadora Especializada em Contratos Bancários
       const dataHoraFormatada = formatDateInUserTimezone(new Date(), 'dd/MM/yyyy HH:mm:ss');
 
       const textoFormatado = `
-═══════════════════════════════════════════════════════════════════════════════
-                    RELATÓRIO DE CÁLCULO DE PENSÃO ALIMENTÍCIA
-                            Oráculo Jurídico - Sistema Especializado
-═══════════════════════════════════════════════════════════════════════════════
+RELATÓRIO DE CÁLCULO DE PENSÃO ALIMENTÍCIA
+Oráculo Jurídico - Sistema Especializado
 
-👨‍👩‍👧‍👦 DADOS DA PENSÃO ALIMENTÍCIA
+DADOS DA PENSÃO ALIMENTÍCIA
 ──────────────────────────────────────────────────────────────────────────────
 • Tipo de Cálculo:          ${formData.tipoCalculo === 'percentual' ? 'Percentual da Renda' : 'Valor Fixo'}
 ${formData.rendaAlimentante ? `• Renda do Alimentante:     R$ ${parseFloat(formData.rendaAlimentante).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : ''}
@@ -98,7 +94,7 @@ ${formData.valorFixo ? `• Valor Fixo da Pensão:     R$ ${parseFloat(formData.
 ${formData.dataFim ? `• Data de Fim:              ${new Date(formData.dataFim).toLocaleDateString('pt-BR')}` : ''}
 ${formData.mesesAtraso ? `• Meses em Atraso:          ${formData.mesesAtraso}` : ''}
 
-💰 RESULTADOS DO CÁLCULO
+RESULTADOS DO CÁLCULO
 ──────────────────────────────────────────────────────────────────────────────
 • VALOR DA PENSÃO MENSAL:   R$ ${calculo.valorPensao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
 ${formData.tipoCalculo === 'percentual' ? `• Percentual da Renda:      ${calculo.percentualRenda.toFixed(2)}%` : ''}
@@ -108,20 +104,20 @@ ${calculo.valorTotalAtrasado > 0 ? `
 • Multa (2%):               R$ ${calculo.multa.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
 • Juros de Mora (1% a.m.):  R$ ${calculo.juros.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : ''}
 
-📄 DETALHAMENTO TÉCNICO E JURÍDICO
+DETALHAMENTO TÉCNICO E JURÍDICO
 ──────────────────────────────────────────────────────────────────────────────
 ${calculo.detalhamento}
 
 ${formData.observacoes ? `
-📝 OBSERVAÇÕES ADICIONAIS
+OBSERVAÇÕES ADICIONAIS
 ──────────────────────────────────────────────────────────────────────────────
 ${formData.observacoes}
 ` : ''}
 
-═══════════════════════════════════════════════════════════════════════════════
+──────────────────────────────────────────────────────────────────────────────
 Documento gerado em: ${dataHoraFormatada}
 Sistema: Oráculo Jurídico - Calculadora Especializada em Pensão Alimentícia
-═══════════════════════════════════════════════════════════════════════════════
+──────────────────────────────────────────────────────────────────────────────
 `.trim();
 
       await navigator.clipboard.writeText(textoFormatado);
