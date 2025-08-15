@@ -24,8 +24,8 @@ const AssistantAudioBlock: React.FC<AssistantAudioBlockProps> = ({ audioSrc, tex
         // Calcula progresso linear simples baseado no tempo
         const linearProgress = currentTime / audioDuration;
         
-        // Adiciona um offset fixo maior (equivalente a 18 palavras)
-        const offsetProgress = (18 / words);
+        // Adiciona um offset balanceado (equivalente a 12 palavras)
+        const offsetProgress = (12 / words);
         
         // Progresso total com limite suave
         const totalProgress = Math.min(1.0, linearProgress + offsetProgress);
