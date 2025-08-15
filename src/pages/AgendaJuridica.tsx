@@ -1196,7 +1196,7 @@ const AgendaJuridica = () => {
                 <TabsContent value="calendar" className="h-full m-0">
                   <Card className="h-full flex flex-col bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border-blue-500/30">
                     <CardContent className="p-6 h-full">
-                      <div className="grid grid-cols-1 lg:grid-cols-[40%_1fr] gap-6 h-full">
+                      <div className="grid grid-cols-1 lg:grid-cols-[60%_1fr] gap-6 h-full">
                         
                         {/* Calendário */}
                         <div className={`flex flex-col ${isMobile ? 'order-1' : ''}`}>
