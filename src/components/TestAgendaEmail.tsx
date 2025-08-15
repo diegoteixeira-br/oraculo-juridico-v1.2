@@ -508,34 +508,35 @@ const TestAgendaEmail = () => {
         </div>
 
         {result && (
-          <div className="mt-4 p-3 bg-slate-50 rounded-lg border">
-            <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+          <div className="mt-4 p-4 bg-white rounded-lg border-2 border-slate-200 shadow-sm">
+            <h4 className="font-semibold text-base mb-3 flex items-center gap-2 text-slate-900">
               {result.error ? (
-                <AlertCircle className="w-4 h-4 text-red-500" />
+                <AlertCircle className="w-5 h-5 text-red-500" />
               ) : (
-                <CheckCircle className="w-4 h-4 text-green-500" />
+                <CheckCircle className="w-5 h-5 text-green-500" />
               )}
               Resultado do Teste:
             </h4>
             
             {result.error ? (
-              <p className="text-red-600 text-sm">{result.error}</p>
+              <p className="text-red-700 text-sm font-medium bg-red-50 p-3 rounded-lg border border-red-200">{result.error}</p>
             ) : (
-              <div className="text-sm space-y-1">
-                <p><strong>Usuários processados:</strong> {result.processed_users || 0}</p>
-                <p><strong>Emails enviados:</strong> {result.sent || 0}</p>
-                <p><strong>Mensagem:</strong> {result.message || 'Teste concluído'}</p>
+              <div className="text-sm space-y-2 bg-slate-50 p-3 rounded-lg">
+                <p className="text-slate-900"><strong className="text-slate-800">Usuários processados:</strong> <span className="font-mono bg-blue-100 px-2 py-1 rounded text-blue-800">{result.processed_users || 0}</span></p>
+                <p className="text-slate-900"><strong className="text-slate-800">Emails enviados:</strong> <span className="font-mono bg-green-100 px-2 py-1 rounded text-green-800">{result.sent || 0}</span></p>
+                <p className="text-slate-900"><strong className="text-slate-800">Mensagem:</strong> <span className="text-slate-700">{result.message || 'Teste concluído'}</span></p>
               </div>
             )}
           </div>
         )}
 
-        <div className="text-xs text-slate-500">
-          <p><strong>Como funciona:</strong></p>
-          <ul className="list-disc list-inside space-y-1 mt-1">
-            <li>Busca compromissos das próximas 24h</li>
+        <div className="text-sm text-slate-700 bg-slate-100 p-3 rounded-lg">
+          <p><strong className="text-slate-900">Como funciona:</strong></p>
+          <ul className="list-disc list-inside space-y-1 mt-2 text-slate-800">
+            <li>Busca compromissos das próximas 24h do usuário informado</li>
             <li>Envia apenas para usuários com notificação ativa</li>
             <li>Usa o timezone configurado no perfil</li>
+            <li><strong>Nota:</strong> O usuário deve existir no sistema e ter compromissos agendados</li>
           </ul>
         </div>
       </CardContent>
