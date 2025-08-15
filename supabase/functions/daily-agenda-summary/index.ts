@@ -152,7 +152,7 @@ serve(async (req) => {
       .from("profiles")
       .select("user_id, full_name, receber_notificacao_agenda, timezone");
     
-    // Se é teste com email específico, buscar apenas esse usuário
+    // Se é teste com email específico, permitir teste mesmo sem usuário no sistema
     if (testEmail) {
       // Buscar o user_id pelo email
       const { data: userData } = await supabase.auth.admin.listUsers();
@@ -162,12 +162,37 @@ serve(async (req) => {
       console.log("Target user found:", !!targetUser);
       
       if (!targetUser) {
-        return new Response(JSON.stringify({ 
-          message: `Usuário com email ${testEmail} não encontrado`, 
-          sent: 0 
-        }), {
-          headers: { "Content-Type": "application/json", ...corsHeaders },
+        console.log("User not found in system, sending test email anyway");
+        // Para teste, enviar email mesmo sem usuário no sistema
+        const sampleItems = [
+          { 
+            title: "Teste: Audiência de conciliação", 
+            commitment_date: new Date(Date.now() + 2*60*60*1000), 
+            location: "Fórum Central (TESTE)", 
+            process_number: "0001234-56.2025.8.26.0000", 
+            client_name: "Cliente Teste" 
+          }
+        ];
+        
+        const html = await renderEmailHTML("Usuário Teste", sampleItems, "America/Sao_Paulo", customTemplate);
+
+        const { data, error } = await resend.emails.send({
+          from: "Oráculo Jurídico <onboarding@resend.dev>",
+          to: [testEmail],
+          subject: "📅 [TESTE] Resumo da Agenda Jurídica",
+          html,
         });
+
+        if (error) throw error;
+        
+        return new Response(
+          JSON.stringify({ 
+            message: `Teste enviado para ${testEmail} (usuário não encontrado no sistema)`, 
+            sent: 1, 
+            results: { test: { status: "sent", email_id: data?.id, test_mode: true } } 
+          }),
+          { headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
       }
       
       console.log("Target user ID:", targetUser.id);
