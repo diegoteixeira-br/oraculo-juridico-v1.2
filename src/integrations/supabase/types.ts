@@ -926,6 +926,10 @@ export type Database = {
         Args: { "": string } | { "": unknown }
         Returns: unknown
       }
+      check_and_block_expired_trials: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       check_and_expire_tokens: {
         Args: { p_user_id: string }
         Returns: boolean
