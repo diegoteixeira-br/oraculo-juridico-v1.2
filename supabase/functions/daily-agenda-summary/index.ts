@@ -30,6 +30,35 @@ async function renderEmailHTML(fullName: string, items: any[], timezone: string 
   return AgendaSummaryEmail({ fullName, items, timezone });
 }
 
+// Função para verificar se deve enviar email agora baseado no horário preferido do usuário
+function shouldSendEmailNow(userEmailTime: string, userTimezone: string): boolean {
+  const now = new Date();
+  
+  // Converter horário UTC atual para o timezone do usuário
+  // Simplificação: para horário de Brasília (UTC-3)
+  let localHour = now.getUTCHours();
+  let localMinute = now.getUTCMinutes();
+  
+  if (userTimezone === 'America/Sao_Paulo') {
+    localHour = localHour - 3; // Subtrair 3 horas para obter horário local
+    if (localHour < 0) localHour += 24;
+  }
+  
+  // Extrair hora e minuto do horário preferido do usuário
+  const [prefHour, prefMinute] = userEmailTime.split(':').map(Number);
+  
+  // Verificar se está dentro da janela de 1 hora para o horário preferido
+  // (para compensar que o cron pode não rodar exatamente no minuto)
+  const currentTimeMinutes = localHour * 60 + localMinute;
+  const preferredTimeMinutes = prefHour * 60 + prefMinute;
+  
+  // Janela de 60 minutos (por exemplo: se preferido é 08:00, aceita de 08:00 até 08:59)
+  const isTimeWindow = currentTimeMinutes >= preferredTimeMinutes && 
+                       currentTimeMinutes < (preferredTimeMinutes + 60);
+  
+  return isTimeWindow;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -130,7 +159,7 @@ serve(async (req) => {
       
       profilesQuery = profilesQuery.eq("user_id", targetUser.id);
     } else {
-      // Apenas usuários que querem receber notificações
+      // Aplicar filtro de horário personalizado para cada usuário
       profilesQuery = profilesQuery.eq("receber_notificacao_agenda", true);
     }
 
@@ -138,7 +167,25 @@ serve(async (req) => {
 
     if (profilesError) throw profilesError;
 
-    const allowedUserIds = new Set((profiles ?? []).map((p) => p.user_id));
+    // Get notification settings including timezone and preferred time
+    const { data: notificationSettings } = await supabase
+      .from("notification_settings") 
+      .select("user_id, agenda_email_time, agenda_timezone")
+      .in("user_id", Array.from(new Set((profiles ?? []).map(p => p.user_id))));
+
+    // Filtrar usuários baseado no horário atual e configuração individual
+    const filteredProfiles = (profiles ?? []).filter(profile => {
+      if (testEmail) return true; // Para testes, sempre incluir
+      
+      const settings = notificationSettings?.find(s => s.user_id === profile.user_id);
+      const userTimezone = profile.timezone || settings?.agenda_timezone || 'America/Sao_Paulo';
+      const userEmailTime = settings?.agenda_email_time || '08:00';
+      
+      // Verificar se é o horário correto para este usuário
+      return shouldSendEmailNow(userEmailTime, userTimezone);
+    });
+
+    const allowedUserIds = new Set(filteredProfiles.map((p) => p.user_id));
     const filtered = commitments.filter((c) => allowedUserIds.has(c.user_id));
 
     if (filtered.length === 0 && !testEmail) {
@@ -185,12 +232,6 @@ serve(async (req) => {
         );
       }
     }
-
-    // Get notification settings including timezone and preferred time
-    const { data: notificationSettings } = await supabase
-      .from("notification_settings") 
-      .select("user_id, agenda_email_time, agenda_timezone")
-      .in("user_id", Array.from(allowedUserIds));
 
     // Group by user
     const grouped = groupBy(filtered, "user_id");

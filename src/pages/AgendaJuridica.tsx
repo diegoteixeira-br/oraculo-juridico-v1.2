@@ -263,6 +263,17 @@ const AgendaJuridica = () => {
         throw error;
       }
 
+      // Chamar função para atualizar agendamentos de email
+      try {
+        const { data: analysisResult } = await supabase.functions.invoke('manage-agenda-cron', {
+          body: { action: 'update_schedules' }
+        });
+        console.log('Análise de agendamentos:', analysisResult);
+      } catch (scheduleError) {
+        console.warn('Aviso: Não foi possível atualizar agendamentos automaticamente:', scheduleError);
+        // Não interromper o salvamento por causa disso
+      }
+
       toast({
         title: "Sucesso",
         description: "Configurações de notificação salvas com sucesso!",
