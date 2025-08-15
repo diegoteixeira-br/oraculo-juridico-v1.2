@@ -130,7 +130,10 @@ serve(async (req) => {
 
     if (commitmentsError) throw commitmentsError;
 
+    console.log("Found commitments:", commitments?.length || 0);
+    
     if (!commitments || commitments.length === 0) {
+      console.log("No commitments found in next 24h for query range:", now.toISOString(), "to", in24h.toISOString());
       return new Response(JSON.stringify({ message: "No commitments in next 24h", sent: 0 }), {
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
@@ -150,6 +153,9 @@ serve(async (req) => {
       const { data: userData } = await supabase.auth.admin.listUsers();
       const targetUser = userData.users.find(u => u.email === testEmail);
       
+      console.log("Test email:", testEmail);
+      console.log("Target user found:", !!targetUser);
+      
       if (!targetUser) {
         return new Response(JSON.stringify({ 
           message: `Usuário com email ${testEmail} não encontrado`, 
@@ -159,6 +165,7 @@ serve(async (req) => {
         });
       }
       
+      console.log("Target user ID:", targetUser.id);
       profilesQuery = profilesQuery.eq("user_id", targetUser.id);
     } else {
       // Aplicar filtro de horário personalizado para cada usuário
@@ -166,6 +173,11 @@ serve(async (req) => {
     }
 
     const { data: profiles, error: profilesError } = await profilesQuery;
+    
+    console.log("Profiles found:", profiles?.length || 0);
+    if (testEmail && profiles) {
+      console.log("Profile details for test:", profiles[0]);
+    }
 
     if (profilesError) throw profilesError;
 
@@ -192,6 +204,21 @@ serve(async (req) => {
 
     if (filtered.length === 0 && !testEmail) {
       return new Response(JSON.stringify({ message: "No opted-in users to notify", sent: 0 }), {
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    // Se é teste mas não encontrou profile, retornar erro específico
+    if (testEmail && (!profiles || profiles.length === 0)) {
+      return new Response(JSON.stringify({ 
+        message: `Nenhum email enviado (sem compromissos ou usuário sem notificação ativa)`, 
+        sent: 0,
+        debug: {
+          testEmail,
+          profilesFound: profiles?.length || 0,
+          commitmentsFound: commitments?.length || 0
+        }
+      }), {
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
