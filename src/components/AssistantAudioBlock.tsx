@@ -21,8 +21,8 @@ const AssistantAudioBlock: React.FC<AssistantAudioBlockProps> = ({ audioSrc, tex
       const words = text.split(/\s+/).length;
       const estimatedReadingTime = (words / wordsPerMinute) * 60; // em segundos
       
-      // Adiciona offset de 28 palavras para compensar o atraso
-      const offsetTime = (28 / wordsPerMinute) * 60; // tempo para 28 palavras
+      // Adiciona offset de 35 palavras para compensar o atraso
+      const offsetTime = (35 / wordsPerMinute) * 60; // tempo para 35 palavras
       const adjustedTime = currentTime + offsetTime;
       
       // Permite até 105% para garantir que complete toda a leitura
