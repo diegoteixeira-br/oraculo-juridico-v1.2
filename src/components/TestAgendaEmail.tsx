@@ -318,7 +318,12 @@ const TestAgendaEmail = () => {
                     Visualização de como o email ficará com dados reais
                   </p>
                   <div 
-                    className="border rounded-lg p-4 bg-background min-h-[400px] max-h-[400px] overflow-auto font-mono text-sm"
+                    className="border rounded-md px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-mono text-sm min-h-[400px] max-h-[400px] resize-none bg-background overflow-auto"
+                    style={{ 
+                      backgroundColor: 'hsl(var(--background))',
+                      border: '1px solid hsl(var(--border))',
+                      color: 'hsl(var(--foreground))'
+                    }}
                     dangerouslySetInnerHTML={{ __html: getPreviewWithData() }}
                   />
                 </div>
