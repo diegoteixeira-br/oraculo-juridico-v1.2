@@ -93,11 +93,13 @@ function CadastroForm() {
       } else {
         toast({
           title: "Conta criada!",
-          description: "Sua conta foi criada com sucesso! Verifique seu email para confirmar.",
+          description: "Redirecionando para finalizar cadastro com teste gratuito de 8 dias...",
         });
         
-        // Redirecionar para página de confirmação de email
-        navigate(`/confirmar-email?email=${encodeURIComponent(email)}${selectedPlan ? `&plano=${selectedPlan}` : ''}`);
+        // Aguardar um momento e redirecionar para o Stripe checkout
+        setTimeout(() => {
+          window.open('https://buy.stripe.com/cNi00k4Hf2lE1xZbwy5AQ02', '_blank');
+        }, 2000);
       }
     } catch (error: any) {
       if (error.message && (error.message.includes('rate limit') || error.message.includes('429'))) {
@@ -158,38 +160,51 @@ function CadastroForm() {
         <div className="container max-w-6xl mx-auto px-4 py-6 space-y-6">
           
           {/* Card de oferta gratuita */}
-          <Card className="bg-gradient-to-r from-green-600/20 to-emerald-600/20 border-green-500/30">
+          <Card className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-blue-500/30">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-3 bg-green-600/20 rounded-xl">
-                    <Gift className="w-8 h-8 text-green-400" />
+                  <div className="p-3 bg-blue-600/20 rounded-xl">
+                    <Zap className="w-8 h-8 text-blue-400" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">100% Gratuito para Começar!</h3>
+                    <h3 className="text-xl font-bold text-white">Plano Essencial - 8 Dias Grátis!</h3>
                     <p className="text-sm text-slate-300">
-                      Crie sua conta e comece a usar imediatamente
+                      Comece agora com 30.000 tokens/mês
                     </p>
                   </div>
                 </div>
               </div>
 
+              <div className="mb-4 p-4 bg-yellow-600/10 rounded-lg border border-yellow-500/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <Shield className="w-5 h-5 text-yellow-400" />
+                  <span className="text-sm font-medium text-yellow-200">Importante sobre o teste gratuito:</span>
+                </div>
+                <ul className="text-xs text-yellow-100 space-y-1">
+                  <li>• Para finalizar o cadastro, é necessário adicionar um cartão</li>
+                  <li>• <strong>Você não será cobrado nos primeiros 8 dias</strong></li>
+                  <li>• Cancele a qualquer momento sem cobrança</li>
+                  <li>• Acesso completo a todos os recursos durante o teste</li>
+                </ul>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="text-center p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-green-400">15.000</div>
-                  <div className="text-xs text-slate-400">Tokens no Teste (7 dias)</div>
+                  <div className="text-lg font-bold text-blue-400">30.000</div>
+                  <div className="text-xs text-slate-400">Tokens/mês</div>
                 </div>
-                  <div className="text-center p-3 bg-white/5 rounded-lg">
-                    <div className="text-lg font-bold text-blue-400">Teste 7 dias</div>
-                    <div className="text-xs text-slate-400">Requer Cartão</div>
-                  </div>
                 <div className="text-center p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-purple-400">IA</div>
-                  <div className="text-xs text-slate-400">Jurídica Completa</div>
+                  <div className="text-lg font-bold text-green-400">R$ 37,90</div>
+                  <div className="text-xs text-slate-400">Por mês</div>
+                </div>
+                <div className="text-center p-3 bg-white/5 rounded-lg">
+                  <div className="text-lg font-bold text-purple-400">8 Dias</div>
+                  <div className="text-xs text-slate-400">Teste Grátis</div>
                 </div>
                 <div className="text-center p-3 bg-white/5 rounded-lg">
                   <div className="text-lg font-bold text-orange-400">Suporte</div>
-                  <div className="text-xs text-slate-400">Incluído</div>
+                  <div className="text-xs text-slate-400">Prioritário</div>
                 </div>
               </div>
             </CardContent>
@@ -343,19 +358,19 @@ function CadastroForm() {
 
                   <Button 
                     type="submit" 
-                    className="w-full bg-primary hover:bg-primary/90 py-3" 
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 py-3" 
                     disabled={loading}
                     size="lg"
                   >
                     {loading ? (
                       <div className="flex items-center gap-2">
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Criando conta...
+                        Criando conta e redirecionando...
                       </div>
                     ) : (
                       <>
-                        <UserPlus className="w-4 h-4 mr-2" />
-                        Criar Conta Gratuita
+                        <Zap className="w-4 h-4 mr-2" />
+                        Começar Teste de 8 Dias Grátis
                       </>
                     )}
                   </Button>
