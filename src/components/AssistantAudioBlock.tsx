@@ -15,31 +15,26 @@ const AssistantAudioBlock: React.FC<AssistantAudioBlockProps> = ({ audioSrc, tex
   const [currentTime, setCurrentTime] = React.useState(0);
   const [pausedProgress, setPausedProgress] = React.useState(0); // Guarda progresso quando pausa
 
-  // Calcula progresso baseado na velocidade real do áudio
+  // Calcula progresso baseado na velocidade real do áudio com suavização
   React.useEffect(() => {
     if (audioDuration > 0) {
       const words = text.split(/\s+/).length;
       
       if (playing) {
-        // Calcula a velocidade real do áudio (palavras por segundo)
-        const realWordsPerSecond = words / audioDuration;
+        // Calcula progresso linear simples baseado no tempo
+        const linearProgress = currentTime / audioDuration;
         
-        // Velocidade base esperada (palavras por segundo)
-        const expectedWordsPerSecond = 200 / 60; // ~3.33 palavras/segundo
+        // Adiciona um offset fixo pequeno (equivalente a 8 palavras)
+        const offsetProgress = (8 / words);
         
-        // Calcula offset dinâmico baseado na diferença de velocidade
-        // Se o áudio é mais rápido que o esperado, precisa de mais offset
-        // Se é mais lento, precisa de menos offset
-        const speedRatio = realWordsPerSecond / expectedWordsPerSecond;
-        const dynamicOffsetWords = Math.max(5, Math.min(30, 15 * speedRatio));
-        const offsetTime = (dynamicOffsetWords / realWordsPerSecond);
+        // Progresso total com limite suave
+        const totalProgress = Math.min(1.0, linearProgress + offsetProgress);
         
-        const adjustedTime = currentTime + offsetTime;
-        const readingProgress = Math.min(1.05, adjustedTime / audioDuration);
-        const newProgress = Math.max(0, readingProgress);
+        // Suaviza mudanças bruscas - só permite aumentos graduais
+        const smoothProgress = Math.max(progress, totalProgress);
         
-        setProgress(newProgress);
-        setPausedProgress(newProgress);
+        setProgress(smoothProgress);
+        setPausedProgress(smoothProgress);
       } else if (currentTime === 0) {
         // Se voltou pro início, reseta o progresso
         setProgress(0);
@@ -49,7 +44,7 @@ const AssistantAudioBlock: React.FC<AssistantAudioBlockProps> = ({ audioSrc, tex
         setProgress(pausedProgress);
       }
     }
-  }, [currentTime, audioDuration, playing, text, pausedProgress]);
+  }, [currentTime, audioDuration, playing, text, pausedProgress, progress]);
 
   return (
     <div>
