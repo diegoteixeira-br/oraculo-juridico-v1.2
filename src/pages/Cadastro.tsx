@@ -17,6 +17,7 @@ function CadastroForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [cpf, setCpf] = useState('');
   const [honeypot, setHoneypot] = useState(''); // Campo honeypot para detectar bots
   const [loading, setLoading] = useState(false);
   const [recaptchaToken, setRecaptchaToken] = useState('');
@@ -60,7 +61,7 @@ function CadastroForm() {
         return;
       }
 
-      const result = await signUp(email, password, fullName);
+      const result = await signUp(email, password, fullName, cpf);
       if (result.error) {
         if (result.error.message.includes('already registered')) {
           toast({
@@ -206,6 +207,24 @@ function CadastroForm() {
                       placeholder="Seu nome completo"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
+                      required
+                      className="bg-slate-700 border-slate-600 focus:border-primary text-white"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="cpf" className="text-sm text-slate-300">CPF *</Label>
+                    <Input
+                      id="cpf"
+                      type="text"
+                      placeholder="000.000.000-00"
+                      value={cpf}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '');
+                        const formatted = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+                        setCpf(formatted);
+                      }}
+                      maxLength={14}
                       required
                       className="bg-slate-700 border-slate-600 focus:border-primary text-white"
                     />

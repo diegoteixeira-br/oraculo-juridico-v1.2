@@ -13,6 +13,7 @@ interface Profile {
   subscription_end_date?: string;
   subscription_activated_at?: string;
   created_at?: string;
+  cpf?: string;
   tokens: number;
   plan_tokens: number;
   plan_type: string;
@@ -27,7 +28,7 @@ interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
-  signUp: (email: string, password: string, fullName?: string) => Promise<any>;
+  signUp: (email: string, password: string, fullName?: string, cpf?: string) => Promise<any>;
   signIn: (email: string, password: string) => Promise<any>;
   signOut: () => Promise<void>;
   hasActiveAccess: () => boolean;
@@ -135,7 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
 
-  const signUp = async (email: string, password: string, fullName?: string) => {
+  const signUp = async (email: string, password: string, fullName?: string, cpf?: string) => {
     // URL de redirecionamento para confirmar email
     const redirectUrl = 'https://oraculojuridico.com.br/dashboard';
     
@@ -145,7 +146,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       options: {
         emailRedirectTo: redirectUrl,
         data: {
-          full_name: fullName
+          full_name: fullName,
+          cpf: cpf
         }
       }
     });
