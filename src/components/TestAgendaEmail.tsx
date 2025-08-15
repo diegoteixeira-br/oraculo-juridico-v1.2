@@ -212,20 +212,18 @@ const TestAgendaEmail = () => {
 
   const getPreviewWithData = () => {
     const sampleData = {
-      '{{SITE_NAME}}': 'Oráculo Jurídico',
+      '{{SITE_NAME}}': 'Cakto',
       '{{USER_NAME}}': ', João Silva',
-      '{{COMMITMENTS}}': `
-        <div class="commitment">
-          <div class="commitment-title">Audiência Trabalhista</div>
-          <div class="commitment-time">📅 15/08/2025, 14:30</div>
-          <div class="commitment-details">Processo: 1234567-89.2024.5.02.0001 • Cliente: Maria da Silva • Local: TRT 2ª Região</div>
+      '{{COMMITMENTS}}': `<div class="commitment">
+            <div class="commitment-title">Audiência Trabalhista</div>
+            <div class="commitment-time">📅 15/08/2025, 14:30</div>
+            <div class="commitment-details">Processo: 1234567-89.2024.5.02.0001 • Cliente: Maria da Silva • Local: TRT 2ª Região</div>
         </div>
         <div class="commitment">
-          <div class="commitment-title">Reunião com Cliente</div>
-          <div class="commitment-time">📅 15/08/2025, 16:00</div>
-          <div class="commitment-details">Cliente: Pedro Santos</div>
-        </div>
-      `
+            <div class="commitment-title">Reunião com Cliente</div>
+            <div class="commitment-time">📅 15/08/2025, 16:00</div>
+            <div class="commitment-details">Cliente: Pedro Santos</div>
+        </div>`
     };
 
     let preview = emailTemplate;
