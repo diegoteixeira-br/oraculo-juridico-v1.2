@@ -154,6 +154,7 @@ serve(async (req) => {
     
     // Se é teste com email específico, permitir teste mesmo sem usuário no sistema
     if (testEmail) {
+      console.log("=== TESTE MODE ACTIVATED ===", testEmail);
       // Buscar o user_id pelo email
       const { data: userData } = await supabase.auth.admin.listUsers();
       const targetUser = userData.users.find(u => u.email === testEmail);
