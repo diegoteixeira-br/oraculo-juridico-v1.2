@@ -230,8 +230,8 @@ export default function TokenManager() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="grid gap-6 md:grid-cols-2">{/* Grid principal */}
+    <div className="space-y-4 sm:space-y-6 w-full">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-2 w-full">{/* Grid principal */}
       {/* Buscar Usuário */}
       <Card>
         <CardHeader>
@@ -244,7 +244,7 @@ export default function TokenManager() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Input
               placeholder="Nome do usuário"
               value={searchQuery}
@@ -255,10 +255,12 @@ export default function TokenManager() {
                 }
               }}
               onKeyPress={(e) => e.key === 'Enter' && searchUsers()}
+              className="flex-1"
             />
             <Button 
               onClick={searchUsers} 
               disabled={searching || !searchQuery.trim()}
+              className="w-full sm:w-auto shrink-0"
             >
               {searching ? "Buscando..." : "Buscar"}
             </Button>
@@ -348,23 +350,23 @@ export default function TokenManager() {
             />
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Button
               onClick={() => processTokens('add')}
               disabled={loading || !selectedUser || !tokenAmount || !description.trim()}
-              className="flex items-center gap-2 flex-1"
+              className="flex items-center justify-center gap-2 flex-1"
             >
               <Plus className="h-4 w-4" />
-              Adicionar Tokens
+              <span className="whitespace-nowrap">Adicionar Tokens</span>
             </Button>
             <Button
               variant="destructive"
               onClick={() => processTokens('remove')}
               disabled={loading || !selectedUser || !tokenAmount || !description.trim()}
-              className="flex items-center gap-2 flex-1"
+              className="flex items-center justify-center gap-2 flex-1"
             >
               <Minus className="h-4 w-4" />
-              Remover Tokens
+              <span className="whitespace-nowrap">Remover Tokens</span>
             </Button>
           </div>
 
