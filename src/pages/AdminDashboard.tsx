@@ -26,7 +26,7 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-4 px-4 sm:py-8">
         <div className="mb-6 sm:mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex flex-col gap-4">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold mb-2">Painel Administrativo</h1>
               <p className="text-muted-foreground text-sm sm:text-base">
@@ -34,7 +34,7 @@ export default function AdminDashboard() {
               </p>
             </div>
             <Button 
-              variant="outline" 
+              variant="default" 
               onClick={() => navigate('/dashboard')}
               className="flex items-center gap-2 w-full sm:w-auto"
             >
