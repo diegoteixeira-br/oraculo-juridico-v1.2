@@ -30,7 +30,7 @@ export default function HistoricoTransacoesPage() {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [dateFilter, setDateFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 50;
+  const itemsPerPage = 30;
   
   const { user, profile } = useAuth();
   const { toast } = useToast();
