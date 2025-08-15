@@ -212,7 +212,7 @@ const TestAgendaEmail = () => {
 
   const getPreviewWithData = () => {
     const sampleData = {
-      '{{SITE_NAME}}': 'Cakto',
+      '{{SITE_NAME}}': 'Oráculo Jurídico',
       '{{USER_NAME}}': ', João Silva',
       '{{COMMITMENTS}}': `
         <div class="commitment">
@@ -302,7 +302,7 @@ const TestAgendaEmail = () => {
                 <div className="p-3 bg-blue-50 rounded-lg text-sm">
                   <h4 className="font-semibold text-blue-900 mb-2">Variáveis disponíveis:</h4>
                   <ul className="space-y-1 text-blue-800">
-                    <li><code>{`{{SITE_NAME}}`}</code> - Nome do site (Cakto)</li>
+                    <li><code>{`{{SITE_NAME}}`}</code> - Nome do site (Oráculo Jurídico)</li>
                     <li><code>{`{{USER_NAME}}`}</code> - Nome do usuário (precedido por vírgula se existir)</li>
                     <li><code>{`{{COMMITMENTS}}`}</code> - Lista HTML dos compromissos</li>
                   </ul>
