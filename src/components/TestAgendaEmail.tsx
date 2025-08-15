@@ -317,23 +317,15 @@ const TestAgendaEmail = () => {
                   <p className="text-xs text-muted-foreground mb-2">
                     Visualização de como o email ficará com dados reais
                   </p>
-                  
-                  {/* Email Preview Container */}
-                  <div className="border rounded-lg bg-gray-50 min-h-[400px] max-h-[400px] overflow-auto">
-                    <div className="bg-white m-4 rounded shadow-sm border">
-                      <div 
-                        dangerouslySetInnerHTML={{ __html: getPreviewWithData() }}
-                      />
-                    </div>
-                  </div>
-                  
-                  {/* Warning message similar to the original */}
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground bg-blue-50 p-2 rounded border">
-                    <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
-                      <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
-                    </div>
-                    <span>A visualização pode diferir ligeiramente da renderização real no cliente de email</span>
-                  </div>
+                  <div 
+                    className="border rounded-lg p-4 bg-background min-h-[400px] max-h-[400px] overflow-auto"
+                    dangerouslySetInnerHTML={{ __html: getPreviewWithData() }}
+                  />
+                </div>
+                
+                <div className="p-3 bg-blue-50 rounded-lg text-sm">
+                  <h4 className="font-semibold text-blue-900 mb-2">Preview com dados simulados:</h4>
+                  <p className="text-blue-700">Este preview mostra como o email ficará com dados reais de compromissos e informações do usuário.</p>
                 </div>
               </div>
             </TabsContent>
