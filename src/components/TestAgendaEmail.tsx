@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Send, CheckCircle, AlertCircle, Users, Eye, Code, Save } from "lucide-react";
+import { Mail, Send, CheckCircle, AlertCircle, Users, Eye, Code, Save, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -128,6 +128,7 @@ const TestAgendaEmail = () => {
   const [activeTab, setActiveTab] = useState('source');
   const [saveLoading, setSaveLoading] = useState(false);
   const [logoUrl, setLogoUrl] = useState('');
+  const [uploadLoading, setUploadLoading] = useState(false);
 
   const testEmailNotification = async (specificEmail?: string) => {
     setLoading(true);
@@ -216,6 +217,48 @@ const TestAgendaEmail = () => {
     }
   };
 
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Verificar se é uma imagem
+    if (!file.type.startsWith('image/')) {
+      toast.error('❌ Por favor, selecione apenas arquivos de imagem');
+      return;
+    }
+
+    // Verificar tamanho (máx 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('❌ Arquivo muito grande. Máximo 2MB');
+      return;
+    }
+
+    setUploadLoading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `logo-${Date.now()}.${fileExt}`;
+      
+      const { data, error } = await supabase.storage
+        .from('email-logos')
+        .upload(fileName, file);
+
+      if (error) throw error;
+
+      // Gerar URL pública
+      const { data: { publicUrl } } = supabase.storage
+        .from('email-logos')
+        .getPublicUrl(fileName);
+
+      setLogoUrl(publicUrl);
+      toast.success('✅ Logo enviada com sucesso!');
+    } catch (error) {
+      console.error('Erro ao fazer upload:', error);
+      toast.error('❌ Erro ao enviar arquivo');
+    } finally {
+      setUploadLoading(false);
+    }
+  };
+
   const getPreviewWithData = () => {
     const sampleData = {
       '{{SITE_NAME}}': 'Cakto',
@@ -292,18 +335,63 @@ const TestAgendaEmail = () => {
               <div className="space-y-4">
                 {/* Configuração da Logo */}
                 <div className="p-4 bg-gray-50 rounded-lg border">
-                  <Label className="text-sm font-medium mb-2 block">Configuração da Logo</Label>
-                  <div className="space-y-2">
+                  <Label className="text-sm font-medium mb-3 block">Configuração da Logo</Label>
+                  
+                  {/* Upload de arquivo */}
+                  <div className="space-y-3 mb-4 p-3 bg-white rounded border">
+                    <Label className="text-sm font-medium text-blue-700">Opção 1: Enviar arquivo da sua máquina</Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                        disabled={uploadLoading}
+                        className="file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                      />
+                      {uploadLoading && (
+                        <div className="flex items-center gap-2 text-blue-600">
+                          <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                          <span className="text-sm">Enviando...</span>
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Formatos aceitos: PNG, JPG, GIF. Tamanho máximo: 2MB.
+                    </p>
+                  </div>
+
+                  {/* URL manual */}
+                  <div className="space-y-3 p-3 bg-white rounded border">
+                    <Label className="text-sm font-medium text-green-700">Opção 2: Usar URL de imagem</Label>
                     <Input
                       type="url"
-                      placeholder="URL da logo (ex: https://exemplo.com/logo.png)"
+                      placeholder="https://exemplo.com/logo.png"
                       value={logoUrl}
                       onChange={(e) => setLogoUrl(e.target.value)}
                       className="w-full"
                     />
                     <p className="text-xs text-muted-foreground">
-                      Cole a URL da sua logo aqui. Recomendamos logos com até 200px de largura e fundo transparente.
+                      Cole a URL de uma imagem já hospedada na internet.
                     </p>
+                  </div>
+
+                  {/* Preview da logo atual */}
+                  {logoUrl && (
+                    <div className="mt-3 p-3 bg-white rounded border">
+                      <Label className="text-sm font-medium mb-2 block">Preview da Logo:</Label>
+                      <img 
+                        src={logoUrl} 
+                        alt="Preview da logo" 
+                        className="max-h-16 max-w-48 object-contain border rounded"
+                        onError={(e) => {
+                          e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMCA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDQgOUwxMC45MSA4LjI2TDEyIDJaIiBzdHJva2U9IiNmNjg0OGYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=';
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  {/* Botão aplicar */}
+                  <div className="mt-3">
                     <Button 
                       onClick={() => {
                         if (logoUrl.trim()) {
@@ -314,12 +402,14 @@ const TestAgendaEmail = () => {
                           setEmailTemplate(updatedTemplate);
                           toast.success('✅ Logo aplicada ao template!');
                         } else {
-                          toast.error('❌ Digite uma URL válida para a logo');
+                          toast.error('❌ Selecione ou cole uma URL para a logo');
                         }
                       }}
                       size="sm"
                       disabled={!logoUrl.trim()}
+                      className="w-full"
                     >
+                      <Upload className="w-4 h-4 mr-2" />
                       Aplicar Logo ao Template
                     </Button>
                   </div>
