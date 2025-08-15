@@ -18,6 +18,7 @@ import { useFeatureUsage } from "@/hooks/useFeatureUsage";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import MarkdownEditor from "@/components/MarkdownEditor";
 import { useAccessControl } from "@/hooks/useAccessControl";
+import { TrialStatusCard } from "@/components/TrialStatusCard";
 
 
 // CONFIGURAÇÃO DE MANUTENÇÃO - Altere para false quando quiser reativar
@@ -409,26 +410,7 @@ const openTemplateEditor = async (documentId: string) => {
                 </CardContent>
               </Card>
             ) : (
-              <Card className="bg-gradient-to-br from-amber-600/20 to-amber-600/10 border-amber-600/30">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs text-amber-300 font-medium">Período Gratuito</p>
-                      <p className="text-2xl font-bold text-amber-400">
-                        Expirado
-                      </p>
-                      <div className="mt-2">
-                        <p className="text-xs text-amber-300/70">
-                          Ative uma assinatura para continuar
-                        </p>
-                      </div>
-                    </div>
-                    <div className="p-2 bg-amber-600/20 rounded-lg">
-                      <Clock className="w-6 h-6 text-amber-400" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <TrialStatusCard profile={profile} />
             )}
 
             <Card className="bg-gradient-to-br from-blue-600/20 to-blue-600/10 border-blue-600/30">
