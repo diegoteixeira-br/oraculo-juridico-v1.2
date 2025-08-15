@@ -25,8 +25,9 @@ const AssistantAudioBlock: React.FC<AssistantAudioBlockProps> = ({ audioSrc, tex
       const offsetTime = (28 / wordsPerMinute) * 60; // tempo para 28 palavras
       const adjustedTime = currentTime + offsetTime;
       
-      const readingProgress = Math.min(1, adjustedTime / estimatedReadingTime);
-      setProgress(readingProgress);
+      // Garante que não passe de 100% e não exceda o final do texto
+      const readingProgress = Math.min(0.98, adjustedTime / estimatedReadingTime);
+      setProgress(Math.max(0, readingProgress));
     }
   }, [currentTime, audioDuration, playing, text]);
 
