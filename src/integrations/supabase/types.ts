@@ -906,6 +906,12 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: boolean
       }
+      exec_sql: {
+        Args: { sql: string }
+        Returns: {
+          result: string
+        }[]
+      }
       halfvec_avg: {
         Args: { "": number[] }
         Returns: unknown
