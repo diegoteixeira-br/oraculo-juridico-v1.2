@@ -67,7 +67,7 @@ const AssistantAudioBlock: React.FC<AssistantAudioBlockProps> = ({ audioSrc, tex
       />
       {loading ? (
         <div className="mt-2 text-xs text-muted-foreground">Carregando áudio…</div>
-      ) : playing || progress > 0 ? (
+      ) : (progress > 0 || pausedProgress > 0) ? (
         <ReadingProgress text={text} progress={progress} />
       ) : null}
     </div>
