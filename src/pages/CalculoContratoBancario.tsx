@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import UserMenu from "@/components/UserMenu";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 import { useUserTimezone } from "@/hooks/useUserTimezone";
+import { useExportDocument } from "@/hooks/useExportDocument";
 import HistoricoCalculosModal from "@/components/HistoricoCalculosModal";
 
 interface CalculoResult {
@@ -32,6 +33,7 @@ const CalculoContratoBancario = () => {
   const [historicoModalOpen, setHistoricoModalOpen] = useState(false);
   const { visible: menuVisible } = useScrollDirection();
   const { formatDateInUserTimezone } = useUserTimezone();
+  const { exportCalculoContrato, loading: exportLoading } = useExportDocument();
   
   const [formData, setFormData] = useState({
     valorContrato: '',
@@ -413,14 +415,32 @@ const CalculoContratoBancario = () => {
                   </div>
 
                   {/* Detalhamento - DESTAQUE PRINCIPAL */}
-                  <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg border-2 border-primary/30 p-6 mt-6">
-                    <h4 className="text-xl font-bold mb-4 text-white flex items-center gap-3">
-                      <FileText className="w-6 h-6 text-primary" />
-                      Detalhamento do Cálculo
-                      <Badge variant="secondary" className="text-xs bg-primary/20 text-primary border-primary/30">
-                        Relatório Completo
-                      </Badge>
-                    </h4>
+                   <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg border-2 border-primary/30 p-6 mt-6">
+                     <div className="flex items-center justify-between mb-4">
+                       <h4 className="text-xl font-bold text-white flex items-center gap-3">
+                         <FileText className="w-6 h-6 text-primary" />
+                         Detalhamento do Cálculo
+                         <Badge variant="secondary" className="text-xs bg-primary/20 text-primary border-primary/30">
+                           Relatório Completo
+                         </Badge>
+                       </h4>
+                       <Button
+                         onClick={() => exportCalculoContrato(result, formData)}
+                         disabled={exportLoading}
+                         variant="outline"
+                         size="sm"
+                         className="bg-primary/10 border-primary/30 text-primary hover:bg-primary/20"
+                       >
+                         {exportLoading ? (
+                           <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin mr-2" />
+                         ) : (
+                           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                           </svg>
+                         )}
+                         Exportar Word
+                       </Button>
+                     </div>
                      <div className="max-h-96 overflow-y-auto bg-slate-900/50 rounded-lg border border-slate-600 p-4">
                        <pre className="text-sm whitespace-pre-wrap break-words text-slate-200 leading-relaxed font-mono overflow-wrap-anywhere">
                          {result.detalhamento}

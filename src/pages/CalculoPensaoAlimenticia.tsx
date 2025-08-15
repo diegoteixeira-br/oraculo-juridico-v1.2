@@ -13,6 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import UserMenu from "@/components/UserMenu";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
+import { useExportDocument } from "@/hooks/useExportDocument";
 import HistoricoPensaoModal from "@/components/HistoricoPensaoModal";
 
 interface CalculoResult {
@@ -32,6 +33,7 @@ const CalculoPensaoAlimenticia = () => {
   const [result, setResult] = useState<CalculoResult | null>(null);
   const [historicoModalOpen, setHistoricoModalOpen] = useState(false);
   const { visible: menuVisible } = useScrollDirection();
+  const { exportCalculoPensao, loading: exportLoading } = useExportDocument();
   
   const [formData, setFormData] = useState({
     rendaAlimentante: '',
@@ -454,12 +456,30 @@ const CalculoPensaoAlimenticia = () => {
                     </div>
                   </div>
 
-                  {/* Detalhamento */}
-                  <div className="bg-slate-900/50 rounded-lg border border-slate-600 p-4">
-                    <h4 className="text-sm font-semibold mb-3 text-white flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-primary" />
-                      Detalhamento do Cálculo
-                    </h4>
+                   {/* Detalhamento */}
+                   <div className="bg-slate-900/50 rounded-lg border border-slate-600 p-4">
+                     <div className="flex items-center justify-between mb-3">
+                       <h4 className="text-sm font-semibold text-white flex items-center gap-2">
+                         <FileText className="w-4 h-4 text-primary" />
+                         Detalhamento do Cálculo
+                       </h4>
+                       <Button
+                         onClick={() => exportCalculoPensao(result, formData)}
+                         disabled={exportLoading}
+                         variant="outline"
+                         size="sm"
+                         className="bg-primary/10 border-primary/30 text-primary hover:bg-primary/20 text-xs px-2 py-1"
+                       >
+                         {exportLoading ? (
+                           <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin mr-1" />
+                         ) : (
+                           <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                           </svg>
+                         )}
+                         Word
+                       </Button>
+                     </div>
                      <div className="max-h-64 overflow-y-auto">
                        <pre className="text-xs whitespace-pre-wrap break-words text-slate-300 leading-relaxed overflow-wrap-anywhere">
                          {result.detalhamento}
