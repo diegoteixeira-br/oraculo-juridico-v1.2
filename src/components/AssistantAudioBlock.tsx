@@ -27,8 +27,8 @@ const AssistantAudioBlock: React.FC<AssistantAudioBlockProps> = ({ audioSrc, tex
         // Adiciona um offset ajustado (equivalente a 15 palavras)
         const offsetProgress = (15 / words);
         
-        // Progresso total com limite de 96% para não passar à frente
-        const totalProgress = Math.min(0.96, linearProgress + offsetProgress);
+        // Progresso total com limite de 99% para não passar à frente
+        const totalProgress = Math.min(0.99, linearProgress + offsetProgress);
         
         // Suaviza mudanças bruscas - só permite aumentos graduais
         const smoothProgress = Math.max(progress, totalProgress);
