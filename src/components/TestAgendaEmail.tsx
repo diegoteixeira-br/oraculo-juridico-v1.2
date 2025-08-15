@@ -317,9 +317,11 @@ const TestAgendaEmail = () => {
                   <p className="text-xs text-muted-foreground mb-2">
                     Visualização de como o email ficará com dados reais
                   </p>
-                  <div 
-                    className="border rounded-lg p-4 bg-background min-h-[400px] max-h-[400px] overflow-auto"
-                    dangerouslySetInnerHTML={{ __html: getPreviewWithData() }}
+                  <Textarea
+                    value={getPreviewWithData()}
+                    readOnly
+                    className="font-mono text-sm min-h-[400px] max-h-[400px] resize-none"
+                    placeholder="Preview do email..."
                   />
                 </div>
                 
