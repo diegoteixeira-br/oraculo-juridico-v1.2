@@ -15,21 +15,31 @@ const AssistantAudioBlock: React.FC<AssistantAudioBlockProps> = ({ audioSrc, tex
   const [currentTime, setCurrentTime] = React.useState(0);
   const [pausedProgress, setPausedProgress] = React.useState(0); // Guarda progresso quando pausa
 
-  // Calcula progresso baseado no tempo real de leitura com offset inicial
+  // Calcula progresso baseado na velocidade real do áudio
   React.useEffect(() => {
     if (audioDuration > 0) {
-      const wordsPerMinute = 200; // Velocidade mais realista para TTS
       const words = text.split(/\s+/).length;
-      const estimatedReadingTime = (words / wordsPerMinute) * 60; // em segundos
       
       if (playing) {
-        // Offset ajustado para melhor sincronização
-        const offsetTime = (16 / wordsPerMinute) * 60; // 16 palavras de offset
+        // Calcula a velocidade real do áudio (palavras por segundo)
+        const realWordsPerSecond = words / audioDuration;
+        
+        // Velocidade base esperada (palavras por segundo)
+        const expectedWordsPerSecond = 200 / 60; // ~3.33 palavras/segundo
+        
+        // Calcula offset dinâmico baseado na diferença de velocidade
+        // Se o áudio é mais rápido que o esperado, precisa de mais offset
+        // Se é mais lento, precisa de menos offset
+        const speedRatio = realWordsPerSecond / expectedWordsPerSecond;
+        const dynamicOffsetWords = Math.max(5, Math.min(30, 15 * speedRatio));
+        const offsetTime = (dynamicOffsetWords / realWordsPerSecond);
+        
         const adjustedTime = currentTime + offsetTime;
-        const readingProgress = Math.min(1.05, adjustedTime / estimatedReadingTime);
+        const readingProgress = Math.min(1.05, adjustedTime / audioDuration);
         const newProgress = Math.max(0, readingProgress);
+        
         setProgress(newProgress);
-        setPausedProgress(newProgress); // Atualiza posição pausada
+        setPausedProgress(newProgress);
       } else if (currentTime === 0) {
         // Se voltou pro início, reseta o progresso
         setProgress(0);
