@@ -377,7 +377,7 @@ const openTemplateEditor = async (documentId: string) => {
                          <p className="text-2xl font-bold text-emerald-400 capitalize">
                            {planType}
                          </p>
-                         {isTrial && (
+                         {(isTrial || planType === 'Gratuito') && (
                            <span className="text-lg font-semibold text-emerald-400">
                              {daysRemaining}/<span className="text-sm">7</span> dias
                            </span>
