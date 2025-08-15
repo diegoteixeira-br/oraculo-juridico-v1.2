@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { User, LogOut, Settings, MessageSquare, CreditCard, Calculator, Heart, Shield, History } from "lucide-react";
+import { User, LogOut, Settings, MessageSquare, CreditCard, Calculator, Heart, Shield, History, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -70,6 +70,13 @@ export default function UserMenu({ hideOptions = [] }: UserMenuProps) {
       icon: MessageSquare,
       onClick: () => navigate("/chat?new=true"),
       show: !hideOptions.includes("chat"),
+    },
+    {
+      key: "agenda",
+      label: "Agenda Jurídica",
+      icon: Calendar,
+      onClick: () => navigate("/agenda-juridica"),
+      show: !hideOptions.includes("agenda"),
     },
     {
       key: "calc-contrato",
