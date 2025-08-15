@@ -26,7 +26,7 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-background overflow-x-hidden">
       <div className="container mx-auto py-4 px-2 sm:px-4 sm:py-8 max-w-7xl">
         <div className="mb-4 sm:mb-6">
-          <div className="flex flex-col gap-3 sm:gap-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
             <div>
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">Painel Administrativo</h1>
               <p className="text-muted-foreground text-xs sm:text-sm lg:text-base">
@@ -34,9 +34,10 @@ export default function AdminDashboard() {
               </p>
             </div>
             <Button 
-              variant="default" 
+              variant="outline" 
+              size="sm"
               onClick={() => navigate('/dashboard')}
-              className="flex items-center gap-2 w-full sm:w-auto"
+              className="flex items-center gap-2 whitespace-nowrap"
             >
               <ArrowLeft className="h-4 w-4" />
               Voltar ao Dashboard
