@@ -368,21 +368,7 @@ const openTemplateEditor = async (documentId: string) => {
             </Card>
 
             {isTrial ? (
-              <Card className="bg-gradient-to-br from-green-600/20 to-green-600/10 border-green-600/30">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs text-green-300 font-medium">Tokens de Teste / {daysRemaining} {daysRemaining === 1 ? 'dia' : 'dias'}</p>
-                      <p className="text-2xl font-bold text-green-400">
-                        {Math.floor(dailyCredits).toLocaleString()}
-                      </p>
-                    </div>
-                    <div className="p-2 bg-green-600/20 rounded-lg">
-                      <Clock className="w-6 h-6 text-green-400" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <TrialStatusCard profile={profile} />
             ) : isPaid ? (
               <Card className="bg-gradient-to-br from-emerald-600/20 to-emerald-600/10 border-emerald-600/30">
                 <CardContent className="p-4">
@@ -922,8 +908,8 @@ const openTemplateEditor = async (documentId: string) => {
                       </div>
                     ) : (
                       <div className="flex items-center gap-2">
-                        <Badge className={profile?.subscription_status === 'active' ? 'bg-primary text-white' : 'bg-slate-600 text-white'}>
-                          {profile?.subscription_status === 'active' ? 'Assinante' : 'Sem Assinatura'}
+                        <Badge className={profile?.subscription_status === 'active' && planType === 'Essencial' ? 'bg-primary text-white' : 'bg-slate-600 text-white'}>
+                          {profile?.subscription_status === 'active' && planType === 'Essencial' ? 'Assinante' : 'Período Gratuito'}
                         </Badge>
                         {profile?.subscription_status === 'active' && profile?.subscription_end_date && (
                           <span className="text-xs text-slate-300">renova em {new Date(profile.subscription_end_date).toLocaleDateString('pt-BR')}</span>
