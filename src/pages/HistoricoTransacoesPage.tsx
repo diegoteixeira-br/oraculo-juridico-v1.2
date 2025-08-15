@@ -179,36 +179,36 @@ export default function HistoricoTransacoesPage() {
       <div className="flex-shrink-0 bg-slate-800/50 border-b border-slate-700 backdrop-blur-sm">
         <div className="container max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => navigate(-1)}
-                className="text-white hover:bg-slate-700"
+                className="text-white hover:bg-slate-700 flex-shrink-0"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               <img 
                 src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
                 alt="Oráculo Jurídico" 
-                className="h-8 w-auto"
+                className="h-8 w-auto flex-shrink-0"
                 width="160"
                 height="40"
               />
-              <div>
-                <h1 className="text-xl font-bold text-white flex items-center gap-2">
-                  <History className="h-5 w-5 text-primary" />
-                  Histórico de Transações
+              <div className="min-w-0 flex-1">
+                <h1 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+                  <History className="h-5 w-5 text-primary flex-shrink-0" />
+                  <span className="truncate">Histórico de Transações</span>
                 </h1>
-                <p className="text-xs text-slate-300 hidden md:block">
+                <p className="text-xs text-slate-300 hidden lg:block">
                   Visualize todas as transações do seu teste (7 dias) e do plano mensal
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              {/* Contador de tokens */}
-              <div className="hidden md:flex items-center gap-2 bg-slate-700/50 rounded-lg px-3 py-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {/* Contador de tokens - oculto no mobile */}
+              <div className="hidden lg:flex items-center gap-2 bg-slate-700/50 rounded-lg px-3 py-2">
                 <Zap className="w-4 h-4 text-primary" />
                 <span className="text-sm font-medium text-white">
                   {Math.floor(totalTokens).toLocaleString()}
@@ -216,17 +216,33 @@ export default function HistoricoTransacoesPage() {
                 <span className="text-xs text-slate-300">tokens</span>
               </div>
               
+              {/* Botão exportar - apenas no desktop */}
               <Button
                 onClick={exportTransactions}
                 variant="outline"
-                className="border-primary/30 text-primary hover:bg-primary/10"
+                size="sm"
+                className="hidden sm:flex border-primary/30 text-primary hover:bg-primary/10"
               >
-                <Download className="w-4 h-4 mr-2" />
-                Exportar CSV
+                <Download className="w-4 h-4 mr-1" />
+                <span className="hidden md:inline">Exportar CSV</span>
+                <span className="md:hidden">CSV</span>
               </Button>
               
               <UserMenu hideOptions={["historico"]} />
             </div>
+          </div>
+          
+          {/* Botão exportar mobile */}
+          <div className="sm:hidden mt-3 pt-3 border-t border-slate-700">
+            <Button
+              onClick={exportTransactions}
+              variant="outline"
+              size="sm"
+              className="w-full border-primary/30 text-primary hover:bg-primary/10"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Exportar CSV
+            </Button>
           </div>
         </div>
       </div>
