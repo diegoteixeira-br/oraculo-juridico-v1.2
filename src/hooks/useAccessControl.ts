@@ -26,7 +26,7 @@ export function useAccessControl() {
 
   // Verificar se a conta está ativa
   const isAccountActive = profile?.is_active !== false;
-  const isBlocked = ((isTrialExpired || isCancelled) && !isSubscriber && !hasPlanTokens) || !isAccountActive;
+  const isBlocked = ((isTrialExpired && !isSubscriber) && !hasPlanTokens) || !isAccountActive;
 
 
   // Informações sobre o plano atual
@@ -42,12 +42,12 @@ export function useAccessControl() {
     }
     
     if (isSubscriber && (planType === 'gratuito' || planType === 'Gratuito')) {
-      // Inconsistência detectada - usuário tem status ativo mas plano gratuito
+      // Usuário com subscription ativa mas plano gratuito - tratar como assinante ativo
       return {
         name: 'Gratuito',
-        type: 'trial',
-        badge: isTrialActive ? `Trial (${Math.max(0, Math.ceil((trialEnd!.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))} dias)` : 'Expirado',
-        badgeColor: isTrialActive ? 'bg-blue-500/20 text-blue-200 border border-blue-400/30' : 'bg-red-500/20 text-red-200 border border-red-400/30'
+        type: 'active',
+        badge: 'Ativo',
+        badgeColor: 'bg-emerald-500/20 text-emerald-200 border border-emerald-400/30'
       };
     }
     

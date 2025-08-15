@@ -384,11 +384,11 @@ const openTemplateEditor = async (documentId: string) => {
                          <p className="text-2xl font-bold text-emerald-400 capitalize">
                            {planType}
                          </p>
-                         {(isTrial || planType === 'Gratuito') && (
-                           <span className="text-lg font-semibold text-emerald-300 ml-2">
-                             {daysRemaining}/7 Dias
-                           </span>
-                         )}
+                          {isTrial && (
+                            <span className="text-lg font-semibold text-emerald-300 ml-2">
+                              {daysRemaining}/7 Dias
+                            </span>
+                          )}
                        </div>
                        {profile?.subscription_activated_at && (
                         <div className="mt-2 space-y-1">
