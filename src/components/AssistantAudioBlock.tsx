@@ -15,32 +15,40 @@ const AssistantAudioBlock: React.FC<AssistantAudioBlockProps> = ({ audioSrc, tex
   const [currentTime, setCurrentTime] = React.useState(0);
   const [pausedProgress, setPausedProgress] = React.useState(0); // Guarda progresso quando pausa
 
-  // Calcula progresso baseado na velocidade real do áudio com suavização
+  // Sistema automático de sincronização que se adapta à velocidade real do áudio
   React.useEffect(() => {
     if (audioDuration > 0) {
       const words = text.split(/\s+/).length;
       
       if (playing) {
-        // Calcula progresso linear simples baseado no tempo
+        // Calcula a velocidade real do áudio (palavras por segundo)
+        const realWordsPerSecond = words / audioDuration;
+        
+        // Velocidade base esperada para TTS (mais conservadora)
+        const expectedWordsPerSecond = 2.8; // ~168 palavras por minuto
+        
+        // Calcula offset dinâmico baseado na velocidade real
+        // Áudio mais rápido = mais offset, áudio mais lento = menos offset
+        const speedRatio = realWordsPerSecond / expectedWordsPerSecond;
+        const dynamicOffsetWords = Math.max(8, Math.min(25, 15 * speedRatio));
+        const offsetProgress = dynamicOffsetWords / words;
+        
+        // Progresso linear baseado no tempo
         const linearProgress = currentTime / audioDuration;
         
-        // Adiciona um offset ajustado (equivalente a 17 palavras)
-        const offsetProgress = (17 / words);
+        // Limite dinâmico baseado na velocidade do áudio
+        const maxProgress = speedRatio > 1.2 ? 0.97 : 0.99; // Mais restritivo para áudios rápidos
+        const totalProgress = Math.min(maxProgress, linearProgress + offsetProgress);
         
-        // Progresso total com limite de 99% para não passar à frente
-        const totalProgress = Math.min(0.99, linearProgress + offsetProgress);
-        
-        // Suaviza mudanças bruscas - só permite aumentos graduais
+        // Suaviza mudanças bruscas
         const smoothProgress = Math.max(progress, totalProgress);
         
         setProgress(smoothProgress);
         setPausedProgress(smoothProgress);
       } else if (currentTime === 0) {
-        // Se voltou pro início, reseta o progresso
         setProgress(0);
         setPausedProgress(0);
       } else {
-        // Se pausou, mantém o progresso onde estava
         setProgress(pausedProgress);
       }
     }
