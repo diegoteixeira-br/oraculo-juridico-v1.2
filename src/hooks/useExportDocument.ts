@@ -57,11 +57,14 @@ RESULTADOS DO CÁLCULO
 DETALHAMENTO TÉCNICO E JURÍDICO
 ──────────────────────────────────────────────────────────────────────────────
 ${calculo.detalhamento}
-
+${formData.observacoes ? `
+OBSERVAÇÕES ADICIONAIS
+──────────────────────────────────────────────────────────────────────────────
+${formData.observacoes}
+` : ''}
 ──────────────────────────────────────────────────────────────────────────────
 Documento gerado em: ${dataHoraFormatada}
 Sistema: Oráculo Jurídico - Calculadora Especializada em Contratos Bancários
-──────────────────────────────────────────────────────────────────────────────
 `.trim();
 
       await navigator.clipboard.writeText(textoFormatado);
