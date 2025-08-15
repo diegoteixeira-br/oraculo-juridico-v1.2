@@ -68,6 +68,13 @@ const [dailyCredits, setDailyCredits] = useState(0);
     ? Math.max(0, Math.ceil((trialEndDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
     : 7; // Default para usuários gratuitos sem trial_end_date
 
+  // Redirecionar para comprar-creditos se conta estiver inativa
+  useEffect(() => {
+    if (profile && profile.is_active === false) {
+      navigate('/comprar-creditos?reason=account_inactive');
+    }
+  }, [profile, navigate]);
+
   useEffect(() => {
     const loadUserData = async () => {
       if (!user?.id) return;

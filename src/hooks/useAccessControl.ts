@@ -24,7 +24,9 @@ export function useAccessControl() {
   const canUseChat = isSubscriber || isTrialActive || (!isSubscriber && !isTrialActive && hasPlanTokens);
   const canPurchaseTokens = isEssentialSubscriber; // Apenas assinantes essenciais podem comprar tokens extras
 
-  const isBlocked = (isTrialExpired || isCancelled) && !isSubscriber && !hasPlanTokens;
+  // Verificar se a conta está ativa
+  const isAccountActive = profile?.is_active !== false;
+  const isBlocked = ((isTrialExpired || isCancelled) && !isSubscriber && !hasPlanTokens) || !isAccountActive;
 
 
   // Informações sobre o plano atual

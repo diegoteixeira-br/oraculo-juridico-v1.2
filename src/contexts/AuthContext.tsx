@@ -18,6 +18,7 @@ interface Profile {
   token_balance?: number;
   daily_tokens?: number;
   last_daily_reset?: string;
+  is_active?: boolean;
 }
 
 interface AuthContextType {
@@ -62,12 +63,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       
       if (data) {
-        // Verificar se a conta está inativa por trial expirado
-        if (!data.is_active) {
-          console.log('Conta inativa detectada, fazendo logout...');
-          await signOut();
-          return;
-        }
         setProfile(data);
       }
     } catch (error) {
