@@ -134,8 +134,8 @@ const TestAgendaEmail = () => {
     
     try {
       const body = specificEmail 
-        ? { source: 'manual_test', test_email: specificEmail }
-        : { source: 'manual_test' };
+        ? { source: 'manual_test', test_email: specificEmail, template: emailTemplate }
+        : { source: 'manual_test', template: emailTemplate };
         
       const { data, error } = await supabase.functions.invoke('daily-agenda-summary', {
         body
@@ -169,20 +169,28 @@ const TestAgendaEmail = () => {
   };
 
   const openPreview = () => {
-    const previewUrl = 'https://uujoxoxsbvhcmcgfvpvi.supabase.co/functions/v1/daily-agenda-summary?preview=true';
-    window.open(previewUrl, '_blank');
+    const previewUrl = `https://uujoxoxsbvhcmcgfvpvi.supabase.co/functions/v1/daily-agenda-summary?preview=true`;
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = previewUrl;
+    form.target = '_blank';
+    
+    const templateInput = document.createElement('input');
+    templateInput.type = 'hidden';
+    templateInput.name = 'template';
+    templateInput.value = emailTemplate;
+    
+    form.appendChild(templateInput);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
   };
 
   const loadEmailTemplate = async () => {
     try {
-      const { data, error } = await supabase
-        .from('email_templates')
-        .select('template_html')
-        .eq('template_name', 'agenda_summary')
-        .single();
-
-      if (data && data.template_html) {
-        setEmailTemplate(data.template_html);
+      const saved = localStorage.getItem('agenda_email_template');
+      if (saved) {
+        setEmailTemplate(saved);
       }
     } catch (error) {
       console.log('Template padrão será usado');
@@ -192,16 +200,7 @@ const TestAgendaEmail = () => {
   const saveEmailTemplate = async () => {
     setSaveLoading(true);
     try {
-      const { error } = await supabase
-        .from('email_templates')
-        .upsert({
-          template_name: 'agenda_summary',
-          template_html: emailTemplate,
-          updated_at: new Date().toISOString()
-        });
-
-      if (error) throw error;
-      
+      localStorage.setItem('agenda_email_template', emailTemplate);
       toast.success('✅ Template salvo com sucesso!');
     } catch (error) {
       console.error('Erro ao salvar template:', error);
@@ -231,7 +230,7 @@ const TestAgendaEmail = () => {
 
     let preview = emailTemplate;
     Object.entries(sampleData).forEach(([key, value]) => {
-      preview = preview.replace(new RegExp(key, 'g'), value);
+      preview = preview.replace(new RegExp(key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), value);
     });
 
     return preview;
@@ -290,7 +289,7 @@ const TestAgendaEmail = () => {
                 <div>
                   <Label className="text-sm font-medium">Template HTML</Label>
                   <p className="text-xs text-muted-foreground mb-2">
-                    Use as variáveis: {{SITE_NAME}}, {{USER_NAME}}, {{COMMITMENTS}}
+                    Use as variáveis: {`{{SITE_NAME}}, {{USER_NAME}}, {{COMMITMENTS}}`}
                   </p>
                   <Textarea
                     value={emailTemplate}
@@ -303,9 +302,9 @@ const TestAgendaEmail = () => {
                 <div className="p-3 bg-blue-50 rounded-lg text-sm">
                   <h4 className="font-semibold text-blue-900 mb-2">Variáveis disponíveis:</h4>
                   <ul className="space-y-1 text-blue-800">
-                    <li><code>{{SITE_NAME}}</code> - Nome do site (Cakto)</li>
-                    <li><code>{{USER_NAME}}</code> - Nome do usuário (precedido por vírgula se existir)</li>
-                    <li><code>{{COMMITMENTS}}</code> - Lista HTML dos compromissos</li>
+                    <li><code>{`{{SITE_NAME}}`}</code> - Nome do site (Cakto)</li>
+                    <li><code>{`{{USER_NAME}}`}</code> - Nome do usuário (precedido por vírgula se existir)</li>
+                    <li><code>{`{{COMMITMENTS}}`}</code> - Lista HTML dos compromissos</li>
                   </ul>
                 </div>
               </div>

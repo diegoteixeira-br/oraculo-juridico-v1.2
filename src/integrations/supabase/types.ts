@@ -289,6 +289,30 @@ export type Database = {
         }
         Relationships: []
       }
+      email_templates: {
+        Row: {
+          created_at: string
+          id: string
+          template_html: string
+          template_name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          template_html: string
+          template_name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          template_html?: string
+          template_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       feature_usage: {
         Row: {
           created_at: string

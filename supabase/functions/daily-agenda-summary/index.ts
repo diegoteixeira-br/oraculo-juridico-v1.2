@@ -25,9 +25,9 @@ function groupBy<T extends Record<string, any>>(rows: T[], key: keyof T) {
   }, {});
 }
 
-async function renderEmailHTML(fullName: string, items: any[], timezone: string = 'America/Sao_Paulo') {
+async function renderEmailHTML(fullName: string, items: any[], timezone: string = 'America/Sao_Paulo', customTemplate?: string) {
   // Chama a função diretamente já que agora retorna HTML string
-  return AgendaSummaryEmail({ fullName, items, timezone });
+  return AgendaSummaryEmail({ fullName, items, timezone, customTemplate });
 }
 
 // Função para verificar se deve enviar email agora baseado no horário preferido do usuário
@@ -80,6 +80,7 @@ serve(async (req) => {
   const providedSecret = req.headers.get("x-agenda-secret") || payload.secret || qsSecret;
   const source = payload?.source ?? "manual";
   const testEmail = payload?.test_email; // Email específico para teste
+  const customTemplate = payload?.template; // Template customizado opcional
 
   // Preview endpoint: returns the HTML template for quick visual check
   if (isPreview) {
@@ -88,7 +89,7 @@ serve(async (req) => {
       { title: "Audiência de conciliação", commitment_date: new Date(now.getTime() + 2*60*60*1000), location: "Fórum Central", process_number: "0001234-56.2025.8.26.0000", client_name: "Maria Silva" },
       { title: "Prazo: contestação", commitment_date: new Date(now.getTime() + 6*60*60*1000), location: "", process_number: "0009876-54.2025.8.26.0000", client_name: "João Souza" },
     ];
-    const html = await renderEmailHTML("Exemplo", sampleItems, "America/Sao_Paulo");
+    const html = await renderEmailHTML("Exemplo", sampleItems, "America/Sao_Paulo", customTemplate);
     return new Response(html, {
       status: 200,
       headers: { 
@@ -212,7 +213,7 @@ serve(async (req) => {
           }
         ];
         
-        const html = await renderEmailHTML(profile.full_name || "", sampleItems, userTimezone);
+        const html = await renderEmailHTML(profile.full_name || "", sampleItems, userTimezone, customTemplate);
 
         const { data, error } = await resend.emails.send({
           from: "Oráculo Jurídico <agenda@oracurojuridico.com.br>",
@@ -253,7 +254,7 @@ serve(async (req) => {
         if (!user.user?.email) continue;
 
         // Passar timezone para o template de email
-        const html = await renderEmailHTML(profile?.full_name || "", items as any[], userTimezone);
+        const html = await renderEmailHTML(profile?.full_name || "", items as any[], userTimezone, customTemplate);
 
         const { data, error } = await resend.emails.send({
           from: "Oráculo Jurídico <agenda@oracurojuridico.com.br>",

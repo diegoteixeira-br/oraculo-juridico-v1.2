@@ -12,12 +12,42 @@ export interface AgendaSummaryEmailProps {
   fullName?: string
   items: CommitmentItem[]
   timezone?: string
+  customTemplate?: string
 }
 
-export const AgendaSummaryEmail = ({ fullName = '', items, timezone = 'America/Sao_Paulo' }: AgendaSummaryEmailProps) => {
+export const AgendaSummaryEmail = ({ fullName = '', items, timezone = 'America/Sao_Paulo', customTemplate }: AgendaSummaryEmailProps) => {
   const sorted = [...items].sort(
     (a, b) => new Date(a.commitment_date as any).getTime() - new Date(b.commitment_date as any).getTime()
   )
+
+  // Se temos um template customizado, vamos usar ele
+  if (customTemplate) {
+    const commitmentsHtml = sorted.map(c => {
+      const dt = new Date(c.commitment_date as any)
+      const when = dt.toLocaleString('pt-BR', { 
+        dateStyle: 'short', 
+        timeStyle: 'short',
+        timeZone: timezone 
+      })
+      const extra: string[] = []
+      if (c.process_number) extra.push(`Processo: ${c.process_number}`)
+      if (c.client_name) extra.push(`Cliente: ${c.client_name}`)
+      if (c.location) extra.push(`Local: ${c.location}`)
+
+      return `
+        <div class="commitment">
+            <div class="commitment-title">${c.title}</div>
+            <div class="commitment-time">📅 ${when}</div>
+            ${extra.length > 0 ? `<div class="commitment-details">${extra.join(' • ')}</div>` : ''}
+        </div>
+      `
+    }).join('')
+
+    return customTemplate
+      .replace(/\{\{SITE_NAME\}\}/g, 'Cakto')
+      .replace(/\{\{USER_NAME\}\}/g, fullName ? `, ${fullName}` : '')
+      .replace(/\{\{COMMITMENTS\}\}/g, commitmentsHtml)
+  }
 
   const htmlContent = `
 <!DOCTYPE html>
