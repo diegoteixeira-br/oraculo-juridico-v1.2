@@ -189,12 +189,12 @@ function CadastroForm() {
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="text-center p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-blue-400">30.000</div>
-                  <div className="text-xs text-slate-400">Tokens/mês</div>
+                  <div className="text-lg font-bold text-blue-400">R$ 37,90</div>
+                  <div className="text-xs text-slate-400">Por mês</div>
                 </div>
                 <div className="text-center p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-green-400">R$ 37,90</div>
-                  <div className="text-xs text-slate-400">Por mês</div>
+                  <div className="text-lg font-bold text-green-400">30.000</div>
+                  <div className="text-xs text-slate-400">Tokens/mês</div>
                 </div>
                 <div className="text-center p-3 bg-white/5 rounded-lg">
                   <div className="text-lg font-bold text-purple-400">7 Dias</div>
@@ -202,7 +202,7 @@ function CadastroForm() {
                 </div>
                 <div className="text-center p-3 bg-white/5 rounded-lg">
                   <div className="text-lg font-bold text-orange-400">15.000</div>
-                  <div className="text-xs text-slate-400">Tokens gratuitos</div>
+                  <div className="text-xs text-slate-400">Tokens teste</div>
                 </div>
               </div>
             </CardContent>

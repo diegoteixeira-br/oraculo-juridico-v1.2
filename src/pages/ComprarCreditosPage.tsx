@@ -257,9 +257,9 @@ export default function ComprarCreditosPage() {
                       <span>Documentos Jurídicos ilimitados</span>
                     </div>
                     <div className="flex items-center gap-2 text-base">
-                      <Check className="w-5 h-5 text-primary" />
-                      <span>Agenda de Compromissos ilimitada</span>
-                    </div>
+                       <Check className="w-5 h-5 text-primary" />
+                       <span>Agenda de Compromissos com IA ilimitada</span>
+                     </div>
                     <div className="flex items-center gap-2 text-base">
                       <Check className="w-5 h-5 text-primary" />
                       <span>Renovação automática. Cancele quando quiser.</span>

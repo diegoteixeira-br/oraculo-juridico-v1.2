@@ -82,7 +82,7 @@ const Termos = () => {
               </p>
               <ul className="list-disc ml-6 mt-2 space-y-2">
                 <li><strong>Plano Essencial:</strong> R$ 37,90/mês, com 30.000 tokens mensais para funcionalidades de IA (chat jurídico, conversão de áudio em texto, extração automática de prazos de documentos) e uso ilimitado das calculadoras, documentos (cópia) e agenda.</li>
-                <li><strong>Teste Gratuito:</strong> 7 dias grátis com acesso completo: 15.000 tokens para funcionalidades de IA (chat jurídico, conversão de áudio em texto, extração automática de prazos) e uso ilimitado das calculadoras, documentos e agenda.</li>
+                <li><strong>Teste Gratuito:</strong> 7 dias grátis com 15.000 tokens para funcionalidades de IA (chat jurídico, conversão de áudio em texto) e uso ilimitado das calculadoras e documentos.</li>
                 <li><strong>Pacotes Opcionais:</strong> 75.000 e 150.000 tokens avulsos para ampliar o uso das funcionalidades de IA conforme necessidade.</li>
               </ul>
             </section>
@@ -131,8 +131,8 @@ const Termos = () => {
                 <li>Declarações</li>
               </ul>
               <p className="mt-2">
-                <strong>Limites por Plano:</strong> No Plano Essencial, a cópia de documentos é ilimitada. No teste gratuito de 7 dias, a cópia também é ilimitada. A cópia de documentos não consome tokens.
-              </p>
+                 <strong>Limites por Plano:</strong> No Plano Essencial, a cópia de documentos é ilimitada. No teste gratuito de 7 dias, a cópia também é ilimitada. A cópia de documentos não consome tokens.
+               </p>
             </section>
 
             <section>
@@ -159,8 +159,8 @@ const Termos = () => {
                 A Agenda Jurídica permite organizar prazos processuais, audiências, reuniões e compromissos personalizados.
               </p>
               <p className="mt-2">
-                <strong>Limites por Plano:</strong> No Plano Essencial, o uso é ilimitado. No teste gratuito de 7 dias, o uso também é ilimitado.
-              </p>
+                 <strong>Limites por Plano:</strong> A Agenda Jurídica é exclusiva do Plano Essencial com uso ilimitado. Não está disponível no teste gratuito.
+               </p>
               <p className="mt-2">
                 <strong>Extração Automática de Prazos:</strong> A funcionalidade de extração automática de prazos via IA consome um mínimo de 500 tokens por uso, com custo variável baseado no tamanho do texto analisado. Esta função analiza documentos jurídicos (texto, PDF ou imagem) e identifica automaticamente prazos processuais, criando compromissos na agenda.
               </p>
