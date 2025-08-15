@@ -227,8 +227,9 @@ const CalendarAgendaWidget = () => {
               </div>
             )}
           </div>
-          <Button onClick={() => navigate('/agenda-juridica')} size="sm" className="text-white bg-black hover:bg-stone-800 px-[3px] mx-[10px]">
-            Ver Agenda Completa
+          <Button onClick={() => navigate('/agenda-juridica')} size="sm" className="text-white bg-black hover:bg-stone-800 px-2 mx-2 text-xs sm:text-sm whitespace-nowrap">
+            <span className="hidden sm:inline">Ver Agenda Completa</span>
+            <span className="sm:hidden">Ver Agenda</span>
           </Button>
         </div>
       </CardHeader>
