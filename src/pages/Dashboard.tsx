@@ -904,23 +904,23 @@ const openTemplateEditor = async (documentId: string) => {
                   {/* Status da Conta */}
                   <div className="pt-2">
                     <div className="text-xs text-slate-400 mb-1">Status da Conta</div>
-                    {isTrial ? (
-                      <div className="flex items-center gap-2">
-                        <Badge className="bg-green-600 text-white">Período Gratuito</Badge>
-                        <span className="text-xs text-slate-300">
-                          até {trialEndDate ? trialEndDate.toLocaleDateString('pt-BR') : '-'}
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <Badge className={profile?.subscription_status === 'active' && planType === 'Essencial' ? 'bg-primary text-white' : 'bg-slate-600 text-white'}>
-                          {profile?.subscription_status === 'active' && planType === 'Essencial' ? 'Assinante' : 'Período Gratuito'}
-                        </Badge>
-                        {profile?.subscription_status === 'active' && profile?.subscription_end_date && (
-                          <span className="text-xs text-slate-300">renova em {new Date(profile.subscription_end_date).toLocaleDateString('pt-BR')}</span>
-                        )}
-                      </div>
-                    )}
+                     {planType === 'Essencial' && profile?.subscription_status === 'active' ? (
+                       <div className="flex items-center gap-2">
+                         <Badge className="bg-primary text-white">Assinante</Badge>
+                         {profile?.subscription_end_date && (
+                           <span className="text-xs text-slate-300">renova em {new Date(profile.subscription_end_date).toLocaleDateString('pt-BR')}</span>
+                         )}
+                       </div>
+                     ) : (
+                       <div className="flex items-center gap-2">
+                         <Badge className="bg-slate-600 text-white">Período Gratuito</Badge>
+                         {trialEndDate && (
+                           <span className="text-xs text-slate-300">
+                             até {trialEndDate.toLocaleDateString('pt-BR')}
+                           </span>
+                         )}
+                       </div>
+                     )}
                   </div>
                   
                   <div className="space-y-2 pt-4 border-t border-slate-600">
