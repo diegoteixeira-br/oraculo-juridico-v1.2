@@ -93,13 +93,11 @@ function CadastroForm() {
       } else {
         toast({
           title: "Conta criada!",
-          description: "Redirecionando para finalizar cadastro com teste gratuito de 8 dias...",
+          description: "Sua conta foi criada com sucesso! Redirecionando...",
         });
         
-        // Aguardar um momento e redirecionar para o Stripe checkout
-        setTimeout(() => {
-          window.open('https://buy.stripe.com/cNi00k4Hf2lE1xZbwy5AQ02', '_blank');
-        }, 2000);
+        // Redirecionar para página de finalizar cadastro
+        navigate(`/finalizar-cadastro?email=${encodeURIComponent(email)}`);
       }
     } catch (error: any) {
       if (error.message && (error.message.includes('rate limit') || error.message.includes('429'))) {

@@ -1,0 +1,199 @@
+import { useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, Shield, Zap, CheckCircle, CreditCard, Clock, Gift } from 'lucide-react';
+import { useSEO } from '@/hooks/useSEO';
+
+export default function FinalizarCadastro() {
+  const [searchParams] = useSearchParams();
+  const email = searchParams.get('email') || '';
+
+  // SEO
+  useSEO({
+    title: "Finalizar Cadastro - Teste Gratuito | Oráculo Jurídico",
+    description: "Complete seu cadastro e comece seu teste gratuito de 8 dias com 30.000 tokens/mês por apenas R$ 37,90.",
+  });
+
+  const handleContinueToStripe = () => {
+    // Abrir Stripe checkout em nova aba
+    window.open('https://buy.stripe.com/cNi00k4Hf2lE1xZbwy5AQ02', '_blank');
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
+      {/* Header */}
+      <div className="flex-shrink-0 bg-slate-800/50 border-b border-slate-700 backdrop-blur-sm">
+        <div className="container max-w-4xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Link to="/">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white hover:bg-slate-700"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+              </Link>
+              <img 
+                src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
+                alt="Oráculo Jurídico" 
+                className="h-8 w-auto"
+              />
+              <div>
+                <h1 className="text-xl font-bold text-white flex items-center gap-2">
+                  <Zap className="h-5 w-5 text-blue-400" />
+                  Finalizar Cadastro
+                </h1>
+                <p className="text-xs text-slate-300 hidden md:block">
+                  Um último passo para começar seu teste gratuito
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Conteúdo principal */}
+      <div className="flex-1 flex items-center justify-center p-4">
+        <div className="container max-w-2xl mx-auto space-y-6">
+          
+          {/* Card de sucesso */}
+          <Card className="bg-gradient-to-r from-green-600/20 to-emerald-600/20 border-green-500/30">
+            <CardContent className="p-6 text-center">
+              <div className="flex justify-center mb-4">
+                <div className="p-3 bg-green-600/20 rounded-full">
+                  <CheckCircle className="w-12 h-12 text-green-400" />
+                </div>
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-2">Conta Criada com Sucesso!</h2>
+              <p className="text-green-200">
+                Seu email: <strong>{email}</strong>
+              </p>
+              <p className="text-sm text-green-300/80 mt-2">
+                Verifique sua caixa de entrada para confirmar seu email
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Card do plano */}
+          <Card className="bg-slate-800/50 border-slate-700">
+            <CardHeader className="text-center">
+              <CardTitle className="flex items-center justify-center gap-2 text-white text-2xl">
+                <Zap className="w-6 h-6 text-blue-400" />
+                Plano Essencial
+              </CardTitle>
+              <CardDescription>
+                Complete seu cadastro para começar o teste gratuito
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              
+              {/* Destaque do plano */}
+              <div className="text-center p-6 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-xl border border-blue-500/30">
+                <div className="text-4xl font-bold text-blue-400 mb-2">R$ 37,90</div>
+                <div className="text-sm text-slate-300">por mês • 30.000 tokens</div>
+                <div className="text-lg font-semibold text-yellow-400 mt-2">
+                  8 Dias Grátis para Testar!
+                </div>
+              </div>
+
+              {/* Aviso importante */}
+              <div className="p-4 bg-yellow-600/10 rounded-lg border border-yellow-500/30">
+                <div className="flex items-start gap-3">
+                  <Shield className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h3 className="font-medium text-yellow-200 mb-2">Importante sobre seu teste gratuito:</h3>
+                    <ul className="text-sm text-yellow-100 space-y-1">
+                      <li className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full"></div>
+                        Para completar o cadastro, é necessário adicionar um cartão
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 bg-green-400 rounded-full"></div>
+                        <strong>Você não será cobrado nos primeiros 8 dias</strong>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
+                        Cancele a qualquer momento sem cobrança durante o teste
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 bg-purple-400 rounded-full"></div>
+                        Acesso completo a todos os recursos
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Benefícios */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center gap-3 p-3 bg-slate-700/30 rounded-lg">
+                  <Zap className="w-5 h-5 text-blue-400" />
+                  <div>
+                    <div className="font-medium text-white">30.000 tokens/mês</div>
+                    <div className="text-xs text-slate-400">Muito mais do que o básico</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-slate-700/30 rounded-lg">
+                  <Clock className="w-5 h-5 text-green-400" />
+                  <div>
+                    <div className="font-medium text-white">Suporte prioritário</div>
+                    <div className="text-xs text-slate-400">Resposta rápida</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-slate-700/30 rounded-lg">
+                  <Gift className="w-5 h-5 text-purple-400" />
+                  <div>
+                    <div className="font-medium text-white">Recursos premium</div>
+                    <div className="text-xs text-slate-400">Todas as funcionalidades</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-slate-700/30 rounded-lg">
+                  <Shield className="w-5 h-5 text-orange-400" />
+                  <div>
+                    <div className="font-medium text-white">Sem compromisso</div>
+                    <div className="text-xs text-slate-400">Cancele quando quiser</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Botões */}
+              <div className="space-y-3">
+                <Button 
+                  onClick={handleContinueToStripe}
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 py-3 text-lg"
+                  size="lg"
+                >
+                  <CreditCard className="w-5 h-5 mr-2" />
+                  Continuar para Finalizar Cadastro
+                </Button>
+                
+                <div className="text-center">
+                  <Button
+                    asChild
+                    variant="ghost"
+                    className="text-slate-400 hover:text-white"
+                  >
+                    <Link to="/">
+                      Voltar para o início
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Garantia */}
+              <div className="text-center p-4 bg-slate-700/20 rounded-lg">
+                <p className="text-sm text-slate-300">
+                  <Shield className="w-4 h-4 inline mr-1 text-green-400" />
+                  Garantia de 8 dias grátis • Pagamento seguro via Stripe
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}

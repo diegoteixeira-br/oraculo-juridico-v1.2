@@ -12,6 +12,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
 import RedefinirSenha from "./pages/RedefinirSenha";
+import FinalizarCadastro from "./pages/FinalizarCadastro";
 
 import PagamentoPage from "./pages/PagamentoPage";
 import ConfirmarEmail from "./pages/ConfirmarEmail";
@@ -42,6 +43,7 @@ function AppContent() {
       <Route path="/" element={<PageWrapper><Index /></PageWrapper>} />
       <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
       <Route path="/cadastro" element={<PageWrapper><Cadastro /></PageWrapper>} />
+      <Route path="/finalizar-cadastro" element={<PageWrapper><FinalizarCadastro /></PageWrapper>} />
       <Route path="/confirmar-email" element={<PageWrapper><ConfirmarEmail /></PageWrapper>} />
           <Route path="/redefinir-senha" element={<PageWrapper><RedefinirSenha /></PageWrapper>} />
           
