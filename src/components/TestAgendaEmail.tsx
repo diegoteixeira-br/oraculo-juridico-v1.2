@@ -245,14 +245,14 @@ const TestAgendaEmail = () => {
       {/* Editor de Template */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
             <Mail className="w-5 h-5 text-primary" />
             Editor de Template do Email
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
               <TabsList>
                 <TabsTrigger value="source" className="flex items-center gap-2">
                   <Code className="w-4 h-4" />
@@ -294,7 +294,7 @@ const TestAgendaEmail = () => {
                   <Textarea
                     value={emailTemplate}
                     onChange={(e) => setEmailTemplate(e.target.value)}
-                    className="font-mono text-sm min-h-[400px] max-h-[400px] resize-none"
+                    className="font-mono text-sm min-h-[250px] sm:min-h-[400px] max-h-[250px] sm:max-h-[400px] resize-none"
                     placeholder="Digite o HTML do template..."
                   />
                 </div>
@@ -318,7 +318,7 @@ const TestAgendaEmail = () => {
                     Visualização de como o email ficará com dados reais
                   </p>
                   <div 
-                    className="flex min-h-[400px] max-h-[400px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-mono resize-none overflow-auto"
+                    className="flex min-h-[250px] sm:min-h-[400px] max-h-[250px] sm:max-h-[400px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-mono resize-none overflow-auto"
                     dangerouslySetInnerHTML={{ __html: getPreviewWithData() }}
                   />
                 </div>
@@ -334,9 +334,9 @@ const TestAgendaEmail = () => {
       </Card>
 
       {/* Teste de Envio */}
-      <Card className="w-full max-w-md mx-auto">
+      <Card className="w-full">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
             <Send className="w-5 h-5 text-primary" />
             Teste de Envio
           </CardTitle>

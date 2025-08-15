@@ -24,19 +24,19 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-8">
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
+      <div className="container mx-auto py-4 px-4 sm:py-8">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold mb-2">Painel Administrativo</h1>
-              <p className="text-muted-foreground">
+              <h1 className="text-2xl sm:text-3xl font-bold mb-2">Painel Administrativo</h1>
+              <p className="text-muted-foreground text-sm sm:text-base">
                 Gerencie usuários, documentos e processamentos do sistema
               </p>
             </div>
             <Button 
               variant="outline" 
               onClick={() => navigate('/dashboard')}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 w-full sm:w-auto"
             >
               <ArrowLeft className="h-4 w-4" />
               Voltar ao Dashboard
@@ -45,30 +45,30 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="users" className="flex items-center gap-2">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 h-auto">
+            <TabsTrigger value="users" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3">
               <Users className="h-4 w-4" />
-              Usuários
+              <span className="hidden sm:inline">Usuários</span>
             </TabsTrigger>
-            <TabsTrigger value="documents" className="flex items-center gap-2">
+            <TabsTrigger value="documents" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3">
               <FileText className="h-4 w-4" />
-              Documentos
+              <span className="hidden sm:inline">Documentos</span>
             </TabsTrigger>
-            <TabsTrigger value="upload" className="flex items-center gap-2">
+            <TabsTrigger value="upload" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3">
               <Upload className="h-4 w-4" />
-              Upload
+              <span className="hidden sm:inline">Upload</span>
             </TabsTrigger>
-            <TabsTrigger value="tokens" className="flex items-center gap-2">
+            <TabsTrigger value="tokens" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3">
               <Coins className="h-4 w-4" />
-              Tokens
+              <span className="hidden sm:inline">Tokens</span>
             </TabsTrigger>
-            <TabsTrigger value="refunds" className="flex items-center gap-2">
+            <TabsTrigger value="refunds" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3">
               <Undo2 className="h-4 w-4" />
-              Estornos
+              <span className="hidden sm:inline">Estornos</span>
             </TabsTrigger>
-            <TabsTrigger value="teste-agenda" className="flex items-center gap-2">
+            <TabsTrigger value="teste-agenda" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3">
               <Mail className="h-4 w-4" />
-              Templates Email
+              <span className="hidden sm:inline">Templates Email</span>
             </TabsTrigger>
           </TabsList>
 
@@ -95,8 +95,8 @@ export default function AdminDashboard() {
           <TabsContent value="teste-agenda">
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-bold mb-2">Templates de Email Agenda</h2>
-                <p className="text-muted-foreground">
+                <h2 className="text-xl sm:text-2xl font-bold mb-2">Templates de Email Agenda</h2>
+                <p className="text-muted-foreground text-sm sm:text-base">
                   Teste o sistema de envio automático de emails da agenda jurídica
                 </p>
               </div>
