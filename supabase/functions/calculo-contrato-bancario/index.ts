@@ -279,7 +279,8 @@ Ferramenta: Oráculo Jurídico - Calculadora de Contrato Bancário
     // Salvar no histórico se usuário autenticado
     if (userId) {
       try {
-        await supabase
+        console.log('Tentando salvar no histórico...');
+        const { data: insertData, error: insertError } = await supabase
           .from('calculo_contrato_historico')
           .insert({
             user_id: userId,
@@ -300,10 +301,17 @@ Ferramenta: Oráculo Jurídico - Calculadora de Contrato Bancário
             diferenca: diferenca,
             detalhamento: detalhamento
           });
-        console.log('Cálculo salvo no histórico com sucesso');
+        
+        if (insertError) {
+          console.error('Erro detalhado ao salvar histórico:', insertError);
+        } else {
+          console.log('Cálculo salvo no histórico com sucesso:', insertData);
+        }
       } catch (error) {
-        console.log('Erro ao salvar histórico:', error);
+        console.error('Erro ao salvar histórico:', error);
       }
+    } else {
+      console.log('Usuário não autenticado, não salvando no histórico');
     }
 
     return new Response(JSON.stringify(result), {

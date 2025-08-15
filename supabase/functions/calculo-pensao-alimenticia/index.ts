@@ -202,7 +202,8 @@ Ferramenta: Oráculo Jurídico - Calculadora de Pensão Alimentícia`;
     // Salvar no histórico se usuário autenticado
     if (userId) {
       try {
-        await supabase
+        console.log('Tentando salvar pensão no histórico...');
+        const { data: insertData, error: insertError } = await supabase
           .from('calculo_pensao_historico')
           .insert({
             user_id: userId,
@@ -224,10 +225,17 @@ Ferramenta: Oráculo Jurídico - Calculadora de Pensão Alimentícia`;
             valor_corrigido: valorCorrigido,
             detalhamento: detalhamento
           });
-        console.log('Cálculo de pensão salvo no histórico com sucesso');
+        
+        if (insertError) {
+          console.error('Erro detalhado ao salvar histórico de pensão:', insertError);
+        } else {
+          console.log('Cálculo de pensão salvo no histórico com sucesso:', insertData);
+        }
       } catch (error) {
-        console.log('Erro ao salvar histórico de pensão:', error);
+        console.error('Erro ao salvar histórico de pensão:', error);
       }
+    } else {
+      console.log('Usuário não autenticado, não salvando pensão no histórico');
     }
 
     console.log('Cálculo concluído com sucesso:', { 
