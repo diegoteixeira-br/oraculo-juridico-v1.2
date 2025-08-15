@@ -507,32 +507,6 @@ const TestAgendaEmail = () => {
           </div>
         </div>
 
-        {/* Teste para todos os usuários */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 mb-2">
-            <Users className="w-4 h-4 text-primary" />
-            <Label className="font-medium">Teste para todos os usuários</Label>
-          </div>
-          <Button 
-            onClick={() => testEmailNotification()} 
-            disabled={loading}
-            className="w-full"
-            variant="outline"
-          >
-            {loading ? (
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                Enviando...
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                Enviar para Todos
-              </div>
-            )}
-          </Button>
-        </div>
-
         {result && (
           <div className="mt-4 p-3 bg-slate-50 rounded-lg border">
             <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
