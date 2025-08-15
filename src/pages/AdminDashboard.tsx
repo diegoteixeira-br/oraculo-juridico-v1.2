@@ -45,30 +45,30 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 h-auto">
-            <TabsTrigger value="users" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3">
+          <TabsList className="grid w-full grid-cols-6 h-auto">
+            <TabsTrigger value="users" className="flex items-center gap-2 p-3">
               <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">Usuários</span>
+              <span className="hidden lg:inline">Usuários</span>
             </TabsTrigger>
-            <TabsTrigger value="documents" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3">
+            <TabsTrigger value="documents" className="flex items-center gap-2 p-3">
               <FileText className="h-4 w-4" />
-              <span className="hidden sm:inline">Documentos</span>
+              <span className="hidden lg:inline">Documentos</span>
             </TabsTrigger>
-            <TabsTrigger value="upload" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3">
+            <TabsTrigger value="upload" className="flex items-center gap-2 p-3">
               <Upload className="h-4 w-4" />
-              <span className="hidden sm:inline">Upload</span>
+              <span className="hidden lg:inline">Upload</span>
             </TabsTrigger>
-            <TabsTrigger value="tokens" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3">
+            <TabsTrigger value="tokens" className="flex items-center gap-2 p-3">
               <Coins className="h-4 w-4" />
-              <span className="hidden sm:inline">Tokens</span>
+              <span className="hidden lg:inline">Tokens</span>
             </TabsTrigger>
-            <TabsTrigger value="refunds" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3">
+            <TabsTrigger value="refunds" className="flex items-center gap-2 p-3">
               <Undo2 className="h-4 w-4" />
-              <span className="hidden sm:inline">Estornos</span>
+              <span className="hidden lg:inline">Estornos</span>
             </TabsTrigger>
-            <TabsTrigger value="teste-agenda" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3">
+            <TabsTrigger value="teste-agenda" className="flex items-center gap-2 p-3">
               <Mail className="h-4 w-4" />
-              <span className="hidden sm:inline">Templates Email</span>
+              <span className="hidden lg:inline">Templates Email</span>
             </TabsTrigger>
           </TabsList>
 
