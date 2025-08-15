@@ -127,6 +127,7 @@ const TestAgendaEmail = () => {
   const [emailTemplate, setEmailTemplate] = useState(defaultTemplate);
   const [activeTab, setActiveTab] = useState('source');
   const [saveLoading, setSaveLoading] = useState(false);
+  const [logoUrl, setLogoUrl] = useState('');
 
   const testEmailNotification = async (specificEmail?: string) => {
     setLoading(true);
@@ -192,6 +193,10 @@ const TestAgendaEmail = () => {
       if (saved) {
         setEmailTemplate(saved);
       }
+      const savedLogo = localStorage.getItem('agenda_email_logo_url');
+      if (savedLogo) {
+        setLogoUrl(savedLogo);
+      }
     } catch (error) {
       console.log('Template padrão será usado');
     }
@@ -201,7 +206,8 @@ const TestAgendaEmail = () => {
     setSaveLoading(true);
     try {
       localStorage.setItem('agenda_email_template', emailTemplate);
-      toast.success('✅ Template salvo com sucesso!');
+      localStorage.setItem('agenda_email_logo_url', logoUrl);
+      toast.success('✅ Template e logo salvos com sucesso!');
     } catch (error) {
       console.error('Erro ao salvar template:', error);
       toast.error('❌ Erro ao salvar template');
@@ -284,6 +290,41 @@ const TestAgendaEmail = () => {
 
             <TabsContent value="source" className="mt-4">
               <div className="space-y-4">
+                {/* Configuração da Logo */}
+                <div className="p-4 bg-gray-50 rounded-lg border">
+                  <Label className="text-sm font-medium mb-2 block">Configuração da Logo</Label>
+                  <div className="space-y-2">
+                    <Input
+                      type="url"
+                      placeholder="URL da logo (ex: https://exemplo.com/logo.png)"
+                      value={logoUrl}
+                      onChange={(e) => setLogoUrl(e.target.value)}
+                      className="w-full"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Cole a URL da sua logo aqui. Recomendamos logos com até 200px de largura e fundo transparente.
+                    </p>
+                    <Button 
+                      onClick={() => {
+                        if (logoUrl.trim()) {
+                          const updatedTemplate = emailTemplate.replace(
+                            '<h1>{{SITE_NAME}}</h1>',
+                            `<img src="${logoUrl}" alt="{{SITE_NAME}}" style="max-height: 60px; max-width: 200px; height: auto;" />`
+                          );
+                          setEmailTemplate(updatedTemplate);
+                          toast.success('✅ Logo aplicada ao template!');
+                        } else {
+                          toast.error('❌ Digite uma URL válida para a logo');
+                        }
+                      }}
+                      size="sm"
+                      disabled={!logoUrl.trim()}
+                    >
+                      Aplicar Logo ao Template
+                    </Button>
+                  </div>
+                </div>
+
                 <div>
                   <Label className="text-sm font-medium">Template HTML</Label>
                   <p className="text-xs text-muted-foreground mb-2">
@@ -300,7 +341,7 @@ const TestAgendaEmail = () => {
                 <div className="p-3 bg-blue-50 rounded-lg text-sm">
                   <h4 className="font-semibold text-blue-900 mb-2">Variáveis disponíveis:</h4>
                   <ul className="space-y-1 text-blue-800">
-                    <li><code>{`{{SITE_NAME}}`}</code> - Nome do site (Oráculo Jurídico)</li>
+                    <li><code>{`{{SITE_NAME}}`}</code> - Nome do site (usado como alt da logo)</li>
                     <li><code>{`{{USER_NAME}}`}</code> - Nome do usuário (precedido por vírgula se existir)</li>
                     <li><code>{`{{COMMITMENTS}}`}</code> - Lista HTML dos compromissos</li>
                   </ul>
