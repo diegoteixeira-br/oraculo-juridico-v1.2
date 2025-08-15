@@ -390,16 +390,22 @@ const openTemplateEditor = async (documentId: string) => {
                             </span>
                           )}
                        </div>
-                       {profile?.subscription_activated_at && (
-                        <div className="mt-2 space-y-1">
-                          <div className="flex justify-between text-xs">
-                            <span className="text-emerald-300/70">Contratado em:</span>
-                            <span className="text-emerald-200 font-medium">
-                              {new Date(profile.subscription_activated_at).toLocaleDateString('pt-BR')}
-                            </span>
-                          </div>
-                        </div>
-                      )}
+                        {(profile?.subscription_activated_at || profile?.created_at) && (
+                         <div className="mt-2 space-y-1">
+                           <div className="flex justify-between text-xs">
+                             <span className="text-emerald-300/70">
+                               {isPaid ? 'Contratado em:' : 'Membro desde:'}
+                             </span>
+                             <span className="text-emerald-200 font-medium">
+                               {new Date(
+                                 isPaid && profile?.subscription_activated_at 
+                                   ? profile.subscription_activated_at 
+                                   : profile?.created_at || ''
+                               ).toLocaleDateString('pt-BR')}
+                             </span>
+                           </div>
+                         </div>
+                       )}
                     </div>
                     <div className="p-2 bg-emerald-600/20 rounded-lg">
                       <Users className="w-6 h-6 text-emerald-400" />

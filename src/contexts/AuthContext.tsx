@@ -12,6 +12,7 @@ interface Profile {
   trial_end_date: string;
   subscription_end_date?: string;
   subscription_activated_at?: string;
+  created_at?: string;
   tokens: number;
   plan_tokens: number;
   plan_type: string;
@@ -53,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select('*, created_at')
         .eq('user_id', userId)
         .single();
       
@@ -80,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Buscar perfil atualizado
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select('*, created_at')
         .eq('user_id', user.id)
         .single();
       
