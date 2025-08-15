@@ -500,7 +500,7 @@ const TestAgendaEmail = () => {
               ) : (
                 <div className="flex items-center gap-2">
                   <Send className="w-4 h-4" />
-                  Testar para Este Email
+                  Enviar Email de Teste
                 </div>
               )}
             </Button>
