@@ -51,15 +51,24 @@ export default function TokenManager() {
           .replace(/[\u0300-\u036f]/g, "");
         
         const filtered = userData.users.filter((user: any) => {
-          if (!user.name) return false;
-          
-          const normalizedName = user.name
+          // Normalizar nome se existir
+          const normalizedName = user.name ? user.name
             .toLowerCase()
             .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "");
+            .replace(/[\u0300-\u036f]/g, "") : "";
+          
+          // Normalizar email se existir
+          const normalizedEmail = user.email ? user.email
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "") : "";
           
           const queryParts = normalizedQuery.split(' ').filter(part => part.length > 0);
-          return queryParts.every(part => normalizedName.includes(part));
+          
+          // Buscar tanto no nome quanto no email
+          return queryParts.every(part => 
+            normalizedName.includes(part) || normalizedEmail.includes(part)
+          );
         });
         
         // Converter para o formato esperado pelo componente
