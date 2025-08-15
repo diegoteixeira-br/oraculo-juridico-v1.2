@@ -1,16 +1,132 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Mail, Send, CheckCircle, AlertCircle, Users } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import { Mail, Send, CheckCircle, AlertCircle, Users, Eye, Code, Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+
+const defaultTemplate = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Resumo da Agenda Jurídica</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 24px;
+            background-color: #f8fafc;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3a8a, #312e81);
+            color: #ffffff;
+            padding: 24px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            letter-spacing: 0.5px;
+        }
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin: 0;
+        }
+        .content {
+            padding: 32px 24px;
+            color: #0f172a;
+        }
+        .greeting {
+            font-size: 16px;
+            margin: 0 0 24px 0;
+            line-height: 1.6;
+        }
+        .commitments {
+            margin: 24px 0;
+        }
+        .commitment {
+            background: #f8fafc;
+            border-left: 4px solid #1e3a8a;
+            padding: 16px;
+            margin: 12px 0;
+            border-radius: 8px;
+        }
+        .commitment-title {
+            font-weight: 600;
+            color: #1e3a8a;
+            font-size: 16px;
+            margin: 0 0 8px 0;
+        }
+        .commitment-time {
+            color: #374151;
+            font-size: 14px;
+            margin: 4px 0;
+        }
+        .commitment-details {
+            color: #6b7280;
+            font-size: 13px;
+            margin: 8px 0 0 0;
+        }
+        .footer {
+            border-top: 1px solid #e5e7eb;
+            padding: 20px 24px;
+            background: #f9fafb;
+            color: #6b7280;
+            font-size: 12px;
+            text-align: center;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{SITE_NAME}}</h1>
+            <p>Resumo da Agenda Jurídica</p>
+        </div>
+        
+        <div class="content">
+            <p class="greeting">
+                Olá{{USER_NAME}}! 
+                Aqui está o seu resumo de compromissos nas próximas 24 horas:
+            </p>
+            
+            <div class="commitments">
+                {{COMMITMENTS}}
+            </div>
+        </div>
+        
+        <div class="footer">
+            Você está recebendo este e-mail porque ativou notificações de agenda no {{SITE_NAME}}.<br>
+            Para gerenciar suas notificações, acesse sua conta.
+        </div>
+    </div>
+</body>
+</html>`;
 
 const TestAgendaEmail = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [testEmail, setTestEmail] = useState('');
+  const [emailTemplate, setEmailTemplate] = useState(defaultTemplate);
+  const [activeTab, setActiveTab] = useState('source');
+  const [saveLoading, setSaveLoading] = useState(false);
 
   const testEmailNotification = async (specificEmail?: string) => {
     setLoading(true);
@@ -57,15 +173,166 @@ const TestAgendaEmail = () => {
     window.open(previewUrl, '_blank');
   };
 
+  const loadEmailTemplate = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('email_templates')
+        .select('template_html')
+        .eq('template_name', 'agenda_summary')
+        .single();
+
+      if (data && data.template_html) {
+        setEmailTemplate(data.template_html);
+      }
+    } catch (error) {
+      console.log('Template padrão será usado');
+    }
+  };
+
+  const saveEmailTemplate = async () => {
+    setSaveLoading(true);
+    try {
+      const { error } = await supabase
+        .from('email_templates')
+        .upsert({
+          template_name: 'agenda_summary',
+          template_html: emailTemplate,
+          updated_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+      
+      toast.success('✅ Template salvo com sucesso!');
+    } catch (error) {
+      console.error('Erro ao salvar template:', error);
+      toast.error('❌ Erro ao salvar template');
+    } finally {
+      setSaveLoading(false);
+    }
+  };
+
+  const getPreviewWithData = () => {
+    const sampleData = {
+      '{{SITE_NAME}}': 'Cakto',
+      '{{USER_NAME}}': ', João Silva',
+      '{{COMMITMENTS}}': `
+        <div class="commitment">
+          <div class="commitment-title">Audiência Trabalhista</div>
+          <div class="commitment-time">📅 15/08/2025, 14:30</div>
+          <div class="commitment-details">Processo: 1234567-89.2024.5.02.0001 • Cliente: Maria da Silva • Local: TRT 2ª Região</div>
+        </div>
+        <div class="commitment">
+          <div class="commitment-title">Reunião com Cliente</div>
+          <div class="commitment-time">📅 15/08/2025, 16:00</div>
+          <div class="commitment-details">Cliente: Pedro Santos</div>
+        </div>
+      `
+    };
+
+    let preview = emailTemplate;
+    Object.entries(sampleData).forEach(([key, value]) => {
+      preview = preview.replace(new RegExp(key, 'g'), value);
+    });
+
+    return preview;
+  };
+
+  useEffect(() => {
+    loadEmailTemplate();
+  }, []);
+
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Mail className="w-5 h-5 text-primary" />
-          Teste de Email da Agenda
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <div className="w-full space-y-6">
+      {/* Editor de Template */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Mail className="w-5 h-5 text-primary" />
+            Editor de Template do Email
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <div className="flex justify-between items-center mb-4">
+              <TabsList>
+                <TabsTrigger value="source" className="flex items-center gap-2">
+                  <Code className="w-4 h-4" />
+                  Source
+                </TabsTrigger>
+                <TabsTrigger value="preview" className="flex items-center gap-2">
+                  <Eye className="w-4 h-4" />
+                  Preview
+                </TabsTrigger>
+              </TabsList>
+              
+              <Button 
+                onClick={saveEmailTemplate} 
+                disabled={saveLoading}
+                size="sm"
+                className="ml-4"
+              >
+                {saveLoading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Salvando...
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Save className="w-4 h-4" />
+                    Salvar Template
+                  </div>
+                )}
+              </Button>
+            </div>
+
+            <TabsContent value="source" className="mt-4">
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-sm font-medium">Template HTML</Label>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    Use as variáveis: {{SITE_NAME}}, {{USER_NAME}}, {{COMMITMENTS}}
+                  </p>
+                  <Textarea
+                    value={emailTemplate}
+                    onChange={(e) => setEmailTemplate(e.target.value)}
+                    className="font-mono text-sm min-h-[400px] resize-none"
+                    placeholder="Digite o HTML do template..."
+                  />
+                </div>
+                
+                <div className="p-3 bg-blue-50 rounded-lg text-sm">
+                  <h4 className="font-semibold text-blue-900 mb-2">Variáveis disponíveis:</h4>
+                  <ul className="space-y-1 text-blue-800">
+                    <li><code>{{SITE_NAME}}</code> - Nome do site (Cakto)</li>
+                    <li><code>{{USER_NAME}}</code> - Nome do usuário (precedido por vírgula se existir)</li>
+                    <li><code>{{COMMITMENTS}}</code> - Lista HTML dos compromissos</li>
+                  </ul>
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="preview" className="mt-4">
+              <div className="space-y-4">
+                <Label className="text-sm font-medium">Preview com dados de exemplo</Label>
+                <div 
+                  className="border rounded-lg p-4 bg-white min-h-[400px] overflow-auto"
+                  dangerouslySetInnerHTML={{ __html: getPreviewWithData() }}
+                />
+              </div>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+
+      {/* Teste de Envio */}
+      <Card className="w-full max-w-md mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Send className="w-5 h-5 text-primary" />
+            Teste de Envio
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
         {/* Teste para email específico */}
         <div className="space-y-3 p-4 bg-slate-50 rounded-lg border">
           <div className="flex items-center gap-2 mb-2">
@@ -169,6 +436,7 @@ const TestAgendaEmail = () => {
         </div>
       </CardContent>
     </Card>
+    </div>
   );
 };
 
