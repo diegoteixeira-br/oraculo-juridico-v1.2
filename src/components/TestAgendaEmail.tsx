@@ -294,7 +294,7 @@ const TestAgendaEmail = () => {
                   <Textarea
                     value={emailTemplate}
                     onChange={(e) => setEmailTemplate(e.target.value)}
-                    className="font-mono text-sm min-h-[400px] resize-none"
+                    className="font-mono text-sm min-h-[400px] max-h-[400px] resize-none"
                     placeholder="Digite o HTML do template..."
                   />
                 </div>
@@ -312,22 +312,20 @@ const TestAgendaEmail = () => {
 
             <TabsContent value="preview" className="mt-4">
               <div className="space-y-4">
-                <Label className="text-sm font-medium">Preview com dados de exemplo</Label>
-                <div 
-                  className="border rounded-lg p-4 bg-white min-h-[400px] max-h-[400px] overflow-auto"
-                  dangerouslySetInnerHTML={{ __html: getPreviewWithData() }}
-                />
+                <div>
+                  <Label className="text-sm font-medium">Preview com dados de exemplo</Label>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    Visualização de como o email ficará com dados reais
+                  </p>
+                  <div 
+                    className="border rounded-lg p-4 bg-white min-h-[400px] max-h-[400px] overflow-auto"
+                    dangerouslySetInnerHTML={{ __html: getPreviewWithData() }}
+                  />
+                </div>
                 
-                <div className="text-xs text-muted-foreground bg-blue-50 p-3 rounded-lg border border-blue-200">
-                  <div className="flex items-start gap-2">
-                    <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center mt-0.5">
-                      <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
-                    </div>
-                    <div>
-                      <p className="font-medium text-blue-900 mb-1">Preview com dados simulados</p>
-                      <p className="text-blue-700">Este preview mostra como o email ficará com dados reais de compromissos e informações do usuário.</p>
-                    </div>
-                  </div>
+                <div className="p-3 bg-blue-50 rounded-lg text-sm">
+                  <h4 className="font-semibold text-blue-900 mb-2">Preview com dados simulados:</h4>
+                  <p className="text-blue-700">Este preview mostra como o email ficará com dados reais de compromissos e informações do usuário.</p>
                 </div>
               </div>
             </TabsContent>
