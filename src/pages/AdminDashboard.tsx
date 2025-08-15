@@ -45,31 +45,31 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6 w-full">
-          <div className="overflow-x-auto -mx-2 sm:mx-0">
-            <TabsList className="grid w-full grid-cols-6 h-auto min-w-max sm:min-w-0">
-              <TabsTrigger value="users" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3 text-xs sm:text-sm">
+          <div className="w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300">
+            <TabsList className="flex w-max sm:grid sm:w-full sm:grid-cols-6 h-auto gap-1 sm:gap-0 p-1">
+              <TabsTrigger value="users" className="flex items-center gap-1 sm:gap-2 px-3 py-2 text-xs sm:text-sm whitespace-nowrap">
                 <Users className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                <span className="hidden sm:inline lg:inline truncate">Usuários</span>
+                <span className="sm:inline">Usuários</span>
               </TabsTrigger>
-              <TabsTrigger value="documents" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3 text-xs sm:text-sm">
+              <TabsTrigger value="documents" className="flex items-center gap-1 sm:gap-2 px-3 py-2 text-xs sm:text-sm whitespace-nowrap">
                 <FileText className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                <span className="hidden sm:inline lg:inline truncate">Documentos</span>
+                <span className="sm:inline">Docs</span>
               </TabsTrigger>
-              <TabsTrigger value="upload" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3 text-xs sm:text-sm">
+              <TabsTrigger value="upload" className="flex items-center gap-1 sm:gap-2 px-3 py-2 text-xs sm:text-sm whitespace-nowrap">
                 <Upload className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                <span className="hidden sm:inline lg:inline truncate">Upload</span>
+                <span className="sm:inline">Upload</span>
               </TabsTrigger>
-              <TabsTrigger value="tokens" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3 text-xs sm:text-sm">
+              <TabsTrigger value="tokens" className="flex items-center gap-1 sm:gap-2 px-3 py-2 text-xs sm:text-sm whitespace-nowrap">
                 <Coins className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                <span className="hidden sm:inline lg:inline truncate">Tokens</span>
+                <span className="sm:inline">Tokens</span>
               </TabsTrigger>
-              <TabsTrigger value="refunds" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3 text-xs sm:text-sm">
+              <TabsTrigger value="refunds" className="flex items-center gap-1 sm:gap-2 px-3 py-2 text-xs sm:text-sm whitespace-nowrap">
                 <Undo2 className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                <span className="hidden sm:inline lg:inline truncate">Estornos</span>
+                <span className="sm:inline">Estornos</span>
               </TabsTrigger>
-              <TabsTrigger value="teste-agenda" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3 text-xs sm:text-sm">
+              <TabsTrigger value="teste-agenda" className="flex items-center gap-1 sm:gap-2 px-3 py-2 text-xs sm:text-sm whitespace-nowrap">
                 <Mail className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                <span className="hidden md:inline truncate">Email</span>
+                <span className="sm:inline">Email</span>
               </TabsTrigger>
             </TabsList>
           </div>
