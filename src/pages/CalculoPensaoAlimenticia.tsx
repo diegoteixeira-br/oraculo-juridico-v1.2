@@ -460,11 +460,11 @@ const CalculoPensaoAlimenticia = () => {
                       <FileText className="w-4 h-4 text-primary" />
                       Detalhamento do Cálculo
                     </h4>
-                    <div className="max-h-64 overflow-y-auto">
-                      <pre className="text-xs whitespace-pre-wrap text-slate-300 leading-relaxed">
-                        {result.detalhamento}
-                      </pre>
-                    </div>
+                     <div className="max-h-64 overflow-y-auto">
+                       <pre className="text-xs whitespace-pre-wrap break-words text-slate-300 leading-relaxed overflow-wrap-anywhere">
+                         {result.detalhamento}
+                       </pre>
+                     </div>
                   </div>
                 </CardContent>
               </Card>

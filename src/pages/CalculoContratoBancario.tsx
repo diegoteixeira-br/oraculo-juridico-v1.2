@@ -421,11 +421,11 @@ const CalculoContratoBancario = () => {
                         Relatório Completo
                       </Badge>
                     </h4>
-                    <div className="max-h-96 overflow-y-auto bg-slate-900/50 rounded-lg border border-slate-600 p-4">
-                      <pre className="text-sm whitespace-pre-wrap text-slate-200 leading-relaxed font-mono">
-                        {result.detalhamento}
-                      </pre>
-                    </div>
+                     <div className="max-h-96 overflow-y-auto bg-slate-900/50 rounded-lg border border-slate-600 p-4">
+                       <pre className="text-sm whitespace-pre-wrap break-words text-slate-200 leading-relaxed font-mono overflow-wrap-anywhere">
+                         {result.detalhamento}
+                       </pre>
+                     </div>
                   </div>
                 </CardContent>
               </Card>

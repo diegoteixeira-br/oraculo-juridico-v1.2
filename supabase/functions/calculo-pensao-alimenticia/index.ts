@@ -188,7 +188,7 @@ Observações Legais:
 
 ${data.observacoes ? `Observações Adicionais: ${data.observacoes}` : ''}
 
-Cálculo realizado em ${new Date().toLocaleDateString('pt-BR', { timeZone: userTimezone, year: 'numeric', month: '2-digit', day: '2-digit' })} às ${new Date().toLocaleTimeString('pt-BR', { timeZone: userTimezone, hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+Cálculo realizado em ${agora.toLocaleDateString('pt-BR', { timeZone: userTimezone, year: 'numeric', month: '2-digit', day: '2-digit' })} às ${agora.toLocaleTimeString('pt-BR', { timeZone: userTimezone, hour: '2-digit', minute: '2-digit', second: '2-digit' })}
 Ferramenta: Oráculo Jurídico - Calculadora de Pensão Alimentícia`;
 
     const result = {
