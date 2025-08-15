@@ -17,9 +17,9 @@ const AssistantAudioBlock: React.FC<AssistantAudioBlockProps> = ({ audioSrc, tex
       <AudioPlayer
         audioSrc={audioSrc}
         onProgress={(_, __, percent, isPlaying, playbackRate) => {
-          // Acelera o reading progress em 0.20 acima da velocidade do áudio
-          const speedMultiplier = playbackRate + 0.20;
-          setProgress(percent * speedMultiplier);
+          // Acelera o reading progress em 0.35 acima da velocidade do áudio para melhor sincronização
+          const speedMultiplier = playbackRate + 0.35;
+          setProgress(Math.min(1, percent * speedMultiplier));
         }}
         onLoadingChange={setLoading}
         onPlayChange={setPlaying}
