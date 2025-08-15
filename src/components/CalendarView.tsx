@@ -214,98 +214,19 @@ const CalendarView = ({ filteredCommitments, onCommitmentSelect, showActions = f
   }
 
   return (
-    <div className={`${isMobile ? 'space-y-4' : 'grid grid-cols-2 gap-6'}`}>
-      {/* Calendário */}
-      <div className={isMobile ? '' : 'space-y-4'}>
-        <CalendarHeader />
-        
-        {/* Dias da semana */}
-        <div className="grid grid-cols-7 mb-2">
-          {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(day => (
-            <div key={day} className="text-center text-xs font-medium text-slate-400 p-2">
-              {day}
-            </div>
-          ))}
-        </div>
-        
-        {/* Grade do calendário */}
-        <div className="grid grid-cols-7 bg-slate-800/30 rounded-lg overflow-hidden">
-          {renderCalendarDays()}
-        </div>
-        
-        <div className="mt-4 text-xs text-blue-300/70 text-center">
-          Clique em um dia para ver os compromissos
-        </div>
+    <div className="flex flex-col h-full">
+      {/* Dias da semana */}
+      <div className="grid grid-cols-7 mb-1">
+        {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(day => (
+          <div key={day} className="text-center text-xs font-medium text-slate-400 py-1">
+            {day}
+          </div>
+        ))}
       </div>
-
-      {/* Lista de compromissos do dia selecionado */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2 mb-3">
-          <h4 className="font-medium text-blue-200">
-            {format(selectedDate, 'dd/MM/yyyy', { locale: ptBR })}
-          </h4>
-          {isSameDay(selectedDate, new Date()) && (
-            <Badge variant="outline" className="text-xs border-blue-400/30 text-blue-300">
-              Hoje
-            </Badge>
-          )}
-        </div>
-
-        {selectedDateCommitments.length === 0 ? (
-          <div className="text-center py-6">
-            <CalendarIcon className="w-8 h-8 text-blue-400/50 mx-auto mb-2" />
-            <p className="text-sm text-blue-300/80">
-              Nenhum compromisso neste dia
-            </p>
-          </div>
-        ) : (
-          <div className={`space-y-2 ${isMobile ? 'max-h-60' : 'max-h-80'} overflow-y-auto`}>
-            {selectedDateCommitments.map(commitment => (
-              <div
-                key={commitment.id}
-                className={`p-3 rounded-lg bg-blue-600/10 border border-blue-500/20 ${
-                  onCommitmentSelect ? 'cursor-pointer hover:bg-blue-600/20' : ''
-                }`}
-                onClick={() => onCommitmentSelect?.(commitment)}
-              >
-                <div className="flex items-start gap-2">
-                  <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${getCommitmentColor(commitment.commitment_type, commitment.priority)}`} />
-                  <div className="flex-1 min-w-0">
-                    <h5 className="font-medium text-sm text-blue-200 truncate">{commitment.title}</h5>
-                    <p className="text-xs text-blue-300/80 flex items-center gap-1 mt-1">
-                      <Clock className="h-3 w-3 flex-shrink-0" />
-                      {format(parseISO(commitment.commitment_date), 'HH:mm', { locale: ptBR })}
-                    </p>
-                    
-                    <div className="flex gap-1 mt-2 flex-wrap">
-                      <Badge variant="outline" className="text-xs border-blue-400/30 text-blue-300">
-                        {typeLabels[commitment.commitment_type]}
-                      </Badge>
-                      {commitment.priority !== 'normal' && (
-                        <Badge variant={commitment.priority === 'urgente' ? 'destructive' : 'default'} className="text-xs">
-                          {priorityLabels[commitment.priority]}
-                        </Badge>
-                      )}
-                    </div>
-                    
-                    {(commitment.process_number || commitment.client_name || commitment.location) && (
-                      <div className="mt-2 space-y-1 text-xs text-blue-300/70">
-                        {commitment.process_number && <div className="truncate">Processo: {commitment.process_number}</div>}
-                        {commitment.client_name && <div className="truncate">Cliente: {commitment.client_name}</div>}
-                        {commitment.location && (
-                          <div className="flex items-center gap-1 truncate">
-                            <MapPin className="h-3 w-3 flex-shrink-0" />
-                            {commitment.location}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+      
+      {/* Grade do calendário */}
+      <div className="grid grid-cols-7 bg-slate-800/30 rounded-lg overflow-hidden flex-1 min-h-0">
+        {renderCalendarDays()}
       </div>
     </div>
   );

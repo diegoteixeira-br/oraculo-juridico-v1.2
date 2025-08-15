@@ -1207,108 +1207,121 @@ const AgendaJuridica = () => {
                 <TabsContent value="calendar" className="h-full m-0">
                   <Card className="h-full flex flex-col bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border-blue-500/30">
                     <CardContent className="p-6 h-full">
-                      <div className="grid grid-cols-1 lg:grid-cols-[60%_1fr] gap-6 h-full">
+                      <div className="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-4 h-full">
                         
                         {/* Calendário */}
-                        <div className={`flex flex-col ${isMobile ? 'order-1' : ''}`}>
-                          <div className="flex items-center justify-between mb-4">
+                        <div className="flex flex-col">
+                          <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-2">
-                              <CalendarIcon className="w-5 h-5 text-blue-400" />
-                              <h3 className="text-lg font-semibold text-blue-200">
+                              <CalendarIcon className="w-4 h-4 text-blue-400" />
+                              <h3 className="text-base font-semibold text-blue-200">
                                 {format(currentMonth, 'MMMM yyyy', { locale: ptBR })}
                               </h3>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1">
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
                                 onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} 
-                                className="text-blue-400 hover:text-blue-300 hover:bg-blue-600/10"
+                                className="text-blue-400 hover:text-blue-300 hover:bg-blue-600/10 h-7 w-7 p-0"
                               >
-                                <ChevronLeft className="w-4 h-4" />
+                                <ChevronLeft className="w-3 h-3" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => setCurrentMonth(new Date())} 
+                                className="text-blue-400 hover:text-blue-300 hover:bg-blue-600/10 h-7 px-2 text-xs"
+                              >
+                                Hoje
                               </Button>
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
                                 onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} 
-                                className="text-blue-400 hover:text-blue-300 hover:bg-blue-600/10"
+                                className="text-blue-400 hover:text-blue-300 hover:bg-blue-600/10 h-7 w-7 p-0"
                               >
-                                <ChevronLeft className="w-4 h-4 rotate-180" />
+                                <ChevronLeft className="w-3 h-3 rotate-180" />
                               </Button>
                             </div>
                           </div>
                           
                           {/* Dias da semana */}
-                          <div className="grid grid-cols-7 mb-2">
+                          <div className="grid grid-cols-7 mb-1">
                             {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(day => (
-                              <div key={day} className="text-center text-xs font-medium text-slate-400 p-2">
+                              <div key={day} className="text-center text-xs font-medium text-slate-400 py-1">
                                 {day}
                               </div>
                             ))}
                           </div>
                           
                           {/* Grade do calendário */}
-                          <div className="grid grid-cols-7 bg-slate-800/30 rounded-lg overflow-hidden flex-1">
+                          <div className="grid grid-cols-7 bg-slate-800/30 rounded-lg overflow-hidden flex-1 min-h-[280px]">
                             {renderCalendarDays()}
                           </div>
                           
-                          <div className="mt-4 text-xs text-blue-300/70 text-center">
+                          <div className="mt-2 text-xs text-blue-300/70 text-center">
                             Clique em um dia para ver os compromissos
                           </div>
                         </div>
 
                         {/* Lista de compromissos do dia selecionado */}
-                        <div className={`space-y-3 overflow-y-auto ${isMobile ? 'order-2' : ''}`}>
-                          <div className="flex items-center gap-2 mb-3">
-                            <h4 className="font-medium text-blue-200">
+                        <div className="flex flex-col min-h-0 max-h-full">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="text-sm font-medium text-blue-200">
                               {format(selectedDate, 'dd/MM/yyyy', { locale: ptBR })}
                             </h4>
-                            {isSameDay(selectedDate, new Date()) && (
-                              <Badge variant="outline" className="text-xs border-blue-400/30 text-blue-300">
-                                Hoje
-                              </Badge>
-                            )}
+                            <div className="flex items-center gap-1">
+                              {isSameDay(selectedDate, new Date()) && (
+                                <Badge variant="outline" className="text-xs border-blue-400/30 text-blue-300">
+                                  Hoje
+                                </Badge>
+                              )}
+                              <span className="text-xs text-blue-300/70">
+                                {getCommitmentsForDate(selectedDate).length} evento(s)
+                              </span>
+                            </div>
                           </div>
 
-                          {getCommitmentsForDate(selectedDate).length === 0 ? (
-                            <div className="text-center py-6">
-                              <CalendarIcon className="w-8 h-8 text-blue-400/50 mx-auto mb-2" />
-                              <p className="text-sm text-blue-300/80">
-                                Nenhum compromisso neste dia
-                              </p>
-                            </div>
-                          ) : (
-                            <div className="space-y-2">
-                              {getCommitmentsForDate(selectedDate).map((commitment) => (
+                          <div className="flex-1 overflow-y-auto space-y-2 min-h-0">
+                            {getCommitmentsForDate(selectedDate).length === 0 ? (
+                              <div className="text-center py-8">
+                                <CalendarIcon className="w-6 h-6 text-blue-400/50 mx-auto mb-2" />
+                                <p className="text-xs text-blue-300/80">
+                                  Nenhum compromisso neste dia
+                                </p>
+                              </div>
+                            ) : (
+                              getCommitmentsForDate(selectedDate).map((commitment) => (
                                 <div 
                                   key={commitment.id} 
-                                  className={`p-3 rounded-xl border ${getItemAppearance(commitment.commitment_type, commitment.priority)}`}
+                                  className={`p-2 rounded-lg border ${getItemAppearance(commitment.commitment_type, commitment.priority)}`}
                                 >
                                   <div className="flex items-start gap-2">
-                                    <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${getCommitmentColor(commitment.commitment_type, commitment.priority)}`} />
+                                    <div className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${getCommitmentColor(commitment.commitment_type, commitment.priority)}`} />
                                     <div className="flex-1 min-w-0">
-                                      <h5 className="font-medium text-sm text-blue-200 truncate">
+                                      <h5 className="font-medium text-xs text-blue-200 truncate leading-tight">
                                         {commitment.title}
                                       </h5>
-                                      <p className="text-xs text-blue-300/80 flex items-center gap-1 mt-1">
+                                      <p className="text-xs text-blue-300/80 flex items-center gap-1 mt-0.5">
                                         <Clock className="h-3 w-3 flex-shrink-0" />
                                         {formatInTimeZone(parseISO(commitment.commitment_date), userTimezone, 'HH:mm', { locale: ptBR })}
                                       </p>
-                                      <div className="flex gap-1 mt-2">
-                                        <Badge variant="outline" className="text-xs border-blue-400/30 text-blue-300">
+                                      <div className="flex gap-1 mt-1">
+                                        <Badge variant="outline" className="text-xs px-1 py-0 border-blue-400/30 text-blue-300">
                                           {typeLabels[commitment.commitment_type]}
                                         </Badge>
                                         {commitment.priority !== 'normal' && (
                                           <Badge 
                                             variant={commitment.priority === 'urgente' ? 'destructive' : 'default'} 
-                                            className="text-xs"
+                                            className="text-xs px-1 py-0"
                                           >
                                             {priorityLabels[commitment.priority]}
                                           </Badge>
                                         )}
                                       </div>
                                       {(commitment.process_number || commitment.client_name || commitment.location) && (
-                                        <div className="mt-2 space-y-1 text-xs text-blue-300/70">
+                                        <div className="mt-1 space-y-0.5 text-xs text-blue-300/70">
                                           {commitment.process_number && (
                                             <div className="truncate">Processo: {commitment.process_number}</div>
                                           )}
@@ -1318,17 +1331,17 @@ const AgendaJuridica = () => {
                                           {commitment.location && (
                                             <div className="flex items-center gap-1 truncate">
                                               <MapPin className="h-3 w-3 flex-shrink-0" />
-                                              {commitment.location}
+                                              <span className="truncate">{commitment.location}</span>
                                             </div>
                                           )}
                                         </div>
                                       )}
-                                      <div className="flex gap-1 mt-2">
+                                      <div className="flex gap-0.5 mt-1">
                                         <Button
                                           size="sm"
                                           variant="ghost"
                                           onClick={() => handleEditCommitment(commitment)}
-                                          className="h-6 px-2 text-xs text-blue-300 hover:bg-blue-600/10"
+                                          className="h-5 w-5 p-0 text-blue-300 hover:bg-blue-600/10"
                                         >
                                           <Edit className="h-3 w-3" />
                                         </Button>
@@ -1336,7 +1349,7 @@ const AgendaJuridica = () => {
                                           size="sm"
                                           variant="ghost"
                                           onClick={() => handleCompleteCommitment(commitment)}
-                                          className="h-6 px-2 text-xs text-green-300 hover:bg-green-600/10"
+                                          className="h-5 w-5 p-0 text-green-300 hover:bg-green-600/10"
                                         >
                                           <Check className="h-3 w-3" />
                                         </Button>
@@ -1344,7 +1357,7 @@ const AgendaJuridica = () => {
                                           size="sm"
                                           variant="ghost"
                                           onClick={() => handleCancelCommitment(commitment)}
-                                          className="h-6 px-2 text-xs text-red-300 hover:bg-red-600/10"
+                                          className="h-5 w-5 p-0 text-red-300 hover:bg-red-600/10"
                                         >
                                           <X className="h-3 w-3" />
                                         </Button>
@@ -1352,9 +1365,9 @@ const AgendaJuridica = () => {
                                     </div>
                                   </div>
                                 </div>
-                              ))}
-                            </div>
-                          )}
+                              ))
+                            )}
+                          </div>
                         </div>
                       </div>
                     </CardContent>
