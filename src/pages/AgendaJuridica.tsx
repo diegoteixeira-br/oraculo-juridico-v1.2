@@ -664,24 +664,24 @@ const AgendaJuridica = () => {
           key={day.toISOString()}
           onClick={() => setSelectedDate(day)}
           className={`
-            relative p-2 text-sm h-12 w-full border border-slate-600/30 transition-colors
+            relative p-1 text-sm h-9 w-full border border-slate-600/30 transition-colors
             ${isCurrentMonth ? 'text-white' : 'text-slate-500'}
             ${isToday ? 'bg-primary/20 border-primary/50 font-bold' : ''}
             ${isSelected ? 'bg-blue-600/30 border-blue-500' : 'hover:bg-slate-700/50'}
             ${!isCurrentMonth ? 'bg-slate-800/30' : ''}
           `}
         >
-          <span>{format(day, 'd')}</span>
+          <span className="text-xs">{format(day, 'd')}</span>
           {hasCommitments && (
-            <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 flex gap-1">
+            <div className="absolute bottom-0.5 left-1/2 transform -translate-x-1/2 flex gap-0.5">
               {dayCommitments.slice(0, 3).map((commitment, index) => (
                 <div
                   key={commitment.id}
-                  className={`w-1.5 h-1.5 rounded-full ${getCommitmentColor(commitment.commitment_type, commitment.priority)}`}
+                  className={`w-1 h-1 rounded-full ${getCommitmentColor(commitment.commitment_type, commitment.priority)}`}
                 />
               ))}
               {dayCommitments.length > 3 && (
-                <div className="w-1.5 h-1.5 rounded-full bg-yellow-500" />
+                <div className="w-1 h-1 rounded-full bg-yellow-500" />
               )}
             </div>
           )}
@@ -1207,7 +1207,7 @@ const AgendaJuridica = () => {
                 <TabsContent value="calendar" className="h-full m-0">
                   <Card className="h-full flex flex-col bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border-blue-500/30">
                     <CardContent className="p-6 h-full">
-                      <div className="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-4 h-full">
+                      <div className="grid grid-cols-1 xl:grid-cols-[1fr_1fr] gap-4">
                         
                         {/* Calendário */}
                         <div className="flex flex-col">
@@ -1256,7 +1256,7 @@ const AgendaJuridica = () => {
                           </div>
                           
                           {/* Grade do calendário */}
-                          <div className="grid grid-cols-7 bg-slate-800/30 rounded-lg overflow-hidden flex-1 min-h-[280px]">
+                          <div className="grid grid-cols-7 bg-slate-800/30 rounded-lg overflow-hidden">
                             {renderCalendarDays()}
                           </div>
                           

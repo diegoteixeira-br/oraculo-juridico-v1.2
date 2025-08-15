@@ -135,24 +135,24 @@ const CalendarView = ({ filteredCommitments, onCommitmentSelect, showActions = f
           key={day.toISOString()}
           onClick={() => setSelectedDate(day)}
           className={`
-            relative p-2 text-sm h-12 w-full border border-slate-600/30 transition-colors
+            relative p-1 text-sm h-8 w-full border border-slate-600/30 transition-colors
             ${isCurrentMonth ? 'text-white' : 'text-slate-500'}
             ${isToday ? 'bg-primary/20 border-primary/50 font-bold' : ''}
             ${isSelected ? 'bg-blue-600/30 border-blue-500' : 'hover:bg-slate-700/50'}
             ${!isCurrentMonth ? 'bg-slate-800/30' : ''}
           `}
         >
-          <span>{getDate(day)}</span>
+          <span className="text-xs">{getDate(day)}</span>
           {hasCommitments && (
-            <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 flex gap-1">
+            <div className="absolute bottom-0.5 left-1/2 transform -translate-x-1/2 flex gap-0.5">
               {dayCommitments.slice(0, 3).map((commitment) => (
                 <div
                   key={commitment.id}
-                  className={`w-1.5 h-1.5 rounded-full ${getCommitmentColor(commitment.commitment_type, commitment.priority)}`}
+                  className={`w-1 h-1 rounded-full ${getCommitmentColor(commitment.commitment_type, commitment.priority)}`}
                 />
               ))}
               {dayCommitments.length > 3 && (
-                <div className="w-1.5 h-1.5 rounded-full bg-yellow-500" />
+                <div className="w-1 h-1 rounded-full bg-yellow-500" />
               )}
             </div>
           )}
