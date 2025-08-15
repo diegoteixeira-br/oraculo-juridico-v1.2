@@ -23,8 +23,8 @@ const AssistantAudioBlock: React.FC<AssistantAudioBlockProps> = ({ audioSrc, tex
       const estimatedReadingTime = (words / wordsPerMinute) * 60; // em segundos
       
       if (playing) {
-        // Quando está tocando, calcula progresso com offset
-        const offsetTime = (25 / wordsPerMinute) * 60; // 25 palavras de offset
+        // Offset menor para melhor sincronização
+        const offsetTime = (10 / wordsPerMinute) * 60; // 10 palavras de offset
         const adjustedTime = currentTime + offsetTime;
         const readingProgress = Math.min(1.05, adjustedTime / estimatedReadingTime);
         const newProgress = Math.max(0, readingProgress);
