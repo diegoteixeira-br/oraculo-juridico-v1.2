@@ -377,19 +377,21 @@ const openTemplateEditor = async (documentId: string) => {
             {(isPaid || planType === 'Gratuito' || planType === 'gratuito') ? (
               <Card className="bg-gradient-to-br from-emerald-600/20 to-emerald-600/10 border-emerald-600/30">
                 <CardContent className="p-4">
-                   <div className="flex items-center justify-between">
+                       <div className="flex items-center justify-between">
                      <div>
                        <p className="text-xs text-emerald-300 font-medium">Plano Ativo</p>
                        <div className="flex items-baseline gap-2">
                          <p className="text-2xl font-bold text-emerald-400 capitalize">
                            {planType}
                          </p>
-                         {(isTrial || planType === 'Gratuito') && (
-                           <span className="text-lg font-semibold text-emerald-400">
-                             {daysRemaining}/<span className="text-sm">7</span> dias
-                           </span>
-                         )}
                        </div>
+                       {(isTrial || planType === 'Gratuito') && (
+                         <div className="mt-1">
+                           <span className="text-lg font-semibold text-emerald-300">
+                             {daysRemaining}/7 Dias
+                           </span>
+                         </div>
+                       )}
                        {profile?.subscription_activated_at && (
                         <div className="mt-2 space-y-1">
                           <div className="flex justify-between text-xs">
