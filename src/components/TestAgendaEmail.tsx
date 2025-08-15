@@ -485,7 +485,8 @@ const TestAgendaEmail = () => {
               value={testEmail}
               onChange={(e) => setTestEmail(e.target.value)}
               className="w-full bg-white text-slate-900 border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary selection:bg-blue-200 selection:text-slate-900"
-              autoComplete="off"
+              autoComplete="email"
+              name="test-email"
             />
             <Button 
               onClick={handleTestSpecificEmail} 
