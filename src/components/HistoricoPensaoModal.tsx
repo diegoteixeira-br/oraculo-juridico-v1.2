@@ -8,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserTimezone } from "@/hooks/useUserTimezone";
+import { useExportDocument } from "@/hooks/useExportDocument";
 import { FileText, Calendar, Heart, TrendingUp, X, Trash2, Users } from "lucide-react";
 import { toast } from "sonner";
 
@@ -49,6 +50,7 @@ const HistoricoPensaoModal: React.FC<HistoricoPensaoModalProps> = ({
   const [selectedCalculation, setSelectedCalculation] = useState<CalculoPensaoHistorico | null>(null);
   const { user } = useAuth();
   const { formatDateInUserTimezone } = useUserTimezone();
+  const { copyCalculoPensao, loading: exportLoading } = useExportDocument();
 
   useEffect(() => {
     if (isOpen && user) {
@@ -427,10 +429,55 @@ const HistoricoPensaoModal: React.FC<HistoricoPensaoModalProps> = ({
                     {/* Detalhamento completo */}
                     <Card className="bg-slate-800/30 border-slate-600">
                       <CardHeader className="pb-3">
-                        <CardTitle className="text-sm text-white flex items-center gap-2">
-                          <FileText className="w-4 h-4 text-primary" />
-                          Relatório Detalhado
-                        </CardTitle>
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-sm text-white flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-primary" />
+                            Relatório Detalhado
+                          </CardTitle>
+                          <Button
+                            onClick={() => {
+                              const formData = {
+                                tipoCalculo: selectedCalculation.tipo_calculo,
+                                rendaAlimentante: selectedCalculation.renda_alimentante?.toString() || '',
+                                percentualPensao: selectedCalculation.percentual_pensao?.toString() || '',
+                                valorFixo: selectedCalculation.valor_fixo?.toString() || '',
+                                numeroFilhos: selectedCalculation.numero_filhos.toString(),
+                                idadesFilhos: selectedCalculation.idades_filhos.map(idade => idade.toString()),
+                                dataInicio: selectedCalculation.data_inicio,
+                                dataFim: selectedCalculation.data_fim || '',
+                                mesesAtraso: selectedCalculation.meses_atraso?.toString() || '',
+                                observacoes: selectedCalculation.observacoes || ''
+                              };
+                              const result = {
+                                valorPensao: selectedCalculation.valor_pensao,
+                                percentualRenda: selectedCalculation.percentual_renda,
+                                valorTotalAtrasado: selectedCalculation.valor_total_atrasado,
+                                multa: selectedCalculation.multa,
+                                juros: selectedCalculation.juros,
+                                valorCorrigido: selectedCalculation.valor_corrigido,
+                                detalhamento: selectedCalculation.detalhamento
+                              };
+                              copyCalculoPensao(result, formData);
+                            }}
+                            disabled={exportLoading}
+                            size="sm"
+                            className="bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20"
+                          >
+                            {exportLoading ? (
+                              <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                                Copiando...
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-2">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                                Copiar
+                              </div>
+                            )}
+                          </Button>
+                        </div>
                       </CardHeader>
                       <CardContent>
                         <div className="bg-slate-900/50 rounded-lg p-4 max-h-80 overflow-y-auto">

@@ -8,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserTimezone } from "@/hooks/useUserTimezone";
+import { useExportDocument } from "@/hooks/useExportDocument";
 import { FileText, Calendar, DollarSign, TrendingUp, X, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -48,6 +49,7 @@ const HistoricoCalculosModal: React.FC<HistoricoCalculosModalProps> = ({
   const [selectedCalculation, setSelectedCalculation] = useState<CalculoHistorico | null>(null);
   const { user } = useAuth();
   const { formatDateInUserTimezone } = useUserTimezone();
+  const { copyCalculoContrato, loading: exportLoading } = useExportDocument();
 
   useEffect(() => {
     if (isOpen && user) {
@@ -371,10 +373,54 @@ const HistoricoCalculosModal: React.FC<HistoricoCalculosModalProps> = ({
                     {/* Detalhamento completo */}
                     <Card className="bg-slate-800/30 border-slate-600">
                       <CardHeader className="pb-3">
-                        <CardTitle className="text-sm text-white flex items-center gap-2">
-                          <FileText className="w-4 h-4 text-primary" />
-                          Relatório Detalhado
-                        </CardTitle>
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-sm text-white flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-primary" />
+                            Relatório Detalhado
+                          </CardTitle>
+                          <Button
+                            onClick={() => {
+                              const formData = {
+                                valorContrato: selectedCalculation.valor_contrato.toString(),
+                                dataContrato: selectedCalculation.data_contrato,
+                                dataVencimento: selectedCalculation.data_vencimento,
+                                taxaJuros: selectedCalculation.taxa_juros.toString(),
+                                tipoJuros: selectedCalculation.tipo_juros,
+                                indiceCorrecao: selectedCalculation.indice_correcao,
+                                valorPago: selectedCalculation.valor_pago?.toString() || '',
+                                dataPagamentoParcial: selectedCalculation.data_pagamento_parcial || '',
+                                multaAtraso: selectedCalculation.multa_atraso.toString(),
+                                jurosMora: selectedCalculation.juros_mora.toString(),
+                                observacoes: selectedCalculation.observacoes || ''
+                              };
+                              const result = {
+                                valorTotal: selectedCalculation.valor_total,
+                                jurosTotal: selectedCalculation.juros_total,
+                                valorCorrigido: selectedCalculation.valor_corrigido,
+                                diferenca: selectedCalculation.diferenca,
+                                detalhamento: selectedCalculation.detalhamento
+                              };
+                              copyCalculoContrato(result, formData);
+                            }}
+                            disabled={exportLoading}
+                            size="sm"
+                            className="bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20"
+                          >
+                            {exportLoading ? (
+                              <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                                Copiando...
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-2">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                                Copiar
+                              </div>
+                            )}
+                          </Button>
+                        </div>
                       </CardHeader>
                       <CardContent>
                         <div className="bg-slate-900/50 rounded-lg p-4 max-h-80 overflow-y-auto">
