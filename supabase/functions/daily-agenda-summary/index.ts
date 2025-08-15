@@ -136,20 +136,23 @@ serve(async (req) => {
     
     if (!commitments || commitments.length === 0) {
       console.log("No commitments found in next 24h for query range:", now.toISOString(), "to", in24h.toISOString());
-      return new Response(JSON.stringify({ message: "No commitments in next 24h", sent: 0 }), {
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      });
+      
+      // Se é teste, mesmo sem compromissos, continuar para enviar email de teste
+      if (!testEmail) {
+        return new Response(JSON.stringify({ message: "No commitments in next 24h", sent: 0 }), {
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        });
+      }
     }
 
     // Filter users by profile flag and get notification settings
-    const userIds = Array.from(new Set(commitments.map((c) => c.user_id)));
+    let userIds = commitments ? Array.from(new Set(commitments.map((c) => c.user_id))) : [];
     
     let profilesQuery = supabase
       .from("profiles")
-      .select("user_id, full_name, receber_notificacao_agenda, timezone")
-      .in("user_id", userIds);
+      .select("user_id, full_name, receber_notificacao_agenda, timezone");
     
-    // Se é teste com email específico, filtrar apenas por esse usuário
+    // Se é teste com email específico, buscar apenas esse usuário
     if (testEmail) {
       // Buscar o user_id pelo email
       const { data: userData } = await supabase.auth.admin.listUsers();
@@ -169,9 +172,16 @@ serve(async (req) => {
       
       console.log("Target user ID:", targetUser.id);
       profilesQuery = profilesQuery.eq("user_id", targetUser.id);
+    } else if (userIds.length > 0) {
+      // Aplicar filtro normal apenas quando há compromissos
+      profilesQuery = profilesQuery
+        .in("user_id", userIds)
+        .eq("receber_notificacao_agenda", true);
     } else {
-      // Aplicar filtro de horário personalizado para cada usuário
-      profilesQuery = profilesQuery.eq("receber_notificacao_agenda", true);
+      // Sem compromissos e não é teste, retornar vazio
+      return new Response(JSON.stringify({ message: "No commitments and not a test", sent: 0 }), {
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
     }
 
     const { data: profiles, error: profilesError } = await profilesQuery;
@@ -202,7 +212,7 @@ serve(async (req) => {
     });
 
     const allowedUserIds = new Set(filteredProfiles.map((p) => p.user_id));
-    const filtered = commitments.filter((c) => allowedUserIds.has(c.user_id));
+    const filtered = commitments ? commitments.filter((c) => allowedUserIds.has(c.user_id)) : [];
 
     if (filtered.length === 0 && !testEmail) {
       return new Response(JSON.stringify({ message: "No opted-in users to notify", sent: 0 }), {
@@ -225,8 +235,8 @@ serve(async (req) => {
       });
     }
 
-    // Para teste com email específico, mesmo sem compromissos, enviar email de teste
-    if (testEmail && filtered.length === 0 && profiles && profiles.length > 0) {
+    // Para teste com email específico, SEMPRE enviar email de teste
+    if (testEmail && profiles && profiles.length > 0) {
       const profile = profiles[0];
       const { data: user } = await supabase.auth.admin.getUserById(profile.user_id);
       
