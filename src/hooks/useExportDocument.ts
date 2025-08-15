@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { useUserTimezone } from './useUserTimezone';
 
 interface CalculoContrato {
   valorTotal: number;
@@ -21,13 +22,12 @@ interface CalculoPensao {
 
 export const useExportDocument = () => {
   const [loading, setLoading] = useState(false);
+  const { formatDateInUserTimezone } = useUserTimezone();
 
   const copyCalculoContrato = async (calculo: CalculoContrato, formData: any) => {
     setLoading(true);
     try {
-      const hoje = new Date();
-      const dataFormatada = hoje.toLocaleDateString('pt-BR');
-      const horaFormatada = hoje.toLocaleTimeString('pt-BR');
+      const dataHoraFormatada = formatDateInUserTimezone(new Date(), 'dd/MM/yyyy HH:mm:ss');
 
       const textoFormatado = `
 ═══════════════════════════════════════════════════════════════════════════════
@@ -61,7 +61,7 @@ ${formData.dataPagamentoParcial ? `• Data do Pagamento:        ${new Date(form
 ${calculo.detalhamento}
 
 ═══════════════════════════════════════════════════════════════════════════════
-Documento gerado em: ${dataFormatada} às ${horaFormatada}
+Documento gerado em: ${dataHoraFormatada}
 Sistema: Oráculo Jurídico - Calculadora Especializada em Contratos Bancários
 ═══════════════════════════════════════════════════════════════════════════════
 `.trim();
@@ -79,9 +79,7 @@ Sistema: Oráculo Jurídico - Calculadora Especializada em Contratos Bancários
   const copyCalculoPensao = async (calculo: CalculoPensao, formData: any) => {
     setLoading(true);
     try {
-      const hoje = new Date();
-      const dataFormatada = hoje.toLocaleDateString('pt-BR');
-      const horaFormatada = hoje.toLocaleTimeString('pt-BR');
+      const dataHoraFormatada = formatDateInUserTimezone(new Date(), 'dd/MM/yyyy HH:mm:ss');
 
       const textoFormatado = `
 ═══════════════════════════════════════════════════════════════════════════════
@@ -121,7 +119,7 @@ ${formData.observacoes}
 ` : ''}
 
 ═══════════════════════════════════════════════════════════════════════════════
-Documento gerado em: ${dataFormatada} às ${horaFormatada}
+Documento gerado em: ${dataHoraFormatada}
 Sistema: Oráculo Jurídico - Calculadora Especializada em Pensão Alimentícia
 ═══════════════════════════════════════════════════════════════════════════════
 `.trim();

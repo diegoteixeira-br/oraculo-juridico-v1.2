@@ -420,9 +420,6 @@ const CalculoContratoBancario = () => {
                        <h4 className="text-xl font-bold text-white flex items-center gap-3">
                          <FileText className="w-6 h-6 text-primary" />
                          Detalhamento do Cálculo
-                         <Badge variant="secondary" className="text-xs bg-primary/20 text-primary border-primary/30">
-                           Relatório Completo
-                         </Badge>
                        </h4>
                        <Button
                          onClick={() => copyCalculoContrato(result, formData)}
