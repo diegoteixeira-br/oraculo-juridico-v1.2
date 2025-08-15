@@ -17,8 +17,8 @@ const AssistantAudioBlock: React.FC<AssistantAudioBlockProps> = ({ audioSrc, tex
   // Calcula progresso baseado no tempo real de leitura
   React.useEffect(() => {
     if (playing && audioDuration > 0) {
-      // Estima que uma pessoa lê cerca de 200 palavras por minuto
-      const wordsPerMinute = 200;
+      // Acelera para 320 palavras por minuto para compensar o atraso
+      const wordsPerMinute = 320;
       const words = text.split(/\s+/).length;
       const estimatedReadingTime = (words / wordsPerMinute) * 60; // em segundos
       
