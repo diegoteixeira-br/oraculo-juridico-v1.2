@@ -119,6 +119,8 @@ serve(async (req) => {
   try {
     const now = new Date();
     const in24h = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    
+    console.log("Query time range:", now.toISOString(), "to", in24h.toISOString());
 
     // Get commitments for next 24h, pending status
     const { data: commitments, error: commitmentsError } = await supabase
