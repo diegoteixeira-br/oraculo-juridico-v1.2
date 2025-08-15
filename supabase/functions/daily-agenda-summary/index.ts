@@ -101,10 +101,11 @@ serve(async (req) => {
 
   // Authorization strategy:
   // - Prefer DAILY_AGENDA_SECRET via header, body or query param
-  // - Allow pg_cron scheduled calls (they set source="pg_cron" in the body via migration)
+  // - Allow pg_cron scheduled calls (they set source="pg_cron" or "pg_cron_hourly" in the body)
   // - Allow manual tests from authenticated admin users
   const authorized = (AGENDA_SECRET && providedSecret === AGENDA_SECRET) || 
                     source === "pg_cron" || 
+                    source === "pg_cron_hourly" ||
                     source === "manual_test";
 
   if (!authorized) {
