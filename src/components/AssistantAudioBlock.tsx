@@ -14,16 +14,18 @@ const AssistantAudioBlock: React.FC<AssistantAudioBlockProps> = ({ audioSrc, tex
   const [audioDuration, setAudioDuration] = React.useState(0);
   const [currentTime, setCurrentTime] = React.useState(0);
 
-  // Calcula progresso baseado no tempo real de leitura
+  // Calcula progresso baseado no tempo real de leitura com offset inicial
   React.useEffect(() => {
     if (playing && audioDuration > 0) {
-      // Acelera para 320 palavras por minuto para compensar o atraso
-      const wordsPerMinute = 320;
+      const wordsPerMinute = 280;
       const words = text.split(/\s+/).length;
       const estimatedReadingTime = (words / wordsPerMinute) * 60; // em segundos
       
-      // Calcula progresso baseado no tempo atual vs tempo estimado de leitura
-      const readingProgress = Math.min(1, currentTime / estimatedReadingTime);
+      // Adiciona offset de 8 palavras (cerca de 1.7 segundos a 280 WPM)
+      const offsetTime = (8 / wordsPerMinute) * 60; // tempo para 8 palavras
+      const adjustedTime = currentTime + offsetTime;
+      
+      const readingProgress = Math.min(1, adjustedTime / estimatedReadingTime);
       setProgress(readingProgress);
     }
   }, [currentTime, audioDuration, playing, text]);
