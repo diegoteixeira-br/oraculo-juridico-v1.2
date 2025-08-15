@@ -147,9 +147,11 @@ serve(async (req) => {
     const valorCorrigido = valorPensao + valorTotalAtrasado + multa + juros;
     
     // Calcular período total se as datas foram informadas
+    const agora = new Date();
+    const dataAtual = agora.toLocaleDateString('en-CA', { timeZone: userTimezone }); // Formato YYYY-MM-DD no timezone do usuário
     const mesesPeriodo = data.dataFim ? 
       calcularMesesEntreDatas(data.dataInicio, data.dataFim) : 
-      calcularMesesEntreDatas(data.dataInicio, new Date().toISOString());
+      calcularMesesEntreDatas(data.dataInicio, dataAtual);
     
     // Gerar detalhamento
     const detalhamento = `CÁLCULO DE PENSÃO ALIMENTÍCIA

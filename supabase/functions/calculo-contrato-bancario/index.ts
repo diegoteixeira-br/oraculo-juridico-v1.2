@@ -161,7 +161,8 @@ serve(async (req) => {
     }
     
     // 5. Calcular atraso desde o vencimento até hoje
-    const hoje = new Date().toISOString().split('T')[0];
+    const agora = new Date();
+    const hoje = agora.toLocaleDateString('en-CA', { timeZone: userTimezone }); // Formato YYYY-MM-DD no timezone do usuário
     const diasAtraso = calcularDiferencaDias(data.dataVencimento, hoje);
     const mesesAtraso = Math.max(0, diasAtraso / 30);
     
