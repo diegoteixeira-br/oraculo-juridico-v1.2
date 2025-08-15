@@ -13,23 +13,33 @@ const AssistantAudioBlock: React.FC<AssistantAudioBlockProps> = ({ audioSrc, tex
   const [playing, setPlaying] = React.useState(false);
   const [audioDuration, setAudioDuration] = React.useState(0);
   const [currentTime, setCurrentTime] = React.useState(0);
+  const [pausedProgress, setPausedProgress] = React.useState(0); // Guarda progresso quando pausa
 
   // Calcula progresso baseado no tempo real de leitura com offset inicial
   React.useEffect(() => {
-    if (playing && audioDuration > 0) {
-      const wordsPerMinute = 280;
+    if (audioDuration > 0) {
+      const wordsPerMinute = 200; // Velocidade mais realista para TTS
       const words = text.split(/\s+/).length;
       const estimatedReadingTime = (words / wordsPerMinute) * 60; // em segundos
       
-      // Adiciona offset de 35 palavras para compensar o atraso
-      const offsetTime = (35 / wordsPerMinute) * 60; // tempo para 35 palavras
-      const adjustedTime = currentTime + offsetTime;
-      
-      // Permite até 105% para garantir que complete toda a leitura
-      const readingProgress = Math.min(1.05, adjustedTime / estimatedReadingTime);
-      setProgress(Math.max(0, readingProgress));
+      if (playing) {
+        // Quando está tocando, calcula progresso com offset
+        const offsetTime = (25 / wordsPerMinute) * 60; // 25 palavras de offset
+        const adjustedTime = currentTime + offsetTime;
+        const readingProgress = Math.min(1.05, adjustedTime / estimatedReadingTime);
+        const newProgress = Math.max(0, readingProgress);
+        setProgress(newProgress);
+        setPausedProgress(newProgress); // Atualiza posição pausada
+      } else if (currentTime === 0) {
+        // Se voltou pro início, reseta o progresso
+        setProgress(0);
+        setPausedProgress(0);
+      } else {
+        // Se pausou, mantém o progresso onde estava
+        setProgress(pausedProgress);
+      }
     }
-  }, [currentTime, audioDuration, playing, text]);
+  }, [currentTime, audioDuration, playing, text, pausedProgress]);
 
   return (
     <div>
