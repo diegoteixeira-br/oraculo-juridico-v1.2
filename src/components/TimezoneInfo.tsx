@@ -1,10 +1,13 @@
-import { Clock, MapPin } from "lucide-react";
+import { Clock, MapPin, Settings } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useUserTimezone } from "@/hooks/useUserTimezone";
+import { useNavigate } from "react-router-dom";
 
 const TimezoneInfo = () => {
   const { userTimezone, getCurrentDateInUserTimezone } = useUserTimezone();
+  const navigate = useNavigate();
   
   const timezoneLabels: { [key: string]: string } = {
     'America/Sao_Paulo': 'Brasília (GMT-3)',
@@ -43,6 +46,16 @@ const TimezoneInfo = () => {
             Todas as datas e horários do sistema são exibidos neste fuso horário.
           </div>
         </div>
+        
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={() => navigate('/minha-conta')}
+          className="w-full bg-blue-600/20 hover:bg-blue-600/30 border-blue-400/30 text-blue-300 hover:text-blue-200"
+        >
+          <Settings className="w-4 h-4 mr-2" />
+          Alterar Fuso Horário
+        </Button>
       </CardContent>
     </Card>
   );

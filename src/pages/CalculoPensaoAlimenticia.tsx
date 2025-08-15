@@ -15,6 +15,7 @@ import UserMenu from "@/components/UserMenu";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 import { useExportDocument } from "@/hooks/useExportDocument";
 import HistoricoPensaoModal from "@/components/HistoricoPensaoModal";
+import TimezoneInfo from "@/components/TimezoneInfo";
 
 interface CalculoResult {
   valorPensao: number;
@@ -516,25 +517,31 @@ const CalculoPensaoAlimenticia = () => {
             )}
           </div>
 
-          {/* Informações importantes */}
-          <Card className="bg-amber-900/20 border-amber-500/30">
-            <CardContent className="p-4">
-              <div className="flex items-start gap-3">
-                <div className="p-2 bg-amber-500/20 rounded-lg flex-shrink-0">
-                  <Scale className="w-5 h-5 text-amber-400" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-amber-200 mb-2">Informações Legais</h4>
-                  <div className="space-y-1 text-sm text-amber-300/80">
-                    <p>• Pensão devida até 18 anos (ou 24 se universitário)</p>
-                    <p>• Percentual varia entre 15% a 30% da renda por filho</p>
-                    <p>• Atraso: multa de 2% + juros de 1% ao mês</p>
-                    <p>• Valor pode ser revisado mediante mudança financeira</p>
+          {/* Grid com informações importantes e timezone */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Informações importantes */}
+            <Card className="bg-amber-900/20 border-amber-500/30 lg:col-span-2">
+              <CardContent className="p-4">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-amber-500/20 rounded-lg flex-shrink-0">
+                    <Scale className="w-5 h-5 text-amber-400" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-amber-200 mb-2">Informações Legais</h4>
+                    <div className="space-y-1 text-sm text-amber-300/80">
+                      <p>• Pensão devida até 18 anos (ou 24 se universitário)</p>
+                      <p>• Percentual varia entre 15% a 30% da renda por filho</p>
+                      <p>• Atraso: multa de 2% + juros de 1% ao mês</p>
+                      <p>• Valor pode ser revisado mediante mudança financeira</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+
+            {/* Informações de Timezone */}
+            <TimezoneInfo />
+          </div>
         </div>
       </div>
 
