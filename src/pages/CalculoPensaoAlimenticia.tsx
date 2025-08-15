@@ -33,7 +33,7 @@ const CalculoPensaoAlimenticia = () => {
   const [result, setResult] = useState<CalculoResult | null>(null);
   const [historicoModalOpen, setHistoricoModalOpen] = useState(false);
   const { visible: menuVisible } = useScrollDirection();
-  const { exportCalculoPensao, loading: exportLoading } = useExportDocument();
+  const { copyCalculoPensao, loading: exportLoading } = useExportDocument();
   
   const [formData, setFormData] = useState({
     rendaAlimentante: '',
@@ -464,7 +464,7 @@ const CalculoPensaoAlimenticia = () => {
                          Detalhamento do Cálculo
                        </h4>
                        <Button
-                         onClick={() => exportCalculoPensao(result, formData)}
+                         onClick={() => copyCalculoPensao(result, formData)}
                          disabled={exportLoading}
                          variant="outline"
                          size="sm"
@@ -477,7 +477,7 @@ const CalculoPensaoAlimenticia = () => {
                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                            </svg>
                          )}
-                         Word
+                         Copiar
                        </Button>
                      </div>
                      <div className="max-h-64 overflow-y-auto">

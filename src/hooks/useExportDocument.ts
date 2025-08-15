@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, TableRow, TableCell, Table, WidthType } from 'docx';
-import { saveAs } from 'file-saver';
 import { toast } from 'sonner';
 
 interface CalculoContrato {
@@ -24,418 +22,123 @@ interface CalculoPensao {
 export const useExportDocument = () => {
   const [loading, setLoading] = useState(false);
 
-  const exportCalculoContrato = async (calculo: CalculoContrato, formData: any) => {
+  const copyCalculoContrato = async (calculo: CalculoContrato, formData: any) => {
     setLoading(true);
     try {
-      const doc = new Document({
-        sections: [{
-          children: [
-            // Cabeçalho
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: "RELATÓRIO DE CÁLCULO DE CONTRATO BANCÁRIO",
-                  bold: true,
-                  size: 28,
-                })
-              ],
-              alignment: AlignmentType.CENTER,
-              spacing: { after: 400 }
-            }),
+      const hoje = new Date();
+      const dataFormatada = hoje.toLocaleDateString('pt-BR');
+      const horaFormatada = hoje.toLocaleTimeString('pt-BR');
 
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: "Oráculo Jurídico - Calculadora Especializada",
-                  italics: true,
-                  size: 20,
-                })
-              ],
-              alignment: AlignmentType.CENTER,
-              spacing: { after: 600 }
-            }),
+      const textoFormatado = `
+═══════════════════════════════════════════════════════════════════════════════
+                     RELATÓRIO DE CÁLCULO DE CONTRATO BANCÁRIO
+                            Oráculo Jurídico - Sistema Especializado
+═══════════════════════════════════════════════════════════════════════════════
 
-            // Dados do contrato
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: "DADOS DO CONTRATO",
-                  bold: true,
-                  size: 24,
-                })
-              ],
-              heading: HeadingLevel.HEADING_1,
-              spacing: { before: 400, after: 200 }
-            }),
+📋 DADOS DO CONTRATO
+──────────────────────────────────────────────────────────────────────────────
+• Valor do Contrato:        R$ ${parseFloat(formData.valorContrato).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+• Data do Contrato:         ${new Date(formData.dataContrato).toLocaleDateString('pt-BR')}
+• Data de Vencimento:       ${new Date(formData.dataVencimento).toLocaleDateString('pt-BR')}
+• Taxa de Juros:            ${formData.taxaJuros}% a.m.
+• Tipo de Juros:            ${formData.tipoJuros === 'simples' ? 'Juros Simples' : 'Juros Compostos'}
+• Índice de Correção:       ${formData.indiceCorrecao.toUpperCase()}
+• Multa por Atraso:         ${formData.multaAtraso || '2'}%
+• Juros de Mora:            ${formData.jurosMora || '1'}% a.m.
+${formData.valorPago ? `• Valor Pago:               R$ ${parseFloat(formData.valorPago).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : ''}
+${formData.dataPagamentoParcial ? `• Data do Pagamento:        ${new Date(formData.dataPagamentoParcial).toLocaleDateString('pt-BR')}` : ''}
 
-            new Table({
-              width: { size: 100, type: WidthType.PERCENTAGE },
-              rows: [
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: "Valor do Contrato:", bold: true })] })]
-                    }),
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: `R$ ${parseFloat(formData.valorContrato).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` })] })]
-                    })
-                  ]
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: "Data do Contrato:", bold: true })] })]
-                    }),
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: new Date(formData.dataContrato).toLocaleDateString('pt-BR') })] })]
-                    })
-                  ]
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: "Data de Vencimento:", bold: true })] })]
-                    }),
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: new Date(formData.dataVencimento).toLocaleDateString('pt-BR') })] })]
-                    })
-                  ]
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: "Taxa de Juros:", bold: true })] })]
-                    }),
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: `${formData.taxaJuros}% a.m.` })] })]
-                    })
-                  ]
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: "Tipo de Juros:", bold: true })] })]
-                    }),
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: formData.tipoJuros === 'simples' ? 'Juros Simples' : 'Juros Compostos' })] })]
-                    })
-                  ]
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: "Índice de Correção:", bold: true })] })]
-                    }),
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: formData.indiceCorrecao.toUpperCase() })] })]
-                    })
-                  ]
-                })
-              ]
-            }),
+💰 RESULTADOS DO CÁLCULO
+──────────────────────────────────────────────────────────────────────────────
+• VALOR TOTAL DEVIDO:       R$ ${calculo.valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+• Valor Corrigido:          R$ ${calculo.valorCorrigido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+• Juros Totais:             R$ ${calculo.jurosTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+• Diferença Detectada:      R$ ${Math.abs(calculo.diferenca).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+• Status: ${calculo.valorCorrigido > calculo.valorTotal ? 'COBRANÇA EXCESSIVA DETECTADA' : 'VALORES DENTRO DOS PARÂMETROS LEGAIS'}
 
-            // Resultados
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: "RESULTADOS DO CÁLCULO",
-                  bold: true,
-                  size: 24,
-                })
-              ],
-              heading: HeadingLevel.HEADING_1,
-              spacing: { before: 600, after: 200 }
-            }),
+📄 DETALHAMENTO TÉCNICO E JURÍDICO
+──────────────────────────────────────────────────────────────────────────────
+${calculo.detalhamento}
 
-            new Table({
-              width: { size: 100, type: WidthType.PERCENTAGE },
-              rows: [
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: "Valor Total Devido:", bold: true })] })]
-                    }),
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: `R$ ${calculo.valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, bold: true, color: "00AA00" })] })]
-                    })
-                  ]
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: "Valor Corrigido:", bold: true })] })]
-                    }),
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: `R$ ${calculo.valorCorrigido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` })] })]
-                    })
-                  ]
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: "Juros Totais:", bold: true })] })]
-                    }),
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: `R$ ${calculo.jurosTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` })] })]
-                    })
-                  ]
-                })
-              ]
-            }),
+═══════════════════════════════════════════════════════════════════════════════
+Documento gerado em: ${dataFormatada} às ${horaFormatada}
+Sistema: Oráculo Jurídico - Calculadora Especializada em Contratos Bancários
+═══════════════════════════════════════════════════════════════════════════════
+`.trim();
 
-            // Detalhamento completo
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: "DETALHAMENTO COMPLETO",
-                  bold: true,
-                  size: 24,
-                })
-              ],
-              heading: HeadingLevel.HEADING_1,
-              spacing: { before: 600, after: 200 }
-            }),
-
-            // Converter o detalhamento em parágrafos
-            ...calculo.detalhamento.split('\n').map(line => 
-              new Paragraph({
-                children: [
-                  new TextRun({
-                    text: line,
-                    font: "Courier New",
-                    size: 18
-                  })
-                ],
-                spacing: { after: 100 }
-              })
-            )
-          ]
-        }]
-      });
-
-      const blob = await Packer.toBlob(doc);
-      const fileName = `calculo-contrato-bancario-${new Date().toISOString().split('T')[0]}.docx`;
-      saveAs(blob, fileName);
-      
-      toast.success(`Documento exportado como ${fileName}`);
+      await navigator.clipboard.writeText(textoFormatado);
+      toast.success('Relatório copiado para a área de transferência! Cole em qualquer editor.');
     } catch (error) {
-      console.error('Erro ao exportar documento:', error);
-      toast.error('Erro ao exportar documento');
+      console.error('Erro ao copiar texto:', error);
+      toast.error('Erro ao copiar relatório. Tente novamente.');
     } finally {
       setLoading(false);
     }
   };
 
-  const exportCalculoPensao = async (calculo: CalculoPensao, formData: any) => {
+  const copyCalculoPensao = async (calculo: CalculoPensao, formData: any) => {
     setLoading(true);
     try {
-      const doc = new Document({
-        sections: [{
-          children: [
-            // Cabeçalho
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: "RELATÓRIO DE CÁLCULO DE PENSÃO ALIMENTÍCIA",
-                  bold: true,
-                  size: 28,
-                })
-              ],
-              alignment: AlignmentType.CENTER,
-              spacing: { after: 400 }
-            }),
+      const hoje = new Date();
+      const dataFormatada = hoje.toLocaleDateString('pt-BR');
+      const horaFormatada = hoje.toLocaleTimeString('pt-BR');
 
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: "Oráculo Jurídico - Calculadora Especializada",
-                  italics: true,
-                  size: 20,
-                })
-              ],
-              alignment: AlignmentType.CENTER,
-              spacing: { after: 600 }
-            }),
+      const textoFormatado = `
+═══════════════════════════════════════════════════════════════════════════════
+                    RELATÓRIO DE CÁLCULO DE PENSÃO ALIMENTÍCIA
+                            Oráculo Jurídico - Sistema Especializado
+═══════════════════════════════════════════════════════════════════════════════
 
-            // Dados da pensão
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: "DADOS DA PENSÃO ALIMENTÍCIA",
-                  bold: true,
-                  size: 24,
-                })
-              ],
-              heading: HeadingLevel.HEADING_1,
-              spacing: { before: 400, after: 200 }
-            }),
+👨‍👩‍👧‍👦 DADOS DA PENSÃO ALIMENTÍCIA
+──────────────────────────────────────────────────────────────────────────────
+• Tipo de Cálculo:          ${formData.tipoCalculo === 'percentual' ? 'Percentual da Renda' : 'Valor Fixo'}
+${formData.rendaAlimentante ? `• Renda do Alimentante:     R$ ${parseFloat(formData.rendaAlimentante).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : ''}
+${formData.valorFixo ? `• Valor Fixo da Pensão:     R$ ${parseFloat(formData.valorFixo).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : ''}
+• Número de Filhos:         ${formData.numeroFilhos}
+• Idades dos Filhos:        ${formData.idadesFilhos?.filter(idade => idade).join(', ') || 'Não informado'} anos
+• Data de Início:           ${new Date(formData.dataInicio).toLocaleDateString('pt-BR')}
+${formData.dataFim ? `• Data de Fim:              ${new Date(formData.dataFim).toLocaleDateString('pt-BR')}` : ''}
+${formData.mesesAtraso ? `• Meses em Atraso:          ${formData.mesesAtraso}` : ''}
 
-            new Table({
-              width: { size: 100, type: WidthType.PERCENTAGE },
-              rows: [
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: "Tipo de Cálculo:", bold: true })] })]
-                    }),
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: formData.tipoCalculo === 'percentual' ? 'Percentual da Renda' : 'Valor Fixo' })] })]
-                    })
-                  ]
-                }),
-                ...(formData.tipoCalculo === 'percentual' ? [
-                  new TableRow({
-                    children: [
-                      new TableCell({
-                        children: [new Paragraph({ children: [new TextRun({ text: "Renda do Alimentante:", bold: true })] })]
-                      }),
-                      new TableCell({
-                        children: [new Paragraph({ children: [new TextRun({ text: `R$ ${parseFloat(formData.rendaAlimentante || '0').toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` })] })]
-                      })
-                    ]
-                  })
-                ] : [
-                  new TableRow({
-                    children: [
-                      new TableCell({
-                        children: [new Paragraph({ children: [new TextRun({ text: "Valor Fixo:", bold: true })] })]
-                      }),
-                      new TableCell({
-                        children: [new Paragraph({ children: [new TextRun({ text: `R$ ${parseFloat(formData.valorFixo || '0').toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` })] })]
-                      })
-                    ]
-                  })
-                ]),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: "Número de Filhos:", bold: true })] })]
-                    }),
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: formData.numeroFilhos })] })]
-                    })
-                  ]
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: "Data de Início:", bold: true })] })]
-                    }),
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: new Date(formData.dataInicio).toLocaleDateString('pt-BR') })] })]
-                    })
-                  ]
-                })
-              ]
-            }),
+💰 RESULTADOS DO CÁLCULO
+──────────────────────────────────────────────────────────────────────────────
+• VALOR DA PENSÃO MENSAL:   R$ ${calculo.valorPensao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+${formData.tipoCalculo === 'percentual' ? `• Percentual da Renda:      ${calculo.percentualRenda.toFixed(2)}%` : ''}
+• VALOR TOTAL CORRIGIDO:    R$ ${calculo.valorCorrigido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+${calculo.valorTotalAtrasado > 0 ? `
+• Valor em Atraso:          R$ ${calculo.valorTotalAtrasado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+• Multa (2%):               R$ ${calculo.multa.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+• Juros de Mora (1% a.m.):  R$ ${calculo.juros.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : ''}
 
-            // Resultados
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: "RESULTADOS DO CÁLCULO",
-                  bold: true,
-                  size: 24,
-                })
-              ],
-              heading: HeadingLevel.HEADING_1,
-              spacing: { before: 600, after: 200 }
-            }),
+📄 DETALHAMENTO TÉCNICO E JURÍDICO
+──────────────────────────────────────────────────────────────────────────────
+${calculo.detalhamento}
 
-            new Table({
-              width: { size: 100, type: WidthType.PERCENTAGE },
-              rows: [
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: "Valor da Pensão Mensal:", bold: true })] })]
-                    }),
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: `R$ ${calculo.valorPensao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, bold: true, color: "0066CC" })] })]
-                    })
-                  ]
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: "Valor Total Corrigido:", bold: true })] })]
-                    }),
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: `R$ ${calculo.valorCorrigido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, bold: true, color: "00AA00" })] })]
-                    })
-                  ]
-                }),
-                ...(calculo.valorTotalAtrasado > 0 ? [
-                  new TableRow({
-                    children: [
-                      new TableCell({
-                        children: [new Paragraph({ children: [new TextRun({ text: "Valor em Atraso:", bold: true })] })]
-                      }),
-                      new TableCell({
-                        children: [new Paragraph({ children: [new TextRun({ text: `R$ ${calculo.valorTotalAtrasado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` })] })]
-                      })
-                    ]
-                  }),
-                  new TableRow({
-                    children: [
-                      new TableCell({
-                        children: [new Paragraph({ children: [new TextRun({ text: "Multa e Juros:", bold: true })] })]
-                      }),
-                      new TableCell({
-                        children: [new Paragraph({ children: [new TextRun({ text: `R$ ${(calculo.multa + calculo.juros).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` })] })]
-                      })
-                    ]
-                  })
-                ] : [])
-              ]
-            }),
+${formData.observacoes ? `
+📝 OBSERVAÇÕES ADICIONAIS
+──────────────────────────────────────────────────────────────────────────────
+${formData.observacoes}
+` : ''}
 
-            // Detalhamento completo
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: "DETALHAMENTO COMPLETO",
-                  bold: true,
-                  size: 24,
-                })
-              ],
-              heading: HeadingLevel.HEADING_1,
-              spacing: { before: 600, after: 200 }
-            }),
+═══════════════════════════════════════════════════════════════════════════════
+Documento gerado em: ${dataFormatada} às ${horaFormatada}
+Sistema: Oráculo Jurídico - Calculadora Especializada em Pensão Alimentícia
+═══════════════════════════════════════════════════════════════════════════════
+`.trim();
 
-            // Converter o detalhamento em parágrafos
-            ...calculo.detalhamento.split('\n').map(line => 
-              new Paragraph({
-                children: [
-                  new TextRun({
-                    text: line,
-                    font: "Courier New",
-                    size: 18
-                  })
-                ],
-                spacing: { after: 100 }
-              })
-            )
-          ]
-        }]
-      });
-
-      const blob = await Packer.toBlob(doc);
-      const fileName = `calculo-pensao-alimenticia-${new Date().toISOString().split('T')[0]}.docx`;
-      saveAs(blob, fileName);
-      
-      toast.success(`Documento exportado como ${fileName}`);
+      await navigator.clipboard.writeText(textoFormatado);
+      toast.success('Relatório copiado para a área de transferência! Cole em qualquer editor.');
     } catch (error) {
-      console.error('Erro ao exportar documento:', error);
-      toast.error('Erro ao exportar documento');
+      console.error('Erro ao copiar texto:', error);
+      toast.error('Erro ao copiar relatório. Tente novamente.');
     } finally {
       setLoading(false);
     }
   };
 
   return {
-    exportCalculoContrato,
-    exportCalculoPensao,
+    copyCalculoContrato,
+    copyCalculoPensao,
     loading
   };
 };
