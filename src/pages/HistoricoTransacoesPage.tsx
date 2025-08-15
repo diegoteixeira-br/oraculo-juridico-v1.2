@@ -355,7 +355,7 @@ export default function HistoricoTransacoesPage() {
                 </div>
               ) : filteredTransactions.length > 0 ? (
                 <div className="space-y-4">
-                  {filteredTransactions.map((transaction) => (
+                  {filteredTransactions.slice(0, 50).map((transaction) => (
                     <div key={transaction.id} className="group p-4 bg-slate-700/30 rounded-xl border border-slate-600/50 hover:border-slate-500/50 hover:bg-slate-700/50 transition-all">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-3">
