@@ -166,9 +166,9 @@ function CadastroForm() {
                     <Zap className="w-8 h-8 text-blue-400" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">Plano Gratuito - 7 Dias Grátis!</h3>
+                    <h3 className="text-xl font-bold text-white">Plano Mensal (Essencial)</h3>
                     <p className="text-sm text-slate-300">
-                      Comece agora com 15.000 tokens grátis
+                      IA jurídica completa, calculadoras, histórico e agenda com IA
                     </p>
                   </div>
                 </div>
@@ -187,10 +187,10 @@ function CadastroForm() {
                 </ul>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="text-center p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-blue-400">15.000</div>
-                  <div className="text-xs text-slate-400">Tokens gratuitos</div>
+                  <div className="text-lg font-bold text-blue-400">30.000</div>
+                  <div className="text-xs text-slate-400">Tokens/mês</div>
                 </div>
                 <div className="text-center p-3 bg-white/5 rounded-lg">
                   <div className="text-lg font-bold text-green-400">R$ 37,90</div>
@@ -198,11 +198,11 @@ function CadastroForm() {
                 </div>
                 <div className="text-center p-3 bg-white/5 rounded-lg">
                   <div className="text-lg font-bold text-purple-400">7 Dias</div>
-                  <div className="text-xs text-slate-400">Teste Grátis</div>
+                  <div className="text-xs text-slate-400">Grátis</div>
                 </div>
                 <div className="text-center p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-orange-400">Suporte</div>
-                  <div className="text-xs text-slate-400">Prioritário</div>
+                  <div className="text-lg font-bold text-orange-400">15.000</div>
+                  <div className="text-xs text-slate-400">Tokens gratuitos</div>
                 </div>
               </div>
             </CardContent>
