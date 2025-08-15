@@ -82,10 +82,10 @@ export default function FinalizarCadastro() {
             <CardHeader className="text-center">
               <CardTitle className="flex items-center justify-center gap-2 text-white text-2xl">
                 <Zap className="w-6 h-6 text-blue-400" />
-                Plano Essencial
+                Plano Gratuito
               </CardTitle>
               <CardDescription>
-                Complete seu cadastro para começar o teste gratuito
+                Complete seu cadastro para começar seus 7 dias grátis
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -95,7 +95,7 @@ export default function FinalizarCadastro() {
                 <div className="text-4xl font-bold text-blue-400 mb-2">R$ 37,90</div>
                 <div className="text-sm text-slate-300">por mês • 30.000 tokens</div>
                 <div className="text-lg font-semibold text-yellow-400 mt-2">
-                  8 Dias Grátis para Testar!
+                  7 Dias Grátis para Testar!
                 </div>
               </div>
 
@@ -112,7 +112,7 @@ export default function FinalizarCadastro() {
                       </li>
                       <li className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-green-400 rounded-full"></div>
-                        <strong>Você não será cobrado nos primeiros 8 dias</strong>
+                        <strong>7 dias grátis, cobrança inicia no 8º dia</strong>
                       </li>
                       <li className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
@@ -187,7 +187,7 @@ export default function FinalizarCadastro() {
               <div className="text-center p-4 bg-slate-700/20 rounded-lg">
                 <p className="text-sm text-slate-300">
                   <Shield className="w-4 h-4 inline mr-1 text-green-400" />
-                  Garantia de 8 dias grátis • Pagamento seguro via Stripe
+                  Garantia de 7 dias grátis • Pagamento seguro via Stripe
                 </p>
               </div>
             </CardContent>
