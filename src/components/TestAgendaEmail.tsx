@@ -533,15 +533,6 @@ const TestAgendaEmail = () => {
           </Button>
         </div>
 
-        <Button 
-          onClick={openPreview} 
-          variant="secondary"
-          className="w-full"
-        >
-          <Mail className="w-4 h-4 mr-2" />
-          Ver Preview do Email
-        </Button>
-
         {result && (
           <div className="mt-4 p-3 bg-slate-50 rounded-lg border">
             <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
