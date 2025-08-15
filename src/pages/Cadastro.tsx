@@ -166,9 +166,9 @@ function CadastroForm() {
                     <Zap className="w-8 h-8 text-blue-400" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">Plano Essencial - 8 Dias Grátis!</h3>
+                    <h3 className="text-xl font-bold text-white">Plano Gratuito - 7 Dias Grátis!</h3>
                     <p className="text-sm text-slate-300">
-                      Comece agora com 30.000 tokens/mês
+                      Comece agora com 15.000 tokens grátis
                     </p>
                   </div>
                 </div>
@@ -181,7 +181,7 @@ function CadastroForm() {
                 </div>
                 <ul className="text-xs text-yellow-100 space-y-1">
                   <li>• Para finalizar o cadastro, é necessário adicionar um cartão</li>
-                  <li>• <strong>Você não será cobrado nos primeiros 8 dias</strong></li>
+                  <li>• <strong>7 dias grátis, cobrança inicia no 8º dia</strong></li>
                   <li>• Cancele a qualquer momento sem cobrança</li>
                   <li>• Acesso completo a todos os recursos durante o teste</li>
                 </ul>
@@ -189,15 +189,15 @@ function CadastroForm() {
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="text-center p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-blue-400">30.000</div>
-                  <div className="text-xs text-slate-400">Tokens/mês</div>
+                  <div className="text-lg font-bold text-blue-400">15.000</div>
+                  <div className="text-xs text-slate-400">Tokens gratuitos</div>
                 </div>
                 <div className="text-center p-3 bg-white/5 rounded-lg">
                   <div className="text-lg font-bold text-green-400">R$ 37,90</div>
                   <div className="text-xs text-slate-400">Por mês</div>
                 </div>
                 <div className="text-center p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-purple-400">8 Dias</div>
+                  <div className="text-lg font-bold text-purple-400">7 Dias</div>
                   <div className="text-xs text-slate-400">Teste Grátis</div>
                 </div>
                 <div className="text-center p-3 bg-white/5 rounded-lg">
@@ -368,7 +368,7 @@ function CadastroForm() {
                     ) : (
                       <>
                         <Zap className="w-4 h-4 mr-2" />
-                        Começar Teste de 8 Dias Grátis
+                        Começar Teste de 7 Dias Grátis
                       </>
                     )}
                   </Button>
