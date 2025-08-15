@@ -312,11 +312,63 @@ const TestAgendaEmail = () => {
 
             <TabsContent value="preview" className="mt-4">
               <div className="space-y-4">
-                <Label className="text-sm font-medium">Preview com dados de exemplo</Label>
-                <div 
-                  className="border rounded-lg p-4 bg-white min-h-[400px] overflow-auto"
-                  dangerouslySetInnerHTML={{ __html: getPreviewWithData() }}
-                />
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-medium">Preview com dados de exemplo</Label>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Eye className="w-3 h-3" />
+                    Como ficará o email
+                  </div>
+                </div>
+                
+                <div className="relative">
+                  {/* Email Container Preview */}
+                  <div className="bg-gradient-to-b from-slate-50 to-slate-100 p-6 rounded-lg border shadow-sm">
+                    <div className="max-w-2xl mx-auto">
+                      {/* Mock Email Header */}
+                      <div className="bg-white rounded-t-lg border border-b-0 p-4 flex items-center gap-3 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                          <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        </div>
+                        <div className="text-xs">
+                          <span className="font-medium">De:</span> Cakto &lt;agenda@cakto.com&gt;
+                        </div>
+                        <div className="text-xs">
+                          <span className="font-medium">Para:</span> joao.silva@exemplo.com
+                        </div>
+                        <div className="text-xs">
+                          <span className="font-medium">Assunto:</span> Resumo da Agenda Jurídica
+                        </div>
+                      </div>
+                      
+                      {/* Email Content */}
+                      <div 
+                        className="bg-white border border-t-0 rounded-b-lg overflow-hidden shadow-sm"
+                        dangerouslySetInnerHTML={{ __html: getPreviewWithData() }}
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Preview Badge */}
+                  <div className="absolute top-2 right-2">
+                    <div className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full font-medium shadow-lg">
+                      Preview
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="text-xs text-muted-foreground bg-blue-50 p-3 rounded-lg border border-blue-200">
+                  <div className="flex items-start gap-2">
+                    <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center mt-0.5">
+                      <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                    </div>
+                    <div>
+                      <p className="font-medium text-blue-900 mb-1">Preview com dados simulados</p>
+                      <p className="text-blue-700">Este preview mostra como o email ficará com dados reais de compromissos e informações do usuário.</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </TabsContent>
           </Tabs>
