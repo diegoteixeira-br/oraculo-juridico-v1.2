@@ -64,9 +64,9 @@ const [dailyCredits, setDailyCredits] = useState(0);
   const isPaid = profile?.subscription_status === 'active';
   const planType = profile?.plan_type || 'gratuito';
   const trialEndDate = profile?.trial_end_date ? new Date(profile.trial_end_date) : null;
-  const daysRemaining = isTrial && trialEndDate 
+  const daysRemaining = trialEndDate 
     ? Math.max(0, Math.ceil((trialEndDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
-    : 0;
+    : 7; // Default para usuários gratuitos sem trial_end_date
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -367,7 +367,7 @@ const openTemplateEditor = async (documentId: string) => {
               </CardContent>
             </Card>
 
-            {isPaid ? (
+            {(isPaid || planType === 'Gratuito' || planType === 'gratuito') ? (
               <Card className="bg-gradient-to-br from-emerald-600/20 to-emerald-600/10 border-emerald-600/30">
                 <CardContent className="p-4">
                    <div className="flex items-center justify-between">
