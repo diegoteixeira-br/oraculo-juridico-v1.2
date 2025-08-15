@@ -100,18 +100,18 @@ export default function UserMenu({ hideOptions = [] }: UserMenuProps) {
       show: !hideOptions.includes("historico"),
     },
     {
-      key: "admin",
-      label: "Admin",
-      icon: Shield,
-      onClick: () => navigate("/admin"),
-      show: isAdmin && !hideOptions.includes("admin"),
-    },
-    {
       key: "account",
       label: "Minha Conta", 
       icon: Settings,
       onClick: () => navigate("/minha-conta"),
       show: !hideOptions.includes("account"),
+    },
+    {
+      key: "admin",
+      label: "Admin",
+      icon: Shield,
+      onClick: () => navigate("/admin"),
+      show: isAdmin && !hideOptions.includes("admin"),
     },
   ].filter(item => item.show);
 
