@@ -29,6 +29,8 @@ export default function HistoricoTransacoesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [dateFilter, setDateFilter] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 50;
   
   const { user, profile } = useAuth();
   const { toast } = useToast();
@@ -111,7 +113,14 @@ export default function HistoricoTransacoesPage() {
     }
 
     setFilteredTransactions(filtered);
+    setCurrentPage(1); // Reset page when filters change
   }, [transactions, typeFilter, dateFilter, searchTerm]);
+
+  // Calculate pagination values
+  const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentTransactions = filteredTransactions.slice(startIndex, endIndex);
 
   const getTransactionTypeLabel = (type: string) => {
     switch (type) {
@@ -355,7 +364,7 @@ export default function HistoricoTransacoesPage() {
                 </div>
               ) : filteredTransactions.length > 0 ? (
                 <div className="space-y-4">
-                  {filteredTransactions.slice(0, 50).map((transaction) => (
+                  {currentTransactions.map((transaction) => (
                     <div key={transaction.id} className="group p-4 bg-slate-700/30 rounded-xl border border-slate-600/50 hover:border-slate-500/50 hover:bg-slate-700/50 transition-all">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-3">
@@ -449,6 +458,48 @@ export default function HistoricoTransacoesPage() {
                       </Button>
                     </div>
                   )}
+                </div>
+              )}
+              
+              {/* Paginação */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center mt-8 gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                  >
+                    Anterior
+                  </Button>
+                  
+                  <div className="flex gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                      <Button
+                        key={page}
+                        variant={page === currentPage ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setCurrentPage(page)}
+                        className={page === currentPage 
+                          ? "bg-primary text-white" 
+                          : "border-slate-600 text-slate-300 hover:bg-slate-700"
+                        }
+                      >
+                        {page}
+                      </Button>
+                    ))}
+                  </div>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                  >
+                    Próxima
+                  </Button>
                 </div>
               )}
             </CardContent>
