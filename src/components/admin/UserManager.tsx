@@ -106,13 +106,19 @@ export default function UserManager() {
 
   const updatePlanType = async (userId: string, planType: string) => {
     try {
+      // Determinar o subscription_status baseado no plano
+      const subscriptionStatus = planType === 'Essencial' ? 'active' : 'trial';
+      
       const { error } = await supabase
         .from('profiles')
-        .update({ plan_type: planType })
+        .update({ 
+          plan_type: planType,
+          subscription_status: subscriptionStatus 
+        })
         .eq('user_id', userId);
       
       if (error) throw error;
-      toast.success('Plano atualizado');
+      toast.success('Plano e status atualizados');
       load();
     } catch (e: any) {
       console.error(e);

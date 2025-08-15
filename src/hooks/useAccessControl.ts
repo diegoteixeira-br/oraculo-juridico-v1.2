@@ -29,12 +29,23 @@ export function useAccessControl() {
 
   // Informações sobre o plano atual
   const getCurrentPlanInfo = () => {
-    if (isSubscriber) {
+    // Se tem subscription_status active, mas plan_type é gratuito, há inconsistência
+    if (isSubscriber && planType === 'Essencial') {
       return {
-        name: planType === 'essencial' ? 'Essencial' : 'Assinante',
+        name: 'Essencial',
         type: 'subscription',
         badge: 'Assinante', 
         badgeColor: 'bg-amber-500/20 text-amber-200 border border-amber-400/30'
+      };
+    }
+    
+    if (isSubscriber && (planType === 'gratuito' || planType === 'Gratuito')) {
+      // Inconsistência detectada - usuário tem status ativo mas plano gratuito
+      return {
+        name: 'Gratuito',
+        type: 'trial',
+        badge: isTrialActive ? `Trial (${Math.max(0, Math.ceil((trialEnd!.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))} dias)` : 'Expirado',
+        badgeColor: isTrialActive ? 'bg-blue-500/20 text-blue-200 border border-blue-400/30' : 'bg-red-500/20 text-red-200 border border-red-400/30'
       };
     }
     
@@ -44,6 +55,15 @@ export function useAccessControl() {
         type: 'cancelled',
         badge: 'Cancelado',
         badgeColor: 'bg-red-500/20 text-red-200 border border-red-400/30'
+      };
+    }
+    
+    if (isTrialActive) {
+      return {
+        name: 'Gratuito',
+        type: 'trial',
+        badge: `Trial (${Math.max(0, Math.ceil((trialEnd!.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))} dias)`,
+        badgeColor: 'bg-blue-500/20 text-blue-200 border border-blue-400/30'
       };
     }
     
