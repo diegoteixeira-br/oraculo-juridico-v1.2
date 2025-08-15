@@ -16,6 +16,7 @@ function CadastroForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [cpf, setCpf] = useState('');
   const [honeypot, setHoneypot] = useState(''); // Campo honeypot para detectar bots
@@ -55,6 +56,17 @@ function CadastroForm() {
         toast({
           title: "Verificação necessária",
           description: "Por favor, complete a verificação reCAPTCHA.",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Verificar se as senhas coincidem
+      if (password !== confirmPassword) {
+        toast({
+          title: "Senhas não coincidem",
+          description: "A senha e a confirmação devem ser iguais.",
           variant: "destructive",
         });
         setLoading(false);
@@ -252,6 +264,34 @@ function CadastroForm() {
                         placeholder="Sua senha"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        required
+                        className="bg-slate-700 border-slate-600 focus:border-primary text-white pr-10"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 text-slate-400 hover:text-white"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword" className="text-sm text-slate-300">Confirmar Senha *</Label>
+                    <div className="relative">
+                      <Input
+                        id="confirmPassword"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Confirme sua senha"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
                         required
                         className="bg-slate-700 border-slate-600 focus:border-primary text-white pr-10"
                       />
