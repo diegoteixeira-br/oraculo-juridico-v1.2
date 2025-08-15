@@ -621,7 +621,7 @@ const LandingPage = () => {
               </div>
               <h3 className="text-lg font-semibold mb-2 text-foreground">Agenda Inteligente</h3>
               <p className="text-sm text-muted-foreground">
-                Cadastro manual e organização de compromissos com lembretes por e-mail no horário que você configurar
+                Cadastro manual e extração automática de prazos via IA. Organização de compromissos com lembretes por e-mail no horário que você configurar
               </p>
             </div>
             
