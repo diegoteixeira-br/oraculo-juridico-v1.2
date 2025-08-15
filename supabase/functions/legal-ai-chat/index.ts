@@ -198,7 +198,7 @@ serve(async (req) => {
     // Verificar se o usuário tem tokens suficientes
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('tokens, daily_tokens, plan_tokens, plan_type')
+      .select('tokens, token_balance, plan_tokens, plan_type, subscription_status, trial_end_date')
       .eq('user_id', userId)
       .single();
 
@@ -210,7 +210,29 @@ serve(async (req) => {
       });
     }
 
-    const totalAvailableTokens = (profile.daily_tokens || 0) + (profile.plan_tokens || 0);
+    // Verificar acesso: usuários gratuitos têm acesso ao chat com token_balance ou plan_tokens
+    const isTrialActive = profile.subscription_status === 'trial' && 
+                         profile.trial_end_date && 
+                         new Date() < new Date(profile.trial_end_date);
+    
+    const isSubscriber = profile.subscription_status === 'active';
+    const hasPlanTokens = (profile.plan_tokens || 0) > 0;
+    const hasTrialTokens = (profile.token_balance || 0) > 0;
+    
+    // Chat disponível para: assinantes ativos, trial ativo com tokens, ou usuários com plan_tokens
+    const canUseChat = isSubscriber || (isTrialActive && hasTrialTokens) || hasPlanTokens;
+    
+    if (!canUseChat) {
+      return new Response(JSON.stringify({ 
+        error: 'Acesso negado',
+        details: 'Você precisa de uma assinatura ativa ou tokens disponíveis para usar o chat.'
+      }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    
+    const totalAvailableTokens = (profile.token_balance || 0) + (profile.plan_tokens || 0);
       
     if (totalAvailableTokens < 1000) {
       return new Response(JSON.stringify({ 

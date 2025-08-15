@@ -21,7 +21,8 @@ export function useAccessControl() {
   const isFreeUser = planType === 'Gratuito' || planType === 'gratuito';
 
   const canAccessPremiumTools = isSubscriber || isTrialActive;
-  const canUseChat = isSubscriber || isTrialActive || (!isSubscriber && !isTrialActive && hasPlanTokens);
+  // Chat é liberado para todos: assinantes, trial ativo com tokens, ou usuários com plan_tokens
+  const canUseChat = isSubscriber || isTrialActive || hasPlanTokens;
   const canPurchaseTokens = isEssentialSubscriber; // Apenas assinantes essenciais podem comprar tokens extras
 
   // Verificar se a conta está ativa
