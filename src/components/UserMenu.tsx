@@ -56,62 +56,76 @@ export default function UserMenu({ hideOptions = [] }: UserMenuProps) {
     }
   };
 
+  // Mapear rotas para keys do menu
+  const routeToMenuKey: { [key: string]: string } = {
+    '/dashboard': 'dashboard',
+    '/chat': 'chat',
+    '/agenda-juridica': 'agenda',
+    '/calculo-contrato-bancario': 'calc-contrato',
+    '/calculo-pensao-alimenticia': 'calc-pensao',
+    '/historico-transacoes': 'historico',
+    '/minha-conta': 'account',
+    '/admin': 'admin'
+  };
+
+  const currentPageKey = routeToMenuKey[location.pathname];
+
   const menuItems = [
     {
       key: "dashboard", 
       label: "Dashboard",
       icon: CreditCard,
       onClick: () => navigate("/dashboard"),
-      show: !hideOptions.includes("dashboard"),
+      show: !hideOptions.includes("dashboard") && currentPageKey !== "dashboard",
     },
     {
       key: "chat",
       label: "Iniciar Consulta",
       icon: MessageSquare,
       onClick: () => navigate("/chat?new=true"),
-      show: !hideOptions.includes("chat"),
+      show: !hideOptions.includes("chat") && currentPageKey !== "chat",
     },
     {
       key: "agenda",
       label: "Agenda Jurídica",
       icon: Calendar,
       onClick: () => navigate("/agenda-juridica"),
-      show: !hideOptions.includes("agenda"),
+      show: !hideOptions.includes("agenda") && currentPageKey !== "agenda",
     },
     {
       key: "calc-contrato",
       label: "Calc. Contrato Bancário",
       icon: Calculator,
       onClick: () => navigate("/calculo-contrato-bancario"),
-      show: !hideOptions.includes("calc-contrato"),
+      show: !hideOptions.includes("calc-contrato") && currentPageKey !== "calc-contrato",
     },
     {
       key: "calc-pensao",
       label: "Calc. Pensão Alimentícia",
       icon: Heart,
       onClick: () => navigate("/calculo-pensao-alimenticia"),
-      show: !hideOptions.includes("calc-pensao"),
+      show: !hideOptions.includes("calc-pensao") && currentPageKey !== "calc-pensao",
     },
     {
       key: "historico",
       label: "Histórico",
       icon: History,
       onClick: () => navigate("/historico-transacoes"),
-      show: !hideOptions.includes("historico"),
+      show: !hideOptions.includes("historico") && currentPageKey !== "historico",
     },
     {
       key: "account",
       label: "Minha Conta", 
       icon: Settings,
       onClick: () => navigate("/minha-conta"),
-      show: !hideOptions.includes("account"),
+      show: !hideOptions.includes("account") && currentPageKey !== "account",
     },
     {
       key: "admin",
       label: "Admin",
       icon: Shield,
       onClick: () => navigate("/admin"),
-      show: isAdmin && !hideOptions.includes("admin"),
+      show: isAdmin && !hideOptions.includes("admin") && currentPageKey !== "admin",
     },
   ].filter(item => item.show);
 
