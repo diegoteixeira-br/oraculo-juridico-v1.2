@@ -473,10 +473,10 @@ const TestAgendaEmail = () => {
         </CardHeader>
         <CardContent className="space-y-4">
         {/* Teste para email específico */}
-        <div className="space-y-3 p-4 bg-slate-50 rounded-lg border">
+        <div className="space-y-3 p-4 bg-white rounded-lg border border-slate-200">
           <div className="flex items-center gap-2 mb-2">
             <Mail className="w-4 h-4 text-primary" />
-            <Label className="font-medium">Teste para usuário específico</Label>
+            <Label className="font-medium text-slate-900">Teste para usuário específico</Label>
           </div>
           <div className="space-y-2">
             <Input
