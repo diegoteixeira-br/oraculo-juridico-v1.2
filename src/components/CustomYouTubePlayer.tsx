@@ -255,18 +255,18 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
             className="absolute inset-0 flex items-center justify-center bg-black/60 pointer-events-auto cursor-pointer"
             onClick={handleAudioUnlock}
           >
-            <div className="bg-red-500/90 backdrop-blur-sm rounded-lg p-8 text-center shadow-2xl max-w-md mx-4 border-2 border-red-400 pulse">
-              <div className="text-6xl mb-4 animate-bounce">🔊</div>
-              <h3 className="text-xl font-bold mb-4 text-white">
+            <div className="bg-red-500/90 backdrop-blur-sm rounded-lg p-6 text-center shadow-2xl max-w-sm mx-4 border-2 border-red-400 pulse">
+              <div className="text-4xl mb-3 animate-bounce">🔊</div>
+              <h3 className="text-lg font-bold mb-3 text-white">
                 Clique para ativar o áudio
               </h3>
-              <p className="text-red-100 mb-6">
+              <p className="text-red-100 mb-4 text-sm">
                 {hasUserInteracted 
                   ? "O vídeo está pausado. Clique aqui para continuar assistindo de onde parou com áudio."
                   : "O vídeo está reproduzindo sem som. Clique aqui para ativar o áudio e reiniciar do começo."
                 }
               </p>
-              <div className="text-sm text-red-200 pulse">
+              <div className="text-xs text-red-200 pulse">
                 👆 Clique em qualquer lugar desta área
               </div>
             </div>
