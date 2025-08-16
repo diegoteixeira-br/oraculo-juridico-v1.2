@@ -398,12 +398,10 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
               onClick={() => setShowSpeedControls(true)}
               className="flex items-center gap-1 px-2 py-1 rounded text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200"
             >
-              <Settings className="w-3 h-3" />
-              {playbackRate}x
+              Velocidade {playbackRate}x
             </button>
           ) : (
             <>
-              <span className="text-xs text-gray-500 dark:text-gray-500">Velocidade:</span>
               {[1, 1.5, 2].map(rate => (
                 <button
                   key={rate}
@@ -411,7 +409,7 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
                     changePlaybackRate(rate);
                     setShowSpeedControls(false);
                   }}
-                  className={`px-1 py-0.5 rounded text-xs transition-all duration-200 ${
+                  className={`px-2 py-1 rounded text-xs transition-all duration-200 ${
                     playbackRate === rate
                       ? 'bg-red-400 text-white'
                       : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
@@ -422,7 +420,7 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
               ))}
               <button
                 onClick={() => setShowSpeedControls(false)}
-                className="px-1 py-0.5 rounded text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200"
+                className="px-2 py-1 rounded text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200"
               >
                 ✕
               </button>
