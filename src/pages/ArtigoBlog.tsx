@@ -9,6 +9,7 @@ import { useSEO } from '@/hooks/useSEO';
 import { supabase } from '@/integrations/supabase/client';
 import ReactMarkdown from 'react-markdown';
 import AdDisplay from '@/components/AdDisplay';
+import { ArticleTextReader } from '@/components/ArticleTextReader';
 
 interface BlogPost {
   id: string;
@@ -258,6 +259,13 @@ const ArtigoBlog = () => {
 
             {/* Anúncios Personalizados - Topo do Conteúdo */}
             <AdDisplay position="content_top" className="mb-8" />
+
+            {/* Text Reader */}
+            <ArticleTextReader 
+              title={post.title}
+              content={post.content}
+              className="mb-8"
+            />
 
             {/* Article Content */}
             <div className="prose prose-lg max-w-none mb-12">
