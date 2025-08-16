@@ -390,18 +390,18 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
         </div>
       )}
       
-      {/* Controles de velocidade */}
+      {/* Controles de velocidade discretos */}
       {isReady && !showAudioPrompt && !showResumePrompt && !videoEnded && (
-        <div className="mt-3 flex items-center justify-center gap-2">
-          <span className="text-sm text-gray-600 dark:text-gray-400">Velocidade:</span>
+        <div className="mt-2 flex items-center justify-end gap-1 opacity-60 hover:opacity-100 transition-opacity">
+          <span className="text-xs text-gray-500 dark:text-gray-500">Velocidade:</span>
           {[0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].map(rate => (
             <button
               key={rate}
               onClick={() => changePlaybackRate(rate)}
-              className={`px-3 py-1 rounded-md text-xs font-medium transition-all duration-200 ${
+              className={`px-1.5 py-0.5 rounded text-xs transition-all duration-200 ${
                 playbackRate === rate
-                  ? 'bg-red-500 text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                  ? 'bg-red-400 text-white'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >
               {rate}x
