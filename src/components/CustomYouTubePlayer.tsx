@@ -306,12 +306,12 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
             className="absolute inset-0 flex items-center justify-center bg-black/60 pointer-events-auto cursor-pointer"
             onClick={handleAudioUnlock}
           >
-            <div className="bg-red-500/40 backdrop-blur-sm rounded-lg p-6 text-center shadow-2xl max-w-sm mx-4 border-2 border-red-400/40 pulse">
-              <div className="text-4xl mb-3 animate-bounce">🔊</div>
-              <h3 className="text-lg font-bold mb-3 text-white">
+            <div className="bg-red-500/40 backdrop-blur-sm rounded-lg p-3 sm:p-6 text-center shadow-2xl max-w-xs sm:max-w-sm mx-3 sm:mx-4 border-2 border-red-400/40 pulse">
+              <div className="text-2xl sm:text-4xl mb-2 sm:mb-3 animate-bounce">🔊</div>
+              <h3 className="text-sm sm:text-lg font-bold mb-2 sm:mb-3 text-white">
                 Clique para ativar o áudio
               </h3>
-              <p className="text-red-100 mb-4 text-sm">
+              <p className="text-red-100 mb-3 sm:mb-4 text-xs sm:text-sm">
                 {hasUserInteracted 
                   ? "O vídeo está pausado. Clique aqui para continuar assistindo de onde parou com áudio."
                   : "O vídeo está reproduzindo sem som. Clique aqui para ativar o áudio e reiniciar do começo."
@@ -329,24 +329,24 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
           <div 
             className="absolute inset-0 flex items-center justify-center bg-black/60 pointer-events-auto"
           >
-            <div className="bg-green-500/40 backdrop-blur-sm rounded-lg p-6 text-center shadow-2xl max-w-sm mx-4 border-2 border-green-400/40 pulse">
-              <div className="text-4xl mb-3 animate-bounce">🎬</div>
-              <h3 className="text-lg font-bold mb-3 text-white">
+            <div className="bg-green-500/40 backdrop-blur-sm rounded-lg p-3 sm:p-6 text-center shadow-2xl max-w-xs sm:max-w-sm mx-3 sm:mx-4 border-2 border-green-400/40 pulse">
+              <div className="text-2xl sm:text-4xl mb-2 sm:mb-3 animate-bounce">🎬</div>
+              <h3 className="text-sm sm:text-lg font-bold mb-2 sm:mb-3 text-white">
                 Continuar assistindo?
               </h3>
-              <p className="text-green-100 mb-4 text-sm">
+              <p className="text-green-100 mb-3 sm:mb-4 text-xs sm:text-sm">
                 Você já assistiu parte deste vídeo. Deseja continuar de onde parou ou começar do início?
               </p>
-              <div className="flex gap-3 justify-center mt-4">
+              <div className="flex gap-2 sm:gap-3 justify-center mt-3 sm:mt-4">
                 <button
                   onClick={handleResumeFromSaved}
-                  className="bg-green-600/80 hover:bg-green-700/80 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg text-sm backdrop-blur-sm"
+                  className="bg-green-600/80 hover:bg-green-700/80 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg text-xs sm:text-sm backdrop-blur-sm"
                 >
                   Continuar
                 </button>
                 <button
                   onClick={handleStartFromBeginning}
-                  className="bg-blue-600/80 hover:bg-blue-700/80 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg text-sm backdrop-blur-sm"
+                  className="bg-blue-600/80 hover:bg-blue-700/80 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg text-xs sm:text-sm backdrop-blur-sm"
                 >
                   Do início
                 </button>
@@ -360,7 +360,7 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
           <div className="absolute inset-0 flex items-center justify-center bg-black/60 pointer-events-auto">
             <button
               onClick={handleWatchAgain}
-              className="bg-red-500 hover:bg-red-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-200 shadow-2xl border-2 border-red-400"
+              className="bg-red-500 hover:bg-red-600 text-white px-4 sm:px-8 py-2 sm:py-4 rounded-lg font-semibold text-sm sm:text-lg transition-all duration-200 shadow-2xl border-2 border-red-400"
             >
               ▶️ Assistir Novamente
             </button>
