@@ -261,7 +261,7 @@ const TestAgendaEmail = () => {
 
   const getPreviewWithData = () => {
     const sampleData = {
-      '{{SITE_NAME}}': 'Cakto',
+      '{{SITE_NAME}}': 'Oráculo Jurídico',
       '{{USER_NAME}}': ', João Silva',
       '{{COMMITMENTS}}': `<div class="commitment">
 <div class="commitment-title">Audiência Trabalhista</div>

@@ -44,7 +44,7 @@ export const AgendaSummaryEmail = ({ fullName = '', items, timezone = 'America/S
     }).join('')
 
     return customTemplate
-      .replace(/\{\{SITE_NAME\}\}/g, 'Cakto')
+      .replace(/\{\{SITE_NAME\}\}/g, 'Oráculo Jurídico')
       .replace(/\{\{USER_NAME\}\}/g, fullName ? `, ${fullName}` : '')
       .replace(/\{\{COMMITMENTS\}\}/g, commitmentsHtml)
   }
@@ -138,7 +138,7 @@ export const AgendaSummaryEmail = ({ fullName = '', items, timezone = 'America/S
 <body>
     <div class="container">
         <div class="header">
-            <h1>Cakto</h1>
+            <h1>Oráculo Jurídico</h1>
             <p>Resumo da Agenda Jurídica</p>
         </div>
         
@@ -173,7 +173,7 @@ export const AgendaSummaryEmail = ({ fullName = '', items, timezone = 'America/S
         </div>
         
         <div class="footer">
-            Você está recebendo este e-mail porque ativou notificações de agenda no Cakto.<br>
+            Você está recebendo este e-mail porque ativou notificações de agenda no Oráculo Jurídico.<br>
             Para gerenciar suas notificações, acesse sua conta.
         </div>
     </div>

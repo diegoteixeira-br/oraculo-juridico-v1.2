@@ -18,8 +18,8 @@ export default function AdminDashboard() {
   
   usePageTitle();
   useSEO({
-    title: "Painel Administrativo - Cakto",
-    description: "Gerencie usuários, documentos e estornos no painel administrativo do Cakto"
+    title: "Painel Administrativo - Oráculo Jurídico",
+    description: "Gerencie usuários, documentos e estornos no painel administrativo do Oráculo Jurídico"
   });
 
   return (
