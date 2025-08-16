@@ -21,6 +21,7 @@ interface Profile {
   daily_tokens?: number;
   last_daily_reset?: string;
   is_active?: boolean;
+  timezone?: string;
 }
 
 interface AuthContextType {
@@ -55,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('*, created_at')
+        .select('*, created_at, trial_end_date, timezone')
         .eq('user_id', userId)
         .single();
       
@@ -82,7 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Buscar perfil atualizado
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('*, created_at')
+        .select('*, created_at, trial_end_date, timezone')
         .eq('user_id', user.id)
         .single();
       

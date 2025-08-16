@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTrialTimer } from "@/hooks/useTrialTimer";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import UserMenu from "@/components/UserMenu";
@@ -60,22 +61,16 @@ const [dailyCredits, setDailyCredits] = useState(0);
   const currentPlan = getCurrentPlanInfo();
 
   const totalAvailableCredits = userCredits + dailyCredits;
-  const isTrial = profile?.subscription_status === 'trial';
-  const isPaid = profile?.subscription_status === 'active';
+  const { daysRemaining, isTrial, isPaid, trialEndDate } = useTrialTimer();
   const planType = profile?.plan_type || 'gratuito';
-  const trialEndDate = profile?.trial_end_date ? new Date(profile.trial_end_date) : null;
-  const now = new Date();
-  const daysRemaining = trialEndDate 
-    ? Math.max(0, Math.ceil((trialEndDate.getTime() - now.setHours(0,0,0,0)) / (1000 * 60 * 60 * 24)))
-    : 7; // Default para usuários gratuitos sem trial_end_date
   
   // Debug logs
   console.log('Trial Debug:', {
     isTrial,
     trialEndDate: trialEndDate?.toISOString(),
-    now: now.toISOString(),
     daysRemaining,
-    subscription_status: profile?.subscription_status
+    subscription_status: profile?.subscription_status,
+    timezone: profile?.timezone
   });
 
   // Redirecionar para comprar-creditos se conta estiver inativa
