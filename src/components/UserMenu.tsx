@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { User, LogOut, Settings, MessageSquare, CreditCard, Calculator, Heart, Shield, History, Calendar } from "lucide-react";
+import { User, LogOut, Settings, MessageSquare, CreditCard, Calculator, Heart, Shield, History, Calendar, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -58,6 +58,8 @@ export default function UserMenu({ hideOptions = [] }: UserMenuProps) {
 
   // Mapear rotas para keys do menu
   const routeToMenuKey: { [key: string]: string } = {
+    '/': 'blog',
+    '/blog': 'blog',
     '/dashboard': 'dashboard',
     '/chat': 'chat',
     '/agenda-juridica': 'agenda',
@@ -71,6 +73,13 @@ export default function UserMenu({ hideOptions = [] }: UserMenuProps) {
   const currentPageKey = routeToMenuKey[location.pathname];
 
   const menuItems = [
+    {
+      key: "blog", 
+      label: "Blog Jurídico",
+      icon: BookOpen,
+      onClick: () => navigate("/"),
+      show: !hideOptions.includes("blog") && currentPageKey !== "blog",
+    },
     {
       key: "dashboard", 
       label: "Dashboard",
