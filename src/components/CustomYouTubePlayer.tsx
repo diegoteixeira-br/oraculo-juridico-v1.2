@@ -66,7 +66,7 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
       height: '100%',
       width: '100%',
       videoId: videoId,
-      playerVars: {
+        playerVars: {
         autoplay: 1, // Autoplay habilitado
         mute: 1, // Inicia mutado para permitir autoplay
         controls: 0, // Remove controles padrão
@@ -87,6 +87,8 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
         autohide: 1, // Esconde controles automaticamente
         loop: 0, // Não fazer loop
         playlist: videoId, // Define playlist como o próprio vídeo para evitar sugestões
+        title: 0, // Remove título
+        byline: 0, // Remove informações do canal
       },
       events: {
         onReady: (event: any) => {
@@ -139,8 +141,17 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
   const handleAudioUnlock = () => {
     if (!player) return;
     
-    // Voltar ao começo e liberar áudio
-    player.seekTo(0);
+    // Se for primeira interação, voltar ao começo, senão continuar de onde parou
+    if (!hasUserInteracted) {
+      player.seekTo(0);
+    } else {
+      // Continuar de onde parou
+      const savedPosition = getSavedVideoPosition();
+      if (savedPosition > 0) {
+        player.seekTo(savedPosition);
+      }
+    }
+    
     player.unMute();
     player.playVideo();
     setIsMuted(false);
@@ -210,10 +221,15 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
         {/* Container do player */}
         <div ref={containerRef} className="w-full h-full"></div>
         
-        {/* Overlay sem controles customizados */}
-        {isReady && !showAudioPrompt && (
+        {/* Overlay para bloquear cliques no título */}
+        {isReady && !showAudioPrompt && !videoEnded && (
           <div className="absolute inset-0 pointer-events-none">
-            {/* Controles removidos conforme solicitado */}
+            {/* Overlay invisível que bloqueia cliques no YouTube */}
+            <div className="absolute inset-0 bg-transparent pointer-events-auto" 
+                 onClick={(e) => e.preventDefault()} 
+                 onDoubleClick={(e) => e.preventDefault()}
+                 style={{ zIndex: 1 }}>
+            </div>
           </div>
         )}
 
@@ -229,7 +245,10 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
                 Clique para ativar o áudio
               </h3>
               <p className="text-red-100 mb-6">
-                O vídeo está reproduzindo sem som. Clique aqui para ativar o áudio e reiniciar do começo.
+                {hasUserInteracted 
+                  ? "O vídeo está pausado. Clique aqui para continuar assistindo de onde parou com áudio."
+                  : "O vídeo está reproduzindo sem som. Clique aqui para ativar o áudio e reiniciar do começo."
+                }
               </p>
               <div className="text-sm text-red-200 animate-pulse">
                 👆 Clique em qualquer lugar desta área
