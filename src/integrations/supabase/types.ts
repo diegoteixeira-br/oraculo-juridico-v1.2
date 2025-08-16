@@ -29,6 +29,69 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_posts: {
+        Row: {
+          author_name: string | null
+          category: string | null
+          content: string
+          cover_image_url: string | null
+          created_at: string
+          featured: boolean
+          id: string
+          is_published: boolean
+          meta_description: string | null
+          meta_title: string | null
+          published_at: string | null
+          reading_time_minutes: number | null
+          slug: string
+          summary: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          views_count: number
+        }
+        Insert: {
+          author_name?: string | null
+          category?: string | null
+          content: string
+          cover_image_url?: string | null
+          created_at?: string
+          featured?: boolean
+          id?: string
+          is_published?: boolean
+          meta_description?: string | null
+          meta_title?: string | null
+          published_at?: string | null
+          reading_time_minutes?: number | null
+          slug: string
+          summary?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          views_count?: number
+        }
+        Update: {
+          author_name?: string | null
+          category?: string | null
+          content?: string
+          cover_image_url?: string | null
+          created_at?: string
+          featured?: boolean
+          id?: string
+          is_published?: boolean
+          meta_description?: string | null
+          meta_title?: string | null
+          published_at?: string | null
+          reading_time_minutes?: number | null
+          slug?: string
+          summary?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          views_count?: number
+        }
+        Relationships: []
+      }
       calculo_contrato_historico: {
         Row: {
           created_at: string
