@@ -189,40 +189,10 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
         {/* Container do player */}
         <div ref={containerRef} className="w-full h-full"></div>
         
-        {/* Overlay com controles customizados */}
+        {/* Overlay sem controles customizados */}
         {isReady && !showAudioPrompt && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            {/* Controles customizados - botões menores */}
-            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between pointer-events-auto">
-              <div className="flex items-center gap-2">
-                {/* Play/Pause */}
-                <button
-                  onClick={togglePlayPause}
-                  className="bg-black/70 hover:bg-black/90 text-white p-2 rounded-full transition-all duration-200"
-                  aria-label={isPlaying ? 'Pausar' : 'Reproduzir'}
-                >
-                  {isPlaying ? <Pause size={16} /> : <Play size={16} />}
-                </button>
-
-                {/* Mute/Unmute */}
-                <button
-                  onClick={toggleMute}
-                  className="bg-black/70 hover:bg-black/90 text-white p-2 rounded-full transition-all duration-200"
-                  aria-label={isMuted ? 'Ativar som' : 'Silenciar'}
-                >
-                  {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-                </button>
-
-                {/* Legendas */}
-                <button
-                  onClick={toggleCaptions}
-                  className="bg-black/70 hover:bg-black/90 text-white p-2 rounded-full transition-all duration-200"
-                  aria-label="Legendas"
-                >
-                  <Settings size={16} />
-                </button>
-              </div>
-            </div>
+          <div className="absolute inset-0 pointer-events-none">
+            {/* Controles removidos conforme solicitado */}
           </div>
         )}
 
