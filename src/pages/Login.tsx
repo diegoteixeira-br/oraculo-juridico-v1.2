@@ -21,10 +21,11 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Verificar se veio do blog através do estado ou referrer
+  // Verificar de onde veio através do estado ou referrer
   const cameFromBlog = location.state?.from === 'blog' || 
     document.referrer.includes('/blog') || 
     document.referrer.includes('blog');
+  const cameFromLanding = location.state?.from === '/pagina-de-venda';
 
   useSEO({
     title: 'Entrar | Oráculo Jurídico – Teste 7 dias com 15.000 tokens',
@@ -52,9 +53,11 @@ export default function Login() {
           description: "Bem-vindo de volta ao Oráculo Jurídico.",
         });
         
-        // Redirecionar para o blog se veio de lá, senão para o dashboard
+        // Redirecionar conforme a origem
         if (cameFromBlog) {
           navigate('/');
+        } else if (cameFromLanding) {
+          navigate('/pagina-de-venda');
         } else {
           navigate('/dashboard');
         }
@@ -77,7 +80,7 @@ export default function Login() {
         <div className="container max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Link to="/">
+              <Link to={cameFromLanding ? '/pagina-de-venda' : '/'}>
                 <Button
                   variant="ghost"
                   size="icon"

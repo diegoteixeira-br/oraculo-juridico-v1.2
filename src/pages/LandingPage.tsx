@@ -53,7 +53,7 @@ const LandingPage = () => {
           </div>
           
           <div className="flex items-center gap-3">
-            <Link to="/login" className="text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-1 sm:space-x-2 border border-border rounded-lg px-2 py-1.5 sm:px-4 sm:py-2 hover:bg-muted/10">
+            <Link to="/login" state={{ from: '/pagina-de-venda' }} className="text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-1 sm:space-x-2 border border-border rounded-lg px-2 py-1.5 sm:px-4 sm:py-2 hover:bg-muted/10">
               <Smartphone className="w-3 h-3 sm:w-4 sm:h-4" />
               <span className="text-xs sm:text-sm">Login</span>
             </Link>
