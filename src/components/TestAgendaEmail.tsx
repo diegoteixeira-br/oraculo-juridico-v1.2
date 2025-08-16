@@ -293,12 +293,14 @@ const TestAgendaEmail = () => {
   };
 
   const removeLogoFromTemplate = () => {
+    // Remove tanto a URL quanto do template HTML (igual ao botão X)
+    setLogoUrl('');
     const updatedTemplate = emailTemplate.replace(
       /<img[^>]*src="[^"]*"[^>]*alt="\{\{SITE_NAME\}\}"[^>]*\/?>|<img[^>]*alt="\{\{SITE_NAME\}\}"[^>]*src="[^"]*"[^>]*\/?>/g,
       '<h1>{{SITE_NAME}}</h1>'
     );
     setEmailTemplate(updatedTemplate);
-    toast.success('✅ Logo removida do template!');
+    toast.success('✅ Logo removida completamente!');
   };
 
   const getPreviewWithData = () => {
