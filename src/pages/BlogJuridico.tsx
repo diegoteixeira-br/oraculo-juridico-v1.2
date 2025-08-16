@@ -129,6 +129,16 @@ const BlogJuridico = () => {
               Notícias, análises e dicas práticas para advogados que querem se manter atualizados no mundo jurídico digital
             </p>
             
+            {/* Google AdSense Banner Superior */}
+            <div className="mb-8">
+              <div className="bg-muted/20 border-2 border-dashed border-muted-foreground/20 rounded-lg p-6 text-center max-w-4xl mx-auto">
+                <p className="text-sm text-muted-foreground">
+                  Google AdSense - Banner Superior (728x90 ou Responsivo)
+                </p>
+                {/* <ins className="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins> */}
+              </div>
+            </div>
+
             {/* Search Bar */}
             <div className="max-w-md mx-auto relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
@@ -218,8 +228,9 @@ const BlogJuridico = () => {
                 {searchTerm ? `Resultados para "${searchTerm}"` : 'Todos os Artigos'}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {filteredPosts.map((post) => (
-                  <Card key={post.id} className="group hover:shadow-lg transition-all duration-300">
+                {filteredPosts.map((post, index) => (
+                  <>
+                    <Card key={post.id} className="group hover:shadow-lg transition-all duration-300">
                     <div className="relative overflow-hidden rounded-t-lg">
                       <img
                         src={post.cover_image_url || '/placeholder.svg'}
@@ -272,6 +283,19 @@ const BlogJuridico = () => {
                       </Link>
                     </CardContent>
                   </Card>
+                  
+                  {/* AdSense Banner no meio dos artigos (a cada 4 posts) */}
+                  {(index + 1) % 4 === 0 && index < filteredPosts.length - 1 && (
+                    <div className="md:col-span-2 my-8">
+                      <div className="bg-muted/20 border-2 border-dashed border-muted-foreground/20 rounded-lg p-6 text-center">
+                        <p className="text-sm text-muted-foreground">
+                          Google AdSense - Banner Inline (728x90 ou Responsivo)
+                        </p>
+                        {/* <ins className="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins> */}
+                      </div>
+                    </div>
+                  )}
+                </>
                 ))}
               </div>
 
@@ -358,6 +382,18 @@ const BlogJuridico = () => {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        </div>
+      </div>
+
+      {/* Google AdSense Banner Rodapé */}
+      <div className="bg-background py-8 border-t">
+        <div className="container mx-auto px-4">
+          <div className="bg-muted/20 border-2 border-dashed border-muted-foreground/20 rounded-lg p-6 text-center max-w-4xl mx-auto">
+            <p className="text-sm text-muted-foreground">
+              Google AdSense - Banner Rodapé (728x90 ou Responsivo)
+            </p>
+            {/* <ins className="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins> */}
           </div>
         </div>
       </div>

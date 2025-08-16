@@ -7,7 +7,8 @@ import DocumentManager from "@/components/admin/DocumentManager";
 import RefundManager from "@/components/admin/RefundManager";
 import TokenManager from "@/components/admin/TokenManager";
 import TestAgendaEmail from "@/components/TestAgendaEmail";
-import { Users, FileText, Upload, Undo2, ArrowLeft, Coins, Mail } from "lucide-react";
+import BlogManager from "@/components/admin/BlogManager";
+import { Users, FileText, Upload, Undo2, ArrowLeft, Coins, Mail, BookOpen } from "lucide-react";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useSEO } from "@/hooks/useSEO";
 import { useNavigate } from "react-router-dom";
@@ -46,7 +47,7 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 h-auto">
+          <TabsList className="grid w-full grid-cols-7 h-auto">
             <TabsTrigger value="users" className="flex items-center gap-2 p-3">
               <Users className="h-4 w-4" />
               <span className="hidden lg:inline">Usuários</span>
@@ -66,6 +67,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="refunds" className="flex items-center gap-2 p-3">
               <Undo2 className="h-4 w-4" />
               <span className="hidden lg:inline">Estornos</span>
+            </TabsTrigger>
+            <TabsTrigger value="blog" className="flex items-center gap-2 p-3">
+              <BookOpen className="h-4 w-4" />
+              <span className="hidden lg:inline">Blog</span>
             </TabsTrigger>
             <TabsTrigger value="teste-agenda" className="flex items-center gap-2 p-3">
               <Mail className="h-4 w-4" />
@@ -91,6 +96,19 @@ export default function AdminDashboard() {
 
           <TabsContent value="refunds">
             <RefundManager />
+          </TabsContent>
+
+          <TabsContent value="blog">
+            <div className="space-y-4 sm:space-y-6">
+              <div>
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2">Gerenciamento do Blog</h2>
+                <p className="text-muted-foreground text-xs sm:text-sm lg:text-base">
+                  Crie, edite e gerencie artigos do blog jurídico para SEO e engajamento
+                </p>
+              </div>
+              
+              <BlogManager />
+            </div>
           </TabsContent>
 
           <TabsContent value="teste-agenda">
