@@ -70,7 +70,7 @@ const AgendaJuridica = () => {
   const isMobile = useIsMobile();
   const { visible: menuVisible } = useScrollDirection();
   const { logFeatureUsage } = useFeatureUsage();
-  const { canAccessPremiumTools } = useAccessControl();
+  const { canAccessPremiumTools, isEssentialSubscriber } = useAccessControl();
   
   // Timezone do usuário
   const userTimezone = (profile as any)?.timezone || 'America/Sao_Paulo';
@@ -874,13 +874,14 @@ const AgendaJuridica = () => {
 
                 {/* Botões de ação */}
                 <div className="flex gap-2 w-full lg:w-auto">
-                  <Dialog open={showExtractDialog} onOpenChange={setShowExtractDialog}>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" className="flex-1 lg:flex-none border-slate-600 hover:bg-slate-700">
-                        <FileText className="h-4 w-4 mr-2" />
-                        Extrair IA
-                      </Button>
-                    </DialogTrigger>
+                  {isEssentialSubscriber && (
+                    <Dialog open={showExtractDialog} onOpenChange={setShowExtractDialog}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" className="flex-1 lg:flex-none border-slate-600 hover:bg-slate-700">
+                          <FileText className="h-4 w-4 mr-2" />
+                          Extrair IA
+                        </Button>
+                      </DialogTrigger>
                     <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                       <DialogHeader>
                         <DialogTitle>Extrair Prazos Automaticamente</DialogTitle>
@@ -896,8 +897,9 @@ const AgendaJuridica = () => {
                         isExtracting={isExtracting}
                         onExtractingChange={setIsExtracting}
                       />
-                    </DialogContent>
-                  </Dialog>
+                      </DialogContent>
+                    </Dialog>
+                  )}
 
                   <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
                     <DialogTrigger asChild>
