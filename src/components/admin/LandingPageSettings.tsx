@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +14,7 @@ interface LandingPageSettings {
   youtube_video_id: string | null;
   video_title: string;
   video_description: string;
+  video_enabled: boolean;
 }
 
 export default function LandingPageSettings() {
@@ -24,7 +26,8 @@ export default function LandingPageSettings() {
   const [formData, setFormData] = useState({
     youtube_video_id: "",
     video_title: "",
-    video_description: ""
+    video_description: "",
+    video_enabled: true
   });
 
   useEffect(() => {
@@ -45,7 +48,8 @@ export default function LandingPageSettings() {
         setFormData({
           youtube_video_id: data.youtube_video_id || "",
           video_title: data.video_title || "",
-          video_description: data.video_description || ""
+          video_description: data.video_description || "",
+          video_enabled: data.video_enabled ?? true
         });
       }
     } catch (error) {
@@ -70,7 +74,8 @@ export default function LandingPageSettings() {
           .update({
             youtube_video_id: formData.youtube_video_id || null,
             video_title: formData.video_title,
-            video_description: formData.video_description
+            video_description: formData.video_description,
+            video_enabled: formData.video_enabled
           })
           .eq("id", settings.id);
 
@@ -82,7 +87,8 @@ export default function LandingPageSettings() {
           .insert({
             youtube_video_id: formData.youtube_video_id || null,
             video_title: formData.video_title,
-            video_description: formData.video_description
+            video_description: formData.video_description,
+            video_enabled: formData.video_enabled
           });
 
         if (error) throw error;
@@ -138,6 +144,22 @@ export default function LandingPageSettings() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Switch para ativar/desativar vídeo */}
+        <div className="flex items-center justify-between p-4 border rounded-lg">
+          <div className="space-y-0.5">
+            <Label className="text-base font-medium">Exibir Vídeo na Página de Venda</Label>
+            <p className="text-sm text-muted-foreground">
+              Ative para mostrar o vídeo na página de venda, desative para ocultar
+            </p>
+          </div>
+          <Switch
+            checked={formData.video_enabled}
+            onCheckedChange={(checked) => 
+              setFormData(prev => ({ ...prev, video_enabled: checked }))
+            }
+          />
+        </div>
+
         {/* Preview do vídeo atual */}
         {formData.youtube_video_id && formData.youtube_video_id !== 'VIDEO_ID' && formData.youtube_video_id.trim() !== '' && (
           <div className="space-y-2">

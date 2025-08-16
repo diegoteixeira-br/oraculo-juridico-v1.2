@@ -11,7 +11,8 @@ const LandingPage = () => {
   const [videoSettings, setVideoSettings] = useState({
     youtube_video_id: 'VIDEO_ID',
     video_title: 'Veja Como Funciona na Prática',
-    video_description: 'Assista ao vídeo demonstrativo e descubra como o Oráculo Jurídico pode revolucionar sua prática advocatícia'
+    video_description: 'Assista ao vídeo demonstrativo e descubra como o Oráculo Jurídico pode revolucionar sua prática advocatícia',
+    video_enabled: false
   });
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
@@ -21,14 +22,15 @@ const LandingPage = () => {
       try {
         const { data } = await supabase
           .from('landing_page_settings')
-          .select('youtube_video_id, video_title, video_description')
+          .select('youtube_video_id, video_title, video_description, video_enabled')
           .maybeSingle();
         
         if (data) {
           setVideoSettings({
             youtube_video_id: data.youtube_video_id || '',
             video_title: data.video_title || 'Veja Como Funciona na Prática',
-            video_description: data.video_description || 'Assista ao vídeo demonstrativo e descubra como o Oráculo Jurídico pode revolucionar sua prática advocatícia'
+            video_description: data.video_description || 'Assista ao vídeo demonstrativo e descubra como o Oráculo Jurídico pode revolucionar sua prática advocatícia',
+            video_enabled: data.video_enabled ?? false
           });
         }
       } catch (error) {
@@ -112,8 +114,9 @@ const LandingPage = () => {
         </div>
       </header>
 
-      {/* Vídeo Explicativo - só aparece se tiver vídeo configurado */}
-      {videoSettings.youtube_video_id && 
+      {/* Vídeo Explicativo - só aparece se tiver vídeo configurado E habilitado */}
+      {videoSettings.video_enabled && 
+       videoSettings.youtube_video_id && 
        videoSettings.youtube_video_id !== 'VIDEO_ID' && 
        videoSettings.youtube_video_id.trim() !== '' && 
        videoSettings.youtube_video_id !== null && (

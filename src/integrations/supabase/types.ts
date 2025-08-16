@@ -463,6 +463,7 @@ export type Database = {
           id: string
           updated_at: string
           video_description: string | null
+          video_enabled: boolean
           video_title: string | null
           youtube_video_id: string | null
         }
@@ -471,6 +472,7 @@ export type Database = {
           id?: string
           updated_at?: string
           video_description?: string | null
+          video_enabled?: boolean
           video_title?: string | null
           youtube_video_id?: string | null
         }
@@ -479,6 +481,7 @@ export type Database = {
           id?: string
           updated_at?: string
           video_description?: string | null
+          video_enabled?: boolean
           video_title?: string | null
           youtube_video_id?: string | null
         }
