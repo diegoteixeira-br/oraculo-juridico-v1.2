@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { useSEO } from '@/hooks/useSEO';
 import { supabase } from '@/integrations/supabase/client';
 import ReactMarkdown from 'react-markdown';
+import AdDisplay from '@/components/AdDisplay';
 
 interface BlogPost {
   id: string;
@@ -236,6 +237,9 @@ const ArtigoBlog = () => {
               )}
             </div>
 
+            {/* Anúncios Personalizados - Topo do Conteúdo */}
+            <AdDisplay position="content_top" className="mb-8" />
+
             {/* Article Content */}
             <div className="prose prose-lg max-w-none mb-12">
               <ReactMarkdown
@@ -259,6 +263,9 @@ const ArtigoBlog = () => {
                 {post.content}
               </ReactMarkdown>
             </div>
+
+            {/* Anúncios Personalizados - Meio do Conteúdo */}
+            <AdDisplay position="content_middle" className="mb-8" />
 
             <Separator className="my-8" />
 
@@ -316,6 +323,9 @@ const ArtigoBlog = () => {
 
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-8">
+            {/* Anúncios Personalizados - Sidebar Topo */}
+            <AdDisplay position="sidebar_top" />
+
             {/* Google AdSense - Topo */}
             <Card>
               <CardHeader>
@@ -353,6 +363,9 @@ const ArtigoBlog = () => {
               </CardContent>
             </Card>
 
+            {/* Anúncios Personalizados - Sidebar Meio */}
+            <AdDisplay position="sidebar_middle" />
+
             {/* Google AdSense - Meio */}
             <Card>
               <CardHeader>
@@ -383,6 +396,9 @@ const ArtigoBlog = () => {
                 </Link>
               </CardContent>
             </Card>
+
+            {/* Anúncios Personalizados - Sidebar Rodapé */}
+            <AdDisplay position="sidebar_bottom" />
           </div>
         </div>
       </div>
