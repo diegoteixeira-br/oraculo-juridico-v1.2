@@ -1028,13 +1028,6 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
                           >
                             {msg.type === 'assistant' ? (
                               <>
-                                {readingMsgId === msg.id && (isPlayingAudio || readingProgress > 0) && (
-                                  <InlineWordUnderlineOverlay
-                                    containerRef={{ current: messageContainerRefs.current[msg.id] as HTMLDivElement | null }}
-                                    text={msg.content}
-                                    progress={readingProgress}
-                                  />
-                                )}
                                 <ReactMarkdown
                                   components={{
                                     p: ({ children }) => <p className="mb-3 last:mb-0 break-words">{children}</p>,
