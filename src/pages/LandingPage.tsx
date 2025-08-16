@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Clock, DollarSign, AlertTriangle, Shield, Globe, Smartphone, History, Lock, Check, ChevronDown, ChevronRight, Brain, Zap, Users, Award, Scale, Gavel, FileText, Building, Calendar, Heart, MessageCircle, Calculator, Target, TrendingUp, MessageSquare } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { CustomYouTubePlayer } from "@/components/CustomYouTubePlayer";
 import { useSEO } from "@/hooks/useSEO";
 import heroBrain from "../assets/hero-brain-legal.jpg";
 import legalOffice from "../assets/legal-office.jpg";
@@ -102,22 +103,10 @@ const LandingPage = () => {
           </p>
           
           {videoSettings.youtube_video_id && videoSettings.youtube_video_id !== 'VIDEO_ID' ? (
-            <div className="relative max-w-3xl mx-auto">
-              <div className="aspect-video bg-slate-800/50 rounded-lg border border-border overflow-hidden shadow-2xl">
-                <iframe
-                  className="w-full h-full"
-                  src={`https://www.youtube.com/embed/${videoSettings.youtube_video_id}?rel=0&modestbranding=1&showinfo=0`}
-                  title={videoSettings.video_title}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                ></iframe>
-              </div>
-              
-              <div className="mt-6 text-sm text-muted-foreground">
-                <p>💡 <strong>Dica:</strong> O vídeo abre aqui mesmo, sem redirecionamentos!</p>
-              </div>
-            </div>
+            <CustomYouTubePlayer 
+              videoId={videoSettings.youtube_video_id}
+              title={videoSettings.video_title}
+            />
           ) : (
             <div className="relative max-w-3xl mx-auto">
               <div className="aspect-video bg-slate-800/50 rounded-lg border border-border overflow-hidden shadow-2xl flex items-center justify-center">
