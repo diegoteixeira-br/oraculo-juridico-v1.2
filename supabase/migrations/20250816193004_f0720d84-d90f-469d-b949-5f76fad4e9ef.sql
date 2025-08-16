@@ -1,0 +1,1 @@
+UPDATE landing_page_settings SET video_title = 'Demonstração' WHERE video_title = 'Oráculo Jurídico - Demonstração';
