@@ -98,14 +98,27 @@ const LandingPage = () => {
             {videoSettings.video_description}
           </p>
           
-          {videoSettings.youtube_video_id && videoSettings.youtube_video_id !== 'VIDEO_ID' ? <CustomYouTubePlayer videoId={videoSettings.youtube_video_id} title={videoSettings.video_title} /> : <div className="relative max-w-3xl mx-auto">
-              <div className="aspect-video bg-slate-800/50 rounded-lg border border-border overflow-hidden shadow-2xl flex items-center justify-center">
-                <div className="text-center text-muted-foreground">
-                  <div className="text-4xl mb-4">🎥</div>
-                  <p>Vídeo será configurado em breve</p>
+          {/* Container com fundo estilizado para o vídeo */}
+          <div className="relative">
+            {/* Fundo decorativo */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/5 to-primary/5 rounded-2xl blur-3xl transform scale-110"></div>
+            <div className="absolute inset-0 bg-gradient-to-tr from-slate-800/20 via-transparent to-slate-600/20 rounded-2xl"></div>
+            
+            {/* Container do vídeo */}
+            <div className="relative bg-slate-800/30 backdrop-blur-sm rounded-2xl p-8 border border-slate-700/50 shadow-2xl">
+              {videoSettings.youtube_video_id && videoSettings.youtube_video_id !== 'VIDEO_ID' ? 
+                <CustomYouTubePlayer videoId={videoSettings.youtube_video_id} title={videoSettings.video_title} /> : 
+                <div className="relative max-w-3xl mx-auto">
+                  <div className="aspect-video bg-slate-800/50 rounded-lg border border-border overflow-hidden shadow-2xl flex items-center justify-center">
+                    <div className="text-center text-muted-foreground">
+                      <div className="text-4xl mb-4">🎥</div>
+                      <p>Vídeo será configurado em breve</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>}
+              }
+            </div>
+          </div>
         </div>
       </section>
 
