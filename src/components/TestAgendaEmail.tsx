@@ -259,6 +259,11 @@ const TestAgendaEmail = () => {
     }
   };
 
+  const removeLogo = () => {
+    setLogoUrl('');
+    toast.success('✅ Logo removida com sucesso!');
+  };
+
   const getPreviewWithData = () => {
     const sampleData = {
       '{{SITE_NAME}}': 'Oráculo Jurídico',
@@ -379,14 +384,23 @@ const TestAgendaEmail = () => {
                   {logoUrl && (
                     <div className="mt-3 p-3 bg-white rounded border">
                       <Label className="text-sm font-medium mb-2 block">Preview da Logo:</Label>
-                      <img 
-                        src={logoUrl} 
-                        alt="Preview da logo" 
-                        className="max-h-16 max-w-48 object-contain border rounded"
-                        onError={(e) => {
-                          e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMCA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDQgOUwxMC45MSA4LjI2TDEyIDJaIiBzdHJva2U9IiNmNjg0OGYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=';
-                        }}
-                      />
+                      <div className="relative inline-block">
+                        <img 
+                          src={logoUrl} 
+                          alt="Preview da logo" 
+                          className="max-h-16 max-w-48 object-contain border rounded"
+                          onError={(e) => {
+                            e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMCA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDQgOUwxMC45MSA4LjI2TDEyIDJaIiBzdHJva2U9IiNmNjg0OGYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=';
+                          }}
+                        />
+                        <button
+                          onClick={removeLogo}
+                          className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-lg transition-colors"
+                          title="Remover logo"
+                        >
+                          ×
+                        </button>
+                      </div>
                     </div>
                   )}
 
