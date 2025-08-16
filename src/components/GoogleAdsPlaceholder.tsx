@@ -33,51 +33,35 @@ export default function GoogleAdsPlaceholder({ format, position, className = "" 
   const dimensions = getAdDimensions(format);
   
   return (
-    <div className={`${className}`}>
-      <Card className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border-2 border-dashed border-yellow-500/50">
-        <CardContent className="p-4 text-center">
+    <div className={`w-full max-w-full mx-auto ${className}`}>
+      <Card className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-dashed border-yellow-500/50">
+        <CardContent className="p-3 text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <Badge variant="outline" className="bg-yellow-500/20 text-yellow-400 border-yellow-500/50">
+            <Badge variant="outline" className="bg-yellow-500/20 text-yellow-400 border-yellow-500/50 text-xs">
               Google AdSense
             </Badge>
           </div>
           
-          <div className="text-sm text-slate-300 mb-2">
+          <div className="text-xs text-slate-300 mb-1">
             <strong>{dimensions.name}</strong>
           </div>
           
-          <div className="text-xs text-slate-400 mb-2">
-            Posição: {position}
+          <div className="text-xs text-slate-400 mb-1">
+            {position}
           </div>
           
-          <div className="text-xs text-slate-400 mb-3">
-            Dimensões: {dimensions.width} x {dimensions.height}
+          <div className="text-xs text-slate-500 mb-2">
+            {dimensions.width} x {dimensions.height}
           </div>
           
-          <div className="flex justify-center gap-2 text-xs text-slate-500">
-            <div className="flex items-center gap-1">
-              <Monitor className="w-3 h-3" />
-              Desktop
-            </div>
-            <div className="flex items-center gap-1">
-              <Tablet className="w-3 h-3" />
-              Tablet
-            </div>
-            <div className="flex items-center gap-1">
-              <Smartphone className="w-3 h-3" />
-              Mobile
-            </div>
-          </div>
-          
-          <div className="mt-3 p-4 bg-slate-800/50 rounded border-2 border-dashed border-slate-600" 
+          <div className="p-2 bg-slate-800/50 rounded border border-dashed border-slate-600 text-center" 
                style={{ 
-                 minWidth: format === "responsive" ? "100%" : dimensions.width,
-                 minHeight: format === "responsive" ? "200px" : dimensions.height,
+                 width: format === "responsive" ? "100%" : "auto",
+                 minHeight: "40px",
                  maxWidth: "100%"
                }}>
-            <div className="flex items-center justify-center h-full text-slate-500 text-sm">
-              Anúncio Google AdSense<br />
-              {dimensions.name}
+            <div className="flex items-center justify-center h-full text-slate-500 text-xs">
+              Anúncio {dimensions.name}
             </div>
           </div>
         </CardContent>
