@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,12 @@ export default function Login() {
   const { signIn } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Verificar se veio do blog através do estado ou referrer
+  const cameFromBlog = location.state?.from === 'blog' || 
+    document.referrer.includes('/blog') || 
+    document.referrer.includes('blog');
 
   useSEO({
     title: 'Entrar | Oráculo Jurídico – Teste 7 dias com 15.000 tokens',
@@ -45,7 +51,13 @@ export default function Login() {
           title: "Login realizado!",
           description: "Bem-vindo de volta ao Oráculo Jurídico.",
         });
-        navigate('/dashboard');
+        
+        // Redirecionar para o blog se veio de lá, senão para o dashboard
+        if (cameFromBlog) {
+          navigate('/');
+        } else {
+          navigate('/dashboard');
+        }
       }
     } catch (error: any) {
       toast({

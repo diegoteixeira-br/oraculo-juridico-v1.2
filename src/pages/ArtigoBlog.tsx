@@ -171,6 +171,7 @@ const ArtigoBlog = () => {
                   </Link>
                   <Link 
                     to="/login" 
+                    state={{ from: 'blog' }}
                     className="text-slate-300 hover:text-blue-400 transition-colors font-medium"
                   >
                     Login

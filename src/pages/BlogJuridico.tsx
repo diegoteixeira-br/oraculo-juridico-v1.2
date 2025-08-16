@@ -120,6 +120,7 @@ const BlogJuridico = () => {
                 <>
                   <Link 
                     to="/login" 
+                    state={{ from: 'blog' }}
                     className="text-slate-300 hover:text-blue-400 transition-colors font-medium"
                   >
                     Login
@@ -137,7 +138,7 @@ const BlogJuridico = () => {
               {user ? (
                 <UserMenu />
               ) : (
-                <Link to="/login">
+                <Link to="/login" state={{ from: 'blog' }}>
                   <Button size="sm" variant="outline" className="border-slate-600 text-slate-300">
                     Login
                   </Button>
