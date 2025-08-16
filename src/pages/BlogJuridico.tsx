@@ -97,7 +97,7 @@ const BlogJuridico = () => {
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-2">
               <img 
-                src="/src/assets/oraculo-juridico-logo.png" 
+                src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" 
                 alt="Oráculo Jurídico"
                 className="h-8 w-auto"
               />
