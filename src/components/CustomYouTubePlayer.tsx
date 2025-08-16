@@ -224,21 +224,21 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
 
         {/* Prompt central para liberar áudio */}
         {showAudioPrompt && isReady && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/40 pointer-events-auto">
-            <div className="bg-white rounded-lg p-8 text-center shadow-2xl max-w-md mx-4">
-              <div className="text-6xl mb-4">🔊</div>
-              <h3 className="text-xl font-bold mb-4 text-gray-800">
+          <div 
+            className="absolute inset-0 flex items-center justify-center bg-black/60 pointer-events-auto cursor-pointer animate-pulse"
+            onClick={handleAudioUnlock}
+          >
+            <div className="bg-red-500/90 backdrop-blur-sm rounded-lg p-8 text-center shadow-2xl max-w-md mx-4 border-2 border-red-400 animate-pulse">
+              <div className="text-6xl mb-4 animate-bounce">🔊</div>
+              <h3 className="text-xl font-bold mb-4 text-white">
                 Clique para ativar o áudio
               </h3>
-              <p className="text-gray-600 mb-6">
-                O vídeo está reproduzindo sem som. Clique no botão abaixo para ativar o áudio e reiniciar do começo.
+              <p className="text-red-100 mb-6">
+                O vídeo está reproduzindo sem som. Clique aqui para ativar o áudio e reiniciar do começo.
               </p>
-              <button
-                onClick={handleAudioUnlock}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200"
-              >
-                Ativar Áudio e Reiniciar
-              </button>
+              <div className="text-sm text-red-200 animate-pulse">
+                👆 Clique em qualquer lugar desta área
+              </div>
             </div>
           </div>
         )}
