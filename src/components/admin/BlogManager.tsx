@@ -294,8 +294,11 @@ const BlogManager = () => {
                       folder="covers"
                     />
                     <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-md">
-                      <strong>📏 Tamanho recomendado:</strong> 1200×630px (proporção 16:9)
-                      <br />A imagem será exibida com altura de 256px a 384px no site
+                      <strong>📏 Tamanhos ideais para evitar cortes:</strong>
+                      <br />• <strong>Artigos em Destaque (principal):</strong> 800×320px (proporção 2.5:1)
+                      <br />• <strong>Artigos em Destaque (secundários):</strong> 400×224px (proporção 16:9)  
+                      <br />• <strong>Todos os Artigos:</strong> 400×192px (proporção 25:12)
+                      <br />• <strong>Universal (recomendado):</strong> 1200×480px - funciona bem em todas as seções
                       <br /><strong>Formato:</strong> JPG ou PNG • <strong>Máximo:</strong> 2MB
                     </div>
                   </div>
