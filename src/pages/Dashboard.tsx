@@ -64,9 +64,19 @@ const [dailyCredits, setDailyCredits] = useState(0);
   const isPaid = profile?.subscription_status === 'active';
   const planType = profile?.plan_type || 'gratuito';
   const trialEndDate = profile?.trial_end_date ? new Date(profile.trial_end_date) : null;
+  const now = new Date();
   const daysRemaining = trialEndDate 
-    ? Math.max(0, Math.ceil((trialEndDate.getTime() - new Date().setHours(0,0,0,0)) / (1000 * 60 * 60 * 24)))
+    ? Math.max(0, Math.ceil((trialEndDate.getTime() - now.setHours(0,0,0,0)) / (1000 * 60 * 60 * 24)))
     : 7; // Default para usuários gratuitos sem trial_end_date
+  
+  // Debug logs
+  console.log('Trial Debug:', {
+    isTrial,
+    trialEndDate: trialEndDate?.toISOString(),
+    now: now.toISOString(),
+    daysRemaining,
+    subscription_status: profile?.subscription_status
+  });
 
   // Redirecionar para comprar-creditos se conta estiver inativa
   useEffect(() => {
