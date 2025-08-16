@@ -78,7 +78,7 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
         modestbranding: 1, // Remove logo do YouTube
         rel: 0, // Remove vídeos relacionados
         showinfo: 0, // Remove informações do vídeo
-        cc_load_policy: 1, // Carrega legendas se disponíveis
+        cc_load_policy: 0, // Desabilita legendas
         hl: 'pt', // Idioma português
         playsinline: 1, // Reproduz inline no mobile
         widget_referrer: window.location.href, // Define referrer
