@@ -88,7 +88,10 @@ export default function AdsManager() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setAds((data || []) as CustomAd[]);
+      setAds((data || []).map(ad => ({
+        ...ad,
+        ad_type: ad.ad_type as 'image' | 'html' | 'script'
+      })));
     } catch (error) {
       toast({
         title: "Erro ao carregar anúncios",

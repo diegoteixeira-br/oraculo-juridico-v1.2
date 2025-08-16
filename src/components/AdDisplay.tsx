@@ -48,7 +48,10 @@ export default function AdDisplay({ position, className = "" }: AdDisplayProps) 
         return true;
       });
       
-      setAds(validAds as CustomAd[]);
+      setAds(validAds.map(ad => ({
+        ...ad,
+        ad_type: ad.ad_type as 'image' | 'html' | 'script'
+      })));
       
       // Registrar visualizações para cada anúncio
       if (validAds.length > 0) {
