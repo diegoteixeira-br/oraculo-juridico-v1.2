@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function BlogSettings() {
   const [settings, setSettings] = useState({
-    googleAdsenseClientId: "ca-pub-5971738175423899",
+    googleAdsenseClientId: '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5971738175423899" crossorigin="anonymous"></script>',
     googleAdsenseEnabled: true,
     googleAnalyticsId: "",
     metaTitle: "Blog Jurídico - Oráculo Jurídico",
