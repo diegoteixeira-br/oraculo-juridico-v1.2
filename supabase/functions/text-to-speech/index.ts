@@ -19,6 +19,12 @@ serve(async (req) => {
       throw new Error('Text is required')
     }
 
+    // Validar e mapear vozes para as vozes válidas da OpenAI
+    const validVoices = ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer']
+    const selectedVoice = validVoices.includes(voice) ? voice : 'alloy'
+    
+    console.log(`Voice requested: ${voice}, using: ${selectedVoice}`)
+
     // Verificar autenticação
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
@@ -117,7 +123,7 @@ serve(async (req) => {
         body: JSON.stringify({
           model: 'tts-1-hd',
           input: chunk,
-          voice: voice || 'alloy',
+          voice: selectedVoice,
           response_format: 'mp3',
           speed: speed || 1.0
         }),
