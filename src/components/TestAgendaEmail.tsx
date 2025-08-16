@@ -261,7 +261,44 @@ const TestAgendaEmail = () => {
 
   const removeLogo = () => {
     setLogoUrl('');
+    // Também remove a logo do template HTML
+    const updatedTemplate = emailTemplate.replace(
+      /<img[^>]*src="[^"]*"[^>]*alt="\{\{SITE_NAME\}\}"[^>]*\/?>|<img[^>]*alt="\{\{SITE_NAME\}\}"[^>]*src="[^"]*"[^>]*\/?>/g,
+      '<h1>{{SITE_NAME}}</h1>'
+    );
+    setEmailTemplate(updatedTemplate);
     toast.success('✅ Logo removida com sucesso!');
+  };
+
+  const applyLogoToTemplate = () => {
+    if (!logoUrl.trim()) {
+      toast.error('❌ Selecione ou cole uma URL para a logo');
+      return;
+    }
+
+    // Remove qualquer logo existente primeiro
+    let updatedTemplate = emailTemplate.replace(
+      /<img[^>]*src="[^"]*"[^>]*alt="\{\{SITE_NAME\}\}"[^>]*\/?>|<img[^>]*alt="\{\{SITE_NAME\}\}"[^>]*src="[^"]*"[^>]*\/?>/g,
+      '<h1>{{SITE_NAME}}</h1>'
+    );
+
+    // Aplica a nova logo
+    updatedTemplate = updatedTemplate.replace(
+      '<h1>{{SITE_NAME}}</h1>',
+      `<img src="${logoUrl}" alt="{{SITE_NAME}}" style="max-height: 60px; max-width: 200px; height: auto;" />`
+    );
+
+    setEmailTemplate(updatedTemplate);
+    toast.success('✅ Logo aplicada ao template!');
+  };
+
+  const removeLogoFromTemplate = () => {
+    const updatedTemplate = emailTemplate.replace(
+      /<img[^>]*src="[^"]*"[^>]*alt="\{\{SITE_NAME\}\}"[^>]*\/?>|<img[^>]*alt="\{\{SITE_NAME\}\}"[^>]*src="[^"]*"[^>]*\/?>/g,
+      '<h1>{{SITE_NAME}}</h1>'
+    );
+    setEmailTemplate(updatedTemplate);
+    toast.success('✅ Logo removida do template!');
   };
 
   const getPreviewWithData = () => {
@@ -404,27 +441,26 @@ const TestAgendaEmail = () => {
                     </div>
                   )}
 
-                  {/* Botão aplicar */}
-                  <div className="mt-3">
+                  {/* Botões de ação */}
+                  <div className="mt-3 space-y-2">
                     <Button 
-                      onClick={() => {
-                        if (logoUrl.trim()) {
-                          const updatedTemplate = emailTemplate.replace(
-                            '<h1>{{SITE_NAME}}</h1>',
-                            `<img src="${logoUrl}" alt="{{SITE_NAME}}" style="max-height: 60px; max-width: 200px; height: auto;" />`
-                          );
-                          setEmailTemplate(updatedTemplate);
-                          toast.success('✅ Logo aplicada ao template!');
-                        } else {
-                          toast.error('❌ Selecione ou cole uma URL para a logo');
-                        }
-                      }}
+                      onClick={applyLogoToTemplate}
                       size="sm"
                       disabled={!logoUrl.trim()}
                       className="w-full"
                     >
                       <Upload className="w-4 h-4 mr-2" />
                       Aplicar Logo ao Template
+                    </Button>
+                    
+                    <Button 
+                      onClick={removeLogoFromTemplate}
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                    >
+                      <Upload className="w-4 h-4 mr-2" />
+                      Remover Logo do Template
                     </Button>
                   </div>
                 </div>
