@@ -82,6 +82,10 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
         origin: window.location.origin, // Define origem
         enablejsapi: 1, // Habilita API JS
         end: 0, // Remove tela final com vídeos relacionados
+        branding: 0, // Remove marca do YouTube
+        autohide: 1, // Esconde controles automaticamente
+        loop: 0, // Não fazer loop
+        playlist: videoId, // Define playlist como o próprio vídeo para evitar sugestões
       },
       events: {
         onReady: (event: any) => {
