@@ -131,15 +131,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Botão Quero Começar */}
-      <section className="py-12 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <button onClick={scrollToFreeAccount} className="inline-block btn-primary text-lg px-8 py-4 animate-fade-in">
-            Quero Começar Gratuitamente
-          </button>
-        </div>
-      </section>
-
       {/* Hero Section */}
       <section className="relative py-20 px-4 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-background/80">
@@ -152,6 +143,9 @@ const LandingPage = () => {
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-4xl mx-auto animate-fade-in">
             Chega de perder horas em pesquisa. Com o Oráculo Jurídico, você acessa uma IA treinada para o Direito brasileiro e obtém respostas fundamentadas em segundos.
           </p>
+          <button onClick={scrollToFreeAccount} className="inline-block btn-primary text-lg px-8 py-4 animate-fade-in">
+            Quero Começar Gratuitamente
+          </button>
         </div>
       </section>
       <section className="py-20 px-4">
