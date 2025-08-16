@@ -48,7 +48,7 @@ export function TrialStatusCard({ profile }: TrialStatusCardProps) {
             <div>
               <p className="text-xs text-amber-300 font-medium">Período Gratuito</p>
               <p className="text-2xl font-bold text-amber-400">
-                {daysRemaining} {daysRemaining === 1 ? 'dia' : 'dias'}
+                {daysRemaining}/7 Dias
               </p>
               <div className="mt-2 space-y-1">
                 <div className="flex justify-between text-xs">
@@ -80,7 +80,7 @@ export function TrialStatusCard({ profile }: TrialStatusCardProps) {
             <div>
               <p className="text-xs text-blue-300 font-medium">Período Gratuito</p>
               <p className="text-2xl font-bold text-blue-400">
-                {daysRemaining} {daysRemaining === 1 ? 'dia' : 'dias'}
+                {daysRemaining}/7 Dias
               </p>
               <div className="mt-2 space-y-1">
                 <div className="flex justify-between text-xs">
