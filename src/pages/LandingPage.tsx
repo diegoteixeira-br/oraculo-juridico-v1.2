@@ -114,7 +114,7 @@ const LandingPage = () => {
             <div className="absolute inset-0 bg-gradient-to-tr from-slate-800/20 via-transparent to-slate-600/20 rounded-2xl"></div>
             
             {/* Container do vídeo */}
-            <div className="relative bg-slate-800/30 backdrop-blur-sm rounded-2xl p-8 border border-slate-700/50 shadow-2xl">
+            <div className="relative bg-red-300/30 backdrop-blur-sm rounded-2xl p-8 border border-red-400/50 shadow-2xl">
               {videoSettings.youtube_video_id && videoSettings.youtube_video_id !== 'VIDEO_ID' ? 
                 <CustomYouTubePlayer videoId={videoSettings.youtube_video_id} title={videoSettings.video_title} /> : 
                 <div className="relative max-w-3xl mx-auto">
