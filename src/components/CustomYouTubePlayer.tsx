@@ -144,14 +144,12 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
             setVideoEnded(true);
           }
           
-          // Quando pausar, mostrar novamente o aviso de áudio SOMENTE se ainda puder pausar
-          if (state === window.YT.PlayerState.PAUSED && hasUserInteracted && canPause) {
-            setShowAudioPrompt(true);
-            player.mute();
-            setIsMuted(true);
+          // Quando pausar, mostrar novamente o aviso de áudio SOMENTE quando sair da página
+          if (state === window.YT.PlayerState.PAUSED && hasUserInteracted) {
+            // Não fazer nada - pause só deve acontecer quando sair da página
           }
           
-          // Se não pode pausar mas tentou pausar, continuar rodando
+          // Se tentar pausar por clique após interação, continuar reproduzindo
           if (state === window.YT.PlayerState.PAUSED && hasUserInteracted && !canPause) {
             player.playVideo();
           }
