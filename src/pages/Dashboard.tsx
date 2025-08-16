@@ -72,33 +72,38 @@ const [dailyCredits, setDailyCredits] = useState(0);
   
   useEffect(() => {
     const calculateDaysRemaining = () => {
-      if (!profile?.trial_end_date) {
+      if (!profile?.created_at) {
         setDaysRemaining(7);
         return;
       }
 
       try {
-        const now = new Date();
-        const trialEnd = new Date(profile.trial_end_date);
+        const hoje = new Date();
+        const dataCadastro = new Date(profile.created_at);
         
         // Converter para o timezone do usuário
-        const nowInUserTz = new Date(now.toLocaleString('en-US', { timeZone: userTimezone }));
-        const trialEndInUserTz = new Date(trialEnd.toLocaleString('en-US', { timeZone: userTimezone }));
+        const hojeInUserTz = new Date(hoje.toLocaleString('en-US', { timeZone: userTimezone }));
+        const cadastroInUserTz = new Date(dataCadastro.toLocaleString('en-US', { timeZone: userTimezone }));
         
         // Definir hora como início do dia para cálculo correto
-        nowInUserTz.setHours(0, 0, 0, 0);
-        trialEndInUserTz.setHours(23, 59, 59, 999);
+        hojeInUserTz.setHours(0, 0, 0, 0);
+        cadastroInUserTz.setHours(0, 0, 0, 0);
         
-        const diffTime = trialEndInUserTz.getTime() - nowInUserTz.getTime();
-        const days = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+        // Calcular dias passados desde o cadastro
+        const diffEmMs = hojeInUserTz.getTime() - cadastroInUserTz.getTime();
+        const diasPassados = Math.floor(diffEmMs / (1000 * 60 * 60 * 24));
         
-        setDaysRemaining(days);
+        // Calcular dias restantes (7 dias de trial)
+        const diasRestantes = Math.max(0, 7 - diasPassados);
+        
+        setDaysRemaining(diasRestantes);
 
         console.log('Trial Timer Update:', {
           timezone: userTimezone,
-          now: nowInUserTz.toISOString(),
-          trialEnd: trialEndInUserTz.toISOString(),
-          daysRemaining: days,
+          hoje: hojeInUserTz.toISOString(),
+          cadastro: cadastroInUserTz.toISOString(),
+          diasPassados: diasPassados,
+          diasRestantes: diasRestantes,
           subscription_status: profile?.subscription_status
         });
       } catch (error) {
@@ -114,7 +119,7 @@ const [dailyCredits, setDailyCredits] = useState(0);
     const interval = setInterval(calculateDaysRemaining, 60000);
 
     return () => clearInterval(interval);
-  }, [profile?.trial_end_date, userTimezone, profile?.subscription_status]);
+  }, [profile?.created_at, userTimezone, profile?.subscription_status]);
 
   // Redirecionar para comprar-creditos se conta estiver inativa
   useEffect(() => {
