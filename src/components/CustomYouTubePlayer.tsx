@@ -76,6 +76,11 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
         start: Math.floor(getSavedVideoPosition()), // Inicia na posição salva
         cc_load_policy: 1, // Carrega legendas se disponíveis
         hl: 'pt', // Idioma português
+        playsinline: 1, // Reproduz inline no mobile
+        widget_referrer: window.location.href, // Define referrer
+        origin: window.location.origin, // Define origem
+        enablejsapi: 1, // Habilita API JS
+        end: 0, // Remove tela final com vídeos relacionados
       },
       events: {
         onReady: (event: any) => {
