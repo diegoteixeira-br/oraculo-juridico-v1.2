@@ -141,6 +141,13 @@ export const ArticleTextReader = ({ title, content, className = '' }: ArticleTex
         )}
       </div>
 
+      {currentAudio && (
+        <AudioPlayer
+          audioSrc={currentAudio}
+          onPlayChange={setIsPlaying}
+        />
+      )}
+
     </div>
   );
 };
