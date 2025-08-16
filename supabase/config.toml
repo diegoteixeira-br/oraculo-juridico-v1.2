@@ -77,3 +77,6 @@ verify_jwt = true
 
 [functions.extract-legal-deadlines]
 verify_jwt = true
+
+[functions.text-to-speech]
+verify_jwt = true
