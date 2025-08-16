@@ -41,7 +41,7 @@ const LandingPage = () => {
     question: "O que é a Agenda Jurídica?",
     answer: "É uma ferramenta exclusiva do Plano Essencial para registrar manualmente prazos, audiências e compromissos. Quando houver itens agendados, você recebe um e-mail de lembrete diariamente no horário configurado na sua conta (respeitando seu fuso horário). Possui também extração automática de prazos via IA que consome mínimo 500 tokens, variando conforme o tamanho do texto."
   }];
-  return <div className="min-h-screen bg-background text-foreground">
+  return <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-foreground">
       {/* Header */}
       <header className="py-6 px-4 border-b border-border bg-slate-800/50 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
