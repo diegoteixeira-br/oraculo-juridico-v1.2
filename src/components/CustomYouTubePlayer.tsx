@@ -109,6 +109,13 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
             setVideoEnded(true);
           }
           
+          // Quando pausar, mostrar novamente o aviso de áudio
+          if (state === window.YT.PlayerState.PAUSED && hasUserInteracted) {
+            setShowAudioPrompt(true);
+            player.mute();
+            setIsMuted(true);
+          }
+          
           // Salvar posição a cada 5 segundos durante reprodução
           if (state === window.YT.PlayerState.PLAYING) {
             setVideoEnded(false); // Reset quando começa a reproduzir novamente
