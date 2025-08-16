@@ -1,14 +1,44 @@
 import { Link } from "react-router-dom";
 import { Clock, DollarSign, AlertTriangle, Shield, Globe, Smartphone, History, Lock, Check, ChevronDown, ChevronRight, Brain, Zap, Users, Award, Scale, Gavel, FileText, Building, Calendar, Heart, MessageCircle, Calculator, Target, TrendingUp, MessageSquare } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useSEO } from "@/hooks/useSEO";
 import heroBrain from "../assets/hero-brain-legal.jpg";
 import legalOffice from "../assets/legal-office.jpg";
 const LandingPage = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [videoSettings, setVideoSettings] = useState({
+    youtube_video_id: 'VIDEO_ID',
+    video_title: 'Veja Como Funciona na Prática',
+    video_description: 'Assista ao vídeo demonstrativo e descubra como o Oráculo Jurídico pode revolucionar sua prática advocatícia'
+  });
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
   };
+  
+  useEffect(() => {
+    const fetchVideoSettings = async () => {
+      try {
+        const { data } = await supabase
+          .from('landing_page_settings')
+          .select('youtube_video_id, video_title, video_description')
+          .maybeSingle();
+        
+        if (data) {
+          setVideoSettings({
+            youtube_video_id: data.youtube_video_id || 'VIDEO_ID',
+            video_title: data.video_title || 'Veja Como Funciona na Prática',
+            video_description: data.video_description || 'Assista ao vídeo demonstrativo e descubra como o Oráculo Jurídico pode revolucionar sua prática advocatícia'
+          });
+        }
+      } catch (error) {
+        console.error('Erro ao carregar configurações de vídeo:', error);
+      }
+    };
+
+    fetchVideoSettings();
+  }, []);
+  
   const scrollToFreeAccount = () => {
     const freeAccountSection = document.getElementById('free-account-section');
     if (freeAccountSection) {
@@ -83,29 +113,39 @@ const LandingPage = () => {
       <section className="py-20 px-4 bg-muted/10">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground">
-            Veja Como Funciona na Prática
+            {videoSettings.video_title}
           </h2>
           <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">
-            Assista ao vídeo demonstrativo e descubra como o Oráculo Jurídico pode revolucionar sua prática advocatícia
+            {videoSettings.video_description}
           </p>
           
-          <div className="relative max-w-3xl mx-auto">
-            <div className="aspect-video bg-slate-800/50 rounded-lg border border-border overflow-hidden shadow-2xl">
-              {/* Placeholder para vídeo do YouTube - substitua VIDEO_ID pelo ID real do vídeo */}
-              <iframe
-                className="w-full h-full"
-                src="https://www.youtube.com/embed/VIDEO_ID?rel=0&modestbranding=1&showinfo=0"
-                title="Oráculo Jurídico - Demonstração"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
+          {videoSettings.youtube_video_id && videoSettings.youtube_video_id !== 'VIDEO_ID' ? (
+            <div className="relative max-w-3xl mx-auto">
+              <div className="aspect-video bg-slate-800/50 rounded-lg border border-border overflow-hidden shadow-2xl">
+                <iframe
+                  className="w-full h-full"
+                  src={`https://www.youtube.com/embed/${videoSettings.youtube_video_id}?rel=0&modestbranding=1&showinfo=0`}
+                  title={videoSettings.video_title}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </div>
+              
+              <div className="mt-6 text-sm text-muted-foreground">
+                <p>💡 <strong>Dica:</strong> O vídeo abre aqui mesmo, sem redirecionamentos!</p>
+              </div>
             </div>
-            
-            <div className="mt-6 text-sm text-muted-foreground">
-              <p>💡 <strong>Dica:</strong> O vídeo abre aqui mesmo, sem redirecionamentos!</p>
+          ) : (
+            <div className="relative max-w-3xl mx-auto">
+              <div className="aspect-video bg-slate-800/50 rounded-lg border border-border overflow-hidden shadow-2xl flex items-center justify-center">
+                <div className="text-center text-muted-foreground">
+                  <div className="text-4xl mb-4">🎥</div>
+                  <p>Vídeo será configurado em breve</p>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
       <section className="py-20 px-4">

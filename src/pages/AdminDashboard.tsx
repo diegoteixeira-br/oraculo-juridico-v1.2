@@ -11,7 +11,8 @@ import TestAgendaEmail from "@/components/TestAgendaEmail";
 import BlogManager from "@/components/admin/BlogManager";
 import BlogSettings from "@/components/admin/BlogSettings";
 import AdsManager from "@/components/admin/AdsManager";
-import { Users, FileText, Upload, Undo2, ArrowLeft, Coins, Mail, BookOpen, Settings2, Wrench } from "lucide-react";
+import LandingPageSettings from "@/components/admin/LandingPageSettings";
+import { Users, FileText, Upload, Undo2, ArrowLeft, Coins, Mail, BookOpen, Settings2, Wrench, Globe } from "lucide-react";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useSEO } from "@/hooks/useSEO";
 import { useNavigate } from "react-router-dom";
@@ -86,7 +87,7 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-                <TabsList className="grid w-full grid-cols-6 h-auto">
+                <TabsList className="grid w-full grid-cols-7 h-auto">
                   <TabsTrigger value="users" className="flex items-center gap-2 p-3">
                     <Users className="h-4 w-4" />
                     <span className="hidden lg:inline">Usuários</span>
@@ -110,6 +111,10 @@ export default function AdminDashboard() {
                   <TabsTrigger value="teste-agenda" className="flex items-center gap-2 p-3">
                     <Mail className="h-4 w-4" />
                     <span className="hidden lg:inline">Templates</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="landing-page" className="flex items-center gap-2 p-3">
+                    <Globe className="h-4 w-4" />
+                    <span className="hidden lg:inline">Página Venda</span>
                   </TabsTrigger>
                 </TabsList>
 
@@ -143,6 +148,19 @@ export default function AdminDashboard() {
                     </div>
                     
                     <TestAgendaEmail />
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="landing-page">
+                  <div className="space-y-4 sm:space-y-6">
+                    <div>
+                      <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2">Configurações da Página de Venda</h2>
+                      <p className="text-muted-foreground text-xs sm:text-sm lg:text-base">
+                        Configure o vídeo explicativo exibido na página de venda
+                      </p>
+                    </div>
+                    
+                    <LandingPageSettings />
                   </div>
                 </TabsContent>
               </Tabs>

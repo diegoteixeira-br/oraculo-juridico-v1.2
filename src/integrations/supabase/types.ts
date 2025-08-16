@@ -457,6 +457,33 @@ export type Database = {
         }
         Relationships: []
       }
+      landing_page_settings: {
+        Row: {
+          created_at: string
+          id: string
+          updated_at: string
+          video_description: string | null
+          video_title: string | null
+          youtube_video_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          updated_at?: string
+          video_description?: string | null
+          video_title?: string | null
+          youtube_video_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          updated_at?: string
+          video_description?: string | null
+          video_title?: string | null
+          youtube_video_id?: string | null
+        }
+        Relationships: []
+      }
       legal_commitments: {
         Row: {
           alert_sent: boolean | null
