@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function BlogSettings() {
   const [settings, setSettings] = useState({
-    googleAdsenseClientId: "ca-pub-5971738175423899",
+    googleAdsenseClientId: "",
     googleAdsenseEnabled: true,
     googleAnalyticsId: "",
     metaTitle: "Blog Jurídico - Oráculo Jurídico",
