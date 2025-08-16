@@ -79,7 +79,35 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Problema e Solução */}
+      {/* Vídeo Explicativo */}
+      <section className="py-20 px-4 bg-muted/10">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground">
+            Veja Como Funciona na Prática
+          </h2>
+          <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">
+            Assista ao vídeo demonstrativo e descubra como o Oráculo Jurídico pode revolucionar sua prática advocatícia
+          </p>
+          
+          <div className="relative max-w-3xl mx-auto">
+            <div className="aspect-video bg-slate-800/50 rounded-lg border border-border overflow-hidden shadow-2xl">
+              {/* Placeholder para vídeo do YouTube - substitua VIDEO_ID pelo ID real do vídeo */}
+              <iframe
+                className="w-full h-full"
+                src="https://www.youtube.com/embed/VIDEO_ID?rel=0&modestbranding=1&showinfo=0"
+                title="Oráculo Jurídico - Demonstração"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+            
+            <div className="mt-6 text-sm text-muted-foreground">
+              <p>💡 <strong>Dica:</strong> O vídeo abre aqui mesmo, sem redirecionamentos!</p>
+            </div>
+          </div>
+        </div>
+      </section>
       <section className="py-20 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
