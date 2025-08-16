@@ -109,8 +109,8 @@ const LandingPage = () => {
           
           {/* Container com fundo estilizado para o vídeo */}
           <div className="relative">
-            {/* Fundo decorativo */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/5 to-primary/5 rounded-2xl blur-3xl transform scale-110"></div>
+            {/* Fundo decorativo azul */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-blue-400/5 to-blue-600/10 rounded-2xl blur-3xl transform scale-110"></div>
             <div className="absolute inset-0 bg-gradient-to-tr from-slate-800/20 via-transparent to-slate-600/20 rounded-2xl"></div>
             
             {/* Container do vídeo */}
