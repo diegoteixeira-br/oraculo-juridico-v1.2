@@ -115,17 +115,15 @@ const LandingPage = () => {
             
             {/* Container do vídeo */}
             <div className="relative bg-red-300/30 backdrop-blur-sm rounded-2xl p-1 border border-red-400/50 shadow-2xl">
-              {videoSettings.youtube_video_id && videoSettings.youtube_video_id !== 'VIDEO_ID' ? 
-                <CustomYouTubePlayer videoId={videoSettings.youtube_video_id} title={videoSettings.video_title} /> : 
                 <div className="relative max-w-3xl mx-auto">
                   <div className="aspect-video bg-slate-800/50 rounded-lg border border-border overflow-hidden shadow-2xl flex items-center justify-center">
                     <div className="text-center text-muted-foreground">
                       <div className="text-4xl mb-4">🎥</div>
-                      <p>Vídeo será configurado em breve</p>
+                      <p>Vídeo será configurado pelo admin</p>
+                      <p className="text-sm mt-2 text-slate-400">Configure o vídeo nas configurações da Landing Page</p>
                     </div>
                   </div>
                 </div>
-              }
             </div>
           </div>
         </div>
