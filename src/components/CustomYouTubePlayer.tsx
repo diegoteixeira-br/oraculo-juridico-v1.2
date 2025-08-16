@@ -27,6 +27,7 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [canPause, setCanPause] = useState(true);
+  const [playbackRate, setPlaybackRate] = useState(1);
 
   // Salvar/carregar posição do vídeo
   const saveVideoPosition = (time: number) => {
@@ -130,6 +131,13 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
           if (savedVolume) {
             event.target.setVolume(parseInt(savedVolume));
             setIsMuted(parseInt(savedVolume) === 0);
+          }
+
+          // Configurar velocidade salva
+          const savedSpeed = localStorage.getItem(`video_speed_${videoId}`);
+          if (savedSpeed) {
+            event.target.setPlaybackRate(parseFloat(savedSpeed));
+            setPlaybackRate(parseFloat(savedSpeed));
           }
 
           // Atualizar tempo atual a cada segundo
@@ -279,28 +287,19 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
     setVideoEnded(false);
   };
 
+  const changePlaybackRate = (rate: number) => {
+    if (!player) return;
+    player.setPlaybackRate(rate);
+    setPlaybackRate(rate);
+    localStorage.setItem(`video_speed_${videoId}`, rate.toString());
+  };
+
   return (
     <div className="relative max-w-3xl mx-auto">
       <div className="aspect-video bg-slate-800/50 rounded-lg border border-border overflow-hidden shadow-2xl relative">
         {/* Container do player */}
         <div ref={containerRef} className="w-full h-full"></div>
         
-        {/* Barra de progresso do vídeo */}
-        {isReady && !showAudioPrompt && !showResumePrompt && !videoEnded && duration > 0 && (
-          <div className="absolute bottom-0 left-0 right-0 bg-black/20 backdrop-blur-sm p-2">
-            <div className="flex items-center gap-2 text-white text-sm">
-              <span>{Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60).toString().padStart(2, '0')}</span>
-              <div className="flex-1 bg-white/20 rounded-full h-1 overflow-hidden">
-                <div 
-                  className="bg-red-500 h-full transition-all duration-200"
-                  style={{ width: `${(currentTime / duration) * 100}%` }}
-                ></div>
-              </div>
-              <span>{Math.floor(duration / 60)}:{Math.floor(duration % 60).toString().padStart(2, '0')}</span>
-            </div>
-          </div>
-        )}
-
         {/* Prompt central para liberar áudio */}
         {showAudioPrompt && isReady && (
           <div 
@@ -356,7 +355,6 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
           </div>
         )}
 
-        
         {/* Botão Assistir Novamente - só aparece quando vídeo termina */}
         {videoEnded && !showAudioPrompt && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/60 pointer-events-auto">
@@ -379,6 +377,38 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
           </div>
         )}
       </div>
+      
+      {/* Barra de progresso externa - só a barra sem tempo */}
+      {isReady && !showAudioPrompt && !showResumePrompt && !videoEnded && duration > 0 && (
+        <div className="mt-3 px-2">
+          <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+            <div 
+              className="bg-red-500 h-full transition-all duration-200"
+              style={{ width: `${(currentTime / duration) * 100}%` }}
+            ></div>
+          </div>
+        </div>
+      )}
+      
+      {/* Controles de velocidade */}
+      {isReady && !showAudioPrompt && !showResumePrompt && !videoEnded && (
+        <div className="mt-3 flex items-center justify-center gap-2">
+          <span className="text-sm text-gray-600 dark:text-gray-400">Velocidade:</span>
+          {[0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].map(rate => (
+            <button
+              key={rate}
+              onClick={() => changePlaybackRate(rate)}
+              className={`px-3 py-1 rounded-md text-xs font-medium transition-all duration-200 ${
+                playbackRate === rate
+                  ? 'bg-red-500 text-white'
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+              }`}
+            >
+              {rate}x
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
