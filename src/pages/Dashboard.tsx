@@ -377,38 +377,24 @@ const openTemplateEditor = async (documentId: string) => {
             {(isPaid || planType === 'Gratuito' || planType === 'gratuito') ? (
               <Card className="bg-gradient-to-br from-emerald-600/20 to-emerald-600/10 border-emerald-600/30">
                 <CardContent className="p-4">
-                       <div className="flex items-center justify-between">
-                     <div>
-                       <p className="text-xs text-emerald-300 font-medium">Plano Ativo</p>
-                       <div className="flex items-baseline gap-2">
-                         <p className="text-2xl font-bold text-emerald-400 capitalize">
-                           {planType}
-                         </p>
-                          {isTrial && (
-                            <span className="text-lg font-semibold text-emerald-300 ml-2">
-                              {daysRemaining}/7 Dias
-                            </span>
-                          )}
-                       </div>
-                        {(profile?.subscription_activated_at || profile?.created_at) && (
-                         <div className="mt-2 space-y-1">
-                           <div className="flex justify-between text-xs">
-                             <span className="text-emerald-300/70">
-                               {isPaid ? 'Contratado em:' : 'Membro desde:'}
-                             </span>
-                             <span className="text-emerald-200 font-medium">
-                               {new Date(
-                                 isPaid && profile?.subscription_activated_at 
-                                   ? profile.subscription_activated_at 
-                                   : profile?.created_at || ''
-                               ).toLocaleDateString('pt-BR')}
-                             </span>
-                           </div>
-                         </div>
-                       )}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-emerald-300 font-medium">Plano Ativo</p>
+                      <p className="text-2xl font-bold text-emerald-400">
+                        {isTrial ? `Gratuito ${daysRemaining}/7 Dias` : planType}
+                      </p>
+                      <div className="mt-2">
+                        <p className="text-xs text-emerald-300/70">
+                          Membro desde: {new Date(
+                            isPaid && profile?.subscription_activated_at 
+                              ? profile.subscription_activated_at 
+                              : profile?.created_at || ''
+                          ).toLocaleDateString('pt-BR')}
+                        </p>
+                      </div>
                     </div>
                     <div className="p-2 bg-emerald-600/20 rounded-lg">
-                      <Users className="w-6 h-6 text-emerald-400" />
+                      {isTrial ? <Clock className="w-6 h-6 text-emerald-400" /> : <Users className="w-6 h-6 text-emerald-400" />}
                     </div>
                   </div>
                 </CardContent>
