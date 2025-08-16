@@ -194,7 +194,7 @@ const BlogJuridico = () => {
                           <img 
                             src={post.cover_image_url} 
                             alt={post.title}
-                            className={`w-full object-contain bg-muted group-hover:scale-105 transition-transform duration-300 ${index === 0 ? 'h-64 md:h-80' : 'h-48 md:h-56'}`}
+                            className={`w-full object-cover group-hover:scale-105 transition-transform duration-300 ${index === 0 ? 'h-48 md:h-64' : 'h-40 md:h-44'}`}
                           />
                         )}
                         <div className="absolute top-3 left-3">
@@ -275,7 +275,7 @@ const BlogJuridico = () => {
                         <img
                           src={post.cover_image_url || '/placeholder.svg'}
                           alt={post.title}
-                          className="w-full h-48 md:h-full object-contain bg-muted group-hover:scale-105 transition-transform duration-300"
+                          className="w-full h-32 md:h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                         <div className="absolute top-3 left-3">
                           <Badge className="bg-blue-600/90 text-white border-0 text-xs">
