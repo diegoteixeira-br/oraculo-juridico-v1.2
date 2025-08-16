@@ -1103,6 +1103,14 @@ export type Database = {
         Args: { "": unknown }
         Returns: unknown
       }
+      increment_ad_clicks: {
+        Args: { ad_id: string }
+        Returns: undefined
+      }
+      increment_ad_views: {
+        Args: { ad_id: string }
+        Returns: undefined
+      }
       is_admin: {
         Args: { p_user_id: string }
         Returns: boolean

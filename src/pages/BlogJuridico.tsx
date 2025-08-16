@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useSEO } from '@/hooks/useSEO';
 import { supabase } from '@/integrations/supabase/client';
+import AdDisplay from '@/components/AdDisplay';
 
 interface BlogPost {
   id: string;
@@ -156,14 +157,8 @@ const BlogJuridico = () => {
               Mantenha-se atualizado com as últimas notícias jurídicas, análises de legislação e dicas práticas para advogados
             </p>
             
-            {/* Google AdSense Banner Superior */}
-            <div className="mb-8">
-              <div className="bg-slate-800/30 border-2 border-dashed border-slate-600/30 rounded-lg p-6 text-center max-w-4xl mx-auto">
-                <p className="text-sm text-slate-400">
-                  Google AdSense - Banner Superior (728x90 ou Responsivo)
-                </p>
-              </div>
-            </div>
+            {/* Anúncios Personalizados - Topo */}
+            <AdDisplay position="content_top" className="mb-8" />
             
             {/* Search Bar */}
             <div className="max-w-md mx-auto relative mb-8">
@@ -260,14 +255,8 @@ const BlogJuridico = () => {
                   ))}
                 </div>
                 
-                {/* Google AdSense Banner Meio */}
-                <div className="mb-8">
-                  <div className="bg-slate-800/30 border-2 border-dashed border-slate-600/30 rounded-lg p-6 text-center">
-                    <p className="text-sm text-slate-400">
-                      Google AdSense - Banner Meio de Conteúdo (728x90)
-                    </p>
-                  </div>
-                </div>
+                {/* Anúncios Personalizados - Meio do Conteúdo */}
+                <AdDisplay position="content_middle" className="mb-8" />
               </section>
             )}
 
@@ -350,11 +339,8 @@ const BlogJuridico = () => {
 
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-6">
-            {/* Google AdSense Lateral */}
-            <div className="bg-slate-800/30 border-2 border-dashed border-slate-600/30 rounded-lg p-6 text-center">
-              <p className="text-sm text-slate-400 mb-2">Google AdSense</p>
-              <p className="text-xs text-slate-500">Banner Lateral (300x250)</p>
-            </div>
+            {/* Anúncios Personalizados - Sidebar Topo */}
+            <AdDisplay position="sidebar_top" />
 
             {/* Categories */}
             <Card className="bg-slate-800/50 border-slate-700">
@@ -372,11 +358,8 @@ const BlogJuridico = () => {
               </CardContent>
             </Card>
 
-            {/* Google AdSense Lateral 2 */}
-            <div className="bg-slate-800/30 border-2 border-dashed border-slate-600/30 rounded-lg p-6 text-center">
-              <p className="text-sm text-slate-400 mb-2">Google AdSense</p>
-              <p className="text-xs text-slate-500">Banner Lateral 2 (300x600)</p>
-            </div>
+            {/* Anúncios Personalizados - Sidebar Meio */}
+            <AdDisplay position="sidebar_middle" />
 
             {/* Newsletter */}
             <Card className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border-blue-500/30">
@@ -396,17 +379,16 @@ const BlogJuridico = () => {
                 </Button>
               </CardContent>
             </Card>
+
+            {/* Anúncios Personalizados - Sidebar Rodapé */}
+            <AdDisplay position="sidebar_bottom" />
           </div>
         </div>
       </div>
 
-      {/* Google AdSense Banner Inferior */}
+      {/* Anúncios Personalizados - Rodapé do Conteúdo */}
       <div className="container mx-auto px-4 pb-8">
-        <div className="bg-slate-800/30 border-2 border-dashed border-slate-600/30 rounded-lg p-6 text-center">
-          <p className="text-sm text-slate-400">
-            Google AdSense - Banner Inferior (728x90 ou Responsivo)
-          </p>
-        </div>
+        <AdDisplay position="content_bottom" />
       </div>
 
       {/* Footer */}

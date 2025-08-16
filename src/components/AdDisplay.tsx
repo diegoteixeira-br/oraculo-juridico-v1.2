@@ -48,7 +48,7 @@ export default function AdDisplay({ position, className = "" }: AdDisplayProps) 
         return true;
       });
       
-      setAds(validAds);
+      setAds(validAds as CustomAd[]);
       
       // Registrar visualizações para cada anúncio
       if (validAds.length > 0) {
@@ -63,7 +63,19 @@ export default function AdDisplay({ position, className = "" }: AdDisplayProps) 
 
   const trackView = async (adId: string) => {
     try {
-      await supabase.rpc('increment_ad_views', { ad_id: adId });
+      // Buscar contagem atual primeiro
+      const { data: currentAd } = await supabase
+        .from('custom_ads')
+        .select('view_count')
+        .eq('id', adId)
+        .single();
+      
+      if (currentAd) {
+        await supabase
+          .from('custom_ads')
+          .update({ view_count: currentAd.view_count + 1 })
+          .eq('id', adId);
+      }
     } catch (error) {
       console.error('Erro ao registrar visualização:', error);
     }
@@ -71,7 +83,19 @@ export default function AdDisplay({ position, className = "" }: AdDisplayProps) 
 
   const trackClick = async (adId: string) => {
     try {
-      await supabase.rpc('increment_ad_clicks', { ad_id: adId });
+      // Buscar contagem atual primeiro
+      const { data: currentAd } = await supabase
+        .from('custom_ads')
+        .select('click_count')
+        .eq('id', adId)
+        .single();
+      
+      if (currentAd) {
+        await supabase
+          .from('custom_ads')
+          .update({ click_count: currentAd.click_count + 1 })
+          .eq('id', adId);
+      }
     } catch (error) {
       console.error('Erro ao registrar clique:', error);
     }

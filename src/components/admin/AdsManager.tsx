@@ -37,7 +37,17 @@ export default function AdsManager() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    title: string;
+    description: string;
+    ad_type: 'image' | 'html' | 'script';
+    content: string;
+    link_url: string;
+    position: string;
+    is_active: boolean;
+    start_date: string;
+    end_date: string;
+  }>({
     title: "",
     description: "",
     ad_type: "image" as const,
@@ -78,7 +88,7 @@ export default function AdsManager() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setAds(data || []);
+      setAds((data || []) as CustomAd[]);
     } catch (error) {
       toast({
         title: "Erro ao carregar anúncios",
@@ -263,7 +273,7 @@ export default function AdsManager() {
                 
                 <div className="space-y-2">
                   <Label htmlFor="ad_type">Tipo</Label>
-                  <Select value={formData.ad_type} onValueChange={(value: any) => setFormData(prev => ({ ...prev, ad_type: value }))}>
+                  <Select value={formData.ad_type} onValueChange={(value: 'image' | 'html' | 'script') => setFormData(prev => ({ ...prev, ad_type: value }))}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>

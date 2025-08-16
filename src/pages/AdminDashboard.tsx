@@ -10,6 +10,7 @@ import TokenManager from "@/components/admin/TokenManager";
 import TestAgendaEmail from "@/components/TestAgendaEmail";
 import BlogManager from "@/components/admin/BlogManager";
 import BlogSettings from "@/components/admin/BlogSettings";
+import AdsManager from "@/components/admin/AdsManager";
 import { Users, FileText, Upload, Undo2, ArrowLeft, Coins, Mail, BookOpen, Settings2, Wrench } from "lucide-react";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useSEO } from "@/hooks/useSEO";
@@ -160,13 +161,17 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <Tabs value={activeBlogTab} onValueChange={setActiveBlogTab} className="space-y-6">
-                <TabsList className="grid w-full grid-cols-2 h-auto">
+                <TabsList className="grid w-full grid-cols-3 h-auto">
                   <TabsTrigger value="articles" className="flex items-center gap-2 p-3">
-                    <FileText className="h-4 w-4" />
+                    <FileText className="w-4 h-4" />
                     <span>Artigos</span>
                   </TabsTrigger>
+                  <TabsTrigger value="ads" className="flex items-center gap-2 p-3">
+                    <Settings2 className="w-4 h-4" />
+                    <span>Anúncios</span>
+                  </TabsTrigger>
                   <TabsTrigger value="settings" className="flex items-center gap-2 p-3">
-                    <Settings2 className="h-4 w-4" />
+                    <Settings2 className="w-4 h-4" />
                     <span>Configurações</span>
                   </TabsTrigger>
                 </TabsList>
@@ -181,6 +186,19 @@ export default function AdminDashboard() {
                     </div>
                     
                     <BlogManager />
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="ads">
+                  <div className="space-y-4 sm:space-y-6">
+                    <div>
+                      <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2">Gerenciamento de Anúncios</h2>
+                      <p className="text-muted-foreground text-xs sm:text-sm lg:text-base">
+                        Adicione seus próprios anúncios ou de terceiros nas diferentes posições do blog
+                      </p>
+                    </div>
+                    
+                    <AdsManager />
                   </div>
                 </TabsContent>
 
