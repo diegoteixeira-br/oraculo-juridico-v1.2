@@ -91,26 +91,8 @@ const LandingPage = () => {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative py-20 px-4 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-background/80">
-          <img src={heroBrain} alt="IA jurídica - imagem hero" loading="lazy" decoding="async" className="w-full h-full object-cover object-center opacity-20" width="1920" height="1080" />
-        </div>
-        <div className="relative max-w-6xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
-            A Resposta Jurídica que Você Precisa, <span className="text-primary">na Velocidade da Luz</span>
-          </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-4xl mx-auto animate-fade-in">
-            Chega de perder horas em pesquisa. Com o Oráculo Jurídico, você acessa uma IA treinada para o Direito brasileiro e obtém respostas fundamentadas em segundos.
-          </p>
-          <button onClick={scrollToFreeAccount} className="inline-block btn-primary text-lg px-8 py-4 animate-fade-in">
-            Quero Começar Gratuitamente
-          </button>
-        </div>
-      </section>
-
       {/* Vídeo Explicativo */}
-      <section className="py-20 px-4 bg-muted/10">
+      <section className="py-16 px-4 bg-muted/10">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground">
             {videoSettings.video_title}
@@ -146,6 +128,30 @@ const LandingPage = () => {
               </div>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Botão Quero Começar */}
+      <section className="py-12 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <button onClick={scrollToFreeAccount} className="inline-block btn-primary text-lg px-8 py-4 animate-fade-in">
+            Quero Começar Gratuitamente
+          </button>
+        </div>
+      </section>
+
+      {/* Hero Section */}
+      <section className="relative py-20 px-4 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-background/80">
+          <img src={heroBrain} alt="IA jurídica - imagem hero" loading="lazy" decoding="async" className="w-full h-full object-cover object-center opacity-20" width="1920" height="1080" />
+        </div>
+        <div className="relative max-w-6xl mx-auto text-center">
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
+            A Resposta Jurídica que Você Precisa, <span className="text-primary">na Velocidade da Luz</span>
+          </h1>
+          <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-4xl mx-auto animate-fade-in">
+            Chega de perder horas em pesquisa. Com o Oráculo Jurídico, você acessa uma IA treinada para o Direito brasileiro e obtém respostas fundamentadas em segundos.
+          </p>
         </div>
       </section>
       <section className="py-20 px-4">
