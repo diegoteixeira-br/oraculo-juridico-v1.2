@@ -141,12 +141,6 @@ export const ArticleTextReader = ({ title, content, className = '' }: ArticleTex
         )}
       </div>
 
-      {currentAudio && (
-        <AssistantAudioBlock
-          audioSrc={currentAudio}
-          text={cleanTextForTTS(content)}
-        />
-      )}
     </div>
   );
 };
