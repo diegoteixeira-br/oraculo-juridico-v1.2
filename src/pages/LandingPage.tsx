@@ -16,15 +16,12 @@ const LandingPage = () => {
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
   };
-  
   useEffect(() => {
     const fetchVideoSettings = async () => {
       try {
-        const { data } = await supabase
-          .from('landing_page_settings')
-          .select('youtube_video_id, video_title, video_description')
-          .maybeSingle();
-        
+        const {
+          data
+        } = await supabase.from('landing_page_settings').select('youtube_video_id, video_title, video_description').maybeSingle();
         if (data) {
           setVideoSettings({
             youtube_video_id: data.youtube_video_id || 'VIDEO_ID',
@@ -36,10 +33,8 @@ const LandingPage = () => {
         console.error('Erro ao carregar configurações de vídeo:', error);
       }
     };
-
     fetchVideoSettings();
   }, []);
-  
   const scrollToFreeAccount = () => {
     const freeAccountSection = document.getElementById('free-account-section');
     if (freeAccountSection) {
@@ -48,7 +43,6 @@ const LandingPage = () => {
       });
     }
   };
-
   useSEO({
     title: "Oráculo Jurídico — IA Jurídica para Advogados",
     description: "Crie sua conta gratuita e teste 7 dias com 15.000 tokens. Chat jurídico com IA, calculadoras, documentos e agenda."
@@ -61,7 +55,7 @@ const LandingPage = () => {
     answer: "Não. O saldo de 15.000 tokens do teste é único para o período de 7 dias e não é cumulativo após o término do teste."
   }, {
     question: "Preciso cadastrar um cartão de crédito para usar o plano gratuito?",
-    answer: "Sim. Para ativar o teste de 7 dias é necessário cadastrar um cartão de crédito. Não haverá cobrança até o 8º dia caso você não cancele.",
+    answer: "Sim. Para ativar o teste de 7 dias é necessário cadastrar um cartão de crédito. Não haverá cobrança até o 8º dia caso você não cancele."
   }, {
     question: "As informações da IA são confiáveis?",
     answer: "Nossa IA integra-se com a LexML, base oficial de jurisprudência do governo brasileiro. IMPORTANTE: As informações sempre precisam ser revisadas e adaptadas às necessidades específicas de cada caso pelo advogado responsável, pois a base LexML pode não estar 100% atualizada e cada situação jurídica é única."
@@ -84,7 +78,9 @@ const LandingPage = () => {
           </div>
           
           <div className="flex items-center gap-3">
-            <Link to="/login" state={{ from: '/pagina-de-venda' }} className="text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-1 sm:space-x-2 border border-border rounded-lg px-2 py-1.5 sm:px-4 sm:py-2 hover:bg-muted/10">
+            <Link to="/login" state={{
+            from: '/pagina-de-venda'
+          }} className="text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-1 sm:space-x-2 border border-border rounded-lg px-2 py-1.5 sm:px-4 sm:py-2 hover:bg-muted/10">
               <Smartphone className="w-3 h-3 sm:w-4 sm:h-4" />
               <span className="text-xs sm:text-sm">Login</span>
             </Link>
@@ -95,28 +91,21 @@ const LandingPage = () => {
       {/* Vídeo Explicativo */}
       <section className="py-16 px-4 bg-muted/10">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground">
+          <h2 className="text-3xl font-bold mb-6 md:text-[b79b71] text-[#b79b71]">
             {videoSettings.video_title}
           </h2>
           <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">
             {videoSettings.video_description}
           </p>
           
-          {videoSettings.youtube_video_id && videoSettings.youtube_video_id !== 'VIDEO_ID' ? (
-            <CustomYouTubePlayer 
-              videoId={videoSettings.youtube_video_id}
-              title={videoSettings.video_title}
-            />
-          ) : (
-            <div className="relative max-w-3xl mx-auto">
+          {videoSettings.youtube_video_id && videoSettings.youtube_video_id !== 'VIDEO_ID' ? <CustomYouTubePlayer videoId={videoSettings.youtube_video_id} title={videoSettings.video_title} /> : <div className="relative max-w-3xl mx-auto">
               <div className="aspect-video bg-slate-800/50 rounded-lg border border-border overflow-hidden shadow-2xl flex items-center justify-center">
                 <div className="text-center text-muted-foreground">
                   <div className="text-4xl mb-4">🎥</div>
                   <p>Vídeo será configurado em breve</p>
                 </div>
               </div>
-            </div>
-          )}
+            </div>}
         </div>
       </section>
 
