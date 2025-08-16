@@ -10,6 +10,8 @@ import { supabase } from '@/integrations/supabase/client';
 import ReactMarkdown from 'react-markdown';
 import AdDisplay from '@/components/AdDisplay';
 import { ArticleTextReader } from '@/components/ArticleTextReader';
+import { useAuth } from '@/contexts/AuthContext';
+import UserMenu from '@/components/UserMenu';
 
 interface BlogPost {
   id: string;
@@ -34,6 +36,7 @@ const ArtigoBlog = () => {
   const [post, setPost] = useState<BlogPost | null>(null);
   const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   useSEO({
     title: post?.meta_title || post?.title || 'Artigo | Oráculo Jurídico',
@@ -156,31 +159,41 @@ const ArtigoBlog = () => {
             </Link>
 
             <nav className="hidden md:flex items-center space-x-6">
-              <Link 
-                to="/" 
-                className="text-slate-300 hover:text-blue-400 transition-colors font-medium"
-              >
-                Blog
-              </Link>
-              <Link 
-                to="/login" 
-                className="text-slate-300 hover:text-blue-400 transition-colors font-medium"
-              >
-                Login
-              </Link>
-              <Link to="/cadastro">
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium px-6">
-                  Começar Grátis
-                </Button>
-              </Link>
+              {user ? (
+                <UserMenu />
+              ) : (
+                <>
+                  <Link 
+                    to="/" 
+                    className="text-slate-300 hover:text-blue-400 transition-colors font-medium"
+                  >
+                    Blog
+                  </Link>
+                  <Link 
+                    to="/login" 
+                    className="text-slate-300 hover:text-blue-400 transition-colors font-medium"
+                  >
+                    Login
+                  </Link>
+                  <Link to="/cadastro">
+                    <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium px-6">
+                      Começar Grátis
+                    </Button>
+                  </Link>
+                </>
+              )}
             </nav>
 
             <div className="md:hidden">
-              <Link to="/">
-                <Button size="sm" variant="outline" className="border-slate-600 text-slate-300">
-                  Blog
-                </Button>
-              </Link>
+              {user ? (
+                <UserMenu />
+              ) : (
+                <Link to="/">
+                  <Button size="sm" variant="outline" className="border-slate-600 text-slate-300">
+                    Blog
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         </div>

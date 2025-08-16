@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input';
 import { useSEO } from '@/hooks/useSEO';
 import { supabase } from '@/integrations/supabase/client';
 import AdDisplay from '@/components/AdDisplay';
+import { useAuth } from '@/contexts/AuthContext';
+import UserMenu from '@/components/UserMenu';
 
 interface BlogPost {
   id: string;
@@ -28,6 +30,7 @@ const BlogJuridico = () => {
   const [featuredPosts, setFeaturedPosts] = useState<BlogPost[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   useSEO({
     title: 'Blog Jurídico - Notícias e Dicas para Advogados | Oráculo Jurídico',
@@ -111,25 +114,35 @@ const BlogJuridico = () => {
             </Link>
 
             <nav className="hidden md:flex items-center space-x-6">
-              <Link 
-                to="/login" 
-                className="text-slate-300 hover:text-blue-400 transition-colors font-medium"
-              >
-                Login
-              </Link>
-              <Link to="/cadastro">
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium px-6">
-                  Começar Grátis
-                </Button>
-              </Link>
+              {user ? (
+                <UserMenu />
+              ) : (
+                <>
+                  <Link 
+                    to="/login" 
+                    className="text-slate-300 hover:text-blue-400 transition-colors font-medium"
+                  >
+                    Login
+                  </Link>
+                  <Link to="/cadastro">
+                    <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium px-6">
+                      Começar Grátis
+                    </Button>
+                  </Link>
+                </>
+              )}
             </nav>
 
             <div className="md:hidden">
-              <Link to="/login">
-                <Button size="sm" variant="outline" className="border-slate-600 text-slate-300">
-                  Login
-                </Button>
-              </Link>
+              {user ? (
+                <UserMenu />
+              ) : (
+                <Link to="/login">
+                  <Button size="sm" variant="outline" className="border-slate-600 text-slate-300">
+                    Login
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         </div>
