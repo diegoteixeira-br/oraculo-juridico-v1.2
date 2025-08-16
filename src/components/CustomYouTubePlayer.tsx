@@ -225,9 +225,9 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
   };
 
   const togglePlayPause = () => {
-    if (!player) return;
+    if (!player || !canPause) return;
 
-    if (isPlaying) {
+    if (isPlaying && canPause) {
       player.pauseVideo();
     } else {
       player.playVideo();
