@@ -19,12 +19,14 @@ const LandingPage = () => {
   useEffect(() => {
     const fetchVideoSettings = async () => {
       try {
-        const {
-          data
-        } = await supabase.from('landing_page_settings').select('youtube_video_id, video_title, video_description').maybeSingle();
+        const { data } = await supabase
+          .from('landing_page_settings')
+          .select('youtube_video_id, video_title, video_description')
+          .maybeSingle();
+        
         if (data) {
           setVideoSettings({
-            youtube_video_id: data.youtube_video_id || 'VIDEO_ID',
+            youtube_video_id: data.youtube_video_id || '',
             video_title: data.video_title || 'Veja Como Funciona na Prática',
             video_description: data.video_description || 'Assista ao vídeo demonstrativo e descubra como o Oráculo Jurídico pode revolucionar sua prática advocatícia'
           });
@@ -33,7 +35,29 @@ const LandingPage = () => {
         console.error('Erro ao carregar configurações de vídeo:', error);
       }
     };
+
     fetchVideoSettings();
+
+    // Configurar listener para mudanças na tabela
+    const channel = supabase
+      .channel('landing_page_settings_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'landing_page_settings'
+        },
+        (payload) => {
+          console.log('Configuração de vídeo atualizada:', payload);
+          fetchVideoSettings(); // Recarregar configurações quando houver mudanças
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
   const scrollToFreeAccount = () => {
     const freeAccountSection = document.getElementById('free-account-section');
@@ -91,7 +115,8 @@ const LandingPage = () => {
       {/* Vídeo Explicativo - só aparece se tiver vídeo configurado */}
       {videoSettings.youtube_video_id && 
        videoSettings.youtube_video_id !== 'VIDEO_ID' && 
-       videoSettings.youtube_video_id.trim() !== '' && (
+       videoSettings.youtube_video_id.trim() !== '' && 
+       videoSettings.youtube_video_id !== null && (
         <section className="py-16 px-4 bg-muted/10">
           <div className="max-w-4xl mx-auto text-center">
             {/* Container com fundo azul para o texto */}
