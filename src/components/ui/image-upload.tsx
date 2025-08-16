@@ -97,16 +97,18 @@ export const ImageUpload = ({
       {/* Preview da imagem */}
       {previewUrl && (
         <div className="relative inline-block">
-          <img 
-            src={previewUrl} 
-            alt="Preview" 
-            className="w-32 h-32 object-cover rounded-lg border border-border"
-          />
+          <div className="w-16 h-16 rounded-lg border-2 border-dashed border-border overflow-hidden bg-muted flex items-center justify-center">
+            <img 
+              src={previewUrl} 
+              alt="Preview" 
+              className="w-full h-full object-cover"
+            />
+          </div>
           <Button
             type="button"
             variant="destructive"
             size="sm"
-            className="absolute -top-2 -right-2 w-6 h-6 rounded-full p-0"
+            className="absolute -top-1 -right-1 w-5 h-5 rounded-full p-0 text-xs"
             onClick={removeImage}
           >
             <X className="w-3 h-3" />
