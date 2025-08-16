@@ -306,7 +306,7 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
             className="absolute inset-0 flex items-center justify-center pointer-events-auto cursor-pointer"
             onClick={handleAudioUnlock}
           >
-            <div className="bg-red-500/90 backdrop-blur-sm rounded-lg p-3 sm:p-4 text-center shadow-2xl w-48 sm:w-56 border-2 border-red-400/60 pulse">
+            <div className="bg-red-500/40 backdrop-blur-sm rounded-lg p-3 sm:p-4 text-center shadow-2xl w-48 sm:w-56 border-2 border-red-400/60 pulse">
               <div className="text-xl sm:text-2xl mb-2 animate-bounce">🔊</div>
               <h3 className="text-xs sm:text-sm font-bold mb-2 text-white">
                 Clique para ativar o áudio
@@ -329,7 +329,7 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
           <div 
             className="absolute inset-0 flex items-center justify-center pointer-events-auto"
           >
-            <div className="bg-green-500/90 backdrop-blur-sm rounded-lg p-3 sm:p-4 text-center shadow-2xl w-48 sm:w-56 border-2 border-green-400/60 pulse">
+            <div className="bg-green-500/40 backdrop-blur-sm rounded-lg p-3 sm:p-4 text-center shadow-2xl w-48 sm:w-56 border-2 border-green-400/60 pulse">
               <div className="text-lg sm:text-xl mb-2 animate-bounce">🎬</div>
               <h3 className="text-xs sm:text-sm font-bold mb-2 text-white">
                 Continuar assistindo?
