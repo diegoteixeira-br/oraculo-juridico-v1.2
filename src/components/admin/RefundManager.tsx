@@ -185,7 +185,7 @@ export default function RefundManager() {
                   id="transaction_id"
                   value={refundForm.transaction_id}
                   onChange={(e) => setRefundForm(prev => ({ ...prev, transaction_id: e.target.value }))}
-                  placeholder="ID da transação Stripe/Cakto"
+                  placeholder="ID da transação Stripe"
                 />
               </div>
 
