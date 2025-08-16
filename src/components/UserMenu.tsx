@@ -48,11 +48,12 @@ export default function UserMenu({ hideOptions = [] }: UserMenuProps) {
   const handleSignOut = async () => {
     try {
       await signOut();
-      // Limpar cache e redirecionar
-      window.location.href = "/";
+      // Usar navigate em vez de window.location.href
+      navigate("/", { replace: true });
     } catch (error) {
       console.error('Erro no logout:', error);
-      navigate("/");
+      // Em caso de erro, força o redirect
+      navigate("/", { replace: true });
     }
   };
 
