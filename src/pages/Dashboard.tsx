@@ -65,7 +65,7 @@ const [dailyCredits, setDailyCredits] = useState(0);
   const planType = profile?.plan_type || 'gratuito';
   const trialEndDate = profile?.trial_end_date ? new Date(profile.trial_end_date) : null;
   const daysRemaining = trialEndDate 
-    ? Math.max(0, Math.floor((trialEndDate.getTime() - new Date().setHours(0,0,0,0)) / (1000 * 60 * 60 * 24)) + 1)
+    ? Math.max(0, Math.ceil((trialEndDate.getTime() - new Date().setHours(0,0,0,0)) / (1000 * 60 * 60 * 24)))
     : 7; // Default para usuários gratuitos sem trial_end_date
 
   // Redirecionar para comprar-creditos se conta estiver inativa

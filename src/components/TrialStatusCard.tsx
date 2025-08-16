@@ -13,7 +13,7 @@ export function TrialStatusCard({ profile }: TrialStatusCardProps) {
   const trialEnd = profile?.trial_end_date ? new Date(profile.trial_end_date) : null;
   const isTrial = profile?.subscription_status === 'trial';
   const isTrialExpired = !!(isTrial && trialEnd && now >= trialEnd);
-  const daysRemaining = trialEnd ? Math.max(0, Math.floor((trialEnd.getTime() - new Date().setHours(0,0,0,0)) / (1000 * 60 * 60 * 24)) + 1) : 0;
+  const daysRemaining = trialEnd ? Math.max(0, Math.ceil((trialEnd.getTime() - new Date().setHours(0,0,0,0)) / (1000 * 60 * 60 * 24))) : 0;
 
   if (isTrialExpired) {
     return (

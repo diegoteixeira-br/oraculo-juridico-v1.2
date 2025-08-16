@@ -257,7 +257,7 @@ export default function MinhaContaPage() {
   const isPaid = profile?.subscription_status === 'active';
   const trialEndDate = profile?.trial_end_date ? new Date(profile.trial_end_date) : null;
   const daysRemaining = isTrial && trialEndDate
-    ? Math.max(0, Math.floor((trialEndDate.getTime() - new Date().setHours(0,0,0,0)) / (1000 * 60 * 60 * 24)) + 1)
+    ? Math.max(0, Math.ceil((trialEndDate.getTime() - new Date().setHours(0,0,0,0)) / (1000 * 60 * 60 * 24)))
     : 0;
   const statusBadgeClass = isPaid ? 'bg-green-600 text-white' : 'bg-slate-900 text-white border border-slate-700';
   const statusLabel = isPaid ? 'Pago' : (isTrial ? `Gratuito • ${daysRemaining}d` : 'Gratuito');
