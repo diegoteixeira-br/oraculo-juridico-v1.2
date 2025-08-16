@@ -91,13 +91,13 @@ const LandingPage = () => {
       {/* Vídeo Explicativo */}
       <section className="py-16 px-4 bg-muted/10">
         <div className="max-w-4xl mx-auto text-center">
-          {/* Container com fundo vermelho para o texto */}
+          {/* Container com fundo azul para o texto */}
           <div className="relative mb-10">
-            {/* Fundo decorativo vermelho */}
-            <div className="absolute inset-0 bg-gradient-to-br from-red-500/20 via-red-400/15 to-red-600/20 rounded-xl blur-2xl transform scale-110"></div>
+            {/* Fundo decorativo azul */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-blue-400/15 to-blue-600/20 rounded-xl blur-2xl transform scale-110"></div>
             
             {/* Container do texto */}
-            <div className="relative bg-red-500/15 backdrop-blur-sm rounded-xl p-6 border border-red-500/40 shadow-lg">
+            <div className="relative bg-blue-500/15 backdrop-blur-sm rounded-xl p-6 border border-blue-500/40 shadow-lg">
               <h2 className="text-3xl font-bold mb-4 md:text-[b79b71] text-[#b79b71]">
                 {videoSettings.video_title}
               </h2>
