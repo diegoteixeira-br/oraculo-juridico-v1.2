@@ -313,13 +313,11 @@ export default function AdsManager() {
                     folder="ads"
                   />
                   <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-md">
-                    <strong>Tamanhos recomendados por posição:</strong>
-                    <ul className="mt-2 space-y-1">
-                      <li>• <strong>Header/Topo:</strong> 728x90px (Leaderboard) ou 970x90px (Super Leaderboard)</li>
-                      <li>• <strong>Sidebar:</strong> 300x250px (Medium Rectangle) ou 336x280px (Large Rectangle)</li>
-                      <li>• <strong>Footer:</strong> 728x90px (Leaderboard)</li>
-                      <li>• <strong>Mobile:</strong> 320x50px (Mobile Banner) ou 300x250px (Mobile Rectangle)</li>
-                    </ul>
+                    <strong>📏 Tamanhos por posição:</strong>
+                    <br />• <strong>Sidebar:</strong> 300×250px (padrão)
+                    <br />• <strong>Content:</strong> 728×90px (banner horizontal)  
+                    <br />• <strong>Header/Footer:</strong> 970×90px ou 728×90px
+                    <br /><strong>Formato:</strong> JPG, PNG ou GIF • <strong>Máximo:</strong> 2MB
                   </div>
                 </div>
               ) : (

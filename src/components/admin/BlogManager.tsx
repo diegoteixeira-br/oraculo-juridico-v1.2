@@ -294,16 +294,9 @@ const BlogManager = () => {
                       folder="covers"
                     />
                     <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-md">
-                      <strong>Tamanhos recomendados para imagem de capa:</strong>
-                      <ul className="mt-2 space-y-1">
-                        <li>• <strong>Ideal:</strong> 1200x630px (formato ideal para redes sociais)</li>
-                        <li>• <strong>Mínimo:</strong> 800x400px (proporção 2:1)</li>
-                        <li>• <strong>Desktop:</strong> 1920x1080px (para banners grandes)</li>
-                        <li>• <strong>Mobile:</strong> 600x300px (carregamento rápido)</li>
-                      </ul>
-                      <p className="mt-2 text-xs">
-                        <strong>Formato:</strong> JPG ou PNG • <strong>Tamanho:</strong> Máximo 2MB
-                      </p>
+                      <strong>📏 Tamanho recomendado:</strong> 1200×630px (proporção 16:9)
+                      <br />A imagem será exibida com altura de 256px a 384px no site
+                      <br /><strong>Formato:</strong> JPG ou PNG • <strong>Máximo:</strong> 2MB
                     </div>
                   </div>
                 </TabsContent>
