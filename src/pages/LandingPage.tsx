@@ -94,10 +94,10 @@ const LandingPage = () => {
           {/* Container com fundo vermelho para o texto */}
           <div className="relative mb-10">
             {/* Fundo decorativo vermelho */}
-            <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 via-red-400/5 to-red-600/10 rounded-xl blur-2xl transform scale-110"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-red-500/20 via-red-400/15 to-red-600/20 rounded-xl blur-2xl transform scale-110"></div>
             
             {/* Container do texto */}
-            <div className="relative bg-red-500/5 backdrop-blur-sm rounded-xl p-6 border border-red-500/20 shadow-lg">
+            <div className="relative bg-red-500/15 backdrop-blur-sm rounded-xl p-6 border border-red-500/40 shadow-lg">
               <h2 className="text-3xl font-bold mb-4 md:text-[b79b71] text-[#b79b71]">
                 {videoSettings.video_title}
               </h2>
