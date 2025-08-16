@@ -25,6 +25,8 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
   const [videoEnded, setVideoEnded] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [canPause, setCanPause] = useState(true);
+  const [showResumeOptions, setShowResumeOptions] = useState(false);
 
   // Salvar/carregar posição do vídeo
   const saveVideoPosition = (time: number) => {
@@ -37,6 +39,12 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
   };
 
   useEffect(() => {
+    // Verificar se há posição salva ao carregar
+    const savedPosition = getSavedVideoPosition();
+    if (savedPosition > 0) {
+      setShowResumeOptions(true);
+    }
+
     // Carregar API do YouTube
     if (!window.YT) {
       const tag = document.createElement('script');
@@ -51,7 +59,20 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
       initializePlayer();
     }
 
+    // Salvar posição quando sair da página
+    const handleBeforeUnload = () => {
+      if (player && player.getCurrentTime) {
+        const currentTime = player.getCurrentTime();
+        if (currentTime > 0) {
+          saveVideoPosition(currentTime);
+        }
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
     return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
       if (player) {
         const currentTime = player.getCurrentTime();
         if (currentTime > 0) {
@@ -123,11 +144,16 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
             setVideoEnded(true);
           }
           
-          // Quando pausar, mostrar novamente o aviso de áudio
-          if (state === window.YT.PlayerState.PAUSED && hasUserInteracted) {
+          // Quando pausar, mostrar novamente o aviso de áudio SOMENTE se ainda puder pausar
+          if (state === window.YT.PlayerState.PAUSED && hasUserInteracted && canPause) {
             setShowAudioPrompt(true);
             player.mute();
             setIsMuted(true);
+          }
+          
+          // Se não pode pausar mas tentou pausar, continuar rodando
+          if (state === window.YT.PlayerState.PAUSED && hasUserInteracted && !canPause) {
+            player.playVideo();
           }
           
           // Salvar posição a cada 5 segundos durante reprodução
@@ -169,6 +195,33 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
     setIsMuted(false);
     setShowAudioPrompt(false);
     setHasUserInteracted(true);
+    setCanPause(false); // Depois de dar play, não pode mais pausar
+  };
+
+  const handleStartFromBeginning = () => {
+    if (!player) return;
+    localStorage.removeItem(`video_position_${videoId}`);
+    player.seekTo(0);
+    player.unMute();
+    player.playVideo();
+    setIsMuted(false);
+    setShowResumeOptions(false);
+    setShowAudioPrompt(false);
+    setHasUserInteracted(true);
+    setCanPause(false);
+  };
+
+  const handleResumeFromSaved = () => {
+    if (!player) return;
+    const savedPosition = getSavedVideoPosition();
+    player.seekTo(savedPosition);
+    player.unMute();
+    player.playVideo();
+    setIsMuted(false);
+    setShowResumeOptions(false);
+    setShowAudioPrompt(false);
+    setHasUserInteracted(true);
+    setCanPause(false);
   };
 
   const togglePlayPause = () => {
@@ -268,6 +321,35 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
               </p>
               <div className="text-xs text-red-200 pulse">
                 👆 Clique em qualquer lugar desta área
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal de opções para retomar vídeo */}
+        {showResumeOptions && isReady && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/70 pointer-events-auto">
+            <div className="bg-white rounded-lg p-8 text-center shadow-2xl max-w-md mx-4 border-2 border-gray-200">
+              <div className="text-4xl mb-4">🎬</div>
+              <h3 className="text-xl font-bold mb-4 text-gray-800">
+                Continuar assistindo?
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Você já assistiu parte deste vídeo. Deseja continuar de onde parou ou começar do início?
+              </p>
+              <div className="flex gap-3 justify-center">
+                <button
+                  onClick={handleResumeFromSaved}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg"
+                >
+                  Continuar de onde parou
+                </button>
+                <button
+                  onClick={handleStartFromBeginning}
+                  className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg"
+                >
+                  Começar do início
+                </button>
               </div>
             </div>
           </div>
