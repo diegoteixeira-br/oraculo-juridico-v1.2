@@ -22,6 +22,7 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
   const [showAudioPrompt, setShowAudioPrompt] = useState(true); // Mostra prompt de áudio
   const [isReady, setIsReady] = useState(false);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const [videoEnded, setVideoEnded] = useState(false);
 
   // Salvar/carregar posição do vídeo
   const saveVideoPosition = (time: number) => {
@@ -103,8 +104,14 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
           const state = event.data;
           setIsPlaying(state === window.YT.PlayerState.PLAYING);
           
+          // Detectar quando o vídeo termina
+          if (state === window.YT.PlayerState.ENDED) {
+            setVideoEnded(true);
+          }
+          
           // Salvar posição a cada 5 segundos durante reprodução
           if (state === window.YT.PlayerState.PLAYING) {
+            setVideoEnded(false); // Reset quando começa a reproduzir novamente
             const interval = setInterval(() => {
               if (player && player.getCurrentTime) {
                 saveVideoPosition(player.getCurrentTime());
@@ -183,6 +190,13 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
     }
   };
 
+  const handleWatchAgain = () => {
+    if (!player) return;
+    player.seekTo(0);
+    player.playVideo();
+    setVideoEnded(false);
+  };
+
   return (
     <div className="relative max-w-3xl mx-auto">
       <div className="aspect-video bg-slate-800/50 rounded-lg border border-border overflow-hidden shadow-2xl relative">
@@ -217,6 +231,19 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
           </div>
         )}
 
+        
+        {/* Botão Assistir Novamente - só aparece quando vídeo termina */}
+        {videoEnded && !showAudioPrompt && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/60 pointer-events-auto">
+            <button
+              onClick={handleWatchAgain}
+              className="bg-red-500 hover:bg-red-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-200 shadow-2xl border-2 border-red-400"
+            >
+              ▶️ Assistir Novamente
+            </button>
+          </div>
+        )}
+
         {/* Loading state */}
         {!isReady && (
           <div className="absolute inset-0 flex items-center justify-center bg-slate-800/50">
@@ -226,10 +253,6 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
             </div>
           </div>
         )}
-      </div>
-      
-      <div className="mt-6 text-sm text-muted-foreground text-center">
-        <p>💡 <strong>Dica:</strong> Use os controles para pausar/reproduzir, ajustar volume e ativar legendas</p>
       </div>
     </div>
   );
