@@ -188,70 +188,70 @@ const BlogJuridico = () => {
                 
                 <div className="grid md:grid-cols-3 gap-8 mb-8">
                   {featuredPosts.map((post, index) => (
-                    <Card key={post.id} className={`group hover-scale bg-slate-800/50 border-slate-700 hover:border-blue-500/50 transition-all duration-300 animate-fade-in ${index === 0 ? 'md:col-span-2' : ''}`} style={{ animationDelay: `${index * 0.1}s` }}>
-                      <div className="relative overflow-hidden rounded-t-lg">
-                        {post.cover_image_url && (
-                          <img 
-                            src={post.cover_image_url} 
-                            alt={post.title}
-                            className={`w-full object-cover group-hover:scale-105 transition-transform duration-300 ${index === 0 ? 'h-48 md:h-64' : 'h-40 md:h-44'}`}
-                          />
-                        )}
-                        <div className="absolute top-3 left-3">
-                          <Badge className="bg-blue-600/90 text-white border-0">
-                            <Star className="w-3 h-3 mr-1" />
-                            Destaque
-                          </Badge>
-                        </div>
-                      </div>
-                      
-                      <CardContent className="p-6">
-                        <div className="flex items-center gap-4 text-sm text-slate-400 mb-3">
-                          <div className="flex items-center gap-1">
-                            <User className="w-4 h-4" />
-                            {post.author_name}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Calendar className="w-4 h-4" />
-                            {formatDate(post.published_at)}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-4 h-4" />
-                            {post.reading_time_minutes} min
-                          </div>
-                        </div>
-                        
-                        <h3 className="text-xl font-bold mb-3 text-slate-200 group-hover:text-blue-400 transition-colors line-clamp-2">
-                          {post.title}
-                        </h3>
-                        
-                        <p className="text-slate-300 mb-4 line-clamp-3">
-                          {post.summary}
-                        </p>
-                        
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {post.tags.slice(0, 3).map((tag, tagIndex) => (
-                            <Badge key={tagIndex} variant="outline" className="text-xs border-slate-600 text-slate-300">
-                              {tag}
+                    <Link key={post.id} to={`/blog/${post.slug}`} className="block">
+                      <Card className={`group hover-scale bg-slate-800/50 border-slate-700 hover:border-blue-500/50 transition-all duration-300 animate-fade-in cursor-pointer ${index === 0 ? 'md:col-span-2' : ''}`} style={{ animationDelay: `${index * 0.1}s` }}>
+                        <div className="relative overflow-hidden rounded-t-lg">
+                          {post.cover_image_url && (
+                            <img 
+                              src={post.cover_image_url} 
+                              alt={post.title}
+                              className={`w-full object-cover group-hover:scale-105 transition-transform duration-300 ${index === 0 ? 'h-48 md:h-64' : 'h-40 md:h-44'}`}
+                            />
+                          )}
+                          <div className="absolute top-3 left-3">
+                            <Badge className="bg-blue-600/90 text-white border-0">
+                              <Star className="w-3 h-3 mr-1" />
+                              Destaque
                             </Badge>
-                          ))}
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <Link to={`/blog/${post.slug}`}>
-                            <Button variant="outline" size="sm" className="border-slate-600 text-slate-300 hover:bg-blue-600 hover:border-blue-600 hover:text-white">
-                              Ler mais
-                              <ArrowRight className="w-4 h-4 ml-1" />
-                            </Button>
-                          </Link>
-                          
-                          <div className="flex items-center gap-1 text-sm text-slate-400">
-                            <Eye className="w-4 h-4" />
-                            {post.views_count}
                           </div>
                         </div>
-                      </CardContent>
-                    </Card>
+                        
+                        <CardContent className="p-6">
+                          <div className="flex items-center gap-4 text-sm text-slate-400 mb-3">
+                            <div className="flex items-center gap-1">
+                              <User className="w-4 h-4" />
+                              {post.author_name}
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Calendar className="w-4 h-4" />
+                              {formatDate(post.published_at)}
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Clock className="w-4 h-4" />
+                              {post.reading_time_minutes} min
+                            </div>
+                          </div>
+                          
+                          <h3 className="text-xl font-bold mb-3 text-slate-200 group-hover:text-blue-400 transition-colors line-clamp-2">
+                            {post.title}
+                          </h3>
+                          
+                          <p className="text-slate-300 mb-4 line-clamp-3">
+                            {post.summary}
+                          </p>
+                          
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {post.tags.slice(0, 3).map((tag, tagIndex) => (
+                              <Badge key={tagIndex} variant="outline" className="text-xs border-slate-600 text-slate-300">
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                          
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-slate-300 group-hover:text-blue-400 transition-colors">
+                              <span className="text-sm font-medium">Ler mais</span>
+                              <ArrowRight className="w-4 h-4" />
+                            </div>
+                            
+                            <div className="flex items-center gap-1 text-sm text-slate-400">
+                              <Eye className="w-4 h-4" />
+                              {post.views_count}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
                   ))}
                 </div>
                 
@@ -269,69 +269,69 @@ const BlogJuridico = () => {
               
               <div className="grid gap-6">
                 {filteredPosts.map((post, index) => (
-                  <Card key={post.id} className="group hover-scale bg-slate-800/50 border-slate-700 hover:border-blue-500/50 transition-all duration-300 animate-fade-in overflow-hidden" style={{ animationDelay: `${index * 0.05}s` }}>
-                    <div className="md:flex h-full">
-                      <div className="md:w-1/3 relative overflow-hidden">
-                        <img
-                          src={post.cover_image_url || '/placeholder.svg'}
-                          alt={post.title}
-                          className="w-full h-32 md:h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                        <div className="absolute top-3 left-3">
-                          <Badge className="bg-blue-600/90 text-white border-0 text-xs">
-                            {post.category}
-                          </Badge>
-                        </div>
-                      </div>
-                      
-                      <div className="md:w-2/3 p-6">
-                        <div className="flex flex-wrap gap-2 mb-3">
-                          {post.tags.slice(0, 3).map((tag) => (
-                            <Badge key={tag} variant="outline" className="text-xs border-slate-600 text-slate-300">
-                              <Tag className="w-3 h-3 mr-1" />
-                              {tag}
+                  <Link key={post.id} to={`/blog/${post.slug}`} className="block">
+                    <Card className="group hover-scale bg-slate-800/50 border-slate-700 hover:border-blue-500/50 transition-all duration-300 animate-fade-in overflow-hidden cursor-pointer" style={{ animationDelay: `${index * 0.05}s` }}>
+                      <div className="md:flex h-full">
+                        <div className="md:w-1/3 relative overflow-hidden">
+                          <img
+                            src={post.cover_image_url || '/placeholder.svg'}
+                            alt={post.title}
+                            className="w-full h-32 md:h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                          <div className="absolute top-3 left-3">
+                            <Badge className="bg-blue-600/90 text-white border-0 text-xs">
+                              {post.category}
                             </Badge>
-                          ))}
+                          </div>
                         </div>
                         
-                        <h3 className="text-xl font-bold mb-3 text-slate-200 group-hover:text-blue-400 transition-colors line-clamp-2">
-                          {post.title}
-                        </h3>
-                        
-                        <p className="text-slate-300 mb-4 line-clamp-3">
-                          {post.summary}
-                        </p>
-                        
-                        <div className="flex items-center justify-between text-sm text-slate-400 mb-4">
-                          <div className="flex items-center space-x-4">
+                        <div className="md:w-2/3 p-6">
+                          <div className="flex flex-wrap gap-2 mb-3">
+                            {post.tags.slice(0, 3).map((tag) => (
+                              <Badge key={tag} variant="outline" className="text-xs border-slate-600 text-slate-300">
+                                <Tag className="w-3 h-3 mr-1" />
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                          
+                          <h3 className="text-xl font-bold mb-3 text-slate-200 group-hover:text-blue-400 transition-colors line-clamp-2">
+                            {post.title}
+                          </h3>
+                          
+                          <p className="text-slate-300 mb-4 line-clamp-3">
+                            {post.summary}
+                          </p>
+                          
+                          <div className="flex items-center justify-between text-sm text-slate-400 mb-4">
+                            <div className="flex items-center space-x-4">
+                              <span className="flex items-center">
+                                <User className="w-3 h-3 mr-1" />
+                                {post.author_name}
+                              </span>
+                              <span className="flex items-center">
+                                <Calendar className="w-3 h-3 mr-1" />
+                                {formatDate(post.published_at)}
+                              </span>
+                              <span className="flex items-center">
+                                <Clock className="w-3 h-3 mr-1" />
+                                {post.reading_time_minutes} min
+                              </span>
+                            </div>
                             <span className="flex items-center">
-                              <User className="w-3 h-3 mr-1" />
-                              {post.author_name}
-                            </span>
-                            <span className="flex items-center">
-                              <Calendar className="w-3 h-3 mr-1" />
-                              {formatDate(post.published_at)}
-                            </span>
-                            <span className="flex items-center">
-                              <Clock className="w-3 h-3 mr-1" />
-                              {post.reading_time_minutes} min
+                              <Eye className="w-3 h-3 mr-1" />
+                              {post.views_count}
                             </span>
                           </div>
-                          <span className="flex items-center">
-                            <Eye className="w-3 h-3 mr-1" />
-                            {post.views_count}
-                          </span>
+                          
+                          <div className="flex items-center gap-2 text-slate-300 group-hover:text-blue-400 transition-colors">
+                            <span className="text-sm font-medium">Ler artigo completo</span>
+                            <ArrowRight className="w-4 h-4" />
+                          </div>
                         </div>
-                        
-                        <Link to={`/blog/${post.slug}`}>
-                          <Button variant="outline" size="sm" className="border-slate-600 text-slate-300 hover:bg-blue-600 hover:border-blue-600 hover:text-white">
-                            Ler artigo completo
-                            <ArrowRight className="w-4 h-4 ml-1" />
-                          </Button>
-                        </Link>
                       </div>
-                    </div>
-                  </Card>
+                    </Card>
+                  </Link>
                 ))}
               </div>
             </section>
