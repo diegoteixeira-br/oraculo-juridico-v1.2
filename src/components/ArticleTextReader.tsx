@@ -47,7 +47,7 @@ export const ArticleTextReader = ({ title, content, className = '' }: ArticleTex
 
     const fullText = `${title}. ${cleanTextForTTS(content)}`;
     
-    if (fullText.length > 4000) {
+    if (fullText.length > 3000) {
       toast({
         title: "Texto muito longo",
         description: "Este artigo é muito extenso para conversão em áudio. Tente um artigo menor.",
@@ -57,13 +57,20 @@ export const ArticleTextReader = ({ title, content, className = '' }: ArticleTex
     }
 
     try {
-      const audioUrl = await generateSpeech(fullText, 'Aria', 1.1);
+      const audioUrl = await generateSpeech(fullText, 'Aria', 1.0);
       if (audioUrl) {
         setCurrentAudio(audioUrl);
         setIsPlaying(true);
+      } else {
+        throw new Error('Não foi possível gerar o áudio');
       }
     } catch (error) {
       console.error('Erro ao gerar áudio:', error);
+      toast({
+        title: "Erro no leitor de texto",
+        description: error instanceof Error ? error.message : "Erro desconhecido ao gerar áudio",
+        variant: "destructive",
+      });
     }
   };
 
