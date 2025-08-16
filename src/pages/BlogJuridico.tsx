@@ -194,7 +194,7 @@ const BlogJuridico = () => {
                           <img 
                             src={post.cover_image_url} 
                             alt={post.title}
-                            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                            className={`w-full object-cover group-hover:scale-105 transition-transform duration-300 ${index === 0 ? 'h-64 md:h-80' : 'h-48 md:h-56'}`}
                           />
                         )}
                         <div className="absolute top-3 left-3">
@@ -271,11 +271,11 @@ const BlogJuridico = () => {
                 {filteredPosts.map((post, index) => (
                   <Card key={post.id} className="group hover-scale bg-slate-800/50 border-slate-700 hover:border-blue-500/50 transition-all duration-300 animate-fade-in" style={{ animationDelay: `${index * 0.05}s` }}>
                     <div className="md:flex">
-                      <div className="md:w-1/3 relative overflow-hidden">
+                      <div className="md:w-1/3 relative overflow-hidden rounded-l-lg md:rounded-r-none rounded-t-lg md:rounded-t-lg">
                         <img
                           src={post.cover_image_url || '/placeholder.svg'}
                           alt={post.title}
-                          className="w-full h-48 md:h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="w-full h-48 md:h-full min-h-[200px] object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                         <div className="absolute top-3 left-3">
                           <Badge className="bg-blue-600/90 text-white border-0">
