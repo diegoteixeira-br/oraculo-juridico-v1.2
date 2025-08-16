@@ -18,9 +18,10 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
   const containerRef = useRef<HTMLDivElement>(null);
   const [player, setPlayer] = useState<any>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [showSoundMessage, setShowSoundMessage] = useState(false);
+  const [isMuted, setIsMuted] = useState(true); // Inicia sempre mutado
+  const [showAudioPrompt, setShowAudioPrompt] = useState(true); // Mostra prompt de áudio
   const [isReady, setIsReady] = useState(false);
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
 
   // Salvar/carregar posição do vídeo
   const saveVideoPosition = (time: number) => {
@@ -65,7 +66,8 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
       width: '100%',
       videoId: videoId,
       playerVars: {
-        autoplay: 0,
+        autoplay: 1, // Autoplay habilitado
+        mute: 1, // Inicia mutado para permitir autoplay
         controls: 0, // Remove controles padrão
         disablekb: 1, // Desabilita teclado
         fs: 0, // Remove fullscreen
@@ -73,7 +75,6 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
         modestbranding: 1, // Remove logo do YouTube
         rel: 0, // Remove vídeos relacionados
         showinfo: 0, // Remove informações do vídeo
-        start: Math.floor(getSavedVideoPosition()), // Inicia na posição salva
         cc_load_policy: 1, // Carrega legendas se disponíveis
         hl: 'pt', // Idioma português
         playsinline: 1, // Reproduz inline no mobile
@@ -117,6 +118,18 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
     });
   };
 
+  const handleAudioUnlock = () => {
+    if (!player) return;
+    
+    // Voltar ao começo e liberar áudio
+    player.seekTo(0);
+    player.unMute();
+    player.playVideo();
+    setIsMuted(false);
+    setShowAudioPrompt(false);
+    setHasUserInteracted(true);
+  };
+
   const togglePlayPause = () => {
     if (!player) return;
 
@@ -124,10 +137,6 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
       player.pauseVideo();
     } else {
       player.playVideo();
-      if (!showSoundMessage) {
-        setShowSoundMessage(true);
-        setTimeout(() => setShowSoundMessage(false), 3000);
-      }
     }
   };
 
@@ -177,46 +186,60 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
         <div ref={containerRef} className="w-full h-full"></div>
         
         {/* Overlay com controles customizados */}
-        {isReady && (
+        {isReady && !showAudioPrompt && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            {/* Controles customizados */}
+            {/* Controles customizados - botões menores */}
             <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between pointer-events-auto">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 {/* Play/Pause */}
                 <button
                   onClick={togglePlayPause}
-                  className="bg-black/70 hover:bg-black/90 text-white p-3 rounded-full transition-all duration-200"
+                  className="bg-black/70 hover:bg-black/90 text-white p-2 rounded-full transition-all duration-200"
                   aria-label={isPlaying ? 'Pausar' : 'Reproduzir'}
                 >
-                  {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+                  {isPlaying ? <Pause size={16} /> : <Play size={16} />}
                 </button>
 
                 {/* Mute/Unmute */}
                 <button
                   onClick={toggleMute}
-                  className="bg-black/70 hover:bg-black/90 text-white p-3 rounded-full transition-all duration-200"
+                  className="bg-black/70 hover:bg-black/90 text-white p-2 rounded-full transition-all duration-200"
                   aria-label={isMuted ? 'Ativar som' : 'Silenciar'}
                 >
-                  {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+                  {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
                 </button>
 
                 {/* Legendas */}
                 <button
                   onClick={toggleCaptions}
-                  className="bg-black/70 hover:bg-black/90 text-white p-3 rounded-full transition-all duration-200"
+                  className="bg-black/70 hover:bg-black/90 text-white p-2 rounded-full transition-all duration-200"
                   aria-label="Legendas"
                 >
-                  <Settings size={20} />
+                  <Settings size={16} />
                 </button>
               </div>
             </div>
+          </div>
+        )}
 
-            {/* Mensagem para ligar o som */}
-            {showSoundMessage && (
-              <div className="absolute top-4 left-4 right-4 bg-black/80 text-white p-3 rounded-lg text-center animate-fade-in">
-                🔊 <strong>Ligue o som para uma melhor experiência!</strong>
-              </div>
-            )}
+        {/* Prompt central para liberar áudio */}
+        {showAudioPrompt && isReady && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/40 pointer-events-auto">
+            <div className="bg-white rounded-lg p-8 text-center shadow-2xl max-w-md mx-4">
+              <div className="text-6xl mb-4">🔊</div>
+              <h3 className="text-xl font-bold mb-4 text-gray-800">
+                Clique para ativar o áudio
+              </h3>
+              <p className="text-gray-600 mb-6">
+                O vídeo está reproduzindo sem som. Clique no botão abaixo para ativar o áudio e reiniciar do começo.
+              </p>
+              <button
+                onClick={handleAudioUnlock}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200"
+              >
+                Ativar Áudio e Reiniciar
+              </button>
+            </div>
           </div>
         )}
 
