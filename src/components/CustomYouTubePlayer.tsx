@@ -303,22 +303,22 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
         {/* Prompt central para liberar áudio */}
         {showAudioPrompt && isReady && (
           <div 
-            className="absolute inset-0 flex items-center justify-center bg-black/60 pointer-events-auto cursor-pointer"
+            className="absolute inset-0 flex items-center justify-center pointer-events-auto cursor-pointer"
             onClick={handleAudioUnlock}
           >
-            <div className="bg-red-500/40 backdrop-blur-sm rounded-lg p-2 sm:p-4 text-center shadow-2xl w-[280px] sm:max-w-sm mx-auto border-2 border-red-400/40 pulse">
-              <div className="text-2xl sm:text-4xl mb-2 sm:mb-3 animate-bounce">🔊</div>
-              <h3 className="text-sm sm:text-lg font-bold mb-2 sm:mb-3 text-white">
+            <div className="bg-red-500/90 backdrop-blur-sm rounded-lg p-3 sm:p-4 text-center shadow-2xl w-48 sm:w-56 border-2 border-red-400/60 pulse">
+              <div className="text-xl sm:text-2xl mb-2 animate-bounce">🔊</div>
+              <h3 className="text-xs sm:text-sm font-bold mb-2 text-white">
                 Clique para ativar o áudio
               </h3>
-              <p className="text-red-100 mb-3 sm:mb-4 text-xs sm:text-sm">
+              <p className="text-red-100 mb-2 text-xs">
                 {hasUserInteracted 
-                  ? "O vídeo está pausado. Clique aqui para continuar assistindo de onde parou com áudio."
-                  : "O vídeo está reproduzindo sem som. Clique aqui para ativar o áudio e reiniciar do começo."
+                  ? "O vídeo está pausado. Clique para continuar com áudio."
+                  : "Clique para ativar o áudio e reiniciar."
                 }
               </p>
               <div className="text-xs text-red-200 pulse">
-                👆 Clique em qualquer lugar desta área
+                👆 Clique aqui
               </div>
             </div>
           </div>
@@ -327,26 +327,26 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
         {/* Modal verde/azul para quem volta - similar ao vermelho mas com cor diferente */}
         {showResumePrompt && isReady && (
           <div 
-            className="absolute inset-0 flex items-center justify-center bg-black/60 pointer-events-auto"
+            className="absolute inset-0 flex items-center justify-center pointer-events-auto"
           >
-            <div className="bg-green-500/40 backdrop-blur-sm rounded-lg p-2 sm:p-4 text-center shadow-2xl w-[280px] sm:max-w-sm mx-auto border-2 border-green-400/40 pulse">
-              <div className="text-2xl sm:text-4xl mb-2 sm:mb-3 animate-bounce">🎬</div>
-              <h3 className="text-sm sm:text-lg font-bold mb-2 sm:mb-3 text-white">
+            <div className="bg-green-500/90 backdrop-blur-sm rounded-lg p-3 sm:p-4 text-center shadow-2xl w-48 sm:w-56 border-2 border-green-400/60 pulse">
+              <div className="text-lg sm:text-xl mb-2 animate-bounce">🎬</div>
+              <h3 className="text-xs sm:text-sm font-bold mb-2 text-white">
                 Continuar assistindo?
               </h3>
-              <p className="text-green-100 mb-3 sm:mb-4 text-xs sm:text-sm">
-                Você já assistiu parte deste vídeo. Deseja continuar de onde parou ou começar do início?
+              <p className="text-green-100 mb-2 text-xs">
+                Já assistiu parte. Continuar ou começar do início?
               </p>
-              <div className="flex gap-2 sm:gap-3 justify-center mt-3 sm:mt-4">
+              <div className="flex gap-1 sm:gap-2 justify-center mt-2">
                 <button
                   onClick={handleResumeFromSaved}
-                  className="bg-green-600/80 hover:bg-green-700/80 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg text-xs sm:text-sm backdrop-blur-sm"
+                  className="bg-green-600/80 hover:bg-green-700/80 text-white px-2 sm:px-3 py-1 sm:py-1.5 rounded font-semibold transition-all duration-200 shadow-lg text-xs backdrop-blur-sm"
                 >
                   Continuar
                 </button>
                 <button
                   onClick={handleStartFromBeginning}
-                  className="bg-blue-600/80 hover:bg-blue-700/80 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg text-xs sm:text-sm backdrop-blur-sm"
+                  className="bg-blue-600/80 hover:bg-blue-700/80 text-white px-2 sm:px-3 py-1 sm:py-1.5 rounded font-semibold transition-all duration-200 shadow-lg text-xs backdrop-blur-sm"
                 >
                   Do início
                 </button>
