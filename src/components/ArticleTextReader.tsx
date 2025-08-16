@@ -47,10 +47,9 @@ export const ArticleTextReader = ({ title, content, className = '' }: ArticleTex
       return;
     }
 
-    const fullText = `${title}. ${cleanTextForTTS(content)}`;
+    const fullText = cleanTextForTTS(content);
     
     console.log('Iniciando TTS para artigo:', {
-      titleLength: title.length,
       contentLength: content.length,
       fullTextLength: fullText.length,
       cleanedText: fullText.substring(0, 100) + '...'
@@ -145,7 +144,7 @@ export const ArticleTextReader = ({ title, content, className = '' }: ArticleTex
       {currentAudio && (
         <AssistantAudioBlock
           audioSrc={currentAudio}
-          text={`${title}. ${cleanTextForTTS(content)}`}
+          text={cleanTextForTTS(content)}
         />
       )}
     </div>
