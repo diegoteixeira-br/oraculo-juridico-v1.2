@@ -47,10 +47,11 @@ export const ArticleTextReader = ({ title, content, className = '' }: ArticleTex
 
     const fullText = `${title}. ${cleanTextForTTS(content)}`;
     
-    if (fullText.length > 3000) {
+    // Limite mais generoso para artigos completos
+    if (fullText.length > 8000) {
       toast({
         title: "Texto muito longo",
-        description: "Este artigo é muito extenso para conversão em áudio. Tente um artigo menor.",
+        description: "Este artigo é muito extenso para conversão em áudio. Tente um artigo menor ou uma seção específica.",
         variant: "destructive",
       });
       return;
