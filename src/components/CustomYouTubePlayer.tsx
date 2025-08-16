@@ -19,14 +19,14 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
   const [player, setPlayer] = useState<any>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true); // Inicia sempre mutado
-  const [showAudioPrompt, setShowAudioPrompt] = useState(true); // Mostra prompt de áudio
+  const [showAudioPrompt, setShowAudioPrompt] = useState(false); // Aviso vermelho para novos usuários
+  const [showResumePrompt, setShowResumePrompt] = useState(false); // Aviso verde/azul para quem volta
   const [isReady, setIsReady] = useState(false);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const [videoEnded, setVideoEnded] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [canPause, setCanPause] = useState(true);
-  const [showResumeOptions, setShowResumeOptions] = useState(false);
 
   // Salvar/carregar posição do vídeo
   const saveVideoPosition = (time: number) => {
@@ -39,10 +39,16 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
   };
 
   useEffect(() => {
-    // Verificar se há posição salva ao carregar
+    // Verificar se há posição salva e se usuário já interagiu antes
     const savedPosition = getSavedVideoPosition();
-    if (savedPosition > 0) {
-      setShowResumeOptions(true);
+    const hasInteractedBefore = localStorage.getItem(`user_interacted_${videoId}`) === 'true';
+    
+    if (savedPosition > 0 && hasInteractedBefore) {
+      // Usuário já assistiu antes - mostrar prompt verde/azul
+      setShowResumePrompt(true);
+    } else {
+      // Usuário novo - mostrar prompt vermelho
+      setShowAudioPrompt(true);
     }
 
     // Carregar API do YouTube
@@ -177,16 +183,9 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
   const handleAudioUnlock = () => {
     if (!player) return;
     
-    // Se for primeira interação, voltar ao começo, senão continuar de onde parou
-    if (!hasUserInteracted) {
-      player.seekTo(0);
-    } else {
-      // Continuar de onde parou
-      const savedPosition = getSavedVideoPosition();
-      if (savedPosition > 0) {
-        player.seekTo(savedPosition);
-      }
-    }
+    // Para usuários novos, sempre começar do início
+    player.seekTo(0);
+    localStorage.setItem(`user_interacted_${videoId}`, 'true');
     
     player.unMute();
     player.playVideo();
@@ -199,11 +198,12 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
   const handleStartFromBeginning = () => {
     if (!player) return;
     localStorage.removeItem(`video_position_${videoId}`);
+    localStorage.setItem(`user_interacted_${videoId}`, 'true');
     player.seekTo(0);
     player.unMute();
     player.playVideo();
     setIsMuted(false);
-    setShowResumeOptions(false);
+    setShowResumePrompt(false);
     setShowAudioPrompt(false);
     setHasUserInteracted(true);
     setCanPause(false);
@@ -212,11 +212,12 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
   const handleResumeFromSaved = () => {
     if (!player) return;
     const savedPosition = getSavedVideoPosition();
+    localStorage.setItem(`user_interacted_${videoId}`, 'true');
     player.seekTo(savedPosition);
     player.unMute();
     player.playVideo();
     setIsMuted(false);
-    setShowResumeOptions(false);
+    setShowResumePrompt(false);
     setShowAudioPrompt(false);
     setHasUserInteracted(true);
     setCanPause(false);
@@ -324,29 +325,31 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
           </div>
         )}
 
-        {/* Modal de opções para retomar vídeo */}
-        {showResumeOptions && isReady && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/70 pointer-events-auto">
-            <div className="bg-white rounded-lg p-8 text-center shadow-2xl max-w-md mx-4 border-2 border-gray-200">
-              <div className="text-4xl mb-4">🎬</div>
-              <h3 className="text-xl font-bold mb-4 text-gray-800">
+        {/* Modal verde/azul para quem volta - similar ao vermelho mas com cor diferente */}
+        {showResumePrompt && isReady && (
+          <div 
+            className="absolute inset-0 flex items-center justify-center bg-black/60 pointer-events-auto"
+          >
+            <div className="bg-green-500/40 backdrop-blur-sm rounded-lg p-6 text-center shadow-2xl max-w-sm mx-4 border-2 border-green-400/40 pulse">
+              <div className="text-4xl mb-3 animate-bounce">🎬</div>
+              <h3 className="text-lg font-bold mb-3 text-white">
                 Continuar assistindo?
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-green-100 mb-4 text-sm">
                 Você já assistiu parte deste vídeo. Deseja continuar de onde parou ou começar do início?
               </p>
-              <div className="flex gap-3 justify-center">
+              <div className="flex gap-3 justify-center mt-4">
                 <button
                   onClick={handleResumeFromSaved}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg"
+                  className="bg-green-600/80 hover:bg-green-700/80 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg text-sm backdrop-blur-sm"
                 >
-                  Continuar de onde parou
+                  Continuar
                 </button>
                 <button
                   onClick={handleStartFromBeginning}
-                  className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg"
+                  className="bg-blue-600/80 hover:bg-blue-700/80 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg text-sm backdrop-blur-sm"
                 >
-                  Começar do início
+                  Do início
                 </button>
               </div>
             </div>
