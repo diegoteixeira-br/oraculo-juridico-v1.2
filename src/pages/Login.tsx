@@ -53,11 +53,9 @@ export default function Login() {
           description: "Bem-vindo de volta ao Oráculo Jurídico.",
         });
         
-        // Redirecionar conforme a origem
+        // Sempre redirecionar para dashboard após login bem sucedido
         if (cameFromBlog) {
           navigate('/');
-        } else if (cameFromLanding) {
-          navigate('/pagina-de-venda');
         } else {
           navigate('/dashboard');
         }
