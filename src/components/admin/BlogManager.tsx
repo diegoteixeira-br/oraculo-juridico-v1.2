@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ImageUpload } from '@/components/ui/image-upload';
 import { Plus, Edit, Trash2, Eye, Calendar, Clock, Tag } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -285,12 +286,12 @@ const BlogManager = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="cover_image_url">URL da Imagem de Capa</Label>
-                    <Input
-                      id="cover_image_url"
+                    <ImageUpload
+                      label="Imagem de Capa"
                       value={formData.cover_image_url}
-                      onChange={(e) => setFormData({ ...formData, cover_image_url: e.target.value })}
-                      placeholder="https://example.com/image.jpg"
+                      onChange={(url) => setFormData({ ...formData, cover_image_url: url })}
+                      bucket="blog-images"
+                      folder="covers"
                     />
                   </div>
                 </TabsContent>
