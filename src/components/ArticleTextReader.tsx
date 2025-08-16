@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 import { AudioPlayer } from '@/components/AudioPlayer';
 import AssistantAudioBlock from '@/components/AssistantAudioBlock';
+import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
 interface ArticleTextReaderProps {
@@ -17,6 +18,7 @@ export const ArticleTextReader = ({ title, content, className = '' }: ArticleTex
   const [isPlaying, setIsPlaying] = useState(false);
   const { generateSpeech, isGenerating } = useTextToSpeech();
   const { toast } = useToast();
+  const { user } = useAuth();
 
   // Limpar o texto markdown para TTS
   const cleanTextForTTS = (markdownText: string) => {
@@ -47,6 +49,13 @@ export const ArticleTextReader = ({ title, content, className = '' }: ArticleTex
 
     const fullText = `${title}. ${cleanTextForTTS(content)}`;
     
+    console.log('Iniciando TTS para artigo:', {
+      titleLength: title.length,
+      contentLength: content.length,
+      fullTextLength: fullText.length,
+      cleanedText: fullText.substring(0, 100) + '...'
+    });
+    
     // Limite mais generoso para artigos completos
     if (fullText.length > 8000) {
       toast({
@@ -57,16 +66,31 @@ export const ArticleTextReader = ({ title, content, className = '' }: ArticleTex
       return;
     }
 
+    // Verificar se o usuário está logado
+    if (!user?.id) {
+      toast({
+        title: "Login necessário",
+        description: "Você precisa estar logado para usar o leitor de texto.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
+      console.log('Chamando generateSpeech...');
       const audioUrl = await generateSpeech(fullText, 'Aria', 1.0);
+      console.log('generateSpeech retornou:', audioUrl);
+      
       if (audioUrl) {
         setCurrentAudio(audioUrl);
         setIsPlaying(true);
+        console.log('Áudio configurado com sucesso');
       } else {
+        console.error('generateSpeech retornou null');
         throw new Error('Não foi possível gerar o áudio');
       }
     } catch (error) {
-      console.error('Erro ao gerar áudio:', error);
+      console.error('Erro detalhado ao gerar áudio:', error);
       toast({
         title: "Erro no leitor de texto",
         description: error instanceof Error ? error.message : "Erro desconhecido ao gerar áudio",
