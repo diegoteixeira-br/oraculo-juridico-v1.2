@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserTimezone } from '@/hooks/useUserTimezone';
 
-export const useTrialTimer = () => {
+export function useTrialTimer() {
   const { profile } = useAuth();
   const { userTimezone } = useUserTimezone();
   const [daysRemaining, setDaysRemaining] = useState(7);
@@ -58,4 +58,4 @@ export const useTrialTimer = () => {
     isPaid: profile?.subscription_status === 'active',
     trialEndDate: profile?.trial_end_date ? new Date(profile.trial_end_date) : null
   };
-};
+}

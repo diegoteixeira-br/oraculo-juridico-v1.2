@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useTrialTimer } from "@/hooks/useTrialTimer";
+import { useUserTimezone } from "@/hooks/useUserTimezone";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import UserMenu from "@/components/UserMenu";
@@ -61,17 +61,60 @@ const [dailyCredits, setDailyCredits] = useState(0);
   const currentPlan = getCurrentPlanInfo();
 
   const totalAvailableCredits = userCredits + dailyCredits;
-  const { daysRemaining, isTrial, isPaid, trialEndDate } = useTrialTimer();
+  const { userTimezone } = useUserTimezone();
+  
+  // Calcular trial status em tempo real
+  const isTrial = profile?.subscription_status === 'trial';
+  const isPaid = profile?.subscription_status === 'active';
   const planType = profile?.plan_type || 'gratuito';
   
-  // Debug logs
-  console.log('Trial Debug:', {
-    isTrial,
-    trialEndDate: trialEndDate?.toISOString(),
-    daysRemaining,
-    subscription_status: profile?.subscription_status,
-    timezone: profile?.timezone
-  });
+  const [daysRemaining, setDaysRemaining] = useState(7);
+  
+  useEffect(() => {
+    const calculateDaysRemaining = () => {
+      if (!profile?.trial_end_date) {
+        setDaysRemaining(7);
+        return;
+      }
+
+      try {
+        const now = new Date();
+        const trialEnd = new Date(profile.trial_end_date);
+        
+        // Converter para o timezone do usuário
+        const nowInUserTz = new Date(now.toLocaleString('en-US', { timeZone: userTimezone }));
+        const trialEndInUserTz = new Date(trialEnd.toLocaleString('en-US', { timeZone: userTimezone }));
+        
+        // Definir hora como início do dia para cálculo correto
+        nowInUserTz.setHours(0, 0, 0, 0);
+        trialEndInUserTz.setHours(23, 59, 59, 999);
+        
+        const diffTime = trialEndInUserTz.getTime() - nowInUserTz.getTime();
+        const days = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+        
+        setDaysRemaining(days);
+
+        console.log('Trial Timer Update:', {
+          timezone: userTimezone,
+          now: nowInUserTz.toISOString(),
+          trialEnd: trialEndInUserTz.toISOString(),
+          daysRemaining: days,
+          subscription_status: profile?.subscription_status
+        });
+      } catch (error) {
+        console.error('Error calculating trial days:', error);
+        setDaysRemaining(7);
+      }
+    };
+
+    // Calcular imediatamente
+    calculateDaysRemaining();
+
+    // Atualizar a cada minuto para garantir tempo real
+    const interval = setInterval(calculateDaysRemaining, 60000);
+
+    return () => clearInterval(interval);
+  }, [profile?.trial_end_date, userTimezone, profile?.subscription_status]);
 
   // Redirecionar para comprar-creditos se conta estiver inativa
   useEffect(() => {
@@ -918,11 +961,11 @@ const openTemplateEditor = async (documentId: string) => {
                      ) : (
                        <div className="flex items-center gap-2">
                          <Badge className="bg-slate-600 text-white">Período Gratuito</Badge>
-                         {trialEndDate && (
-                           <span className="text-xs text-slate-300">
-                             até {trialEndDate.toLocaleDateString('pt-BR')}
-                           </span>
-                         )}
+                          {profile?.trial_end_date && (
+                            <span className="text-xs text-slate-300">
+                              até {new Date(profile.trial_end_date).toLocaleDateString('pt-BR')}
+                            </span>
+                          )}
                        </div>
                      )}
                   </div>
