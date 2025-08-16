@@ -9,6 +9,7 @@ import { useSmoothScrollTop } from "./hooks/useSmoothScrollTop";
 
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
+import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
 import RedefinirSenha from "./pages/RedefinirSenha";
@@ -34,6 +35,7 @@ import AgendaJuridica from "./pages/AgendaJuridica";
 import SuportePage from "./pages/SuportePage";
 import MeusDocumentos from "./pages/MeusDocumentos";
 import AdminDashboard from "./pages/AdminDashboard";
+import ArtigoBlog from "./pages/ArtigoBlog";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +43,7 @@ function AppContent() {
   return (
     <Routes>
       <Route path="/" element={<PageWrapper><Index /></PageWrapper>} />
+      <Route path="/pagina-de-venda" element={<PageWrapper><LandingPage /></PageWrapper>} />
       <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
       <Route path="/cadastro" element={<PageWrapper><Cadastro /></PageWrapper>} />
       <Route path="/finalizar-cadastro" element={<PageWrapper><FinalizarCadastro /></PageWrapper>} />
@@ -67,6 +70,7 @@ function AppContent() {
       
       <Route path="/suporte" element={<PageWrapper><ProtectedRoute gate="dashboard"><SuportePage /></ProtectedRoute></PageWrapper>} />
       <Route path="/meus-documentos" element={<PageWrapper><ProtectedRoute gate="premium"><MeusDocumentos /></ProtectedRoute></PageWrapper>} />
+      <Route path="/blog/:slug" element={<PageWrapper><ArtigoBlog /></PageWrapper>} />
       
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />

@@ -1,7 +1,7 @@
-import LandingPage from "./LandingPage";
+import BlogJuridico from "./BlogJuridico";
 
 const Index = () => {
-  return <LandingPage />;
+  return <BlogJuridico />;
 };
 
 export default Index;
