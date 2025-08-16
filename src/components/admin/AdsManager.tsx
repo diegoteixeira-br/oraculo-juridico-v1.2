@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Plus, Edit, Trash2, Eye, BarChart3, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 interface CustomAd {
   id: string;
@@ -302,24 +303,32 @@ export default function AdsManager() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="content">
-                  {formData.ad_type === 'image' ? 'URL da Imagem' : 
-                   formData.ad_type === 'html' ? 'Código HTML' : 'Código JavaScript/Script'}
-                </Label>
-                <Textarea
-                  id="content"
+              {formData.ad_type === 'image' ? (
+                <ImageUpload
                   value={formData.content}
-                  onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                  placeholder={
-                    formData.ad_type === 'image' ? 'https://exemplo.com/banner.jpg' :
-                    formData.ad_type === 'html' ? '<div>Seu código HTML aqui</div>' :
-                    '<script>// Seu código aqui</script>'
-                  }
-                  rows={4}
-                  required
+                  onChange={(url) => setFormData(prev => ({ ...prev, content: url }))}
+                  label="Imagem do Anúncio"
+                  bucket="blog-images"
+                  folder="ads"
                 />
-              </div>
+              ) : (
+                <div className="space-y-2">
+                  <Label htmlFor="content">
+                    {formData.ad_type === 'html' ? 'Código HTML' : 'Código JavaScript/Script'}
+                  </Label>
+                  <Textarea
+                    id="content"
+                    value={formData.content}
+                    onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+                    placeholder={
+                      formData.ad_type === 'html' ? '<div>Seu código HTML aqui</div>' :
+                      '<script>// Seu código aqui</script>'
+                    }
+                    rows={4}
+                    required
+                  />
+                </div>
+              )}
 
               {formData.ad_type === 'image' && (
                 <div className="space-y-2">
