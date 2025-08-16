@@ -448,7 +448,7 @@ const openTemplateEditor = async (documentId: string) => {
                 </CardContent>
               </Card>
             ) : (
-              <TrialStatusCard profile={profile} />
+              <TrialStatusCard profile={profile} daysRemaining={daysRemaining} />
             )}
 
             <Card className="bg-gradient-to-br from-blue-600/20 to-blue-600/10 border-blue-600/30">
