@@ -269,6 +269,60 @@ export type Database = {
         }
         Relationships: []
       }
+      custom_ads: {
+        Row: {
+          ad_type: string
+          click_count: number
+          content: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          is_active: boolean
+          link_url: string | null
+          position: string
+          start_date: string | null
+          title: string
+          updated_at: string
+          view_count: number
+        }
+        Insert: {
+          ad_type: string
+          click_count?: number
+          content: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          is_active?: boolean
+          link_url?: string | null
+          position: string
+          start_date?: string | null
+          title: string
+          updated_at?: string
+          view_count?: number
+        }
+        Update: {
+          ad_type?: string
+          click_count?: number
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          is_active?: boolean
+          link_url?: string | null
+          position?: string
+          start_date?: string | null
+          title?: string
+          updated_at?: string
+          view_count?: number
+        }
+        Relationships: []
+      }
       document_shares: {
         Row: {
           created_at: string
