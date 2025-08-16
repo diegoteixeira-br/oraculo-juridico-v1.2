@@ -28,6 +28,7 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
   const [duration, setDuration] = useState(0);
   const [canPause, setCanPause] = useState(true);
   const [playbackRate, setPlaybackRate] = useState(1);
+  const [showSpeedControls, setShowSpeedControls] = useState(false);
 
   // Salvar/carregar posição do vídeo
   const saveVideoPosition = (time: number) => {
@@ -66,13 +67,15 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
       initializePlayer();
     }
 
-    // Salvar posição quando sair da página
+    // Salvar posição quando sair da página e resetar velocidade
     const handleBeforeUnload = () => {
       if (player && player.getCurrentTime) {
         const currentTime = player.getCurrentTime();
         if (currentTime > 0) {
           saveVideoPosition(currentTime);
         }
+        // Resetar velocidade para 1x ao sair
+        player.setPlaybackRate(1);
       }
     };
 
@@ -133,12 +136,9 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
             setIsMuted(parseInt(savedVolume) === 0);
           }
 
-          // Configurar velocidade salva
-          const savedSpeed = localStorage.getItem(`video_speed_${videoId}`);
-          if (savedSpeed) {
-            event.target.setPlaybackRate(parseFloat(savedSpeed));
-            setPlaybackRate(parseFloat(savedSpeed));
-          }
+          // Sempre iniciar na velocidade 1x
+          event.target.setPlaybackRate(1);
+          setPlaybackRate(1);
 
           // Atualizar tempo atual a cada segundo
           const timeInterval = setInterval(() => {
@@ -291,7 +291,7 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
     if (!player) return;
     player.setPlaybackRate(rate);
     setPlaybackRate(rate);
-    localStorage.setItem(`video_speed_${videoId}`, rate.toString());
+    // Não salvar mais a velocidade
   };
 
   return (
@@ -392,21 +392,42 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
       
       {/* Controles de velocidade discretos */}
       {isReady && !showAudioPrompt && !showResumePrompt && !videoEnded && (
-        <div className="mt-2 flex items-center justify-end gap-1 opacity-50 hover:opacity-80 transition-opacity">
-          <span className="text-xs text-gray-500 dark:text-gray-500">Velocidade:</span>
-          {[1, 1.5, 2].map(rate => (
+        <div className="mt-2 flex items-center justify-end gap-1">
+          {!showSpeedControls ? (
             <button
-              key={rate}
-              onClick={() => changePlaybackRate(rate)}
-              className={`px-1 py-0.5 rounded text-xs transition-all duration-200 ${
-                playbackRate === rate
-                  ? 'bg-red-400 text-white'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
-              }`}
+              onClick={() => setShowSpeedControls(true)}
+              className="flex items-center gap-1 px-2 py-1 rounded text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200"
             >
-              {rate}x
+              <Settings className="w-3 h-3" />
+              {playbackRate}x
             </button>
-          ))}
+          ) : (
+            <>
+              <span className="text-xs text-gray-500 dark:text-gray-500">Velocidade:</span>
+              {[1, 1.5, 2].map(rate => (
+                <button
+                  key={rate}
+                  onClick={() => {
+                    changePlaybackRate(rate);
+                    setShowSpeedControls(false);
+                  }}
+                  className={`px-1 py-0.5 rounded text-xs transition-all duration-200 ${
+                    playbackRate === rate
+                      ? 'bg-red-400 text-white'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  {rate}x
+                </button>
+              ))}
+              <button
+                onClick={() => setShowSpeedControls(false)}
+                className="px-1 py-0.5 rounded text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200"
+              >
+                ✕
+              </button>
+            </>
+          )}
         </div>
       )}
     </div>
