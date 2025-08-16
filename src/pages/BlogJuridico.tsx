@@ -173,7 +173,7 @@ const BlogJuridico = () => {
             </p>
             
             {/* Google AdSense - Topo do Conteúdo */}
-            <GoogleAdsPlaceholder format="leaderboard" position="Topo da página (Hero)" className="mb-8" />
+            <GoogleAdsPlaceholder format="banner" position="Topo da página (Hero)" className="mb-8" />
             
             {/* Search Bar */}
             <div className="max-w-md mx-auto relative mb-8">
@@ -271,7 +271,7 @@ const BlogJuridico = () => {
                 </div>
                 
                 {/* Google AdSense - Entre os artigos em destaque */}
-                <GoogleAdsPlaceholder format="rectangle" position="Entre artigos em destaque" className="mb-8" />
+                <GoogleAdsPlaceholder format="mobile_banner" position="Entre artigos em destaque" className="mb-8" />
               </section>
             )}
 
@@ -355,7 +355,7 @@ const BlogJuridico = () => {
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-6">
             {/* Google AdSense - Sidebar Topo */}
-            <GoogleAdsPlaceholder format="rectangle" position="Sidebar - Topo" />
+            <GoogleAdsPlaceholder format="mobile_banner" position="Sidebar - Topo" />
 
             {/* Categories */}
             <Card className="bg-slate-800/50 border-slate-700">
@@ -374,7 +374,7 @@ const BlogJuridico = () => {
             </Card>
 
             {/* Google AdSense - Sidebar Meio */}
-            <GoogleAdsPlaceholder format="rectangle" position="Sidebar - Meio" />
+            <GoogleAdsPlaceholder format="mobile_banner" position="Sidebar - Meio" />
 
             {/* Newsletter */}
             <Card className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border-blue-500/30">
@@ -396,14 +396,14 @@ const BlogJuridico = () => {
             </Card>
 
             {/* Google AdSense - Sidebar Rodapé */}
-            <GoogleAdsPlaceholder format="rectangle" position="Sidebar - Rodapé" />
+            <GoogleAdsPlaceholder format="mobile_banner" position="Sidebar - Rodapé" />
           </div>
         </div>
       </div>
 
       {/* Google AdSense - Rodapé do Conteúdo */}
       <div className="container mx-auto px-4 pb-8">
-        <GoogleAdsPlaceholder format="leaderboard" position="Rodapé do conteúdo principal" />
+        <GoogleAdsPlaceholder format="banner" position="Rodapé do conteúdo principal" />
       </div>
 
       {/* Footer */}
