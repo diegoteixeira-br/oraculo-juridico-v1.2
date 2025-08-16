@@ -125,7 +125,7 @@ const ArtigoBlog = () => {
         <div className="container mx-auto px-4 py-12">
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4">Artigo não encontrado</h1>
-            <Link to="/blog">
+            <Link to="/">
               <Button>Voltar ao Blog</Button>
             </Link>
           </div>
@@ -156,7 +156,7 @@ const ArtigoBlog = () => {
 
             <nav className="hidden md:flex items-center space-x-6">
               <Link 
-                to="/blog" 
+                to="/" 
                 className="text-slate-300 hover:text-blue-400 transition-colors font-medium"
               >
                 Blog
@@ -175,7 +175,7 @@ const ArtigoBlog = () => {
             </nav>
 
             <div className="md:hidden">
-              <Link to="/blog">
+              <Link to="/">
                 <Button size="sm" variant="outline" className="border-slate-600 text-slate-300">
                   Blog
                 </Button>
@@ -191,7 +191,7 @@ const ArtigoBlog = () => {
           <article className="lg:col-span-3">
             {/* Back Button */}
             <div className="mb-6">
-              <Link to="/blog">
+              <Link to="/">
                 <Button variant="outline" className="mb-4 border-slate-600 text-slate-300 hover:bg-blue-600 hover:border-blue-600 hover:text-white">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Voltar ao Blog
@@ -369,7 +369,7 @@ const ArtigoBlog = () => {
                 <CardTitle className="text-slate-200">Navegação</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <Link to="/blog" className="block p-2 rounded hover:bg-slate-700/50 transition-colors text-slate-300 hover:text-blue-400">
+                <Link to="/" className="block p-2 rounded hover:bg-slate-700/50 transition-colors text-slate-300 hover:text-blue-400">
                   Todos os Artigos
                 </Link>
                 <Link to="/blog?categoria=direito-digital" className="block p-2 rounded hover:bg-slate-700/50 transition-colors text-slate-300 hover:text-blue-400">
