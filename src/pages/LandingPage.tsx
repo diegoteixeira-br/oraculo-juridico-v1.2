@@ -88,46 +88,42 @@ const LandingPage = () => {
         </div>
       </header>
 
-      {/* Vídeo Explicativo */}
-      <section className="py-16 px-4 bg-muted/10">
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Container com fundo azul para o texto */}
-          <div className="relative mb-10">
-            {/* Fundo decorativo azul */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-blue-400/15 to-blue-600/20 rounded-xl blur-2xl transform scale-110"></div>
+      {/* Vídeo Explicativo - só aparece se tiver vídeo configurado */}
+      {videoSettings.youtube_video_id && 
+       videoSettings.youtube_video_id !== 'VIDEO_ID' && 
+       videoSettings.youtube_video_id.trim() !== '' && (
+        <section className="py-16 px-4 bg-muted/10">
+          <div className="max-w-4xl mx-auto text-center">
+            {/* Container com fundo azul para o texto */}
+            <div className="relative mb-10">
+              {/* Fundo decorativo azul */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-blue-400/15 to-blue-600/20 rounded-xl blur-2xl transform scale-110"></div>
+              
+              {/* Container do texto */}
+              <div className="relative bg-blue-500/15 backdrop-blur-sm rounded-xl p-6 border border-blue-500/40 shadow-lg">
+                <h2 className="text-3xl font-bold mb-4 md:text-[b79b71] text-[#b79b71]">
+                  {videoSettings.video_title}
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                  {videoSettings.video_description}
+                </p>
+              </div>
+            </div>
             
-            {/* Container do texto */}
-            <div className="relative bg-blue-500/15 backdrop-blur-sm rounded-xl p-6 border border-blue-500/40 shadow-lg">
-              <h2 className="text-3xl font-bold mb-4 md:text-[b79b71] text-[#b79b71]">
-                {videoSettings.video_title}
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                {videoSettings.video_description}
-              </p>
+            {/* Container com fundo estilizado para o vídeo */}
+            <div className="relative">
+              {/* Fundo decorativo */}
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/5 to-primary/5 rounded-2xl blur-3xl transform scale-110"></div>
+              <div className="absolute inset-0 bg-gradient-to-tr from-slate-800/20 via-transparent to-slate-600/20 rounded-2xl"></div>
+              
+              {/* Container do vídeo */}
+              <div className="relative bg-red-300/30 backdrop-blur-sm rounded-2xl p-1 border border-red-400/50 shadow-2xl">
+                <CustomYouTubePlayer videoId={videoSettings.youtube_video_id} title={videoSettings.video_title} />
+              </div>
             </div>
           </div>
-          
-          {/* Container com fundo estilizado para o vídeo */}
-          <div className="relative">
-            {/* Fundo decorativo */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/5 to-primary/5 rounded-2xl blur-3xl transform scale-110"></div>
-            <div className="absolute inset-0 bg-gradient-to-tr from-slate-800/20 via-transparent to-slate-600/20 rounded-2xl"></div>
-            
-            {/* Container do vídeo */}
-            <div className="relative bg-red-300/30 backdrop-blur-sm rounded-2xl p-1 border border-red-400/50 shadow-2xl">
-                <div className="relative max-w-3xl mx-auto">
-                  <div className="aspect-video bg-slate-800/50 rounded-lg border border-border overflow-hidden shadow-2xl flex items-center justify-center">
-                    <div className="text-center text-muted-foreground">
-                      <div className="text-4xl mb-4">🎥</div>
-                      <p>Vídeo será configurado pelo admin</p>
-                      <p className="text-sm mt-2 text-slate-400">Configure o vídeo nas configurações da Landing Page</p>
-                    </div>
-                  </div>
-                </div>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Hero Section */}
       <section className="relative py-20 px-4 overflow-hidden">

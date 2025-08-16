@@ -139,18 +139,30 @@ export default function LandingPageSettings() {
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Preview do vídeo atual */}
-        {formData.youtube_video_id && formData.youtube_video_id !== 'VIDEO_ID' && (
+        {formData.youtube_video_id && formData.youtube_video_id !== 'VIDEO_ID' && formData.youtube_video_id.trim() !== '' && (
           <div className="space-y-2">
             <Label>Preview do Vídeo</Label>
-            <div className="aspect-video bg-slate-800/50 rounded-lg border border-border overflow-hidden">
-              <iframe
-                className="w-full h-full"
-                src={`https://www.youtube.com/embed/${formData.youtube_video_id}?rel=0&modestbranding=1&showinfo=0`}
-                title="Preview do vídeo"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
+            <div className="w-[45%] mx-auto">
+              <div className="aspect-video bg-slate-800/50 rounded-lg border border-border overflow-hidden">
+                <iframe
+                  className="w-full h-full"
+                  src={`https://www.youtube.com/embed/${formData.youtube_video_id}?rel=0&modestbranding=1&showinfo=0`}
+                  title="Preview do vídeo"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </div>
+            </div>
+            <div className="text-center">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setFormData({ ...formData, youtube_video_id: '' })}
+                className="text-destructive hover:text-destructive"
+              >
+                Remover Vídeo
+              </Button>
             </div>
           </div>
         )}
