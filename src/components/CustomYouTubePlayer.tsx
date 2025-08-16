@@ -286,7 +286,7 @@ export const CustomYouTubePlayer: React.FC<CustomYouTubePlayerProps> = ({ videoI
         <div ref={containerRef} className="w-full h-full"></div>
         
         {/* Barra de progresso do vídeo */}
-        {isReady && !showAudioPrompt && !videoEnded && duration > 0 && (
+        {isReady && !showAudioPrompt && !showResumePrompt && !videoEnded && duration > 0 && (
           <div className="absolute bottom-0 left-0 right-0 bg-black/20 backdrop-blur-sm p-2">
             <div className="flex items-center gap-2 text-white text-sm">
               <span>{Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60).toString().padStart(2, '0')}</span>
