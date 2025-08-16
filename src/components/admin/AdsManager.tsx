@@ -304,13 +304,24 @@ export default function AdsManager() {
               </div>
 
               {formData.ad_type === 'image' ? (
-                <ImageUpload
-                  value={formData.content}
-                  onChange={(url) => setFormData(prev => ({ ...prev, content: url }))}
-                  label="Imagem do Anúncio"
-                  bucket="blog-images"
-                  folder="ads"
-                />
+                <div className="space-y-3">
+                  <ImageUpload
+                    value={formData.content}
+                    onChange={(url) => setFormData(prev => ({ ...prev, content: url }))}
+                    label="Imagem do Anúncio"
+                    bucket="blog-images"
+                    folder="ads"
+                  />
+                  <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-md">
+                    <strong>Tamanhos recomendados por posição:</strong>
+                    <ul className="mt-2 space-y-1">
+                      <li>• <strong>Header/Topo:</strong> 728x90px (Leaderboard) ou 970x90px (Super Leaderboard)</li>
+                      <li>• <strong>Sidebar:</strong> 300x250px (Medium Rectangle) ou 336x280px (Large Rectangle)</li>
+                      <li>• <strong>Footer:</strong> 728x90px (Leaderboard)</li>
+                      <li>• <strong>Mobile:</strong> 320x50px (Mobile Banner) ou 300x250px (Mobile Rectangle)</li>
+                    </ul>
+                  </div>
+                </div>
               ) : (
                 <div className="space-y-2">
                   <Label htmlFor="content">
