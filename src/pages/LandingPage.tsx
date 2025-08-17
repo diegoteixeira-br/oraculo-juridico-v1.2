@@ -11,7 +11,8 @@ const LandingPage = () => {
   const [videoSettings, setVideoSettings] = useState({
     youtube_video_id: 'VIDEO_ID',
     video_title: 'Veja Como Funciona na Prática',
-    video_description: 'Assista ao vídeo demonstrativo e descubra como o Oráculo Jurídico pode revolucionar sua prática advocatícia'
+    video_description: 'Assista ao vídeo demonstrativo e descubra como o Oráculo Jurídico pode revolucionar sua prática advocatícia',
+    video_enabled: false
   });
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
@@ -21,12 +22,13 @@ const LandingPage = () => {
       try {
         const {
           data
-        } = await supabase.from('landing_page_settings').select('youtube_video_id, video_title, video_description').maybeSingle();
+        } = await supabase.from('landing_page_settings').select('youtube_video_id, video_title, video_description, video_enabled').maybeSingle();
         if (data) {
           setVideoSettings({
             youtube_video_id: data.youtube_video_id || 'VIDEO_ID',
             video_title: data.video_title || 'Veja Como Funciona na Prática',
-            video_description: data.video_description || 'Assista ao vídeo demonstrativo e descubra como o Oráculo Jurídico pode revolucionar sua prática advocatícia'
+            video_description: data.video_description || 'Assista ao vídeo demonstrativo e descubra como o Oráculo Jurídico pode revolucionar sua prática advocatícia',
+            video_enabled: data.video_enabled || false
           });
         }
       } catch (error) {
@@ -89,25 +91,27 @@ const LandingPage = () => {
       </header>
 
       {/* Vídeo Explicativo */}
-      <section className="py-16 px-4 bg-muted/10">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-6 md:text-[b79b71] text-[#b79b71]">
-            {videoSettings.video_title}
-          </h2>
-          <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">
-            {videoSettings.video_description}
-          </p>
-          
-          {videoSettings.youtube_video_id && videoSettings.youtube_video_id !== 'VIDEO_ID' ? <CustomYouTubePlayer videoId={videoSettings.youtube_video_id} title={videoSettings.video_title} /> : <div className="relative max-w-3xl mx-auto">
-              <div className="aspect-video bg-slate-800/50 rounded-lg border border-border overflow-hidden shadow-2xl flex items-center justify-center">
-                <div className="text-center text-muted-foreground">
-                  <div className="text-4xl mb-4">🎥</div>
-                  <p>Vídeo será configurado em breve</p>
+      {videoSettings.video_enabled && (
+        <section className="py-16 px-4 bg-muted/10">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl font-bold mb-6 md:text-[b79b71] text-[#b79b71]">
+              {videoSettings.video_title}
+            </h2>
+            <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">
+              {videoSettings.video_description}
+            </p>
+            
+            {videoSettings.youtube_video_id && videoSettings.youtube_video_id !== 'VIDEO_ID' ? <CustomYouTubePlayer videoId={videoSettings.youtube_video_id} title={videoSettings.video_title} /> : <div className="relative max-w-3xl mx-auto">
+                <div className="aspect-video bg-slate-800/50 rounded-lg border border-border overflow-hidden shadow-2xl flex items-center justify-center">
+                  <div className="text-center text-muted-foreground">
+                    <div className="text-4xl mb-4">🎥</div>
+                    <p>Vídeo será configurado em breve</p>
+                  </div>
                 </div>
-              </div>
-            </div>}
-        </div>
-      </section>
+              </div>}
+          </div>
+        </section>
+      )}
 
       {/* Hero Section */}
       <section className="relative py-20 px-4 overflow-hidden">
@@ -540,8 +544,14 @@ const LandingPage = () => {
                   <Check className="w-5 h-5 text-primary flex-shrink-0" />
                   <span className="text-muted-foreground">Acesso completo à IA Jurídica com 15.000 tokens</span>
                 </div>
-                
-                
+                <div className="flex items-center space-x-3 text-left">
+                  <Check className="w-5 h-5 text-primary flex-shrink-0" />
+                  
+                </div>
+                <div className="flex items-center space-x-3 text-left">
+                  <Check className="w-5 h-5 text-primary flex-shrink-0" />
+                  <span className="text-muted-foreground">Calculadoras especializadas</span>
+                </div>
                 <div className="flex items-center space-x-3 text-left">
                   <Check className="w-5 h-5 text-primary flex-shrink-0" />
                   <span className="text-muted-foreground">Histórico de conversas</span>
