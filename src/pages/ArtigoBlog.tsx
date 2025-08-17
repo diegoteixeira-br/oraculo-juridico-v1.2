@@ -176,9 +176,9 @@ const ArtigoBlog = () => {
                   >
                     Login
                   </Link>
-                  <Link to="/cadastro">
+                  <Link to="/pagina-de-venda">
                     <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium px-6">
-                      Começar Grátis
+                      Conheça nossa ferramenta
                     </Button>
                   </Link>
                 </>
