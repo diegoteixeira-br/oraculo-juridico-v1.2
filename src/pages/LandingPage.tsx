@@ -74,7 +74,7 @@ const LandingPage = () => {
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
             <img src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" alt="Oráculo Jurídico" className="h-8 w-auto" width="160" height="40" />
-            <div className="text-2xl font-bold text-[#b79b71]" aria-label="Oráculo Jurídico">
+            <div className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent" aria-label="Oráculo Jurídico">
               Oráculo Jurídico
             </div>
           </Link>
@@ -120,7 +120,7 @@ const LandingPage = () => {
         </div>
         <div className="relative max-w-6xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
-            A Resposta Jurídica que Você Precisa, <span className="text-primary">na Velocidade da Luz</span>
+            <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent">A Resposta Jurídica que Você Precisa</span>, <span className="text-primary">na Velocidade da Luz</span>
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-4xl mx-auto animate-fade-in">
             Chega de perder horas em pesquisa. Com o Oráculo Jurídico, você acessa uma IA treinada para o Direito brasileiro e obtém respostas fundamentadas em segundos.

@@ -140,7 +140,7 @@ const BlogJuridico = () => {
                 <UserMenu />
               ) : (
                 <Link to="/pagina-de-venda">
-                  <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
+                  <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-xs px-3 py-2">
                     Conheça nossa ferramenta
                   </Button>
                 </Link>
