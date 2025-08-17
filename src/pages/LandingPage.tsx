@@ -11,8 +11,7 @@ const LandingPage = () => {
   const [videoSettings, setVideoSettings] = useState({
     youtube_video_id: 'VIDEO_ID',
     video_title: 'Veja Como Funciona na Prática',
-    video_description: 'Assista ao vídeo demonstrativo e descubra como o Oráculo Jurídico pode revolucionar sua prática advocatícia',
-    video_enabled: false
+    video_description: 'Assista ao vídeo demonstrativo e descubra como o Oráculo Jurídico pode revolucionar sua prática advocatícia'
   });
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
@@ -20,46 +19,21 @@ const LandingPage = () => {
   useEffect(() => {
     const fetchVideoSettings = async () => {
       try {
-        const { data } = await supabase
-          .from('landing_page_settings')
-          .select('youtube_video_id, video_title, video_description, video_enabled')
-          .maybeSingle();
-        
+        const {
+          data
+        } = await supabase.from('landing_page_settings').select('youtube_video_id, video_title, video_description').maybeSingle();
         if (data) {
           setVideoSettings({
-            youtube_video_id: data.youtube_video_id || '',
+            youtube_video_id: data.youtube_video_id || 'VIDEO_ID',
             video_title: data.video_title || 'Veja Como Funciona na Prática',
-            video_description: data.video_description || 'Assista ao vídeo demonstrativo e descubra como o Oráculo Jurídico pode revolucionar sua prática advocatícia',
-            video_enabled: data.video_enabled ?? false
+            video_description: data.video_description || 'Assista ao vídeo demonstrativo e descubra como o Oráculo Jurídico pode revolucionar sua prática advocatícia'
           });
         }
       } catch (error) {
         console.error('Erro ao carregar configurações de vídeo:', error);
       }
     };
-
     fetchVideoSettings();
-
-    // Configurar listener para mudanças na tabela
-    const channel = supabase
-      .channel('landing_page_settings_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'landing_page_settings'
-        },
-        (payload) => {
-          console.log('Configuração de vídeo atualizada:', payload);
-          fetchVideoSettings(); // Recarregar configurações quando houver mudanças
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, []);
   const scrollToFreeAccount = () => {
     const freeAccountSection = document.getElementById('free-account-section');
@@ -114,44 +88,26 @@ const LandingPage = () => {
         </div>
       </header>
 
-      {/* Vídeo Explicativo - só aparece se tiver vídeo configurado E habilitado */}
-      {videoSettings.video_enabled && 
-       videoSettings.youtube_video_id && 
-       videoSettings.youtube_video_id !== 'VIDEO_ID' && 
-       videoSettings.youtube_video_id.trim() !== '' && 
-       videoSettings.youtube_video_id !== null && (
-        <section className="py-16 px-4 bg-muted/10">
-          <div className="max-w-4xl mx-auto text-center">
-            {/* Container com fundo azul para o texto */}
-            <div className="relative mb-10">
-              {/* Fundo decorativo azul */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-blue-400/15 to-blue-600/20 rounded-xl blur-2xl transform scale-110"></div>
-              
-              {/* Container do texto */}
-              <div className="relative bg-blue-500/15 backdrop-blur-sm rounded-xl p-6 border border-blue-500/40 shadow-lg">
-                <h2 className="text-3xl font-bold mb-4 md:text-[b79b71] text-[#b79b71]">
-                  {videoSettings.video_title}
-                </h2>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  {videoSettings.video_description}
-                </p>
+      {/* Vídeo Explicativo */}
+      <section className="py-16 px-4 bg-muted/10">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-6 md:text-[b79b71] text-[#b79b71]">
+            {videoSettings.video_title}
+          </h2>
+          <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">
+            {videoSettings.video_description}
+          </p>
+          
+          {videoSettings.youtube_video_id && videoSettings.youtube_video_id !== 'VIDEO_ID' ? <CustomYouTubePlayer videoId={videoSettings.youtube_video_id} title={videoSettings.video_title} /> : <div className="relative max-w-3xl mx-auto">
+              <div className="aspect-video bg-slate-800/50 rounded-lg border border-border overflow-hidden shadow-2xl flex items-center justify-center">
+                <div className="text-center text-muted-foreground">
+                  <div className="text-4xl mb-4">🎥</div>
+                  <p>Vídeo será configurado em breve</p>
+                </div>
               </div>
-            </div>
-            
-            {/* Container com fundo estilizado para o vídeo */}
-            <div className="relative">
-              {/* Fundo decorativo */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/5 to-primary/5 rounded-2xl blur-3xl transform scale-110"></div>
-              <div className="absolute inset-0 bg-gradient-to-tr from-slate-800/20 via-transparent to-slate-600/20 rounded-2xl"></div>
-              
-              {/* Container do vídeo */}
-              <div className="relative bg-red-300/30 backdrop-blur-sm rounded-2xl p-1 border border-red-400/50 shadow-2xl">
-                <CustomYouTubePlayer videoId={videoSettings.youtube_video_id} title={videoSettings.video_title} />
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
+            </div>}
+        </div>
+      </section>
 
       {/* Hero Section */}
       <section className="relative py-20 px-4 overflow-hidden">
@@ -628,17 +584,7 @@ const LandingPage = () => {
           
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Scale className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-2 text-foreground">Jurisprudência Oficial Integrada</h3>
-                  <p className="text-muted-foreground">
-                    Acesso direto à base oficial LexML do governo brasileiro com jurisprudência dos principais tribunais (STF, STJ, TJs). IMPORTANTE: As informações sempre devem ser revisadas e verificadas pelo advogado responsável.
-                  </p>
-                </div>
-              </div>
+              
               
               <div className="flex items-start space-x-4">
                 <div className="w-12 h-12 bg-secondary/20 rounded-lg flex items-center justify-center flex-shrink-0">
