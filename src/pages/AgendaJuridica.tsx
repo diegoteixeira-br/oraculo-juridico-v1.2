@@ -477,6 +477,7 @@ const AgendaJuridica = () => {
 
   // Abrir modal de duplicação
   const handleDuplicateCommitment = (commitment: LegalCommitment) => {
+    console.log("Duplicando compromisso:", commitment);
     setSelectedCommitment(commitment);
     setDuplicateCommitment({
       title: commitment.title,
@@ -491,6 +492,7 @@ const AgendaJuridica = () => {
       client_name: commitment.client_name || "",
       priority: commitment.priority
     });
+    console.log("Abrindo modal de duplicação");
     setShowDuplicateDialog(true);
   };
 
@@ -566,6 +568,7 @@ const AgendaJuridica = () => {
 
   // Duplicar compromisso com nova data
   const handleSaveDuplicate = async () => {
+    console.log("Iniciando duplicação com dados:", duplicateCommitment);
     if (!duplicateCommitment.title || !duplicateCommitment.commitment_date) {
       toast({
         title: "Erro",
@@ -1648,7 +1651,10 @@ const AgendaJuridica = () => {
                                        <Button
                                          variant="outline"
                                          size="icon"
-                                         onClick={() => handleDuplicateCommitment(commitment)}
+                                         onClick={() => {
+                                           console.log("Clicou no botão duplicar");
+                                           handleDuplicateCommitment(commitment);
+                                         }}
                                          className={`${isMobile ? 'h-8 w-8 flex-1 min-w-[32px]' : 'h-7 w-7'} border-blue-600 text-blue-400 hover:bg-blue-600/10`}
                                          title="Duplicar"
                                        >
