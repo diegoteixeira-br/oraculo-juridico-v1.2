@@ -324,42 +324,59 @@ const AgendaJuridica = () => {
         }
       }
 
-      // Verificar conflito de horário (mesmo horário já agendado)
+      // Verificar conflito de horário apenas para compromissos que exigem presença física
       const desiredStart = toIsoUtc(newCommitment.commitment_date);
       const desiredEnd = endIsoFromLocal(newCommitment.commitment_date, 1);
       if (!desiredStart || !desiredEnd) {
         throw new Error('Data/Hora inválida');
       }
 
-      // Verificar conflito de horário (sobreposição)
-      const { data: overlaps1, error: err1 } = await supabase
-        .from('legal_commitments' as any)
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('status', 'pendente')
-        .gt('end_date', desiredStart)
-        .lt('commitment_date', desiredEnd)
-        .limit(1);
-      if (err1) throw err1;
+      // Só verificar conflito para tipos que exigem presença/atenção exclusiva
+      const exclusiveTypes = ['audiencia', 'reuniao'];
+      const isExclusiveType = exclusiveTypes.includes(newCommitment.commitment_type);
 
-      const { data: overlaps2, error: err2 } = await supabase
-        .from('legal_commitments' as any)
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('status', 'pendente')
-        .is('end_date', null)
-        .gte('commitment_date', desiredStart)
-        .lt('commitment_date', desiredEnd)
-        .limit(1);
-      if (err2) throw err2;
+      if (isExclusiveType) {
+        // Verificar se já existe outro compromisso exclusivo no mesmo horário
+        const { data: existingExclusive, error: err1 } = await supabase
+          .from('legal_commitments' as any)
+          .select('id, commitment_type, title')
+          .eq('user_id', user.id)
+          .eq('status', 'pendente')
+          .in('commitment_type', exclusiveTypes)
+          .gte('commitment_date', desiredStart)
+          .lt('commitment_date', desiredEnd)
+          .limit(1);
+        if (err1) throw err1;
 
-      if ((overlaps1 && overlaps1.length > 0) || (overlaps2 && overlaps2.length > 0)) {
-        toast({
-          title: 'Horário indisponível',
-          description: 'Já existe um compromisso neste período. Escolha outro horário ou dia.',
-          variant: 'destructive',
-        });
-        return;
+        if (existingExclusive && existingExclusive.length > 0) {
+          const existing = existingExclusive[0] as any;
+          toast({
+            title: 'Horário indisponível',
+            description: `Já existe ${existing.commitment_type === 'audiencia' ? 'uma audiência' : 'uma reunião'} agendada neste horário: "${existing.title}".`,
+            variant: 'destructive',
+          });
+          return;
+        }
+      } else {
+        // Para prazos processuais, apenas avisar se já existe outro no mesmo horário
+        const { data: existingDeadlines, error: err2 } = await supabase
+          .from('legal_commitments' as any)
+          .select('title, deadline_type')
+          .eq('user_id', user.id)
+          .eq('status', 'pendente')
+          .eq('commitment_type', 'prazo_processual')
+          .eq('commitment_date', desiredStart)
+          .limit(3);
+        if (err2) throw err2;
+
+        if (existingDeadlines && existingDeadlines.length > 0) {
+          const deadlineNames = (existingDeadlines as any[]).map(d => d.title || d.deadline_type).join(', ');
+          toast({
+            title: 'Múltiplos prazos no mesmo horário',
+            description: `Já existem outros prazos neste horário: ${deadlineNames}. O novo prazo será adicionado.`,
+            variant: 'default',
+          });
+        }
       }
 
       const { error } = await supabase
@@ -443,22 +460,32 @@ const AgendaJuridica = () => {
     try {
       const desiredStart = toIsoUtc(editCommitment.commitment_date);
       if (!desiredStart) throw new Error('Data/Hora inválida');
-      const { data: existingAtSameTime, error: conflictError } = await supabase
-        .from('legal_commitments' as any)
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('status', 'pendente')
-        .eq('commitment_date', desiredStart)
-        .neq('id', selectedCommitment.id)
-        .limit(1);
-      if (conflictError) throw conflictError;
-      if (existingAtSameTime && existingAtSameTime.length > 0) {
-        toast({
-          title: 'Horário indisponível',
-          description: 'Já existe um compromisso neste horário. Escolha outro horário ou dia.',
-          variant: 'destructive',
-        });
-        return;
+      
+      // Só verificar conflito para tipos que exigem presença/atenção exclusiva
+      const exclusiveTypes = ['audiencia', 'reuniao'];
+      const isExclusiveType = exclusiveTypes.includes(editCommitment.commitment_type);
+
+      if (isExclusiveType) {
+        const { data: existingExclusive, error: conflictError } = await supabase
+          .from('legal_commitments' as any)
+          .select('id, commitment_type, title')
+          .eq('user_id', user.id)
+          .eq('status', 'pendente')
+          .in('commitment_type', exclusiveTypes)
+          .eq('commitment_date', desiredStart)
+          .neq('id', selectedCommitment.id)
+          .limit(1);
+        if (conflictError) throw conflictError;
+        
+        if (existingExclusive && existingExclusive.length > 0) {
+          const existing = existingExclusive[0] as any;
+          toast({
+            title: 'Horário indisponível',
+            description: `Já existe ${existing.commitment_type === 'audiencia' ? 'uma audiência' : 'uma reunião'} agendada neste horário: "${existing.title}".`,
+            variant: 'destructive',
+          });
+          return;
+        }
       }
 
       const { error } = await supabase
