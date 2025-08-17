@@ -433,6 +433,7 @@ const BlogJuridico = () => {
                 <li><Link to="/cadastro" className="hover:text-blue-400 transition-colors">Criar Conta</Link></li>
                 <li><Link to="/contato" className="hover:text-blue-400 transition-colors">Contato</Link></li>
                 <li><Link to="/termos" className="hover:text-blue-400 transition-colors">Termos de Uso</Link></li>
+                <li><Link to="/privacidade" className="hover:text-blue-400 transition-colors">Política de Privacidade</Link></li>
               </ul>
             </div>
             
