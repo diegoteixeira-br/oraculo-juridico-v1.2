@@ -72,12 +72,12 @@ const LandingPage = () => {
       {/* Header */}
       <header className="py-6 px-4 border-b border-border bg-slate-800/50 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-3">
             <img src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" alt="Oráculo Jurídico" className="h-8 w-auto" width="160" height="40" />
-            <div className="text-2xl font-bold text-foreground" aria-label="Oráculo Jurídico">
+            <div className="text-2xl font-bold text-[#b79b71]" aria-label="Oráculo Jurídico">
               Oráculo Jurídico
             </div>
-          </div>
+          </Link>
           
           <div className="flex items-center gap-3">
             <Link to="/login" state={{

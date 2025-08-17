@@ -139,9 +139,9 @@ const BlogJuridico = () => {
               {user ? (
                 <UserMenu />
               ) : (
-                <Link to="/login" state={{ from: 'blog' }}>
-                  <Button size="sm" variant="outline" className="border-slate-600 text-slate-300">
-                    Login
+                <Link to="/pagina-de-venda">
+                  <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
+                    Conheça nossa ferramenta
                   </Button>
                 </Link>
               )}
