@@ -17,7 +17,8 @@ import {
   Edit, 
   Trash2, 
   Check, 
-  X 
+  X,
+  Copy
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -91,6 +92,7 @@ const AgendaJuridica = () => {
   const [selectedCommitment, setSelectedCommitment] = useState<LegalCommitment | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showNotificationDialog, setShowNotificationDialog] = useState(false);
+  const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
   
   // Estados para configurações de notificação
   const [notificationSettings, setNotificationSettings] = useState({
@@ -446,6 +448,25 @@ const AgendaJuridica = () => {
     setShowEditDialog(true);
   };
 
+  // Abrir modal de duplicação
+  const handleDuplicateCommitment = (commitment: LegalCommitment) => {
+    setSelectedCommitment(commitment);
+    setEditCommitment({
+      title: commitment.title,
+      description: commitment.description || "",
+      commitment_type: commitment.commitment_type,
+      deadline_type: commitment.deadline_type || "",
+      commitment_date: "", // Data vazia para o usuário escolher
+      end_date: "",
+      location: commitment.location || "",
+      is_virtual: commitment.is_virtual || false,
+      process_number: commitment.process_number || "",
+      client_name: commitment.client_name || "",
+      priority: commitment.priority
+    });
+    setShowDuplicateDialog(true);
+  };
+
   // Salvar edição do compromisso
   const handleSaveEdit = async () => {
     if (!selectedCommitment || !editCommitment.title || !editCommitment.commitment_date) {
@@ -511,6 +532,79 @@ const AgendaJuridica = () => {
       toast({
         title: "Erro",
         description: "Não foi possível atualizar o compromisso.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Duplicar compromisso com nova data
+  const handleSaveDuplicate = async () => {
+    if (!selectedCommitment || !editCommitment.title || !editCommitment.commitment_date) {
+      toast({
+        title: "Erro",
+        description: "Preencha os campos obrigatórios.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const desiredStart = toIsoUtc(editCommitment.commitment_date);
+      const desiredEnd = endIsoFromLocal(editCommitment.commitment_date, 1);
+      if (!desiredStart || !desiredEnd) {
+        throw new Error('Data/Hora inválida');
+      }
+
+      // Verificar conflito apenas para tipos exclusivos
+      const exclusiveTypes = ['audiencia', 'reuniao'];
+      const isExclusiveType = exclusiveTypes.includes(editCommitment.commitment_type);
+
+      if (isExclusiveType) {
+        const { data: existingExclusive, error: conflictError } = await supabase
+          .from('legal_commitments' as any)
+          .select('id, commitment_type, title')
+          .eq('user_id', user.id)
+          .eq('status', 'pendente')
+          .in('commitment_type', exclusiveTypes)
+          .eq('commitment_date', desiredStart)
+          .limit(1);
+        if (conflictError) throw conflictError;
+        
+        if (existingExclusive && existingExclusive.length > 0) {
+          const existing = existingExclusive[0] as any;
+          toast({
+            title: 'Horário indisponível',
+            description: `Já existe ${existing.commitment_type === 'audiencia' ? 'uma audiência' : 'uma reunião'} agendada neste horário: "${existing.title}".`,
+            variant: 'destructive',
+          });
+          return;
+        }
+      }
+
+      const { error } = await supabase
+        .from('legal_commitments' as any)
+        .insert({
+          user_id: user.id,
+          ...editCommitment,
+          commitment_date: desiredStart,
+          end_date: desiredEnd,
+          status: 'pendente',
+          auto_detected: false,
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Sucesso",
+        description: "Compromisso duplicado com sucesso!",
+      });
+
+      setShowDuplicateDialog(false);
+      loadCommitments();
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível duplicar o compromisso.",
         variant: "destructive",
       });
     }
@@ -1498,52 +1592,61 @@ const AgendaJuridica = () => {
                                  </div>
                                )}
                                  
-                                {/* Ações do compromisso */}
-                                <div className={`flex flex-wrap gap-2 ${isMobile ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity`}>
-                                  {commitment.status === 'pendente' && (
-                                    <>
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => handleEditCommitment(commitment)}
-                                        className="h-8 px-3 text-xs border-slate-600 hover:bg-slate-600 flex-1 min-w-0"
-                                      >
-                                        <Edit className="w-3 h-3 mr-1 flex-shrink-0" />
-                                        <span className="truncate">Editar</span>
-                                      </Button>
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => handleCompleteCommitment(commitment)}
-                                        className="h-8 px-3 text-xs border-green-600 text-green-400 hover:bg-green-600/10 flex-1 min-w-0"
-                                      >
-                                        <Check className="w-3 h-3 mr-1 flex-shrink-0" />
-                                        <span className="truncate">Concluir</span>
-                                      </Button>
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => handleCancelCommitment(commitment)}
-                                        className="h-8 px-3 text-xs border-red-600 text-red-400 hover:bg-red-600/10 flex-1 min-w-0"
-                                      >
-                                        <X className="w-3 h-3 mr-1 flex-shrink-0" />
-                                        <span className="truncate">Cancelar</span>
-                                      </Button>
-                                    </>
-                                  )}
-                                  
-                                  {canDeleteCommitment(commitment) && (
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => handleDeleteCommitment(commitment)}
-                                      className="h-8 px-3 text-xs border-red-600 text-red-400 hover:bg-red-600/10"
-                                    >
-                                      <Trash2 className="w-3 h-3 mr-1 flex-shrink-0" />
-                                      <span className="truncate">Excluir</span>
-                                    </Button>
-                                  )}
-                                </div>
+                                 {/* Ações do compromisso */}
+                                 <div className={`flex gap-1 ${isMobile ? 'opacity-100 flex-wrap' : 'opacity-0 group-hover:opacity-100 justify-end'} transition-opacity`}>
+                                   {commitment.status === 'pendente' && (
+                                     <>
+                                       <Button
+                                         variant="outline"
+                                         size="icon"
+                                         onClick={() => handleEditCommitment(commitment)}
+                                         className={`${isMobile ? 'h-8 w-8 flex-1 min-w-[32px]' : 'h-7 w-7'} border-slate-600 hover:bg-slate-600`}
+                                         title="Editar"
+                                       >
+                                         <Edit className="w-3 h-3" />
+                                       </Button>
+                                       <Button
+                                         variant="outline"
+                                         size="icon"
+                                         onClick={() => handleDuplicateCommitment(commitment)}
+                                         className={`${isMobile ? 'h-8 w-8 flex-1 min-w-[32px]' : 'h-7 w-7'} border-blue-600 text-blue-400 hover:bg-blue-600/10`}
+                                         title="Duplicar"
+                                       >
+                                         <Copy className="w-3 h-3" />
+                                       </Button>
+                                       <Button
+                                         variant="outline"
+                                         size="icon"
+                                         onClick={() => handleCompleteCommitment(commitment)}
+                                         className={`${isMobile ? 'h-8 w-8 flex-1 min-w-[32px]' : 'h-7 w-7'} border-green-600 text-green-400 hover:bg-green-600/10`}
+                                         title="Concluir"
+                                       >
+                                         <Check className="w-3 h-3" />
+                                       </Button>
+                                       <Button
+                                         variant="outline"
+                                         size="icon"
+                                         onClick={() => handleCancelCommitment(commitment)}
+                                         className={`${isMobile ? 'h-8 w-8 flex-1 min-w-[32px]' : 'h-7 w-7'} border-red-600 text-red-400 hover:bg-red-600/10`}
+                                         title="Cancelar"
+                                       >
+                                         <X className="w-3 h-3" />
+                                       </Button>
+                                     </>
+                                   )}
+                                   
+                                   {canDeleteCommitment(commitment) && (
+                                     <Button
+                                       variant="outline"
+                                       size="icon"
+                                       onClick={() => handleDeleteCommitment(commitment)}
+                                       className={`${isMobile ? 'h-8 w-8 flex-1 min-w-[32px]' : 'h-7 w-7'} border-red-600 text-red-400 hover:bg-red-600/10`}
+                                       title="Excluir"
+                                     >
+                                       <Trash2 className="w-3 h-3" />
+                                     </Button>
+                                   )}
+                                 </div>
                                </div>
                           ))
                         )}
@@ -1657,6 +1760,98 @@ const AgendaJuridica = () => {
           </Card>
         </div>
       </div>
+
+      {/* Dialog de Duplicação */}
+      <Dialog open={showDuplicateDialog} onOpenChange={setShowDuplicateDialog}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Copy className="h-5 w-5" />
+              Duplicar Compromisso
+            </DialogTitle>
+            <DialogDescription>
+              Duplicar o compromisso para uma nova data mantendo todas as informações.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 max-h-[60vh] overflow-y-auto">
+            <div className="grid gap-2">
+              <Label htmlFor="duplicate-title">Título *</Label>
+              <Input
+                id="duplicate-title"
+                value={editCommitment.title}
+                onChange={(e) => setEditCommitment({...editCommitment, title: e.target.value})}
+                placeholder="Ex: Prazo para contestação - Processo 123456"
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="duplicate-type">Tipo *</Label>
+              <Select 
+                value={editCommitment.commitment_type} 
+                onValueChange={(value: any) => setEditCommitment({...editCommitment, commitment_type: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(typeLabels).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>{label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="duplicate-date">Nova Data/Hora *</Label>
+                <Input
+                  id="duplicate-date"
+                  type="datetime-local"
+                  value={editCommitment.commitment_date}
+                  onChange={(e) => setEditCommitment({...editCommitment, commitment_date: e.target.value})}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="duplicate-priority">Prioridade</Label>
+                <Select 
+                  value={editCommitment.priority} 
+                  onValueChange={(value: any) => setEditCommitment({...editCommitment, priority: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(priorityLabels).map(([value, label]) => (
+                      <SelectItem key={value} value={value}>{label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="duplicate-description">Descrição</Label>
+              <Textarea
+                id="duplicate-description"
+                value={editCommitment.description}
+                onChange={(e) => setEditCommitment({...editCommitment, description: e.target.value})}
+                placeholder="Detalhes adicionais sobre o compromisso"
+                className="min-h-[80px]"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-2 mt-4">
+            <Button variant="outline" onClick={() => setShowDuplicateDialog(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSaveDuplicate}>
+              Duplicar Compromisso
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Dialog de Configurações de Notificação */}
       <Dialog open={showNotificationDialog} onOpenChange={setShowNotificationDialog}>
