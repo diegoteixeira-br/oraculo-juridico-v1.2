@@ -559,8 +559,8 @@ const LandingPage = () => {
                 
               </div>
               
-              <Link to="/cadastro" className="inline-block w-full py-4 px-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-lg font-semibold text-lg">
-                Criar Conta Gratuita
+              <Link to="/pagina-de-venda" className="inline-block w-full py-4 px-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-lg font-semibold text-lg">
+                Ver Todas as Funcionalidades
               </Link>
             </div>
           </div>
