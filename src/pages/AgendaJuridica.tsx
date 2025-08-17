@@ -93,6 +93,33 @@ const AgendaJuridica = () => {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showNotificationDialog, setShowNotificationDialog] = useState(false);
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
+
+  // Estados para duplicação separados
+  const [duplicateCommitment, setDuplicateCommitment] = useState<{
+    title: string;
+    description: string;
+    commitment_type: 'prazo_processual' | 'audiencia' | 'reuniao' | 'personalizado';
+    deadline_type: string;
+    commitment_date: string;
+    end_date: string;
+    location: string;
+    is_virtual: boolean;
+    process_number: string;
+    client_name: string;
+    priority: 'baixa' | 'normal' | 'alta' | 'urgente';
+  }>({
+    title: "",
+    description: "",
+    commitment_type: "prazo_processual",
+    deadline_type: "",
+    commitment_date: "",
+    end_date: "",
+    location: "",
+    is_virtual: false,
+    process_number: "",
+    client_name: "",
+    priority: "normal"
+  });
   
   // Estados para configurações de notificação
   const [notificationSettings, setNotificationSettings] = useState({
@@ -451,7 +478,7 @@ const AgendaJuridica = () => {
   // Abrir modal de duplicação
   const handleDuplicateCommitment = (commitment: LegalCommitment) => {
     setSelectedCommitment(commitment);
-    setEditCommitment({
+    setDuplicateCommitment({
       title: commitment.title,
       description: commitment.description || "",
       commitment_type: commitment.commitment_type,
@@ -539,7 +566,7 @@ const AgendaJuridica = () => {
 
   // Duplicar compromisso com nova data
   const handleSaveDuplicate = async () => {
-    if (!selectedCommitment || !editCommitment.title || !editCommitment.commitment_date) {
+    if (!duplicateCommitment.title || !duplicateCommitment.commitment_date) {
       toast({
         title: "Erro",
         description: "Preencha os campos obrigatórios.",
@@ -549,15 +576,15 @@ const AgendaJuridica = () => {
     }
 
     try {
-      const desiredStart = toIsoUtc(editCommitment.commitment_date);
-      const desiredEnd = endIsoFromLocal(editCommitment.commitment_date, 1);
+      const desiredStart = toIsoUtc(duplicateCommitment.commitment_date);
+      const desiredEnd = endIsoFromLocal(duplicateCommitment.commitment_date, 1);
       if (!desiredStart || !desiredEnd) {
         throw new Error('Data/Hora inválida');
       }
 
       // Verificar conflito apenas para tipos exclusivos
       const exclusiveTypes = ['audiencia', 'reuniao'];
-      const isExclusiveType = exclusiveTypes.includes(editCommitment.commitment_type);
+      const isExclusiveType = exclusiveTypes.includes(duplicateCommitment.commitment_type);
 
       if (isExclusiveType) {
         const { data: existingExclusive, error: conflictError } = await supabase
@@ -585,7 +612,7 @@ const AgendaJuridica = () => {
         .from('legal_commitments' as any)
         .insert({
           user_id: user.id,
-          ...editCommitment,
+          ...duplicateCommitment,
           commitment_date: desiredStart,
           end_date: desiredEnd,
           status: 'pendente',
@@ -600,6 +627,19 @@ const AgendaJuridica = () => {
       });
 
       setShowDuplicateDialog(false);
+      setDuplicateCommitment({
+        title: "",
+        description: "",
+        commitment_type: "prazo_processual",
+        deadline_type: "",
+        commitment_date: "",
+        end_date: "",
+        location: "",
+        is_virtual: false,
+        process_number: "",
+        client_name: "",
+        priority: "normal"
+      });
       loadCommitments();
     } catch (error: any) {
       toast({
@@ -1778,8 +1818,8 @@ const AgendaJuridica = () => {
               <Label htmlFor="duplicate-title">Título *</Label>
               <Input
                 id="duplicate-title"
-                value={editCommitment.title}
-                onChange={(e) => setEditCommitment({...editCommitment, title: e.target.value})}
+                value={duplicateCommitment.title}
+                onChange={(e) => setDuplicateCommitment({...duplicateCommitment, title: e.target.value})}
                 placeholder="Ex: Prazo para contestação - Processo 123456"
               />
             </div>
@@ -1787,8 +1827,8 @@ const AgendaJuridica = () => {
             <div className="grid gap-2">
               <Label htmlFor="duplicate-type">Tipo *</Label>
               <Select 
-                value={editCommitment.commitment_type} 
-                onValueChange={(value: any) => setEditCommitment({...editCommitment, commitment_type: value})}
+                value={duplicateCommitment.commitment_type} 
+                onValueChange={(value: any) => setDuplicateCommitment({...duplicateCommitment, commitment_type: value})}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -1801,22 +1841,42 @@ const AgendaJuridica = () => {
               </Select>
             </div>
 
+            {duplicateCommitment.commitment_type === 'prazo_processual' && (
+              <div className="grid gap-2">
+                <Label htmlFor="duplicate-deadline-type">Tipo de Prazo</Label>
+                <Select 
+                  value={duplicateCommitment.deadline_type} 
+                  onValueChange={(value) => setDuplicateCommitment({...duplicateCommitment, deadline_type: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o tipo de prazo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="recursal">Recursal</SelectItem>
+                    <SelectItem value="contestacao">Contestação</SelectItem>
+                    <SelectItem value="replicas">Tréplica</SelectItem>
+                    <SelectItem value="outras">Outras</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="duplicate-date">Nova Data/Hora *</Label>
                 <Input
                   id="duplicate-date"
                   type="datetime-local"
-                  value={editCommitment.commitment_date}
-                  onChange={(e) => setEditCommitment({...editCommitment, commitment_date: e.target.value})}
+                  value={duplicateCommitment.commitment_date}
+                  onChange={(e) => setDuplicateCommitment({...duplicateCommitment, commitment_date: e.target.value})}
                 />
               </div>
 
               <div className="grid gap-2">
                 <Label htmlFor="duplicate-priority">Prioridade</Label>
                 <Select 
-                  value={editCommitment.priority} 
-                  onValueChange={(value: any) => setEditCommitment({...editCommitment, priority: value})}
+                  value={duplicateCommitment.priority} 
+                  onValueChange={(value: any) => setDuplicateCommitment({...duplicateCommitment, priority: value})}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -1830,12 +1890,57 @@ const AgendaJuridica = () => {
               </div>
             </div>
 
+            {(['audiencia', 'reuniao'].includes(duplicateCommitment.commitment_type)) && (
+              <>
+                <div className="grid gap-2">
+                  <Label htmlFor="duplicate-location">Local</Label>
+                  <Input
+                    id="duplicate-location"
+                    value={duplicateCommitment.location}
+                    onChange={(e) => setDuplicateCommitment({...duplicateCommitment, location: e.target.value})}
+                    placeholder="Ex: Fórum da Comarca de São Paulo"
+                  />
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="duplicate-virtual"
+                    checked={duplicateCommitment.is_virtual}
+                    onCheckedChange={(checked) => setDuplicateCommitment({...duplicateCommitment, is_virtual: checked})}
+                  />
+                  <Label htmlFor="duplicate-virtual">Evento virtual</Label>
+                </div>
+              </>
+            )}
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="duplicate-process">Número do Processo</Label>
+                <Input
+                  id="duplicate-process"
+                  value={duplicateCommitment.process_number}
+                  onChange={(e) => setDuplicateCommitment({...duplicateCommitment, process_number: e.target.value})}
+                  placeholder="Ex: 0001234-56.2024.8.26.0001"
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="duplicate-client">Cliente</Label>
+                <Input
+                  id="duplicate-client"
+                  value={duplicateCommitment.client_name}
+                  onChange={(e) => setDuplicateCommitment({...duplicateCommitment, client_name: e.target.value})}
+                  placeholder="Nome do cliente"
+                />
+              </div>
+            </div>
+
             <div className="grid gap-2">
               <Label htmlFor="duplicate-description">Descrição</Label>
               <Textarea
                 id="duplicate-description"
-                value={editCommitment.description}
-                onChange={(e) => setEditCommitment({...editCommitment, description: e.target.value})}
+                value={duplicateCommitment.description}
+                onChange={(e) => setDuplicateCommitment({...duplicateCommitment, description: e.target.value})}
                 placeholder="Detalhes adicionais sobre o compromisso"
                 className="min-h-[80px]"
               />
