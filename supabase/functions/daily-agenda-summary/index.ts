@@ -13,7 +13,14 @@ const corsHeaders = {
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") as string;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") as string;
 const AGENDA_SECRET = Deno.env.get("DAILY_AGENDA_SECRET") as string;
-const resend = new Resend(Deno.env.get("RESEND_API_KEY") as string);
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+
+// Verificar se a API key do Resend está configurada
+if (!RESEND_API_KEY) {
+  console.error("RESEND_API_KEY não configurado!");
+}
+
+const resend = new Resend(RESEND_API_KEY as string);
 
 // Util: group by user_id
 function groupBy<T extends Record<string, any>>(rows: T[], key: keyof T) {
