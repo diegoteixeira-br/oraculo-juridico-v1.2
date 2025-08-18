@@ -116,8 +116,8 @@ serve(async (req) => {
 
       sessionConfig.mode = "subscription";
       sessionConfig.line_items[0].price_data.recurring = { interval: productType.billing_period };
-      // Para assinaturas, usar uma página intermediária que redireciona automaticamente
-      sessionConfig.success_url = `${origin}/payment-success?subscription=true&session_id={CHECKOUT_SESSION_ID}`;
+      // Redirecionar diretamente para finalizar-cadastro com success=true
+      sessionConfig.success_url = `${origin}/finalizar-cadastro?success=true&email=${encodeURIComponent(user.email)}`;
       sessionConfig.metadata.plan = productType.name.toLowerCase();
       
       // Se ainda há trial restante, configurar trial period no Stripe

@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 export default function FinalizarCadastro() {
   const [searchParams] = useSearchParams();
   const email = searchParams.get('email') || '';
+  const success = searchParams.get('success') === 'true';
 
   // SEO
   useSEO({
@@ -38,6 +39,82 @@ export default function FinalizarCadastro() {
       window.open('https://buy.stripe.com/cNi00k4Hf2lE1xZbwy5AQ02', '_blank');
     }
   };
+  // Se success=true, mostrar página de boas-vindas
+  if (success) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
+        {/* Header */}
+        <div className="flex-shrink-0 bg-slate-800/50 border-b border-slate-700 backdrop-blur-sm">
+          <div className="container max-w-4xl mx-auto px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <img src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" alt="Oráculo Jurídico" className="h-8 w-auto" />
+                <div>
+                  <h1 className="text-xl font-bold text-white flex items-center gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-400" />
+                    Bem-vindo ao Oráculo Jurídico!
+                  </h1>
+                  <p className="text-xs text-slate-300 hidden md:block">
+                    Sua conta foi criada com sucesso
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Conteúdo de boas-vindas */}
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="container max-w-xl mx-auto">
+            <Card className="bg-gradient-to-r from-green-600/20 to-emerald-600/20 border-green-500/30">
+              <CardContent className="p-8 text-center">
+                <div className="flex justify-center mb-6">
+                  <div className="p-4 bg-green-600/20 rounded-full">
+                    <CheckCircle className="w-16 h-16 text-green-400" />
+                  </div>
+                </div>
+                
+                <h2 className="text-3xl font-bold text-white mb-4">Seja Bem-vindo!</h2>
+                
+                <p className="text-green-200 mb-2">
+                  Parabéns! Sua conta foi criada com sucesso.
+                </p>
+                
+                {email && (
+                  <p className="text-green-200 mb-6">
+                    Email: <strong>{email}</strong>
+                  </p>
+                )}
+                
+                <p className="text-slate-300 mb-8">
+                  Agora você pode acessar sua conta e começar a usar todos os recursos do Oráculo Jurídico.
+                </p>
+                
+                <Button 
+                  asChild 
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 py-3 text-lg"
+                  size="lg"
+                >
+                  <Link to="/login">
+                    <Zap className="w-5 h-5 mr-2" />
+                    Acesse aqui sua conta
+                  </Link>
+                </Button>
+                
+                <div className="mt-6 p-4 bg-slate-700/20 rounded-lg">
+                  <p className="text-sm text-slate-300">
+                    <Shield className="w-4 h-4 inline mr-1 text-green-400" />
+                    Sua assinatura está ativa • 7 dias de teste gratuito
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
       {/* Header */}
       <div className="flex-shrink-0 bg-slate-800/50 border-b border-slate-700 backdrop-blur-sm">
