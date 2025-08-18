@@ -125,15 +125,14 @@ function CadastroForm() {
         <div className="container max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Link to="/">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-white hover:bg-slate-700"
-                >
-                  <ArrowLeft className="h-5 w-5" />
-                </Button>
-              </Link>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-white hover:bg-slate-700"
+                onClick={() => window.history.back()}
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
               <img 
                 src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
                 alt="Oráculo Jurídico" 
