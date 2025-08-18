@@ -259,13 +259,14 @@ export default function MinhaContaPage() {
       
       toast({
         title: "Conta excluída com sucesso",
-        description: "Sua conta e assinatura foram canceladas. Você será redirecionado.",
+        description: "Sua conta e assinatura foram canceladas. Você será deslogado.",
       });
       
-      // Aguardar um pouco para mostrar o toast e depois redirecionar
-      setTimeout(() => {
-        navigate('/');
-      }, 2000);
+      // Fazer logout do usuário
+      await signOut();
+      
+      // Redirecionar para a página inicial
+      navigate('/');
       
     } catch (error: any) {
       console.error('Error deleting account:', error);

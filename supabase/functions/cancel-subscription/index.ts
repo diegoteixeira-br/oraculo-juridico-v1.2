@@ -59,11 +59,12 @@ serve(async (req) => {
       console.log(`[CANCEL-SUBSCRIPTION] No Stripe customer found for ${user.email}`);
     }
 
-    // Atualizar status da assinatura no perfil
+    // Atualizar status da assinatura no perfil (manter dados para controle de trial)
     const { error: updateError } = await supabase
       .from('profiles')
       .update({ 
         subscription_status: 'cancelled',
+        is_active: false,
         updated_at: new Date().toISOString()
       })
       .eq('user_id', user.id);
@@ -73,7 +74,7 @@ serve(async (req) => {
       throw updateError;
     }
 
-    // Deletar o usuário do Supabase Auth
+    // Deletar o usuário do Supabase Auth (perfil permanece para controle de trial)
     const { error: deleteError } = await supabase.auth.admin.deleteUser(user.id);
     
     if (deleteError) {
@@ -81,7 +82,7 @@ serve(async (req) => {
       throw deleteError;
     }
 
-    console.log(`[CANCEL-SUBSCRIPTION] Successfully deleted user account: ${user.email}`);
+    console.log(`[CANCEL-SUBSCRIPTION] Successfully cancelled subscription for user: ${user.email}`);
 
     return new Response(JSON.stringify({ 
       success: true,
