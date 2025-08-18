@@ -113,8 +113,19 @@ serve(async (req) => {
     });
 
     if (error) {
-      console.error("Erro do Resend:", error);
-      throw new Error(`Falha no Resend: ${error.message}`);
+      console.error("Erro detalhado do Resend:", JSON.stringify(error, null, 2));
+      console.error("Tipo do erro:", typeof error);
+      console.error("Propriedades do erro:", Object.keys(error));
+      
+      // Retornar erro 400 com detalhes específicos para problemas do Resend
+      return new Response(JSON.stringify({ 
+        error: `Erro do Resend: ${error.message || JSON.stringify(error)}`,
+        details: error,
+        email_destination: testEmail
+      }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders }
+      });
     }
 
     console.log("Email enviado com sucesso:", data?.id);
