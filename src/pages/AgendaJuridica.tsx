@@ -856,11 +856,15 @@ const AgendaJuridica = () => {
     return days;
   };
 
-  // Obter compromissos do dia
+  // Obter compromissos do dia ordenados por horário
   const getCommitmentsForDate = (date: Date) => {
-    return filteredCommitments.filter(c => 
-      isSameDay(parseISO(c.commitment_date), date)
-    );
+    return filteredCommitments
+      .filter(c => isSameDay(parseISO(c.commitment_date), date))
+      .sort((a, b) => {
+        const dateA = parseISO(a.commitment_date);
+        const dateB = parseISO(b.commitment_date);
+        return dateA.getTime() - dateB.getTime();
+      });
   };
 
   const typeLabels = {
