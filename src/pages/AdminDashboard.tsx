@@ -140,8 +140,8 @@ export default function AdminDashboard() {
                 </TabsContent>
 
                 <TabsContent value="teste-agenda">
-                  <div className="space-y-4 sm:space-y-6">
-                    <div>
+                  <div className="space-y-8">
+                    <div className="text-center">
                       <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2">Gerenciamento de Agenda por Email</h2>
                       <p className="text-muted-foreground text-xs sm:text-sm lg:text-base">
                         Configure e teste o sistema de envio automático de emails da agenda jurídica
@@ -149,11 +149,29 @@ export default function AdminDashboard() {
                     </div>
                     
                     {/* Novo painel de gerenciamento */}
-                    <AgendaCronManager />
+                    <div className="max-w-4xl mx-auto">
+                      <AgendaCronManager />
+                    </div>
+                    
+                    {/* Separador visual */}
+                    <div className="flex items-center justify-center my-12">
+                      <div className="flex-1 border-t border-border"></div>
+                      <div className="px-6">
+                        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-muted">
+                          <Mail className="h-6 w-6 text-muted-foreground" />
+                        </div>
+                      </div>
+                      <div className="flex-1 border-t border-border"></div>
+                    </div>
                     
                     {/* Componente original de teste mantido */}
-                    <div className="mt-8 pt-8 border-t">
-                      <h3 className="text-lg font-semibold mb-4">Teste Avançado de Templates</h3>
+                    <div className="max-w-4xl mx-auto">
+                      <div className="text-center mb-6">
+                        <h3 className="text-lg font-semibold mb-2">Teste Avançado de Templates</h3>
+                        <p className="text-muted-foreground text-sm">
+                          Ferramenta original para testes mais detalhados dos templates de email
+                        </p>
+                      </div>
                       <TestAgendaEmail />
                     </div>
                   </div>
