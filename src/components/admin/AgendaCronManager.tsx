@@ -142,15 +142,15 @@ export default function AgendaCronManager() {
           </div>
 
           {/* Instruções */}
-          <div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
-            <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
-              Como configurar o envio automático:
+          <div className="p-4 bg-amber-50 dark:bg-amber-950/20 rounded-lg">
+            <h4 className="font-medium text-amber-900 dark:text-amber-100 mb-2">
+              ⚠️ Configurações importantes do Supabase
             </h4>
-            <ol className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
-              <li>1. Configure o DAILY_AGENDA_SECRET no Supabase</li>
-              <li>2. Ative as extensões pg_cron e pg_net no Supabase</li>
-              <li>3. Configure o cron job SQL no Supabase SQL Editor</li>
-              <li>4. Use "Analisar" acima para ver quais horários configurar</li>
+            <ol className="text-sm text-amber-800 dark:text-amber-200 space-y-1">
+              <li>1. <strong>Desative &quot;Confirm email&quot;</strong> em Authentication &gt; Settings</li>
+              <li>2. Configure RESEND_API_KEY nos secrets do Supabase</li>
+              <li>3. Verifique se o domínio está validado no Resend</li>
+              <li>4. Use o mesmo email "from" que funciona no contato</li>
             </ol>
           </div>
         </CardContent>
@@ -169,7 +169,7 @@ export default function AgendaCronManager() {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Links para configurações do Supabase */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex items-center justify-between p-4 border rounded-lg">
               <div>
                 <h4 className="font-medium">Secrets do Supabase</h4>
@@ -198,6 +198,22 @@ export default function AgendaCronManager() {
                 onClick={() => window.open('https://supabase.com/dashboard/project/uujoxoxsbvhcmcgfvpvi/sql/new', '_blank')}
               >
                 <Globe className="h-4 w-4 mr-2" />
+                Abrir
+              </Button>
+            </div>
+
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <div>
+                <h4 className="font-medium">Configurações Auth</h4>
+                <p className="text-sm text-muted-foreground">
+                  Desative confirmação de email
+                </p>
+              </div>
+              <Button 
+                variant="outline"
+                onClick={() => window.open('https://supabase.com/dashboard/project/uujoxoxsbvhcmcgfvpvi/auth/settings', '_blank')}
+              >
+                <Settings className="h-4 w-4 mr-2" />
                 Abrir
               </Button>
             </div>
