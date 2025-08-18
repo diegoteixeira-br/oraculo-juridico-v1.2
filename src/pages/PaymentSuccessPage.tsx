@@ -20,6 +20,7 @@ export default function PaymentSuccessPage() {
   const [hasProcessed, setHasProcessed] = useState(false);
 
   const sessionId = searchParams.get('session_id');
+  const isSubscription = searchParams.get('subscription') === 'true';
 
   useEffect(() => {
     const verifyPayment = async () => {
@@ -58,6 +59,13 @@ export default function PaymentSuccessPage() {
             description: `${data.tokens_added} tokens foram adicionados à sua conta.`,
             duration: 5000,
           });
+          
+          // Se for assinatura, redirecionar automaticamente para dashboard após 3 segundos
+          if (isSubscription) {
+            setTimeout(() => {
+              navigate('/dashboard');
+            }, 3000);
+          }
         } else {
           toast({
             title: "Pagamento Pendente",
@@ -80,7 +88,7 @@ export default function PaymentSuccessPage() {
     };
 
     verifyPayment();
-  }, [sessionId]); // Removidas as dependências que causavam re-execução
+  }, [sessionId, isSubscription, navigate, toast, refreshProfile, hasProcessed]);
 
   if (processing) {
     return (
@@ -134,27 +142,48 @@ export default function PaymentSuccessPage() {
             )}
             
             <p className="text-muted-foreground">
-              Seus tokens foram adicionados com sucesso à sua conta. 
-              Agora você pode fazer suas consultas no Oráculo Jurídico!
+              {isSubscription 
+                ? "Sua assinatura foi ativada com sucesso! Redirecionando para o dashboard..."
+                : "Seus tokens foram adicionados com sucesso à sua conta. Agora você pode fazer suas consultas no Oráculo Jurídico!"
+              }
             </p>
 
-            <div className="space-y-3">
-              <Button 
-                onClick={() => navigate('/chat')} 
-                className="w-full"
-              >
-                <ArrowRight className="w-4 h-4 mr-2" />
-                Começar a Usar
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                onClick={() => navigate('/dashboard')}
-                className="w-full"
-              >
-                Voltar ao Dashboard
-              </Button>
-            </div>
+            {!isSubscription && (
+              <div className="space-y-3">
+                <Button 
+                  onClick={() => navigate('/chat')} 
+                  className="w-full"
+                >
+                  <ArrowRight className="w-4 h-4 mr-2" />
+                  Começar a Usar
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  onClick={() => navigate('/dashboard')}
+                  className="w-full"
+                >
+                  Voltar ao Dashboard
+                </Button>
+              </div>
+            )}
+
+            {isSubscription && (
+              <div className="space-y-3">
+                <div className="text-center">
+                  <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">Redirecionando em instantes...</p>
+                </div>
+                
+                <Button 
+                  onClick={() => navigate('/dashboard')}
+                  className="w-full"
+                >
+                  <ArrowRight className="w-4 h-4 mr-2" />
+                  Ir para o Dashboard
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
