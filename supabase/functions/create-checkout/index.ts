@@ -82,10 +82,38 @@ serve(async (req) => {
 
     // Configurar baseado na categoria do produto
     if (productType.category === 'subscription') {
+      // Buscar dados do usuário para calcular trial_end correto
+      const { data: userProfile } = await supabaseClient
+        .from('profiles')
+        .select('trial_start_date, trial_end_date')
+        .eq('user_id', user.id)
+        .single();
+
+      let trialEnd = null;
+      if (userProfile?.trial_end_date) {
+        // Calcular quantos dias restam do trial original
+        const trialEndDate = new Date(userProfile.trial_end_date);
+        const now = new Date();
+        
+        if (trialEndDate > now) {
+          // Se ainda está no período de trial, usar a data original
+          trialEnd = Math.floor((trialEndDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+          console.log(`[create-checkout] Trial restante: ${trialEnd} dias`);
+        }
+      }
+
       sessionConfig.mode = "subscription";
       sessionConfig.line_items[0].price_data.recurring = { interval: productType.billing_period };
       sessionConfig.success_url = `${origin}/payment-success?subscription=1&session_id={CHECKOUT_SESSION_ID}`;
       sessionConfig.metadata.plan = productType.name.toLowerCase();
+      
+      // Se ainda há trial restante, configurar trial period no Stripe
+      if (trialEnd && trialEnd > 0) {
+        sessionConfig.subscription_data = {
+          trial_period_days: trialEnd
+        };
+        console.log(`[create-checkout] Configurando trial no Stripe: ${trialEnd} dias`);
+      }
     } else {
       sessionConfig.mode = "payment";
       sessionConfig.success_url = `${origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`;
