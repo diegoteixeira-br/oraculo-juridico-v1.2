@@ -4,7 +4,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Shield, Zap, CheckCircle, CreditCard, Clock, Gift } from 'lucide-react';
 import { useSEO } from '@/hooks/useSEO';
-
 export default function FinalizarCadastro() {
   const [searchParams] = useSearchParams();
   const email = searchParams.get('email') || '';
@@ -12,35 +11,24 @@ export default function FinalizarCadastro() {
   // SEO
   useSEO({
     title: "Finalizar Cadastro - Teste Gratuito | Oráculo Jurídico",
-    description: "Complete seu cadastro e comece seu teste gratuito de 8 dias com 30.000 tokens/mês por apenas R$ 37,90.",
+    description: "Complete seu cadastro e comece seu teste gratuito de 8 dias com 30.000 tokens/mês por apenas R$ 37,90."
   });
-
   const handleContinueToStripe = () => {
     // Abrir Stripe checkout em nova aba
     window.open('https://buy.stripe.com/cNi00k4Hf2lE1xZbwy5AQ02', '_blank');
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
+  return <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
       {/* Header */}
       <div className="flex-shrink-0 bg-slate-800/50 border-b border-slate-700 backdrop-blur-sm">
         <div className="container max-w-4xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Link to="/blog">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-white hover:bg-slate-700"
-                >
+                <Button variant="ghost" size="icon" className="text-white hover:bg-slate-700">
                   <ArrowLeft className="h-5 w-5" />
                 </Button>
               </Link>
-              <img 
-                src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" 
-                alt="Oráculo Jurídico"
-                className="h-8 w-auto"
-              />
+              <img src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" alt="Oráculo Jurídico" className="h-8 w-auto" />
               <div>
                 <h1 className="text-xl font-bold text-white flex items-center gap-2">
                   <Zap className="h-5 w-5 text-blue-400" />
@@ -71,9 +59,7 @@ export default function FinalizarCadastro() {
               <p className="text-green-200">
                 Seu email: <strong>{email}</strong>
               </p>
-              <p className="text-sm text-green-300/80 mt-2">
-                Verifique sua caixa de entrada para confirmar seu email
-              </p>
+              
             </CardContent>
           </Card>
 
@@ -161,21 +147,13 @@ export default function FinalizarCadastro() {
 
               {/* Botões */}
               <div className="space-y-3">
-                <Button 
-                  onClick={handleContinueToStripe}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 py-3 text-lg"
-                  size="lg"
-                >
+                <Button onClick={handleContinueToStripe} className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 py-3 text-lg" size="lg">
                   <CreditCard className="w-5 h-5 mr-2" />
                   Continuar para Finalizar Cadastro
                 </Button>
                 
                 <div className="text-center">
-                  <Button
-                    asChild
-                    variant="ghost"
-                    className="text-slate-400 hover:text-white"
-                  >
+                  <Button asChild variant="ghost" className="text-slate-400 hover:text-white">
                     <Link to="/blog">
                       Voltar para o blog
                     </Link>
@@ -194,6 +172,5 @@ export default function FinalizarCadastro() {
           </Card>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 }
