@@ -21,7 +21,7 @@ export default function AgendaCronManager() {
 
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('daily-agenda-summary', {
+      const { data, error } = await supabase.functions.invoke('daily-agenda-summary-simple', {
         body: {
           source: 'manual_test',
           test_email: testEmail
