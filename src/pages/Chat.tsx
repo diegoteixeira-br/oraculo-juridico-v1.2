@@ -784,8 +784,8 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
               title="Voltar ao Dashboard"
             >
               <img 
-                src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
-                alt="Oráculo Jurídico" 
+                src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" 
+                alt="Oráculo Jurídico"
                 className="h-6 w-auto"
               />
             </button>
@@ -943,8 +943,8 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
                 title="Voltar ao Dashboard"
               >
                 <img 
-                  src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
-                  alt="Oráculo Jurídico" 
+                  src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" 
+                  alt="Oráculo Jurídico"
                   className="h-8 w-auto"
                 />
               </button>
