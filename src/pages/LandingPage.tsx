@@ -717,47 +717,52 @@ const LandingPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-4 border-t border-border">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="mb-4 md:mb-0">
+      <footer className="bg-slate-900/90 border-t border-slate-700/50 py-12 px-4">
+        <div className="container mx-auto">
+          <div className="grid md:grid-cols-3 gap-8">
+            <div>
               <button 
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="flex items-center gap-3 cursor-pointer group"
+                className="flex items-center gap-3 mb-4 cursor-pointer group"
               >
                 <img 
-                  src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
+                  src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" 
                   alt="Oráculo Jurídico" 
-                  className="h-6 w-auto transition-transform group-hover:scale-105" 
-                  width="120" 
-                  height="30" 
+                  className="h-8 w-auto transition-transform group-hover:scale-105"
                 />
-                <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent group-hover:from-blue-300 group-hover:via-purple-300 group-hover:to-blue-200 transition-all">
+                <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent group-hover:from-blue-300 group-hover:to-purple-300 transition-all">
                   Oráculo Jurídico
-                </h3>
+                </span>
               </button>
+              <p className="text-slate-400">
+                Sua ferramenta jurídica inteligente para consultas, cálculos e documentos legais.
+              </p>
             </div>
             
-            <div className="flex space-x-8">
-              <Link to="/termos" className="text-muted-foreground hover:text-foreground transition-colors">
-                Termos de Uso
-              </Link>
-              <Link to="/privacidade" className="text-muted-foreground hover:text-foreground transition-colors">
-                Política de Privacidade
-              </Link>
-              <Link to="/contato" className="text-muted-foreground hover:text-foreground transition-colors">
-                Contato
-              </Link>
-              <Link to="/blog" className="text-muted-foreground hover:text-foreground transition-colors">
-                Blog
-              </Link>
+            <div>
+              <h3 className="font-semibold mb-4 text-slate-200">Links Úteis</h3>
+              <ul className="space-y-2 text-slate-400">
+                <li><Link to="/login" className="hover:text-blue-400 transition-colors">Login</Link></li>
+                <li><Link to="/cadastro" className="hover:text-blue-400 transition-colors">Criar Conta</Link></li>
+                <li><Link to="/contato" className="hover:text-blue-400 transition-colors">Contato</Link></li>
+                <li><Link to="/termos" className="hover:text-blue-400 transition-colors">Termos de Uso</Link></li>
+                <li><Link to="/privacidade" className="hover:text-blue-400 transition-colors">Política de Privacidade</Link></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="font-semibold mb-4 text-slate-200">Recursos</h3>
+              <ul className="space-y-2 text-slate-400">
+                <li><Link to="/blog" className="hover:text-blue-400 transition-colors">Blog</Link></li>
+                <li><Link to="/dashboard" className="hover:text-blue-400 transition-colors">Dashboard</Link></li>
+                <li><Link to="/chat" className="hover:text-blue-400 transition-colors">Assistente IA</Link></li>
+                <li><Link to="/calculo-contrato-bancario" className="hover:text-blue-400 transition-colors">Cálculo Bancário</Link></li>
+              </ul>
             </div>
           </div>
           
-          <div className="mt-8 pt-8 border-t border-border text-center">
-            <p className="text-sm text-muted-foreground">
-              © 2025 Oráculo Jurídico. Todos os direitos reservados.
-            </p>
+          <div className="border-t border-slate-700/50 mt-8 pt-8 text-center text-slate-400">
+            <p>&copy; 2024 Oráculo Jurídico. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>
