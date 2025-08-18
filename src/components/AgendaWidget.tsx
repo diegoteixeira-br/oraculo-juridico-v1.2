@@ -55,7 +55,35 @@ const AgendaWidget = () => {
         .limit(10);
 
       if (error) throw error;
-      setWeekCommitments((data as unknown as LegalCommitment[]) || []);
+      
+      // Aplicar ordenação local adicional para tratar 00:00 como final do dia
+      const sortedData = (data as unknown as LegalCommitment[])?.sort((a, b) => {
+        const dateA = parseISO(a.commitment_date);
+        const dateB = parseISO(b.commitment_date);
+        
+        // Se forem dias diferentes, usar ordenação normal
+        const dayA = format(dateA, 'yyyy-MM-dd');
+        const dayB = format(dateB, 'yyyy-MM-dd');
+        if (dayA !== dayB) {
+          return dateA.getTime() - dateB.getTime();
+        }
+        
+        // Se forem o mesmo dia, aplicar lógica especial para horários
+        const hourA = dateA.getHours();
+        const hourB = dateB.getHours();
+        
+        // Tratar 00:00 como final do dia (24:00)
+        const adjustedHourA = hourA === 0 ? 24 : hourA;
+        const adjustedHourB = hourB === 0 ? 24 : hourB;
+        
+        if (adjustedHourA !== adjustedHourB) {
+          return adjustedHourA - adjustedHourB;
+        }
+        
+        return dateA.getMinutes() - dateB.getMinutes();
+      }) || [];
+      
+      setWeekCommitments(sortedData);
       
       console.log('Compromissos carregados:', data?.length || 0);
       console.log('Período:', now.toISOString(), 'até', nextWeek.toISOString());

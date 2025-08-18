@@ -139,7 +139,29 @@ const CalendarAgendaWidget = () => {
     'urgente': 'Urgente'
   };
   const getCommitmentsForDate = (date: Date) => {
-    return commitments.filter(c => isSameDay(parseISO(c.commitment_date), date));
+    const dayCommitments = commitments.filter(c => isSameDay(parseISO(c.commitment_date), date));
+    
+    // Ordenar por horário - tratando 00:00 como final do dia
+    return dayCommitments.sort((a, b) => {
+      const dateA = parseISO(a.commitment_date);
+      const dateB = parseISO(b.commitment_date);
+      
+      // Extrair horas para comparação
+      const hourA = dateA.getHours();
+      const hourB = dateB.getHours();
+      
+      // Tratar 00:00 como final do dia (24:00)
+      const adjustedHourA = hourA === 0 ? 24 : hourA;
+      const adjustedHourB = hourB === 0 ? 24 : hourB;
+      
+      // Se as horas ajustadas forem diferentes, ordenar por hora
+      if (adjustedHourA !== adjustedHourB) {
+        return adjustedHourA - adjustedHourB;
+      }
+      
+      // Se as horas forem iguais, ordenar por minutos
+      return dateA.getMinutes() - dateB.getMinutes();
+    });
   };
   const selectedDateCommitments = getCommitmentsForDate(selectedDate);
   const displayedCommitments = showAll ? selectedDateCommitments : selectedDateCommitments.slice(0, MAX_ITEMS);
