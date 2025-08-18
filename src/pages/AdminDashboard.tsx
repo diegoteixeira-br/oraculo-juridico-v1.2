@@ -22,7 +22,7 @@ export default function AdminDashboard() {
   const [activeSection, setActiveSection] = useState("system");
   const [activeTab, setActiveTab] = useState("users");
   const [activeBlogTab, setActiveBlogTab] = useState("articles");
-  const [activeAgendaTab, setActiveAgendaTab] = useState("management");
+  
   const navigate = useNavigate();
   
   usePageTitle();
@@ -143,38 +143,15 @@ export default function AdminDashboard() {
                 <TabsContent value="teste-agenda">
                   <div className="space-y-6">
                     <div className="text-center">
-                      <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2">Agenda por Email</h2>
+                      <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2">Gerenciamento de Agenda por Email</h2>
                       <p className="text-muted-foreground text-xs sm:text-sm lg:text-base">
-                        Configure e teste o sistema de envio automático de emails da agenda jurídica
+                        Configure, teste e monitore o sistema de envio automático de emails da agenda jurídica
                       </p>
                     </div>
                     
-                    <Tabs value={activeAgendaTab} onValueChange={setActiveAgendaTab} className="max-w-4xl mx-auto">
-                      <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="management" className="flex items-center gap-2">
-                          <Cog className="h-4 w-4" />
-                          Gerenciamento
-                        </TabsTrigger>
-                        <TabsTrigger value="advanced-test" className="flex items-center gap-2">
-                          <Mail className="h-4 w-4" />
-                          Teste Avançado
-                        </TabsTrigger>
-                      </TabsList>
-
-                      <TabsContent value="management" className="mt-6">
-                        <AgendaCronManager />
-                      </TabsContent>
-
-                      <TabsContent value="advanced-test" className="mt-6">
-                        <div className="text-center mb-6">
-                          <h3 className="text-lg font-semibold mb-2">Teste Avançado de Templates</h3>
-                          <p className="text-muted-foreground text-sm">
-                            Ferramenta original para testes mais detalhados dos templates de email
-                          </p>
-                        </div>
-                        <TestAgendaEmail />
-                      </TabsContent>
-                    </Tabs>
+                    <div className="max-w-4xl mx-auto">
+                      <AgendaCronManager />
+                    </div>
                   </div>
                 </TabsContent>
 

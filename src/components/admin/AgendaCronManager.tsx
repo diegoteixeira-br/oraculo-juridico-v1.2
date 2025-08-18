@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { CalendarDays, Clock, Mail, Play, Settings } from "lucide-react";
+import { CalendarDays, Clock, Mail, Play, Settings, Server, Globe } from "lucide-react";
 
 export default function AgendaCronManager() {
   const [testEmail, setTestEmail] = useState("");
@@ -78,6 +78,7 @@ export default function AgendaCronManager() {
 
   return (
     <div className="space-y-6">
+      {/* Card principal de gerenciamento */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -185,6 +186,94 @@ export default function AgendaCronManager() {
               <li>3. Configure o cron job SQL no Supabase SQL Editor</li>
               <li>4. Use "Analisar" acima para ver quais horários configurar</li>
             </ol>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Card de configurações de email */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Server className="h-5 w-5" />
+            Configurações de Email
+          </CardTitle>
+          <CardDescription>
+            Gerencie as configurações SMTP e de envio de email
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Links para configurações do Supabase */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <div>
+                <h4 className="font-medium">Secrets do Supabase</h4>
+                <p className="text-sm text-muted-foreground">
+                  Configure RESEND_API_KEY e outros secrets
+                </p>
+              </div>
+              <Button 
+                variant="outline" 
+                onClick={() => window.open('https://supabase.com/dashboard/project/uujoxoxsbvhcmcgfvpvi/settings/functions', '_blank')}
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                Abrir
+              </Button>
+            </div>
+
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <div>
+                <h4 className="font-medium">Editor SQL</h4>
+                <p className="text-sm text-muted-foreground">
+                  Configure extensões e cron jobs
+                </p>
+              </div>
+              <Button 
+                variant="outline"
+                onClick={() => window.open('https://supabase.com/dashboard/project/uujoxoxsbvhcmcgfvpvi/sql/new', '_blank')}
+              >
+                <Globe className="h-4 w-4 mr-2" />
+                Abrir
+              </Button>
+            </div>
+          </div>
+
+          {/* Instruções detalhadas */}
+          <div className="space-y-4">
+            <div className="p-4 bg-amber-50 dark:bg-amber-950/20 rounded-lg">
+              <h4 className="font-medium text-amber-900 dark:text-amber-100 mb-2">
+                📧 Configuração do Resend (Obrigatório)
+              </h4>
+              <ol className="text-sm text-amber-800 dark:text-amber-200 space-y-1">
+                <li>1. Crie uma conta em <a href="https://resend.com" target="_blank" rel="noopener noreferrer" className="underline">resend.com</a></li>
+                <li>2. Valide seu domínio em <a href="https://resend.com/domains" target="_blank" rel="noopener noreferrer" className="underline">resend.com/domains</a></li>
+                <li>3. Gere uma API key em <a href="https://resend.com/api-keys" target="_blank" rel="noopener noreferrer" className="underline">resend.com/api-keys</a></li>
+                <li>4. Adicione a chave como RESEND_API_KEY nos secrets do Supabase</li>
+              </ol>
+            </div>
+
+            <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg">
+              <h4 className="font-medium text-green-900 dark:text-green-100 mb-2">
+                ⚙️ Configuração do Cron (Opcional - para automação)
+              </h4>
+              <ol className="text-sm text-green-800 dark:text-green-200 space-y-1">
+                <li>1. No SQL Editor, execute: <code className="bg-black/10 px-1 rounded">CREATE EXTENSION IF NOT EXISTS pg_cron;</code></li>
+                <li>2. Execute também: <code className="bg-black/10 px-1 rounded">CREATE EXTENSION IF NOT EXISTS pg_net;</code></li>
+                <li>3. Use "Analisar" acima para ver os horários necessários</li>
+                <li>4. Configure um cron job para cada horário identificado</li>
+              </ol>
+            </div>
+
+            <div className="p-4 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
+              <h4 className="font-medium text-purple-900 dark:text-purple-100 mb-2">
+                🔍 Monitoramento e Logs
+              </h4>
+              <ol className="text-sm text-purple-800 dark:text-purple-200 space-y-1">
+                <li>1. Use a função "Testar" acima para validar envios</li>
+                <li>2. Verifique os logs das Edge Functions no Supabase</li>
+                <li>3. Configure alertas no Resend para monitorar entregas</li>
+                <li>4. Use "Preview" para testar templates visuais</li>
+              </ol>
+            </div>
           </div>
         </CardContent>
       </Card>
