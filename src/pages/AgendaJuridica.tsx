@@ -871,13 +871,35 @@ const AgendaJuridica = () => {
 
   // Obter compromissos do dia ordenados por horário
   const getCommitmentsForDate = (date: Date) => {
-    return filteredCommitments
-      .filter(c => isSameDay(parseISO(c.commitment_date), date))
-      .sort((a, b) => {
-        const dateA = parseISO(a.commitment_date);
-        const dateB = parseISO(b.commitment_date);
-        return dateA.getTime() - dateB.getTime();
+    const commitments = filteredCommitments.filter(c => 
+      isSameDay(parseISO(c.commitment_date), date)
+    );
+    
+    console.log('getCommitmentsForDate: Original commitments for date', date, commitments.map(c => ({
+      title: c.title,
+      commitment_date: c.commitment_date,
+      parsed: parseISO(c.commitment_date),
+      time: formatInTimeZone(parseISO(c.commitment_date), userTimezone, 'HH:mm')
+    })));
+    
+    const sorted = commitments.sort((a, b) => {
+      const dateA = parseISO(a.commitment_date);
+      const dateB = parseISO(b.commitment_date);
+      const result = dateA.getTime() - dateB.getTime();
+      console.log('Sorting:', {
+        a: { title: a.title.substring(0, 20), time: formatInTimeZone(dateA, userTimezone, 'HH:mm'), timestamp: dateA.getTime() },
+        b: { title: b.title.substring(0, 20), time: formatInTimeZone(dateB, userTimezone, 'HH:mm'), timestamp: dateB.getTime() },
+        result
       });
+      return result;
+    });
+    
+    console.log('getCommitmentsForDate: Sorted commitments', sorted.map(c => ({
+      title: c.title,
+      time: formatInTimeZone(parseISO(c.commitment_date), userTimezone, 'HH:mm')
+    })));
+    
+    return sorted;
   };
 
   const typeLabels = {
