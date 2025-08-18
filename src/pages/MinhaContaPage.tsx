@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Eye, EyeOff, Save, User, Lock, Camera, Trash, ArrowLeft, Zap, Shield, Mail, Calendar, Award, Globe } from "lucide-react";
+import { Eye, EyeOff, Save, User, Lock, Camera, Trash, ArrowLeft, Zap, Shield, Mail, Calendar, Award, Globe, UserX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
@@ -27,6 +28,7 @@ export default function MinhaContaPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [selectedTimezone, setSelectedTimezone] = useState("");
   const [isUpdatingTimezone, setIsUpdatingTimezone] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -241,6 +243,39 @@ export default function MinhaContaPage() {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!user?.id) return;
+    
+    setIsDeletingAccount(true);
+    try {
+      const { error } = await supabase.functions.invoke('cancel-subscription');
+      
+      if (error) {
+        throw error;
+      }
+      
+      toast({
+        title: "Conta excluída com sucesso",
+        description: "Sua conta e assinatura foram canceladas. Você será redirecionado.",
+      });
+      
+      // Aguardar um pouco para mostrar o toast e depois redirecionar
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
+      
+    } catch (error: any) {
+      console.error('Error deleting account:', error);
+      toast({
+        title: "Erro ao excluir conta",
+        description: error.message || "Não foi possível excluir sua conta. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeletingAccount(false);
     }
   };
 
@@ -719,6 +754,88 @@ export default function MinhaContaPage() {
                           <p>• Combine letras, números e símbolos</p>
                           <p>• Não use informações pessoais</p>
                           <p>• Altere regularmente sua senha</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Zona de Perigo - Excluir Conta */}
+                  <div className="mt-6 pt-4 border-t border-red-600/30">
+                    <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4">
+                      <div className="flex items-start gap-3">
+                        <UserX className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <h4 className="text-sm font-semibold text-red-200 mb-2">Zona de Perigo</h4>
+                          <p className="text-xs text-red-300/80 mb-3">
+                            Excluir sua conta irá cancelar automaticamente qualquer assinatura ativa no Stripe 
+                            e remover permanentemente todos os seus dados. Esta ação não pode ser desfeita.
+                          </p>
+                          
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button 
+                                variant="destructive" 
+                                size="sm"
+                                className="bg-red-600 hover:bg-red-700 text-white"
+                                disabled={isDeletingAccount}
+                              >
+                                {isDeletingAccount ? (
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                    Excluindo...
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center gap-2">
+                                    <UserX className="w-3 h-3" />
+                                    Excluir Conta
+                                  </div>
+                                )}
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent className="bg-slate-800 border-slate-700">
+                              <AlertDialogHeader>
+                                <AlertDialogTitle className="text-white flex items-center gap-2">
+                                  <UserX className="w-5 h-5 text-red-400" />
+                                  Confirmar Exclusão da Conta
+                                </AlertDialogTitle>
+                                <AlertDialogDescription className="text-slate-300">
+                                  <div className="space-y-3">
+                                    <p className="font-medium text-red-300">
+                                      ⚠️ Esta ação é irreversível e irá:
+                                    </p>
+                                    <ul className="text-sm space-y-1 list-disc list-inside ml-4">
+                                      <li>Cancelar automaticamente sua assinatura no Stripe</li>
+                                      <li>Excluir permanentemente todos os seus dados</li>
+                                      <li>Remover acesso a todas as funcionalidades</li>
+                                      <li>Apagar histórico de consultas e documentos</li>
+                                    </ul>
+                                    <p className="font-medium text-amber-300">
+                                      💡 Certifique-se de ter feito backup de dados importantes antes de continuar.
+                                    </p>
+                                  </div>
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600">
+                                  Cancelar
+                                </AlertDialogCancel>
+                                <AlertDialogAction 
+                                  onClick={handleDeleteAccount}
+                                  className="bg-red-600 hover:bg-red-700 text-white"
+                                  disabled={isDeletingAccount}
+                                >
+                                  {isDeletingAccount ? (
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                      Excluindo...
+                                    </div>
+                                  ) : (
+                                    "Sim, Excluir Minha Conta"
+                                  )}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
                       </div>
                     </div>

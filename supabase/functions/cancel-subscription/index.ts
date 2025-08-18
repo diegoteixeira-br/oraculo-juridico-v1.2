@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
@@ -11,67 +12,90 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const supabaseClient = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-    { auth: { persistSession: false } }
-  );
-
   try {
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
+
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      { auth: { persistSession: false } }
+    );
+
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("No authorization header provided");
 
     const token = authHeader.replace("Bearer ", "");
-    const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
+    const { data: userData, error: userError } = await supabase.auth.getUser(token);
     if (userError) throw new Error(`Authentication error: ${userError.message}`);
-    
     const user = userData.user;
     if (!user?.email) throw new Error("User not authenticated or email not available");
 
     console.log(`[CANCEL-SUBSCRIPTION] Processing cancellation for user: ${user.email}`);
 
-    // Atualizar o status da assinatura para "cancelled" no Supabase
-    const { error: updateError } = await supabaseClient
-      .from("profiles")
-      .update({
-        subscription_status: "cancelled",
-        updated_at: new Date().toISOString()
-      })
-      .eq("user_id", user.id);
-
-    if (updateError) {
-      console.error("[CANCEL-SUBSCRIPTION] Error updating profile:", updateError);
-      throw new Error("Erro ao atualizar status da assinatura");
+    const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
+    
+    // Buscar customer no Stripe pelo email
+    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+    
+    if (customers.data.length > 0) {
+      const customerId = customers.data[0].id;
+      console.log(`[CANCEL-SUBSCRIPTION] Found Stripe customer: ${customerId}`);
+      
+      // Buscar assinaturas ativas do customer
+      const subscriptions = await stripe.subscriptions.list({
+        customer: customerId,
+        status: "active",
+      });
+      
+      // Cancelar todas as assinaturas ativas
+      for (const subscription of subscriptions.data) {
+        console.log(`[CANCEL-SUBSCRIPTION] Cancelling subscription: ${subscription.id}`);
+        await stripe.subscriptions.cancel(subscription.id);
+      }
+      
+      console.log(`[CANCEL-SUBSCRIPTION] Cancelled ${subscriptions.data.length} subscription(s)`);
+    } else {
+      console.log(`[CANCEL-SUBSCRIPTION] No Stripe customer found for ${user.email}`);
     }
 
-    console.log(`[CANCEL-SUBSCRIPTION] Successfully cancelled subscription for user: ${user.email}`);
+    // Atualizar status da assinatura no perfil
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({ 
+        subscription_status: 'cancelled',
+        updated_at: new Date().toISOString()
+      })
+      .eq('user_id', user.id);
 
-    // Aqui você pode adicionar uma chamada para a API da Cakto para cancelar pagamentos recorrentes
-    // Exemplo: await cancelCaktoSubscription(user.email);
+    if (updateError) {
+      console.error('[CANCEL-SUBSCRIPTION] Error updating profile:', updateError);
+      throw updateError;
+    }
 
-    return new Response(
-      JSON.stringify({ 
-        success: true, 
-        message: "Assinatura cancelada com sucesso",
-        subscription_status: "cancelled"
-      }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 200,
-      }
-    );
+    // Deletar o usuário do Supabase Auth
+    const { error: deleteError } = await supabase.auth.admin.deleteUser(user.id);
+    
+    if (deleteError) {
+      console.error('[CANCEL-SUBSCRIPTION] Error deleting user:', deleteError);
+      throw deleteError;
+    }
 
-  } catch (error) {
+    console.log(`[CANCEL-SUBSCRIPTION] Successfully deleted user account: ${user.email}`);
+
+    return new Response(JSON.stringify({ 
+      success: true,
+      message: "Conta excluída com sucesso" 
+    }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 200,
+    });
+    
+  } catch (error: any) {
     console.error("[CANCEL-SUBSCRIPTION] Error:", error);
-    return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: error.message || "Erro interno do servidor" 
-      }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 500,
-      }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 500,
+    });
   }
 });
