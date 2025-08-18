@@ -11,7 +11,6 @@ import AdDisplay from '@/components/AdDisplay';
 import GoogleAdsPlaceholder from '@/components/GoogleAdsPlaceholder';
 import { useAuth } from '@/contexts/AuthContext';
 import UserMenu from '@/components/UserMenu';
-
 interface BlogPost {
   id: string;
   title: string;
@@ -25,42 +24,36 @@ interface BlogPost {
   category: string;
   published_at: string;
 }
-
 const BlogJuridico = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [featuredPosts, setFeaturedPosts] = useState<BlogPost[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
-
+  const {
+    user
+  } = useAuth();
   useSEO({
     title: 'Blog Jurídico - Notícias e Dicas para Advogados | Oráculo Jurídico',
-    description: 'Mantenha-se atualizado com as últimas notícias jurídicas, dicas práticas para advogados e análises de legislação. Conteúdo especializado em direito digital, LGPD e tecnologia jurídica.',
+    description: 'Mantenha-se atualizado com as últimas notícias jurídicas, dicas práticas para advogados e análises de legislação. Conteúdo especializado em direito digital, LGPD e tecnologia jurídica.'
   });
-
   useEffect(() => {
     fetchPosts();
   }, []);
-
   const fetchPosts = async () => {
     try {
       // Buscar posts em destaque
-      const { data: featured } = await supabase
-        .from('blog_posts')
-        .select('*')
-        .eq('is_published', true)
-        .eq('featured', true)
-        .order('published_at', { ascending: false })
-        .limit(3);
+      const {
+        data: featured
+      } = await supabase.from('blog_posts').select('*').eq('is_published', true).eq('featured', true).order('published_at', {
+        ascending: false
+      }).limit(3);
 
       // Buscar todos os posts publicados
-      const { data: allPosts } = await supabase
-        .from('blog_posts')
-        .select('*')
-        .eq('is_published', true)
-        .order('published_at', { ascending: false })
-        .limit(12);
-
+      const {
+        data: allPosts
+      } = await supabase.from('blog_posts').select('*').eq('is_published', true).order('published_at', {
+        ascending: false
+      }).limit(12);
       if (featured) setFeaturedPosts(featured);
       if (allPosts) setPosts(allPosts);
     } catch (error) {
@@ -69,13 +62,7 @@ const BlogJuridico = () => {
       setLoading(false);
     }
   };
-
-  const filteredPosts = posts.filter(post =>
-    post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    post.summary.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
-
+  const filteredPosts = posts.filter(post => post.title.toLowerCase().includes(searchTerm.toLowerCase()) || post.summary.toLowerCase().includes(searchTerm.toLowerCase()) || post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase())));
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('pt-BR', {
       day: '2-digit',
@@ -83,29 +70,20 @@ const BlogJuridico = () => {
       year: 'numeric'
     });
   };
-
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900/20">
+    return <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900/20">
         <div className="container mx-auto px-4 py-12">
           <div className="text-center text-slate-300">Carregando...</div>
         </div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900/20 text-foreground">
+  return <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900/20 text-foreground">
       {/* Header */}
       <header className="border-b border-slate-700/50 bg-slate-900/90 backdrop-blur-md sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-3 group">
-              <img 
-                src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" 
-                alt="Oráculo Jurídico" 
-                className="h-10 w-auto group-hover:scale-105 transition-transform duration-200"
-              />
+              <img src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" alt="Oráculo Jurídico" className="h-10 w-auto group-hover:scale-105 transition-transform duration-200" />
               <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent">
                   Oráculo Jurídico
@@ -115,15 +93,10 @@ const BlogJuridico = () => {
             </Link>
 
             <nav className="hidden md:flex items-center space-x-6">
-              {user ? (
-                <UserMenu />
-              ) : (
-                <>
-                  <Link 
-                    to="/login" 
-                    state={{ from: 'blog' }}
-                    className="text-slate-300 hover:text-blue-400 transition-colors font-medium"
-                  >
+              {user ? <UserMenu /> : <>
+                  <Link to="/login" state={{
+                from: 'blog'
+              }} className="text-slate-300 hover:text-blue-400 transition-colors font-medium">
                     Login
                   </Link>
                   <Link to="/">
@@ -131,20 +104,15 @@ const BlogJuridico = () => {
                       Conheça nossa ferramenta
                     </Button>
                   </Link>
-                </>
-              )}
+                </>}
             </nav>
 
             <div className="md:hidden">
-              {user ? (
-                <UserMenu />
-              ) : (
-                <Link to="/">
+              {user ? <UserMenu /> : <Link to="/">
                   <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-[10px] px-2 py-1 h-7 min-w-0">
                     Conheça nossa ferramenta
                   </Button>
-                </Link>
-              )}
+                </Link>}
             </div>
           </div>
         </div>
@@ -178,13 +146,7 @@ const BlogJuridico = () => {
             {/* Search Bar */}
             <div className="max-w-md mx-auto relative mb-8">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-              <Input
-                type="text"
-                placeholder="Buscar artigos..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 py-3 bg-slate-800/50 border-slate-600 text-slate-200 placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500/20"
-              />
+              <Input type="text" placeholder="Buscar artigos..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10 py-3 bg-slate-800/50 border-slate-600 text-slate-200 placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500/20" />
             </div>
           </div>
         </div>
@@ -195,24 +157,18 @@ const BlogJuridico = () => {
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-12">
             {/* Featured Posts */}
-            {featuredPosts.length > 0 && (
-              <section>
+            {featuredPosts.length > 0 && <section>
                 <h2 className="text-3xl font-bold text-center mb-12 text-slate-200">
                   Artigos em <span className="text-blue-400">Destaque</span>
                 </h2>
                 
                 <div className="grid md:grid-cols-3 gap-8 mb-8">
-                  {featuredPosts.map((post, index) => (
-                    <Link key={post.id} to={`/blog/${post.slug}`} className="block">
-                      <Card className={`group hover-scale bg-slate-800/50 border-slate-700 hover:border-blue-500/50 transition-all duration-300 animate-fade-in cursor-pointer ${index === 0 ? 'md:col-span-2' : ''}`} style={{ animationDelay: `${index * 0.1}s` }}>
+                  {featuredPosts.map((post, index) => <Link key={post.id} to={`/blog/${post.slug}`} className="block">
+                      <Card className={`group hover-scale bg-slate-800/50 border-slate-700 hover:border-blue-500/50 transition-all duration-300 animate-fade-in cursor-pointer ${index === 0 ? 'md:col-span-2' : ''}`} style={{
+                  animationDelay: `${index * 0.1}s`
+                }}>
                         <div className="relative overflow-hidden rounded-t-lg">
-                          {post.cover_image_url && (
-                            <img 
-                              src={post.cover_image_url} 
-                              alt={post.title}
-                              className={`w-full object-cover group-hover:scale-105 transition-transform duration-300 ${index === 0 ? 'h-48 md:h-64' : 'h-40 md:h-44'}`}
-                            />
-                          )}
+                          {post.cover_image_url && <img src={post.cover_image_url} alt={post.title} className={`w-full object-cover group-hover:scale-105 transition-transform duration-300 ${index === 0 ? 'h-48 md:h-64' : 'h-40 md:h-44'}`} />}
                           <div className="absolute top-3 left-3">
                             <Badge className="bg-blue-600/90 text-white border-0">
                               <Star className="w-3 h-3 mr-1" />
@@ -246,11 +202,9 @@ const BlogJuridico = () => {
                           </p>
                           
                           <div className="flex flex-wrap gap-2 mb-4">
-                            {post.tags.slice(0, 3).map((tag, tagIndex) => (
-                              <Badge key={tagIndex} variant="outline" className="text-xs border-slate-600 text-slate-300">
+                            {post.tags.slice(0, 3).map((tag, tagIndex) => <Badge key={tagIndex} variant="outline" className="text-xs border-slate-600 text-slate-300">
                                 {tag}
-                              </Badge>
-                            ))}
+                              </Badge>)}
                           </div>
                           
                           <div className="flex items-center justify-between">
@@ -266,14 +220,12 @@ const BlogJuridico = () => {
                           </div>
                         </CardContent>
                       </Card>
-                    </Link>
-                  ))}
+                    </Link>)}
                 </div>
                 
                 {/* Google AdSense - Entre os artigos em destaque */}
                 <GoogleAdsPlaceholder format="mobile_banner" position="Entre artigos em destaque" className="mb-8" />
-              </section>
-            )}
+              </section>}
 
             {/* All Posts */}
             <section>
@@ -283,16 +235,13 @@ const BlogJuridico = () => {
               </h2>
               
               <div className="grid gap-6">
-                {filteredPosts.map((post, index) => (
-                  <Link key={post.id} to={`/blog/${post.slug}`} className="block">
-                    <Card className="group hover-scale bg-slate-800/50 border-slate-700 hover:border-blue-500/50 transition-all duration-300 animate-fade-in overflow-hidden cursor-pointer" style={{ animationDelay: `${index * 0.05}s` }}>
+                {filteredPosts.map((post, index) => <Link key={post.id} to={`/blog/${post.slug}`} className="block">
+                    <Card className="group hover-scale bg-slate-800/50 border-slate-700 hover:border-blue-500/50 transition-all duration-300 animate-fade-in overflow-hidden cursor-pointer" style={{
+                  animationDelay: `${index * 0.05}s`
+                }}>
                       <div className="md:flex h-full">
                         <div className="md:w-1/3 relative overflow-hidden">
-                          <img
-                            src={post.cover_image_url || '/placeholder.svg'}
-                            alt={post.title}
-                            className="w-full h-32 md:h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
+                          <img src={post.cover_image_url || '/placeholder.svg'} alt={post.title} className="w-full h-32 md:h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                           <div className="absolute top-3 left-3">
                             <Badge className="bg-blue-600/90 text-white border-0 text-xs">
                               {post.category}
@@ -302,12 +251,10 @@ const BlogJuridico = () => {
                         
                         <div className="md:w-2/3 p-6">
                           <div className="flex flex-wrap gap-2 mb-3">
-                            {post.tags.slice(0, 3).map((tag) => (
-                              <Badge key={tag} variant="outline" className="text-xs border-slate-600 text-slate-300">
+                            {post.tags.slice(0, 3).map(tag => <Badge key={tag} variant="outline" className="text-xs border-slate-600 text-slate-300">
                                 <Tag className="w-3 h-3 mr-1" />
                                 {tag}
-                              </Badge>
-                            ))}
+                              </Badge>)}
                           </div>
                           
                           <h3 className="text-xl font-bold mb-3 text-slate-200 group-hover:text-blue-400 transition-colors line-clamp-2">
@@ -346,8 +293,7 @@ const BlogJuridico = () => {
                         </div>
                       </div>
                     </Card>
-                  </Link>
-                ))}
+                  </Link>)}
               </div>
             </section>
           </div>
@@ -364,11 +310,9 @@ const BlogJuridico = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {['Direito Digital', 'LGPD', 'Trabalhista', 'Civil', 'Tributário'].map((category) => (
-                    <Button key={category} variant="ghost" size="sm" className="justify-start w-full text-slate-300 hover:text-blue-400 hover:bg-slate-700/50">
+                  {['Direito Digital', 'LGPD', 'Trabalhista', 'Civil', 'Tributário'].map(category => <Button key={category} variant="ghost" size="sm" className="justify-start w-full text-slate-300 hover:text-blue-400 hover:bg-slate-700/50">
                       {category}
-                    </Button>
-                  ))}
+                    </Button>)}
                 </div>
               </CardContent>
             </Card>
@@ -385,10 +329,7 @@ const BlogJuridico = () => {
                 <p className="text-slate-300 text-sm mb-4">
                   Receba as principais notícias jurídicas direto no seu e-mail
                 </p>
-                <Input 
-                  placeholder="Seu e-mail" 
-                  className="mb-3 bg-slate-800/50 border-slate-600 text-slate-200"
-                />
+                <Input placeholder="Seu e-mail" className="mb-3 bg-slate-800/50 border-slate-600 text-slate-200" />
                 <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
                   Assinar
                 </Button>
@@ -411,15 +352,11 @@ const BlogJuridico = () => {
         <div className="container mx-auto">
           <div className="grid md:grid-cols-3 gap-8">
             <div>
-              <button 
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="flex items-center gap-3 mb-4 cursor-pointer group"
-              >
-                <img 
-                  src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" 
-                  alt="Oráculo Jurídico" 
-                  className="h-8 w-auto transition-transform group-hover:scale-105"
-                />
+              <button onClick={() => window.scrollTo({
+              top: 0,
+              behavior: 'smooth'
+            })} className="flex items-center gap-3 mb-4 cursor-pointer group">
+                <img src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" alt="Oráculo Jurídico" className="h-8 w-auto transition-transform group-hover:scale-105" />
                 <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent group-hover:from-blue-300 group-hover:to-purple-300 transition-all">
                   Oráculo Jurídico
                 </span>
@@ -432,8 +369,8 @@ const BlogJuridico = () => {
             <div>
               <h3 className="font-semibold mb-4 text-slate-200">Links Úteis</h3>
               <ul className="space-y-2 text-slate-400">
-                <li><Link to="/login" className="hover:text-blue-400 transition-colors">Login</Link></li>
-                <li><Link to="/cadastro" className="hover:text-blue-400 transition-colors">Criar Conta</Link></li>
+                
+                
                 <li><Link to="/contato" className="hover:text-blue-400 transition-colors">Contato</Link></li>
                 <li><Link to="/termos" className="hover:text-blue-400 transition-colors">Termos de Uso</Link></li>
                 <li><Link to="/privacidade" className="hover:text-blue-400 transition-colors">Política de Privacidade</Link></li>
@@ -456,8 +393,6 @@ const BlogJuridico = () => {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default BlogJuridico;
