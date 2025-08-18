@@ -43,7 +43,7 @@ function AppContent() {
   return (
     <Routes>
       <Route path="/" element={<PageWrapper><Index /></PageWrapper>} />
-      <Route path="/pagina-de-venda" element={<PageWrapper><LandingPage /></PageWrapper>} />
+      <Route path="/saiba-mais" element={<PageWrapper><LandingPage /></PageWrapper>} />
       <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
       <Route path="/cadastro" element={<PageWrapper><Cadastro /></PageWrapper>} />
       <Route path="/finalizar-cadastro" element={<PageWrapper><FinalizarCadastro /></PageWrapper>} />

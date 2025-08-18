@@ -81,7 +81,7 @@ const LandingPage = () => {
           
           <div className="flex items-center gap-3">
             <Link to="/login" state={{
-            from: '/pagina-de-venda'
+            from: '/saiba-mais'
           }} className="text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-1 sm:space-x-2 border border-border rounded-lg px-2 py-1.5 sm:px-4 sm:py-2 hover:bg-muted/10">
               <Smartphone className="w-3 h-3 sm:w-4 sm:h-4" />
               <span className="text-xs sm:text-sm">Login</span>
@@ -514,7 +514,7 @@ const LandingPage = () => {
       <section id="free-account-section" className="py-10 sm:py-16 px-4 bg-muted/20">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6 text-foreground">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent">
               Comece gratuitamente agora mesmo
             </h2>
             <p className="text-base sm:text-lg text-muted-foreground">
@@ -688,7 +688,7 @@ const LandingPage = () => {
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-6 text-foreground">
+            <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent">
               Ainda tem dúvidas?
             </h2>
           </div>
@@ -714,7 +714,7 @@ const LandingPage = () => {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="mb-4 md:mb-0">
-              <h3 className="text-2xl font-bold text-foreground mb-2">
+              <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent mb-2">
                 Oráculo Jurídico
               </h3>
             </div>

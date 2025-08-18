@@ -126,7 +126,7 @@ const BlogJuridico = () => {
                   >
                     Login
                   </Link>
-                  <Link to="/pagina-de-venda">
+                  <Link to="/saiba-mais">
                     <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium px-6">
                       Conheça nossa ferramenta
                     </Button>
@@ -139,7 +139,7 @@ const BlogJuridico = () => {
               {user ? (
                 <UserMenu />
               ) : (
-                <Link to="/pagina-de-venda">
+                <Link to="/saiba-mais">
                   <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-[10px] px-2 py-1 h-7 min-w-0">
                     Conheça nossa ferramenta
                   </Button>
