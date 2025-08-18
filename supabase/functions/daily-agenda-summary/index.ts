@@ -13,8 +13,13 @@ const corsHeaders = {
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") as string;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") as string;
 const AGENDA_SECRET = Deno.env.get("DAILY_AGENDA_SECRET") as string;
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+if (!RESEND_API_KEY) {
+  console.error("RESEND_API_KEY não configurado");
+}
+
+const resend = new Resend(RESEND_API_KEY);
 
 // Util: group by user_id
 function groupBy<T extends Record<string, any>>(rows: T[], key: keyof T) {
@@ -185,7 +190,10 @@ serve(async (req) => {
           html,
         });
 
-        if (error) throw error;
+        if (error) {
+          console.error("Erro ao enviar email de teste:", error);
+          throw new Error(`Falha ao enviar email: ${error.message || JSON.stringify(error)}`);
+        }
         
         return new Response(
           JSON.stringify({ 
@@ -355,8 +363,25 @@ serve(async (req) => {
       { headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   } catch (error) {
-    console.error("daily-agenda-summary error", error);
-    return new Response(JSON.stringify({ error: String(error) }), {
+    console.error("daily-agenda-summary error:", error);
+    
+    // Detalhar melhor o erro
+    let errorMessage = "Erro interno do servidor";
+    let errorDetails = "";
+    
+    if (error instanceof Error) {
+      errorMessage = error.message;
+      errorDetails = error.stack || "";
+    } else {
+      errorMessage = String(error);
+    }
+    
+    console.error("Error details:", errorDetails);
+    
+    return new Response(JSON.stringify({ 
+      error: errorMessage,
+      details: errorDetails.substring(0, 500) // Limitar tamanho para não ficar muito grande
+    }), {
       status: 500,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
