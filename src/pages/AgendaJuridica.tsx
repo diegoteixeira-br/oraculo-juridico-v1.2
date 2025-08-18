@@ -182,8 +182,12 @@ const AgendaJuridica = () => {
 
   // Carregar compromissos de forma otimizada
   const loadCommitments = async () => {
-    if (!user) return;
+    if (!user) {
+      console.log('loadCommitments: No user found');
+      return;
+    }
     
+    console.log('loadCommitments: Starting to load commitments for user:', user.id);
     setIsLoading(true);
     try {
       let query = supabase
@@ -199,19 +203,27 @@ const AgendaJuridica = () => {
         query = query
           .gte('commitment_date', monthStart.toISOString())
           .lte('commitment_date', monthEnd.toISOString());
+        console.log('loadCommitments: Filtering by month', monthStart.toISOString(), 'to', monthEnd.toISOString());
       }
       
       const { data, error } = await query.order('commitment_date', { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error('loadCommitments: Query error:', error);
+        throw error;
+      }
+      
+      console.log('loadCommitments: Successfully loaded', data?.length || 0, 'commitments');
       setCommitments((data as unknown as LegalCommitment[]) || []);
     } catch (error: any) {
+      console.error('loadCommitments: Error loading commitments:', error);
       toast({
         title: "Erro",
         description: "Não foi possível carregar os compromissos.",
         variant: "destructive",
       });
     } finally {
+      console.log('loadCommitments: Setting isLoading to false');
       setIsLoading(false);
     }
   };
@@ -320,6 +332,7 @@ const AgendaJuridica = () => {
   };
 
   useEffect(() => {
+    console.log('useEffect: Dependencies changed - user:', !!user, 'currentMonth:', currentMonth, 'activeTab:', activeTab);
     loadCommitments();
     loadNotificationSettings();
   }, [user, currentMonth, activeTab]);
