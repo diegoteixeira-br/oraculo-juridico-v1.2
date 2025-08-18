@@ -8,7 +8,7 @@ const pageNames: Record<string, string> = {
   '/chat': 'Chat',
   '/login': 'Login',
   '/cadastro': 'Cadastro',
-  '/confirmar-email': 'Confirmar Email',
+  
   '/comprar-creditos': 'Comprar Tokens',
   '/pagamento': 'Pagamento',
   '/minha-conta': 'Minha Conta',
