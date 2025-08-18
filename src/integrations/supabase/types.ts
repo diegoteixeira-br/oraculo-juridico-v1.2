@@ -730,6 +730,7 @@ export type Database = {
           plan_tokens: number | null
           plan_type: string | null
           receber_notificacao_agenda: boolean
+          stripe_customer_id: string | null
           subscription_activated_at: string | null
           subscription_end_date: string | null
           subscription_status: string | null
@@ -753,6 +754,7 @@ export type Database = {
           plan_tokens?: number | null
           plan_type?: string | null
           receber_notificacao_agenda?: boolean
+          stripe_customer_id?: string | null
           subscription_activated_at?: string | null
           subscription_end_date?: string | null
           subscription_status?: string | null
@@ -776,6 +778,7 @@ export type Database = {
           plan_tokens?: number | null
           plan_type?: string | null
           receber_notificacao_agenda?: boolean
+          stripe_customer_id?: string | null
           subscription_activated_at?: string | null
           subscription_end_date?: string | null
           subscription_status?: string | null
