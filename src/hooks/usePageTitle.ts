@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 const pageNames: Record<string, string> = {
-  '/': 'Saiba Mais',
+  '/': 'Home',
   '/blog': 'Blog',
   '/dashboard': 'Dashboard',
   '/chat': 'Chat',
