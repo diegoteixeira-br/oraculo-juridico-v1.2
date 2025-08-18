@@ -73,11 +73,7 @@ const LandingPage = () => {
       <header className="py-6 px-4 border-b border-border bg-slate-800/50 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <img 
-              src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" 
-              alt="Oráculo Jurídico" 
-              className="h-10 w-auto"
-            />
+            <img src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" alt="Oráculo Jurídico" className="h-10 w-auto" />
             <div>
               <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent">
                 Oráculo Jurídico
@@ -98,8 +94,7 @@ const LandingPage = () => {
       </header>
 
       {/* Vídeo Explicativo */}
-      {videoSettings.video_enabled && (
-        <section className="py-16 px-4 bg-muted/10">
+      {videoSettings.video_enabled && <section className="py-16 px-4 bg-muted/10">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl font-bold mb-6 md:text-[b79b71] text-[#b79b71]">
               {videoSettings.video_title}
@@ -117,8 +112,7 @@ const LandingPage = () => {
                 </div>
               </div>}
           </div>
-        </section>
-      )}
+        </section>}
 
       {/* Hero Section */}
       <section className="relative py-20 px-4 overflow-hidden">
@@ -721,15 +715,11 @@ const LandingPage = () => {
         <div className="container mx-auto">
           <div className="grid md:grid-cols-3 gap-8">
             <div>
-              <button 
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="flex items-center gap-3 mb-4 cursor-pointer group"
-              >
-                <img 
-                  src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" 
-                  alt="Oráculo Jurídico" 
-                  className="h-8 w-auto transition-transform group-hover:scale-105"
-                />
+              <button onClick={() => window.scrollTo({
+              top: 0,
+              behavior: 'smooth'
+            })} className="flex items-center gap-3 mb-4 cursor-pointer group">
+                <img src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" alt="Oráculo Jurídico" className="h-8 w-auto transition-transform group-hover:scale-105" />
                 <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent group-hover:from-blue-300 group-hover:to-purple-300 transition-all">
                   Oráculo Jurídico
                 </span>
@@ -742,8 +732,8 @@ const LandingPage = () => {
             <div>
               <h3 className="font-semibold mb-4 text-slate-200">Links Úteis</h3>
               <ul className="space-y-2 text-slate-400">
-                <li><Link to="/login" className="hover:text-blue-400 transition-colors">Login</Link></li>
-                <li><Link to="/cadastro" className="hover:text-blue-400 transition-colors">Criar Conta</Link></li>
+                
+                
                 <li><Link to="/contato" className="hover:text-blue-400 transition-colors">Contato</Link></li>
                 <li><Link to="/termos" className="hover:text-blue-400 transition-colors">Termos de Uso</Link></li>
                 <li><Link to="/privacidade" className="hover:text-blue-400 transition-colors">Política de Privacidade</Link></li>
