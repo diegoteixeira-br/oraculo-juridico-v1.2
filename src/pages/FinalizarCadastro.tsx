@@ -154,9 +154,7 @@ export default function FinalizarCadastro() {
                 
                 <div className="text-center">
                   <Button asChild variant="ghost" className="text-slate-400 hover:text-white">
-                    <Link to="/blog">
-                      Voltar para o blog
-                    </Link>
+                    
                   </Button>
                 </div>
               </div>
