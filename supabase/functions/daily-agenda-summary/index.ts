@@ -189,9 +189,16 @@ serve(async (req) => {
         
         return new Response(
           JSON.stringify({ 
-            message: `Teste enviado para ${testEmail} (usuário não encontrado no sistema)`, 
+            message: `Teste enviado para ${testEmail} (sem compromissos reais)`, 
             sent: 1, 
-            results: { test: { status: "sent", email_id: data?.id, test_mode: true } } 
+            results: { 
+              test: { 
+                status: "sent", 
+                email_id: data?.id, 
+                test_mode: true,
+                preview: html
+              } 
+            } 
           }),
           { headers: { "Content-Type": "application/json", ...corsHeaders } }
         );
