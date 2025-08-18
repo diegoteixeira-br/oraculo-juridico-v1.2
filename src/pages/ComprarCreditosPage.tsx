@@ -101,12 +101,24 @@ export default function ComprarCreditosPage() {
     try {
       setSubLoading(true);
       
-      // Link direto do Stripe para a assinatura Essencial
-      const stripeUrl = 'https://buy.stripe.com/cNi00k4Hf2lE1xZbwy5AQ02';
+      // Usar create-checkout para gerar URL com redirecionamento correto
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { 
+          product_type_id: '443c946c-18a2-48b0-90bb-925518b11aaf' // ID do plano Essencial
+        }
+      });
+
+      if (error) {
+        console.error('Erro ao criar checkout:', error);
+        // Fallback para link direto
+        const stripeUrl = 'https://buy.stripe.com/cNi00k4Hf2lE1xZbwy5AQ02';
+        window.location.href = stripeUrl;
+        return;
+      }
       
-      console.log("✅ Redirecionando para assinatura:", stripeUrl);
-      // Redirecionar para o link do Stripe na mesma aba
-      window.location.href = stripeUrl;
+      console.log("✅ Redirecionando para assinatura:", data.url);
+      // Redirecionar para o Stripe na mesma aba
+      window.location.href = data.url;
       
     } catch (error) {
       console.error('❌ Erro ao iniciar assinatura:', error);

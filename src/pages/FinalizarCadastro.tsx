@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Shield, Zap, CheckCircle, CreditCard, Clock, Gift } from 'lucide-react';
 import { useSEO } from '@/hooks/useSEO';
+import { supabase } from '@/integrations/supabase/client';
 export default function FinalizarCadastro() {
   const [searchParams] = useSearchParams();
   const email = searchParams.get('email') || '';
@@ -13,9 +14,29 @@ export default function FinalizarCadastro() {
     title: "Finalizar Cadastro - Teste Gratuito | Oráculo Jurídico",
     description: "Complete seu cadastro e comece seu teste gratuito de 8 dias com 30.000 tokens/mês por apenas R$ 37,90."
   });
-  const handleContinueToStripe = () => {
-    // Abrir Stripe checkout em nova aba
-    window.open('https://buy.stripe.com/cNi00k4Hf2lE1xZbwy5AQ02', '_blank');
+  const handleContinueToStripe = async () => {
+    try {
+      // Buscar o product_type da assinatura Essencial
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { 
+          product_type_id: '443c946c-18a2-48b0-90bb-925518b11aaf' // ID do plano Essencial
+        }
+      });
+
+      if (error) {
+        console.error('Erro ao criar checkout:', error);
+        // Fallback para link direto
+        window.open('https://buy.stripe.com/cNi00k4Hf2lE1xZbwy5AQ02', '_blank');
+        return;
+      }
+
+      // Redirecionar para o Stripe (mesma aba para melhor UX)
+      window.location.href = data.url;
+    } catch (error) {
+      console.error('Erro ao iniciar checkout:', error);
+      // Fallback para link direto
+      window.open('https://buy.stripe.com/cNi00k4Hf2lE1xZbwy5AQ02', '_blank');
+    }
   };
   return <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
       {/* Header */}
