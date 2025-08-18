@@ -20,6 +20,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import MarkdownEditor from "@/components/MarkdownEditor";
 import { useAccessControl } from "@/hooks/useAccessControl";
 import { TrialStatusCard } from "@/components/TrialStatusCard";
+import GoogleAdsPlaceholder from "@/components/GoogleAdsPlaceholder";
 
 
 // CONFIGURAÇÃO DE MANUTENÇÃO - Altere para false quando quiser reativar
@@ -584,6 +585,15 @@ const openTemplateEditor = async (documentId: string) => {
               {/* Agenda com Calendário */}
               <CalendarAgendaWidget />
 
+              {/* Anúncio para usuários gratuitos */}
+              {(isTrial || planType === 'Gratuito' || planType === 'gratuito') && (
+                <GoogleAdsPlaceholder 
+                  format="leaderboard" 
+                  position="Entre Agenda e Calculadoras"
+                  className="my-4"
+                />
+              )}
+
               {/* Calculadoras Jurídicas */}
               <Card className="bg-slate-800/50 border-slate-700">
                 <CardHeader className="pb-4">
@@ -1114,6 +1124,15 @@ const openTemplateEditor = async (documentId: string) => {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Segundo anúncio para usuários gratuitos */}
+              {(isTrial || planType === 'Gratuito' || planType === 'gratuito') && (
+                <GoogleAdsPlaceholder 
+                  format="rectangle" 
+                  position="Final do Sidebar"
+                  className="mt-4"
+                />
+              )}
               
             </div>
           </div>
