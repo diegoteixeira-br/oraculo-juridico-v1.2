@@ -30,7 +30,7 @@ export default function FinalizarCadastro() {
         return;
       }
 
-      // Redirecionar para o Stripe (mesma aba para melhor UX)
+      // Redirecionar para o Stripe na mesma aba
       window.location.href = data.url;
     } catch (error) {
       console.error('Erro ao iniciar checkout:', error);
@@ -165,10 +165,10 @@ export default function FinalizarCadastro() {
               </div>
 
               {/* Botões */}
-              <div className="space-y-3">
-                <Button onClick={handleContinueToStripe} className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 py-3 text-lg" size="lg">
-                  <CreditCard className="w-5 h-5 mr-2" />
-                  Continuar para Finalizar Cadastro
+              <div className="space-y-3 px-4 md:px-0">
+                <Button onClick={handleContinueToStripe} className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 py-3 text-base md:text-lg break-words" size="lg">
+                  <CreditCard className="w-5 h-5 mr-2 flex-shrink-0" />
+                  <span className="text-center">Continuar para Finalizar Cadastro</span>
                 </Button>
                 
                 <div className="text-center">

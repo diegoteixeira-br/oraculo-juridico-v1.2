@@ -104,7 +104,7 @@ serve(async (req) => {
 
       sessionConfig.mode = "subscription";
       sessionConfig.line_items[0].price_data.recurring = { interval: productType.billing_period };
-      sessionConfig.success_url = `${origin}/payment-success?subscription=1&session_id={CHECKOUT_SESSION_ID}`;
+      sessionConfig.success_url = `${origin}/dashboard?subscription=success&session_id={CHECKOUT_SESSION_ID}`;
       sessionConfig.metadata.plan = productType.name.toLowerCase();
       
       // Se ainda há trial restante, configurar trial period no Stripe
