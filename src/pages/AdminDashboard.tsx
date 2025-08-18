@@ -7,6 +7,7 @@ import DocumentUploader from "@/components/admin/DocumentUploader";
 import DocumentManager from "@/components/admin/DocumentManager";
 import RefundManager from "@/components/admin/RefundManager";
 import TokenManager from "@/components/admin/TokenManager";
+import TestAgendaEmail from "@/components/TestAgendaEmail";
 import AgendaCronManager from "@/components/admin/AgendaCronManager";
 import BlogManager from "@/components/admin/BlogManager";
 import BlogSettings from "@/components/admin/BlogSettings";
@@ -147,7 +148,14 @@ export default function AdminDashboard() {
                       </p>
                     </div>
                     
+                    {/* Novo painel de gerenciamento */}
                     <AgendaCronManager />
+                    
+                    {/* Componente original de teste mantido */}
+                    <div className="mt-8 pt-8 border-t">
+                      <h3 className="text-lg font-semibold mb-4">Teste Avançado de Templates</h3>
+                      <TestAgendaEmail />
+                    </div>
                   </div>
                 </TabsContent>
 
