@@ -121,7 +121,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Enviar email de confirmação
     const emailResponse = await resend.emails.send({
-      from: "Oráculo Jurídico <contato@oraculojuridico.com.br>",
+      from: "Oráculo Jurídico <nao-responda@oraculojuridico.com.br>",
       to: [user_email],
       subject: subject,
       html: content,
