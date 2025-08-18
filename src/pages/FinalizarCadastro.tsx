@@ -120,10 +120,7 @@ export default function FinalizarCadastro() {
       <div className="flex-shrink-0 bg-slate-800/50 border-b border-slate-700 backdrop-blur-sm">
         <div className="container max-w-4xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link to="/blog">
-                
-              </Link>
+            <Link to="/login" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <img src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" alt="Oráculo Jurídico" className="h-8 w-auto" />
               <div>
                 <h1 className="text-xl font-bold text-white flex items-center gap-2">
@@ -134,7 +131,7 @@ export default function FinalizarCadastro() {
                   Um último passo para começar seu teste gratuito
                 </p>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
       </div>
