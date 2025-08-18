@@ -754,9 +754,6 @@ const LandingPage = () => {
               <h3 className="font-semibold mb-4 text-slate-200">Recursos</h3>
               <ul className="space-y-2 text-slate-400">
                 <li><Link to="/blog" className="hover:text-blue-400 transition-colors">Blog</Link></li>
-                <li><Link to="/dashboard" className="hover:text-blue-400 transition-colors">Dashboard</Link></li>
-                <li><Link to="/chat" className="hover:text-blue-400 transition-colors">Assistente IA</Link></li>
-                <li><Link to="/calculo-contrato-bancario" className="hover:text-blue-400 transition-colors">Cálculo Bancário</Link></li>
               </ul>
             </div>
           </div>
