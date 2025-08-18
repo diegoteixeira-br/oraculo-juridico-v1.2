@@ -178,7 +178,7 @@ serve(async (req) => {
         const html = await renderEmailHTML("Usuário Teste", sampleItems, "America/Sao_Paulo", customTemplate);
 
         const { data, error } = await resend.emails.send({
-          from: "Oráculo Jurídico <onboarding@resend.dev>",
+          from: "Oráculo Jurídico <dieguinhoteixeira@gmail.com>",
           to: [testEmail],
           subject: "📅 [TESTE] Resumo da Agenda Jurídica",
           html,
@@ -281,7 +281,7 @@ serve(async (req) => {
         const html = await renderEmailHTML(profile.full_name || "", sampleItems, userTimezone, customTemplate);
 
         const { data, error } = await resend.emails.send({
-          from: "Oráculo Jurídico <onboarding@resend.dev>",
+          from: "Oráculo Jurídico <dieguinhoteixeira@gmail.com>",
           to: [user.user.email],
           subject: "📅 [TESTE] Resumo da Agenda Jurídica",
           html,
@@ -322,7 +322,7 @@ serve(async (req) => {
         const html = await renderEmailHTML(profile?.full_name || "", items as any[], userTimezone, customTemplate);
 
         const { data, error } = await resend.emails.send({
-          from: "Oráculo Jurídico <onboarding@resend.dev>",
+          from: "Oráculo Jurídico <dieguinhoteixeira@gmail.com>",
           to: [user.user.email],
           subject: "📅 Resumo da Agenda Jurídica - Próximas 24h",
           html,
