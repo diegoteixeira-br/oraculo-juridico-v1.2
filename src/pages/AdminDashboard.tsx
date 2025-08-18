@@ -13,7 +13,7 @@ import BlogManager from "@/components/admin/BlogManager";
 import BlogSettings from "@/components/admin/BlogSettings";
 import AdsManager from "@/components/admin/AdsManager";
 import LandingPageSettings from "@/components/admin/LandingPageSettings";
-import { Users, FileText, Upload, Undo2, ArrowLeft, Coins, Mail, BookOpen, Settings2, Wrench, Globe, Cog } from "lucide-react";
+import { Users, FileText, Upload, Undo2, ArrowLeft, Coins, Mail, BookOpen, Settings2, Wrench, Globe, Settings } from "lucide-react";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useSEO } from "@/hooks/useSEO";
 import { useNavigate } from "react-router-dom";
@@ -152,7 +152,7 @@ export default function AdminDashboard() {
                     <Tabs value={activeAgendaTab} onValueChange={setActiveAgendaTab} className="max-w-4xl mx-auto">
                       <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="management" className="flex items-center gap-2">
-                          <Cog className="h-4 w-4" />
+                          <Settings className="h-4 w-4" />
                           Gerenciamento
                         </TabsTrigger>
                         <TabsTrigger value="editor" className="flex items-center gap-2">
