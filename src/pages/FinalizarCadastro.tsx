@@ -24,9 +24,7 @@ export default function FinalizarCadastro() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Link to="/blog">
-                <Button variant="ghost" size="icon" className="text-white hover:bg-slate-700">
-                  <ArrowLeft className="h-5 w-5" />
-                </Button>
+                
               </Link>
               <img src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" alt="Oráculo Jurídico" className="h-8 w-auto" />
               <div>
