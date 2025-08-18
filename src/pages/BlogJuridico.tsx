@@ -411,16 +411,19 @@ const BlogJuridico = () => {
         <div className="container mx-auto">
           <div className="grid md:grid-cols-3 gap-8">
             <div>
-              <div className="flex items-center gap-3 mb-4">
+              <button 
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="flex items-center gap-3 mb-4 cursor-pointer group"
+              >
                 <img 
                   src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" 
                   alt="Oráculo Jurídico" 
-                  className="h-8 w-auto"
+                  className="h-8 w-auto transition-transform group-hover:scale-105"
                 />
-                <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent group-hover:from-blue-300 group-hover:to-purple-300 transition-all">
                   Oráculo Jurídico
                 </span>
-              </div>
+              </button>
               <p className="text-slate-400">
                 Seu portal de informações jurídicas atualizadas e confiáveis.
               </p>
