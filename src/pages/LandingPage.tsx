@@ -72,10 +72,17 @@ const LandingPage = () => {
       {/* Header */}
       <header className="py-6 px-4 border-b border-border bg-slate-800/50 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" alt="Oráculo Jurídico" className="h-8 w-auto" width="160" height="40" />
-            <div className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent" aria-label="Oráculo Jurídico">
-              Oráculo Jurídico
+          <div className="flex items-center space-x-3">
+            <img 
+              src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" 
+              alt="Oráculo Jurídico" 
+              className="h-10 w-auto"
+            />
+            <div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent">
+                Oráculo Jurídico
+              </h1>
+              <p className="text-sm text-slate-400">Home</p>
             </div>
           </div>
           
