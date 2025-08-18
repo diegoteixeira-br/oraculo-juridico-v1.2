@@ -113,9 +113,9 @@ serve(async (req) => {
 
     console.log("Enviando email via Resend...");
 
-    // Enviar email via Resend usando o domínio padrão enquanto o personalizado não está verificado
+    // Enviar email via Resend usando o domínio verificado
     const { data, error } = await resend.emails.send({
-      from: "Agenda Jurídica <onboarding@resend.dev>",
+      from: "Agenda Jurídica <nao-responda@oraculojuridico.com.br>",
       to: [testEmail],
       subject: "📅 Teste - Agenda Jurídica Funcionando!",
       html: emailHTML,
