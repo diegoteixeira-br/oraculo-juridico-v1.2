@@ -7,7 +7,7 @@ import DocumentUploader from "@/components/admin/DocumentUploader";
 import DocumentManager from "@/components/admin/DocumentManager";
 import RefundManager from "@/components/admin/RefundManager";
 import TokenManager from "@/components/admin/TokenManager";
-import TestAgendaEmail from "@/components/TestAgendaEmail";
+import AgendaCronManager from "@/components/admin/AgendaCronManager";
 import BlogManager from "@/components/admin/BlogManager";
 import BlogSettings from "@/components/admin/BlogSettings";
 import AdsManager from "@/components/admin/AdsManager";
@@ -110,7 +110,7 @@ export default function AdminDashboard() {
                   </TabsTrigger>
                   <TabsTrigger value="teste-agenda" className="flex items-center gap-2 p-3">
                     <Mail className="h-4 w-4" />
-                    <span className="hidden lg:inline">Templates</span>
+                    <span className="hidden lg:inline">Agenda Email</span>
                   </TabsTrigger>
                   <TabsTrigger value="landing-page" className="flex items-center gap-2 p-3">
                     <Globe className="h-4 w-4" />
@@ -141,13 +141,13 @@ export default function AdminDashboard() {
                 <TabsContent value="teste-agenda">
                   <div className="space-y-4 sm:space-y-6">
                     <div>
-                      <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2">Templates de Email Agenda</h2>
+                      <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2">Gerenciamento de Agenda por Email</h2>
                       <p className="text-muted-foreground text-xs sm:text-sm lg:text-base">
-                        Teste o sistema de envio automático de emails da agenda jurídica
+                        Configure e teste o sistema de envio automático de emails da agenda jurídica
                       </p>
                     </div>
                     
-                    <TestAgendaEmail />
+                    <AgendaCronManager />
                   </div>
                 </TabsContent>
 
