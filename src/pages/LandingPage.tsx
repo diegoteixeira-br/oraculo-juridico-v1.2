@@ -714,9 +714,21 @@ const LandingPage = () => {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="mb-4 md:mb-0">
-              <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent mb-2">
-                Oráculo Jurídico
-              </h3>
+              <button 
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="flex items-center gap-3 cursor-pointer group"
+              >
+                <img 
+                  src="/lovable-uploads/78181766-45b6-483a-866f-c4e0e4deff74.png" 
+                  alt="Oráculo Jurídico" 
+                  className="h-6 w-auto transition-transform group-hover:scale-105" 
+                  width="120" 
+                  height="30" 
+                />
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent group-hover:from-blue-300 group-hover:via-purple-300 group-hover:to-blue-200 transition-all">
+                  Oráculo Jurídico
+                </h3>
+              </button>
             </div>
             
             <div className="flex space-x-8">
