@@ -63,7 +63,7 @@ serve(async (req) => {
 
     // Enviar email via Resend
     const { data, error } = await resend.emails.send({
-      from: "Agenda Jurídica <nao-responda@oraculojuridico.com.br>",
+      from: "Teste Agenda <onboarding@resend.dev>",
       to: [testEmail],
       subject: "📅 Teste - Agenda Jurídica Funcionando!",
       html: emailHTML,
