@@ -183,6 +183,9 @@ serve(async (req) => {
         
         const html = await renderEmailHTML("Usuário Teste", sampleItems, "America/Sao_Paulo", customTemplate);
 
+        console.log("Enviando email de teste para:", testEmail);
+        console.log("RESEND_API_KEY configurado:", !!RESEND_API_KEY);
+
         const { data, error } = await resend.emails.send({
           from: "Agenda Jurídica <nao-responda@oraculojuridico.com.br>",
           to: [testEmail],
@@ -190,8 +193,10 @@ serve(async (req) => {
           html,
         });
 
+        console.log("Resend response:", { data, error });
+
         if (error) {
-          console.error("Erro ao enviar email de teste:", error);
+          console.error("Erro detalhado do Resend:", JSON.stringify(error, null, 2));
           throw new Error(`Falha ao enviar email: ${error.message || JSON.stringify(error)}`);
         }
         
