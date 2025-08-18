@@ -44,32 +44,72 @@ serve(async (req) => {
       });
     }
 
-    // Template HTML simples para teste
-    const emailHTML = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="utf-8">
-        <title>Teste Agenda Jurídica</title>
-    </head>
-    <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h1 style="color: #2563eb;">📅 Agenda Jurídica - Teste</h1>
-        <p>Este é um email de teste do sistema de agenda jurídica.</p>
-        <p><strong>Data/Hora:</strong> ${new Date().toLocaleString('pt-BR')}</p>
-        <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
-            <h3>🎯 Teste Funcionou!</h3>
-            <p>Se você está lendo esta mensagem, significa que:</p>
-            <ul>
-                <li>✅ A função Supabase está funcionando</li>
-                <li>✅ A integração com Resend está ativa</li>
-                <li>✅ Os emails da agenda estão prontos para funcionar</li>
-            </ul>
-        </div>
-        <p>Em breve você receberá automaticamente os resumos da sua agenda jurídica!</p>
-        <hr style="margin: 30px 0;">
-        <small style="color: #6b7280;">Este é um email automático do Oráculo Jurídico</small>
-    </body>
-    </html>`;
+    // Buscar template personalizado dos settings (se existir)
+    let emailHTML = "";
+    try {
+      const { data: settings } = await supabase
+        .from('landing_page_settings')
+        .select('agenda_email_template')
+        .limit(1)
+        .single();
+      
+      if (settings?.agenda_email_template) {
+        console.log("Usando template personalizado salvo");
+        // Usar template personalizado com dados de exemplo
+        emailHTML = settings.agenda_email_template;
+        
+        // Substituir variáveis do template
+        const sampleData = {
+          '{{SITE_NAME}}': 'Oráculo Jurídico',
+          '{{USER_NAME}}': 'Usuário de Teste',
+          '{{COMMITMENTS}}': `
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0;">
+              <h3 style="color: #2563eb; margin: 0 0 10px 0;">📅 Compromisso de Teste</h3>
+              <p><strong>Data:</strong> ${new Date(Date.now() + 2*60*60*1000).toLocaleString('pt-BR')}</p>
+              <p><strong>Local:</strong> Fórum Central (TESTE)</p>
+              <p><strong>Processo:</strong> 0001234-56.2025.8.26.0000</p>
+              <p><strong>Cliente:</strong> Cliente de Teste</p>
+            </div>
+          `
+        };
+        
+        Object.entries(sampleData).forEach(([key, value]) => {
+          emailHTML = emailHTML.replace(new RegExp(key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), value);
+        });
+      }
+    } catch (error) {
+      console.log("Erro ao buscar template personalizado, usando template padrão:", error);
+    }
+    
+    // Se não encontrou template personalizado, usar template padrão
+    if (!emailHTML) {
+      console.log("Usando template padrão");
+      emailHTML = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+          <meta charset="utf-8">
+          <title>Teste Agenda Jurídica</title>
+      </head>
+      <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #2563eb;">📅 Agenda Jurídica - Teste</h1>
+          <p>Este é um email de teste do sistema de agenda jurídica.</p>
+          <p><strong>Data/Hora:</strong> ${new Date().toLocaleString('pt-BR')}</p>
+          <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+              <h3>🎯 Teste Funcionou!</h3>
+              <p>Se você está lendo esta mensagem, significa que:</p>
+              <ul>
+                  <li>✅ A função Supabase está funcionando</li>
+                  <li>✅ A integração com Resend está ativa</li>
+                  <li>✅ Os emails da agenda estão prontos para funcionar</li>
+              </ul>
+          </div>
+          <p>Em breve você receberá automaticamente os resumos da sua agenda jurídica!</p>
+          <hr style="margin: 30px 0;">
+          <small style="color: #6b7280;">Este é um email automático do Oráculo Jurídico</small>
+      </body>
+      </html>`;
+    }
 
     console.log("Enviando email via Resend...");
 
