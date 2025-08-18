@@ -875,29 +875,26 @@ const AgendaJuridica = () => {
       isSameDay(parseISO(c.commitment_date), date)
     );
     
-    console.log('getCommitmentsForDate: Original commitments for date', date, commitments.map(c => ({
-      title: c.title,
-      commitment_date: c.commitment_date,
-      parsed: parseISO(c.commitment_date),
-      time: formatInTimeZone(parseISO(c.commitment_date), userTimezone, 'HH:mm')
-    })));
-    
     const sorted = commitments.sort((a, b) => {
       const dateA = parseISO(a.commitment_date);
       const dateB = parseISO(b.commitment_date);
-      const result = dateA.getTime() - dateB.getTime();
-      console.log('Sorting:', {
-        a: { title: a.title.substring(0, 20), time: formatInTimeZone(dateA, userTimezone, 'HH:mm'), timestamp: dateA.getTime() },
-        b: { title: b.title.substring(0, 20), time: formatInTimeZone(dateB, userTimezone, 'HH:mm'), timestamp: dateB.getTime() },
-        result
-      });
-      return result;
+      
+      // Extrair horas para comparação
+      const hourA = dateA.getHours();
+      const hourB = dateB.getHours();
+      
+      // Tratar 00:00 como final do dia (24:00)
+      const adjustedHourA = hourA === 0 ? 24 : hourA;
+      const adjustedHourB = hourB === 0 ? 24 : hourB;
+      
+      // Se as horas ajustadas forem diferentes, ordenar por hora
+      if (adjustedHourA !== adjustedHourB) {
+        return adjustedHourA - adjustedHourB;
+      }
+      
+      // Se as horas forem iguais, ordenar por minutos
+      return dateA.getMinutes() - dateB.getMinutes();
     });
-    
-    console.log('getCommitmentsForDate: Sorted commitments', sorted.map(c => ({
-      title: c.title,
-      time: formatInTimeZone(parseISO(c.commitment_date), userTimezone, 'HH:mm')
-    })));
     
     return sorted;
   };
