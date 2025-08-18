@@ -30,6 +30,7 @@ import CalculoContratoBancario from "./pages/CalculoContratoBancario";
 import CalculoPensaoAlimenticia from "./pages/CalculoPensaoAlimenticia";
 import ComprarCreditosPage from "./pages/ComprarCreditosPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
+import PaymentSuccess from "./pages/PaymentSuccess";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import AgendaJuridica from "./pages/AgendaJuridica";
 import SuportePage from "./pages/SuportePage";
@@ -62,7 +63,7 @@ function AppContent() {
       <Route path="/minha-conta" element={<PageWrapper><ProtectedRoute gate="dashboard"><MinhaContaPage /></ProtectedRoute></PageWrapper>} />
       <Route path="/historico-transacoes" element={<PageWrapper><ProtectedRoute gate="dashboard"><HistoricoTransacoesPage /></ProtectedRoute></PageWrapper>} />
       <Route path="/comprar-creditos" element={<PageWrapper><ComprarCreditosPage /></PageWrapper>} />
-      <Route path="/payment-success" element={<PageWrapper><ProtectedRoute><PaymentSuccessPage /></ProtectedRoute></PageWrapper>} />
+      <Route path="/payment-success" element={<PageWrapper><PaymentSuccess /></PageWrapper>} />
       <Route path="/agenda-juridica" element={<PageWrapper><ProtectedRoute gate="premium"><AgendaJuridica /></ProtectedRoute></PageWrapper>} />
       <Route path="/admin/login" element={<PageWrapper><Navigate to="/admin" replace /></PageWrapper>} />
       <Route path="/admin/documentos" element={<PageWrapper><Navigate to="/admin" replace /></PageWrapper>} />
