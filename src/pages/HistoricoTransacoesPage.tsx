@@ -381,36 +381,36 @@ export default function HistoricoTransacoesPage() {
               ) : filteredTransactions.length > 0 ? (
                 <div className="space-y-2">
                   {currentTransactions.map((transaction) => (
-                    <div key={transaction.id} className="p-3 bg-slate-700/30 rounded-lg border border-slate-600/50 hover:border-slate-500/50 hover:bg-slate-700/50 transition-all">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3 flex-1">
-                          <div className="p-1.5 bg-slate-600/50 rounded">
-                            {transaction.transaction_type === 'purchase' && <CreditCard className="w-4 h-4 text-green-400" />}
-                            {transaction.transaction_type === 'daily_usage' && <Calendar className="w-4 h-4 text-blue-400" />}
-                            {transaction.transaction_type === 'usage' && <Zap className="w-4 h-4 text-orange-400" />}
-                            {transaction.transaction_type === 'bonus' && <TrendingUp className="w-4 h-4 text-purple-400" />}
+                    <div key={transaction.id} className="p-4 bg-slate-700/30 rounded-lg border border-slate-600/50 hover:border-slate-500/50 hover:bg-slate-700/50 transition-all">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-3 flex-1 min-w-0">
+                          <div className="p-2 bg-slate-600/50 rounded-lg mt-0.5">
+                            {transaction.transaction_type === 'purchase' && <CreditCard className="w-5 h-5 text-green-400" />}
+                            {transaction.transaction_type === 'daily_usage' && <Calendar className="w-5 h-5 text-blue-400" />}
+                            {transaction.transaction_type === 'usage' && <Zap className="w-5 h-5 text-orange-400" />}
+                            {transaction.transaction_type === 'bonus' && <TrendingUp className="w-5 h-5 text-purple-400" />}
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
+                          <div className="flex-1 min-w-0 space-y-2">
+                            <div className="flex flex-col gap-1">
                               <Badge 
                                 variant="secondary"
-                                className={`${getTransactionTypeBadgeColor(transaction.transaction_type)} text-white text-xs px-2 py-0.5`}
+                                className={`${getTransactionTypeBadgeColor(transaction.transaction_type)} text-white text-xs px-2 py-1 w-fit`}
                               >
                                 {getTransactionTypeLabel(transaction.transaction_type)}
                               </Badge>
-                              <span className={`text-sm font-bold ${
+                              <span className={`text-base font-bold ${
                                 transaction.amount > 0 ? 'text-green-400' : 'text-orange-400'
                               }`}>
                                 {transaction.amount > 0 ? '+' : ''}{transaction.amount.toLocaleString()} tokens
                               </span>
                             </div>
-                            <p className="text-xs text-slate-300 truncate">
+                            <p className="text-sm text-slate-300 leading-relaxed">
                               {transaction.description}
                             </p>
                           </div>
                         </div>
-                        <div className="text-right text-xs text-slate-400 ml-3">
-                          <div>{formatDateInUserTimezone(new Date(transaction.created_at), 'dd/MM/yyyy')}</div>
+                        <div className="text-right text-xs text-slate-400 flex-shrink-0">
+                          <div className="mb-1">{formatDateInUserTimezone(new Date(transaction.created_at), 'dd/MM/yyyy')}</div>
                           <div>{formatDateInUserTimezone(new Date(transaction.created_at), 'HH:mm')}</div>
                         </div>
                       </div>
