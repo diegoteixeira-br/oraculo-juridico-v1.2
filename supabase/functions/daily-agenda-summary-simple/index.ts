@@ -32,6 +32,18 @@ serve(async (req) => {
       });
     }
 
+    // Verificar se é o email verificado no Resend (apenas para testes)
+    const verifiedEmail = "dieguinhoteixeira@gmail.com";
+    if (testEmail !== verifiedEmail) {
+      return new Response(JSON.stringify({ 
+        error: `Para testes, use apenas o email verificado: ${verifiedEmail}`,
+        note: "Após verificar seu domínio no Resend, poderá enviar para qualquer email"
+      }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders }
+      });
+    }
+
     // Template HTML simples para teste
     const emailHTML = `
     <!DOCTYPE html>
