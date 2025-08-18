@@ -13,7 +13,7 @@ import BlogManager from "@/components/admin/BlogManager";
 import BlogSettings from "@/components/admin/BlogSettings";
 import AdsManager from "@/components/admin/AdsManager";
 import LandingPageSettings from "@/components/admin/LandingPageSettings";
-import { Users, FileText, Upload, Undo2, ArrowLeft, Coins, Mail, BookOpen, Settings2, Wrench, Globe } from "lucide-react";
+import { Users, FileText, Upload, Undo2, ArrowLeft, Coins, Mail, BookOpen, Settings2, Wrench, Globe, Cog } from "lucide-react";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useSEO } from "@/hooks/useSEO";
 import { useNavigate } from "react-router-dom";
@@ -22,6 +22,7 @@ export default function AdminDashboard() {
   const [activeSection, setActiveSection] = useState("system");
   const [activeTab, setActiveTab] = useState("users");
   const [activeBlogTab, setActiveBlogTab] = useState("articles");
+  const [activeAgendaTab, setActiveAgendaTab] = useState("management");
   const navigate = useNavigate();
   
   usePageTitle();
@@ -140,40 +141,40 @@ export default function AdminDashboard() {
                 </TabsContent>
 
                 <TabsContent value="teste-agenda">
-                  <div className="space-y-8">
+                  <div className="space-y-6">
                     <div className="text-center">
-                      <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2">Gerenciamento de Agenda por Email</h2>
+                      <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2">Agenda por Email</h2>
                       <p className="text-muted-foreground text-xs sm:text-sm lg:text-base">
                         Configure e teste o sistema de envio automático de emails da agenda jurídica
                       </p>
                     </div>
                     
-                    {/* Novo painel de gerenciamento */}
-                    <div className="max-w-4xl mx-auto">
-                      <AgendaCronManager />
-                    </div>
-                    
-                    {/* Separador visual */}
-                    <div className="flex items-center justify-center my-12">
-                      <div className="flex-1 border-t border-border"></div>
-                      <div className="px-6">
-                        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-muted">
-                          <Mail className="h-6 w-6 text-muted-foreground" />
+                    <Tabs value={activeAgendaTab} onValueChange={setActiveAgendaTab} className="max-w-4xl mx-auto">
+                      <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="management" className="flex items-center gap-2">
+                          <Cog className="h-4 w-4" />
+                          Gerenciamento
+                        </TabsTrigger>
+                        <TabsTrigger value="advanced-test" className="flex items-center gap-2">
+                          <Mail className="h-4 w-4" />
+                          Teste Avançado
+                        </TabsTrigger>
+                      </TabsList>
+
+                      <TabsContent value="management" className="mt-6">
+                        <AgendaCronManager />
+                      </TabsContent>
+
+                      <TabsContent value="advanced-test" className="mt-6">
+                        <div className="text-center mb-6">
+                          <h3 className="text-lg font-semibold mb-2">Teste Avançado de Templates</h3>
+                          <p className="text-muted-foreground text-sm">
+                            Ferramenta original para testes mais detalhados dos templates de email
+                          </p>
                         </div>
-                      </div>
-                      <div className="flex-1 border-t border-border"></div>
-                    </div>
-                    
-                    {/* Componente original de teste mantido */}
-                    <div className="max-w-4xl mx-auto">
-                      <div className="text-center mb-6">
-                        <h3 className="text-lg font-semibold mb-2">Teste Avançado de Templates</h3>
-                        <p className="text-muted-foreground text-sm">
-                          Ferramenta original para testes mais detalhados dos templates de email
-                        </p>
-                      </div>
-                      <TestAgendaEmail />
-                    </div>
+                        <TestAgendaEmail />
+                      </TabsContent>
+                    </Tabs>
                   </div>
                 </TabsContent>
 
