@@ -12,7 +12,7 @@ const Privacidade = () => {
     <div className="min-h-screen bg-background">
       <header className="py-6 px-4 border-b border-border">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <Link to="/">
+          <Link to="/blog">
             <button className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors">
               <ArrowLeft size={20} />
               <span>Voltar para Home</span>

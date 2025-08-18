@@ -110,7 +110,7 @@ const ContatoForm = () => {
         <div className="container max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Link to="/">
+              <Link to="/blog">
                 <Button
                   variant="ghost"
                   size="icon"

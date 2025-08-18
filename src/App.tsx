@@ -42,8 +42,8 @@ const queryClient = new QueryClient();
 function AppContent() {
   return (
     <Routes>
-      <Route path="/" element={<PageWrapper><Index /></PageWrapper>} />
-      <Route path="/saiba-mais" element={<PageWrapper><LandingPage /></PageWrapper>} />
+      <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
+      <Route path="/blog" element={<PageWrapper><Index /></PageWrapper>} />
       <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
       <Route path="/cadastro" element={<PageWrapper><Cadastro /></PageWrapper>} />
       <Route path="/finalizar-cadastro" element={<PageWrapper><FinalizarCadastro /></PageWrapper>} />

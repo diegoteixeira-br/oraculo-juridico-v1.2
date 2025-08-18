@@ -27,7 +27,7 @@ export default function FinalizarCadastro() {
         <div className="container max-w-4xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Link to="/">
+              <Link to="/blog">
                 <Button
                   variant="ghost"
                   size="icon"
@@ -176,8 +176,8 @@ export default function FinalizarCadastro() {
                     variant="ghost"
                     className="text-slate-400 hover:text-white"
                   >
-                    <Link to="/">
-                      Voltar para o início
+                    <Link to="/blog">
+                      Voltar para o blog
                     </Link>
                   </Button>
                 </div>

@@ -48,8 +48,8 @@ export default function Home() {
       <div className="w-full max-w-md space-y-8">
         {/* Back to Home Button */}
         <div className="text-center">
-          <Link to="/">
-            <Button 
+          <Link to="/blog">
+            <Button
               variant="ghost" 
               className="text-muted-foreground hover:text-foreground"
             >

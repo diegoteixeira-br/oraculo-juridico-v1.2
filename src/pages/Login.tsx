@@ -25,7 +25,7 @@ export default function Login() {
   const cameFromBlog = location.state?.from === 'blog' || 
     document.referrer.includes('/blog') || 
     document.referrer.includes('blog');
-  const cameFromLanding = location.state?.from === '/saiba-mais';
+  const cameFromLanding = location.state?.from === '/';
 
   useSEO({
     title: 'Entrar | Oráculo Jurídico – Teste 7 dias com 15.000 tokens',
@@ -78,7 +78,7 @@ export default function Login() {
         <div className="container max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Link to={cameFromLanding ? '/saiba-mais' : '/'}>
+              <Link to={cameFromLanding ? '/' : '/blog'}>
                 <Button
                   variant="ghost"
                   size="icon"
