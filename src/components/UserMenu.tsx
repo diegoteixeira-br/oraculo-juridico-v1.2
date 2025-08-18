@@ -78,7 +78,7 @@ export default function UserMenu({ hideOptions = [] }: UserMenuProps) {
       key: "blog", 
       label: "Blog Jurídico",
       icon: BookOpen,
-      onClick: () => navigate("/"),
+      onClick: () => navigate("/blog"),
       show: !hideOptions.includes("blog") && currentPageKey !== "blog",
     },
     {
