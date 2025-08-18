@@ -47,8 +47,7 @@ serve(async (req) => {
       .select(`
         user_id, 
         timezone, 
-        receber_notificacao_agenda,
-        notification_settings(agenda_email_time, agenda_timezone)
+        receber_notificacao_agenda
       `)
       .eq('receber_notificacao_agenda', true);
 
@@ -57,13 +56,32 @@ serve(async (req) => {
       throw usersError;
     }
 
+    // Buscar configurações de notificação separadamente
+    const { data: notificationSettings, error: notificationError } = await supabase
+      .from('notification_settings')
+      .select('user_id, agenda_email_time, agenda_timezone');
+
+    if (notificationError) {
+      console.error("Erro ao buscar configurações:", notificationError);
+      // Não falhar se não há configurações de notificação
+    }
+
     console.log(`📊 Encontrados ${usersData?.length || 0} usuários ativos`);
+
+    // Combinar dados dos usuários com configurações
+    const combinedData = usersData?.map(user => {
+      const settings = notificationSettings?.find(s => s.user_id === user.user_id);
+      return {
+        ...user,
+        notification_settings: settings ? [settings] : []
+      };
+    }) || [];
 
     // Agrupar usuários por horário UTC para otimizar
     const groupedByTime: Record<string, UserNotificationConfig[]> = {};
     const analysis: any[] = [];
 
-    for (const user of usersData || []) {
+    for (const user of combinedData || []) {
       const emailTime = user.notification_settings?.[0]?.agenda_email_time || '08:00';
       const timezone = user.timezone || user.notification_settings?.[0]?.agenda_timezone || 'America/Sao_Paulo';
       
@@ -112,7 +130,7 @@ serve(async (req) => {
       message: "Análise de configurações concluída",
       timestamp: new Date().toISOString(),
       statistics: {
-        total_active_users: usersData?.length || 0,
+        total_active_users: combinedData?.length || 0,
         unique_time_slots: requiredJobs.length,
         timezone_distribution: analysis.reduce((acc: any, user) => {
           acc[user.timezone] = (acc[user.timezone] || 0) + 1;

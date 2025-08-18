@@ -40,27 +40,6 @@ export default function AgendaCronManager() {
     }
   };
 
-  const previewTemplate = async () => {
-    try {
-      const response = await fetch(
-        `https://uujoxoxsbvhcmcgfvpvi.supabase.co/functions/v1/daily-agenda-summary?preview=true`,
-        {
-          headers: {
-            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV1am94b3hzYnZoY21jZ2Z2cHZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxNzQwMjcsImV4cCI6MjA2Nzc1MDAyN30.T-R0ssuI_o-1UkcCJbF7CaaPoqpgjgPIuL-ub_SyEtU`
-          }
-        }
-      );
-      
-      const html = await response.text();
-      const newWindow = window.open();
-      if (newWindow) {
-        newWindow.document.write(html);
-        newWindow.document.close();
-      }
-    } catch (error: any) {
-      toast.error("Erro ao visualizar template: " + error.message);
-    }
-  };
 
   const checkCronJobs = async () => {
     try {
@@ -123,19 +102,6 @@ export default function AgendaCronManager() {
             )}
           </div>
 
-          {/* Preview do Template */}
-          <div className="flex items-center justify-between p-4 border rounded-lg">
-            <div>
-              <h4 className="font-medium">Visualizar Template</h4>
-              <p className="text-sm text-muted-foreground">
-                Veja como fica o email de exemplo
-              </p>
-            </div>
-            <Button variant="outline" onClick={previewTemplate}>
-              <Settings className="h-4 w-4 mr-2" />
-              Preview
-            </Button>
-          </div>
 
           {/* Análise de Cron Jobs */}
           <div className="flex items-center justify-between p-4 border rounded-lg">

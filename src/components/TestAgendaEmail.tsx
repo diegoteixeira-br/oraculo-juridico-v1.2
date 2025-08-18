@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Send, CheckCircle, AlertCircle, Users, Eye, Code, Save, Upload } from "lucide-react";
+import { Mail, CheckCircle, AlertCircle, Users, Eye, Code, Save, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -121,8 +121,6 @@ const defaultTemplate = `<!DOCTYPE html>
 </html>`;
 
 const TestAgendaEmail = () => {
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
   const [testEmail, setTestEmail] = useState('');
   const [emailTemplate, setEmailTemplate] = useState(defaultTemplate);
   const [activeTab, setActiveTab] = useState('source');
@@ -130,45 +128,6 @@ const TestAgendaEmail = () => {
   const [logoUrl, setLogoUrl] = useState('');
   const [uploadLoading, setUploadLoading] = useState(false);
 
-  const testEmailNotification = async (specificEmail?: string) => {
-    setLoading(true);
-    setResult(null);
-    
-    try {
-      const body = specificEmail 
-        ? { source: 'manual_test', test_email: specificEmail, template: emailTemplate }
-        : { source: 'manual_test', template: emailTemplate };
-        
-      const { data, error } = await supabase.functions.invoke('daily-agenda-summary', {
-        body
-      });
-
-      if (error) throw error;
-
-      setResult(data);
-      
-      if (data.sent > 0) {
-        const target = specificEmail ? `para ${specificEmail}` : '';
-        toast.success(`✅ ${data.sent} email(s) enviado(s) ${target} com sucesso!`);
-      } else {
-        toast.info("ℹ️ Nenhum email enviado (sem compromissos ou usuário sem notificação ativa)");
-      }
-    } catch (error) {
-      console.error('Erro ao testar notificação:', error);
-      toast.error("❌ Erro ao enviar teste de notificação");
-      setResult({ error: error.message });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleTestSpecificEmail = () => {
-    if (!testEmail.trim()) {
-      toast.error("Digite um email válido");
-      return;
-    }
-    testEmailNotification(testEmail.trim());
-  };
 
   const openPreview = () => {
     const previewUrl = `https://uujoxoxsbvhcmcgfvpvi.supabase.co/functions/v1/daily-agenda-summary?preview=true`;
@@ -495,86 +454,6 @@ const TestAgendaEmail = () => {
         </CardContent>
       </Card>
 
-      {/* Teste de Envio */}
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-            <Send className="w-5 h-5 text-primary" />
-            Teste de Envio
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-        {/* Teste para email específico */}
-        <div className="space-y-3 p-4 bg-white rounded-lg border border-slate-200">
-          <div className="flex items-center gap-2 mb-2">
-            <Mail className="w-4 h-4 text-primary" />
-            <Label className="font-medium text-slate-900">Teste para usuário específico</Label>
-          </div>
-          <div className="space-y-2">
-            <Input
-              type="email"
-              placeholder="Digite o email do usuário"
-              value={testEmail}
-              onChange={(e) => setTestEmail(e.target.value)}
-              className="w-full bg-white text-slate-900 border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary selection:bg-blue-200 selection:text-slate-900"
-              autoComplete="email"
-              name="test-email"
-            />
-            <Button 
-              onClick={handleTestSpecificEmail} 
-              disabled={loading}
-              className="w-full"
-              variant="default"
-            >
-              {loading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Enviando...
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <Send className="w-4 h-4" />
-                  ENVIAR E-MAIL PARA
-                </div>
-              )}
-            </Button>
-          </div>
-        </div>
-
-        {result && (
-          <div className="mt-4 p-4 bg-white rounded-lg border-2 border-slate-200 shadow-sm">
-            <h4 className="font-semibold text-base mb-3 flex items-center gap-2 text-slate-900">
-              {result.error ? (
-                <AlertCircle className="w-5 h-5 text-red-500" />
-              ) : (
-                <CheckCircle className="w-5 h-5 text-green-500" />
-              )}
-              Resultado do Teste:
-            </h4>
-            
-            {result.error ? (
-              <p className="text-red-700 text-sm font-medium bg-red-50 p-3 rounded-lg border border-red-200">{result.error}</p>
-            ) : (
-              <div className="text-sm space-y-2 bg-slate-50 p-3 rounded-lg">
-                <p className="text-slate-900"><strong className="text-slate-800">Usuários processados:</strong> <span className="font-mono bg-blue-100 px-2 py-1 rounded text-blue-800">{result.processed_users || 0}</span></p>
-                <p className="text-slate-900"><strong className="text-slate-800">Emails enviados:</strong> <span className="font-mono bg-green-100 px-2 py-1 rounded text-green-800">{result.sent || 0}</span></p>
-                <p className="text-slate-900"><strong className="text-slate-800">Mensagem:</strong> <span className="text-slate-700">{result.message || 'Teste concluído'}</span></p>
-              </div>
-            )}
-          </div>
-        )}
-
-        <div className="text-sm text-slate-700 bg-slate-100 p-3 rounded-lg">
-          <p><strong className="text-slate-900">Como funciona:</strong></p>
-          <ul className="list-disc list-inside space-y-1 mt-2 text-slate-800">
-            <li>Busca compromissos das próximas 24h do usuário informado</li>
-            <li>Envia apenas para usuários com notificação ativa</li>
-            <li>Usa o timezone configurado no perfil</li>
-            <li><strong>Nota:</strong> O usuário deve existir no sistema e ter compromissos agendados</li>
-          </ul>
-        </div>
-      </CardContent>
-    </Card>
     </div>
   );
 };
