@@ -78,6 +78,18 @@ serve(async (req) => {
         product_type_id: product_type_id,
         tokens: productType.tokens_included.toString(),
       },
+      // Configurar branding personalizado para fazer o logo clicável
+      custom_text: {
+        submit: {
+          message: 'Após a compra, você será redirecionado para fazer seu primeiro acesso no Oráculo Jurídico.'
+        }
+      },
+      branding: {
+        logo: 'https://oraculojuridico.com.br/logo-oraculo.png',
+        icon: 'https://oraculojuridico.com.br/favicon.ico'
+      },
+      // URL para onde o logo deve redirecionar
+      return_url: `${origin}/login`,
     };
 
     // Configurar baseado na categoria do produto
