@@ -741,8 +741,8 @@ const LandingPage = () => {
               <Link to="/contato" className="text-muted-foreground hover:text-foreground transition-colors">
                 Contato
               </Link>
-              <Link to="/login" className="text-muted-foreground hover:text-foreground transition-colors">
-                Acesso
+              <Link to="/blog" className="text-muted-foreground hover:text-foreground transition-colors">
+                Blog
               </Link>
             </div>
           </div>
