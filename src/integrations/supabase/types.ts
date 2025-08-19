@@ -92,6 +92,51 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_settings: {
+        Row: {
+          canonical_url: string | null
+          created_at: string | null
+          favicon: string | null
+          google_adsense_client_id: string | null
+          google_adsense_enabled: boolean | null
+          google_analytics_id: string | null
+          id: string
+          keywords: string | null
+          meta_description: string | null
+          meta_title: string | null
+          social_image: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          canonical_url?: string | null
+          created_at?: string | null
+          favicon?: string | null
+          google_adsense_client_id?: string | null
+          google_adsense_enabled?: boolean | null
+          google_analytics_id?: string | null
+          id?: string
+          keywords?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
+          social_image?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          canonical_url?: string | null
+          created_at?: string | null
+          favicon?: string | null
+          google_adsense_client_id?: string | null
+          google_adsense_enabled?: boolean | null
+          google_analytics_id?: string | null
+          id?: string
+          keywords?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
+          social_image?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       calculo_contrato_historico: {
         Row: {
           created_at: string
