@@ -26,7 +26,7 @@ export default function MinhaContaPage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [selectedTimezone, setSelectedTimezone] = useState("");
+  const [selectedTimezone, setSelectedTimezone] = useState("America/Sao_Paulo");
   const [isUpdatingTimezone, setIsUpdatingTimezone] = useState(false);
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   
@@ -592,15 +592,22 @@ export default function MinhaContaPage() {
                     
                     <div className="text-sm text-muted-foreground bg-secondary/20 p-3 rounded-lg">
                       <p><strong>Hora atual neste fuso:</strong> {
-                        new Date().toLocaleString('pt-BR', { 
-                          timeZone: selectedTimezone,
-                          year: 'numeric',
-                          month: '2-digit',
-                          day: '2-digit',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                          second: '2-digit'
-                        })
+                        (() => {
+                          try {
+                            const timezone = selectedTimezone || 'America/Sao_Paulo';
+                            return new Date().toLocaleString('pt-BR', { 
+                              timeZone: timezone,
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: '2-digit',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              second: '2-digit'
+                            });
+                          } catch (error) {
+                            return new Date().toLocaleString('pt-BR');
+                          }
+                        })()
                       }</p>
                       <p className="mt-1">
                         Este fuso horário será usado para exibir todas as datas e horários do sistema, incluindo agenda e emails de notificação.
