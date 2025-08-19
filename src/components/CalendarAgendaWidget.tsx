@@ -55,14 +55,14 @@ const CalendarAgendaWidget = () => {
     try {
       const { data, error } = await supabase
         .from('notification_settings' as any)
-        .select('*')
+        .select('email_enabled, agenda_email_time, agenda_timezone')
         .eq('user_id', user.id)
         .single();
       
       if (data && !error) {
         setNotificationSettings({
           email_enabled: (data as any).email_enabled || false,
-          email_time: (data as any).email_time || '09:00'
+          email_time: (data as any).agenda_email_time || '09:00'
         });
       }
     } catch (error) {

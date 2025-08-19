@@ -43,6 +43,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import UserMenu from "@/components/UserMenu";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 import { useFeatureUsage } from "@/hooks/useFeatureUsage";
+import { useUserTimezone } from "@/hooks/useUserTimezone";
 import { Bell, BellOff, Settings } from "lucide-react";
 import DocumentExtractor from "@/components/DocumentExtractor";
 
@@ -65,7 +66,7 @@ interface LegalCommitment {
 }
 
 const AgendaJuridica = () => {
-  const { user, profile } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const isMobile = useIsMobile();
@@ -73,8 +74,8 @@ const AgendaJuridica = () => {
   const { logFeatureUsage } = useFeatureUsage();
   const { canAccessPremiumTools, isEssentialSubscriber } = useAccessControl();
   
-  // Timezone do usuário
-  const userTimezone = (profile as any)?.timezone || 'America/Sao_Paulo';
+  // Hook para timezone do usuário
+  const { userTimezone } = useUserTimezone();
   
   const [commitments, setCommitments] = useState<LegalCommitment[]>([]);
   const [filteredCommitments, setFilteredCommitments] = useState<LegalCommitment[]>([]);
@@ -124,7 +125,8 @@ const AgendaJuridica = () => {
   // Estados para configurações de notificação
   const [notificationSettings, setNotificationSettings] = useState({
     email_enabled: true,
-    agenda_email_time: '09:00'
+    agenda_email_time: '09:00',
+    agenda_timezone: 'America/Sao_Paulo'
   });
   const [isLoadingNotifications, setIsLoadingNotifications] = useState(false);
 
@@ -259,7 +261,7 @@ const AgendaJuridica = () => {
     try {
       const { data, error } = await supabase
         .from('notification_settings')
-        .select('email_enabled, agenda_email_time')
+        .select('email_enabled, agenda_email_time, agenda_timezone')
         .eq('user_id', user.id)
         .single();
 
@@ -270,7 +272,8 @@ const AgendaJuridica = () => {
       if (data) {
         setNotificationSettings({
           email_enabled: data.email_enabled ?? true,
-          agenda_email_time: data.agenda_email_time || '09:00'
+          agenda_email_time: data.agenda_email_time || '09:00',
+          agenda_timezone: data.agenda_timezone || userTimezone
         });
       }
     } catch (error: any) {
@@ -294,7 +297,7 @@ const AgendaJuridica = () => {
           hours_before_commitment: 24,
           whatsapp_enabled: false,
           push_enabled: true,
-          agenda_timezone: 'America/Sao_Paulo'
+          agenda_timezone: notificationSettings.agenda_timezone || userTimezone
         }, {
           onConflict: 'user_id'
         });
@@ -302,6 +305,19 @@ const AgendaJuridica = () => {
       if (error) {
         console.error('Erro detalhado:', error);
         throw error;
+      }
+
+      // Sincronizar timezone com o perfil do usuário
+      if (notificationSettings.agenda_timezone !== userTimezone) {
+        await supabase
+          .from('profiles')
+          .update({ timezone: notificationSettings.agenda_timezone })
+          .eq('user_id', user.id);
+        
+        // Recarregar o perfil para sincronizar o contexto
+        if (refreshProfile) {
+          await refreshProfile();
+        }
       }
 
       // Chamar função para atualizar agendamentos de email
@@ -2046,6 +2062,36 @@ const AgendaJuridica = () => {
                   />
                   <p className="text-xs text-muted-foreground">
                     Você receberá o resumo diário neste horário (no seu fuso horário configurado)
+                  </p>
+                </div>
+
+                {/* Seletor de Fuso Horário */}
+                <div className="space-y-2">
+                  <Label htmlFor="timezone">Fuso Horário</Label>
+                  <Select 
+                    value={notificationSettings.agenda_timezone} 
+                    onValueChange={(value) => 
+                      setNotificationSettings({...notificationSettings, agenda_timezone: value})
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione um fuso horário" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="America/Sao_Paulo">Brasília (GMT-3)</SelectItem>
+                      <SelectItem value="America/Manaus">Manaus (GMT-4)</SelectItem>
+                      <SelectItem value="America/Rio_Branco">Rio Branco (GMT-5)</SelectItem>
+                      <SelectItem value="America/Noronha">Fernando de Noronha (GMT-2)</SelectItem>
+                      <SelectItem value="America/Cuiaba">Cuiabá (GMT-4)</SelectItem>
+                      <SelectItem value="America/Recife">Recife (GMT-3)</SelectItem>
+                      <SelectItem value="America/Fortaleza">Fortaleza (GMT-3)</SelectItem>
+                      <SelectItem value="America/Belem">Belém (GMT-3)</SelectItem>
+                      <SelectItem value="America/Campo_Grande">Campo Grande (GMT-4)</SelectItem>
+                      <SelectItem value="America/Boa_Vista">Boa Vista (GMT-4)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Este fuso horário será sincronizado com suas configurações de conta
                   </p>
                 </div>
               </>
