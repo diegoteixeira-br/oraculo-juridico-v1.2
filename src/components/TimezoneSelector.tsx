@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,11 @@ const TimezoneSelector = () => {
     (profile as any)?.timezone || 'America/Sao_Paulo'
   );
   const [loading, setLoading] = useState(false);
+
+  // Sincronizar quando o perfil mudar
+  useEffect(() => {
+    setSelectedTimezone((profile as any)?.timezone || 'America/Sao_Paulo');
+  }, [(profile as any)?.timezone]);
 
   const timezones = [
     { value: 'America/Sao_Paulo', label: 'Brasília (GMT-3)' },

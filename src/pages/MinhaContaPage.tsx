@@ -589,10 +589,27 @@ export default function MinhaContaPage() {
                         ))}
                       </SelectContent>
                     </Select>
-                    <p className="text-xs text-slate-400">
-                      Este fuso horário será usado para exibir todas as datas e horários do sistema,
-                      incluindo agenda e emails de notificação.
-                    </p>
+                    
+                    <div className="text-sm text-muted-foreground bg-secondary/20 p-3 rounded-lg">
+                      <p><strong>Hora atual neste fuso:</strong> {
+                        new Date().toLocaleString('pt-BR', { 
+                          timeZone: selectedTimezone,
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          second: '2-digit'
+                        })
+                      }</p>
+                      <p className="mt-1">
+                        Este fuso horário será usado para exibir todas as datas e horários do sistema, incluindo agenda e emails de notificação.
+                      </p>
+                    </div>
+                    
+                    {isUpdatingTimezone && (
+                      <p className="text-sm text-slate-400">Atualizando fuso horário...</p>
+                    )}
                   </div>
                 </div>
 
