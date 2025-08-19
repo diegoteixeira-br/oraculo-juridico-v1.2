@@ -322,14 +322,14 @@ const HistoricoPensaoModal: React.FC<HistoricoPensaoModalProps> = ({
                           <div>
                             <span className="text-slate-400">Data Início:</span>
                             <div className="text-white font-medium">
-                              {new Date(selectedCalculation.data_inicio).toLocaleDateString('pt-BR')}
+                              {formatDateInUserTimezone(selectedCalculation.data_inicio, 'dd/MM/yyyy')}
                             </div>
                           </div>
                           {selectedCalculation.data_fim && (
                             <div>
                               <span className="text-slate-400">Data Fim:</span>
                               <div className="text-white font-medium">
-                                {new Date(selectedCalculation.data_fim).toLocaleDateString('pt-BR')}
+                                {formatDateInUserTimezone(selectedCalculation.data_fim, 'dd/MM/yyyy')}
                               </div>
                             </div>
                           )}

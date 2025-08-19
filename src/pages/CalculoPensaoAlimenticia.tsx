@@ -15,6 +15,7 @@ import UserMenu from "@/components/UserMenu";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 import { useExportDocument } from "@/hooks/useExportDocument";
 import HistoricoPensaoModal from "@/components/HistoricoPensaoModal";
+import { useUserTimezone } from "@/hooks/useUserTimezone";
 
 
 interface CalculoResult {
@@ -35,6 +36,7 @@ const CalculoPensaoAlimenticia = () => {
   const [historicoModalOpen, setHistoricoModalOpen] = useState(false);
   const { visible: menuVisible } = useScrollDirection();
   const { copyCalculoPensao, loading: exportLoading } = useExportDocument();
+  const { userTimezone } = useUserTimezone();
   
   const [formData, setFormData] = useState({
     rendaAlimentante: '',

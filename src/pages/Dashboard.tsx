@@ -62,7 +62,7 @@ const [dailyCredits, setDailyCredits] = useState(0);
   const currentPlan = getCurrentPlanInfo();
 
   const totalAvailableCredits = userCredits + dailyCredits;
-  const { userTimezone } = useUserTimezone();
+  const { userTimezone, formatDateInUserTimezone } = useUserTimezone();
   
   // Calcular trial status em tempo real
   const isTrial = profile?.subscription_status === 'trial';
@@ -439,11 +439,11 @@ const openTemplateEditor = async (documentId: string) => {
                       </p>
                       <div className="mt-2">
                         <p className="text-xs text-emerald-300/70">
-                          Membro desde: {new Date(
+                          Membro desde: {formatDateInUserTimezone(
                             isPaid && profile?.subscription_activated_at 
                               ? profile.subscription_activated_at 
                               : profile?.created_at || ''
-                          ).toLocaleDateString('pt-BR')}
+                          , 'dd/MM/yyyy')}
                         </p>
                       </div>
                     </div>
@@ -886,7 +886,7 @@ const openTemplateEditor = async (documentId: string) => {
                             >
                               <div className="flex items-center justify-between">
                                 <span className="text-sm text-white truncate">{d.title}</span>
-                                <span className="text-[10px] text-slate-400">{new Date(d.updated_at).toLocaleDateString('pt-BR')}</span>
+                                <span className="text-[10px] text-slate-400">{formatDateInUserTimezone(d.updated_at, 'dd/MM/yyyy')}</span>
                               </div>
                               <div className="mt-1 flex items-center gap-3 text-[11px]">
                                 <button
@@ -970,7 +970,7 @@ const openTemplateEditor = async (documentId: string) => {
                        <div className="flex items-center gap-2">
                          <Badge className="bg-primary text-white">Assinante</Badge>
                          {profile?.subscription_end_date && (
-                           <span className="text-xs text-slate-300">renova em {new Date(profile.subscription_end_date).toLocaleDateString('pt-BR')}</span>
+                           <span className="text-xs text-slate-300">renova em {formatDateInUserTimezone(profile.subscription_end_date, 'dd/MM/yyyy')}</span>
                          )}
                        </div>
                      ) : (
@@ -978,7 +978,7 @@ const openTemplateEditor = async (documentId: string) => {
                          <Badge className="bg-slate-600 text-white">Período Gratuito</Badge>
                           {profile?.trial_end_date && (
                             <span className="text-xs text-slate-300">
-                              até {new Date(profile.trial_end_date).toLocaleDateString('pt-BR')}
+                              até {formatDateInUserTimezone(profile.trial_end_date, 'dd/MM/yyyy')}
                             </span>
                           )}
                        </div>
@@ -1063,7 +1063,7 @@ const openTemplateEditor = async (documentId: string) => {
                           </p>
                           <div className="flex items-center justify-between">
                             <span className="text-xs text-slate-400">
-                              {new Date(query.created_at).toLocaleDateString('pt-BR')}
+                              {formatDateInUserTimezone(query.created_at, 'dd/MM/yyyy')}
                             </span>
                             {query.credits_consumed && (
                               <Badge variant="outline" className="text-xs">

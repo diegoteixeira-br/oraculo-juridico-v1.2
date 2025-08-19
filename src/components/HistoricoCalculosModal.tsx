@@ -290,13 +290,13 @@ const HistoricoCalculosModal: React.FC<HistoricoCalculosModalProps> = ({
                           <div>
                             <span className="text-slate-400">Data Contrato:</span>
                             <div className="text-white font-medium">
-                              {new Date(selectedCalculation.data_contrato).toLocaleDateString('pt-BR')}
+                              {formatDateInUserTimezone(selectedCalculation.data_contrato, 'dd/MM/yyyy')}
                             </div>
                           </div>
                           <div>
                             <span className="text-slate-400">Vencimento:</span>
                             <div className="text-white font-medium">
-                              {new Date(selectedCalculation.data_vencimento).toLocaleDateString('pt-BR')}
+                              {formatDateInUserTimezone(selectedCalculation.data_vencimento, 'dd/MM/yyyy')}
                             </div>
                           </div>
                         </div>
@@ -313,7 +313,7 @@ const HistoricoCalculosModal: React.FC<HistoricoCalculosModalProps> = ({
                               <div>
                                 <span className="text-slate-400">Data Pagamento:</span>
                                 <div className="text-white font-medium">
-                                  {new Date(selectedCalculation.data_pagamento_parcial).toLocaleDateString('pt-BR')}
+                                  {formatDateInUserTimezone(selectedCalculation.data_pagamento_parcial, 'dd/MM/yyyy')}
                                 </div>
                               </div>
                             )}

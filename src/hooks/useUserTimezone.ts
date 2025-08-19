@@ -23,9 +23,19 @@ export const useUserTimezone = () => {
     });
   };
 
+  const getCurrentDateForAPI = () => {
+    return new Date().toLocaleDateString('en-CA', { timeZone: userTimezone });
+  };
+
+  const formatTimeForAPI = (date: Date) => {
+    return date.toISOString();
+  };
+
   return {
     userTimezone,
     formatDateInUserTimezone,
-    getCurrentDateInUserTimezone
+    getCurrentDateInUserTimezone,
+    getCurrentDateForAPI,
+    formatTimeForAPI
   };
 };

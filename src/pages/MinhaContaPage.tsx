@@ -14,6 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import UserMenu from "@/components/UserMenu";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
+import { useUserTimezone } from "@/hooks/useUserTimezone";
 
 export default function MinhaContaPage() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -35,6 +36,7 @@ export default function MinhaContaPage() {
   const { user, profile, signOut, refreshProfile, updatePassword } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { visible: menuVisible } = useScrollDirection();
+  const { formatDateInUserTimezone } = useUserTimezone();
 
   // Fusos horários brasileiros
   const brazilianTimezones = [
@@ -425,7 +427,7 @@ export default function MinhaContaPage() {
                 </div>
                 <div className="text-center p-3 bg-white/5 rounded-lg">
                   <div className="text-lg font-bold text-purple-400">
-                    {user?.created_at ? new Date(user.created_at).toLocaleDateString('pt-BR') : 'N/A'}
+                    {user?.created_at ? formatDateInUserTimezone(user.created_at, 'dd/MM/yyyy') : 'N/A'}
                   </div>
                   <div className="text-xs text-slate-400">Membro desde</div>
                 </div>
@@ -487,8 +489,8 @@ export default function MinhaContaPage() {
                             <span className="text-xs text-slate-400">Data de Ativação:</span>
                             <span className="text-xs text-white">
                               {profile?.subscription_activated_at 
-                                ? new Date(profile.subscription_activated_at).toLocaleDateString('pt-BR') 
-                                : (profile?.trial_start_date ? new Date(profile.trial_start_date).toLocaleDateString('pt-BR') : 'N/A')
+                                ? formatDateInUserTimezone(profile.subscription_activated_at, 'dd/MM/yyyy') 
+                                : (profile?.trial_start_date ? formatDateInUserTimezone(profile.trial_start_date, 'dd/MM/yyyy') : 'N/A')
                               }
                             </span>
                           </div>
@@ -498,13 +500,13 @@ export default function MinhaContaPage() {
                               <div className="flex justify-between items-center">
                                 <span className="text-xs text-slate-400">Vencimento:</span>
                                 <span className="text-xs text-white">
-                                  {new Date(profile.subscription_end_date).toLocaleDateString('pt-BR')}
+                                  {formatDateInUserTimezone(profile.subscription_end_date, 'dd/MM/yyyy')}
                                 </span>
                               </div>
                               <div className="flex justify-between items-center">
                                 <span className="text-xs text-slate-400">Próxima Cobrança:</span>
                                 <span className="text-xs text-primary font-medium">
-                                  {new Date(profile.subscription_end_date).toLocaleDateString('pt-BR')}
+                                  {formatDateInUserTimezone(profile.subscription_end_date, 'dd/MM/yyyy')}
                                 </span>
                               </div>
                             </>
@@ -532,13 +534,13 @@ export default function MinhaContaPage() {
                           <div className="flex justify-between items-center">
                             <span className="text-xs text-slate-400">Início do Teste:</span>
                             <span className="text-xs text-white">
-                              {profile?.trial_start_date ? new Date(profile.trial_start_date).toLocaleDateString('pt-BR') : 'N/A'}
+                              {profile?.trial_start_date ? formatDateInUserTimezone(profile.trial_start_date, 'dd/MM/yyyy') : 'N/A'}
                             </span>
                           </div>
                           <div className="flex justify-between items-center">
                             <span className="text-xs text-slate-400">Fim do Teste:</span>
                             <span className="text-xs text-amber-400 font-medium">
-                              {new Date(profile.trial_end_date).toLocaleDateString('pt-BR')}
+                              {formatDateInUserTimezone(profile.trial_end_date, 'dd/MM/yyyy')}
                             </span>
                           </div>
                           <div className="text-xs text-amber-300 text-center pt-1 border-t border-amber-500/20">
@@ -558,7 +560,7 @@ export default function MinhaContaPage() {
                       </Badge>
                       {profile?.trial_end_date && profile?.subscription_status === 'trial' && (
                         <span className="text-xs text-slate-400">
-                          até {new Date(profile.trial_end_date).toLocaleDateString('pt-BR')}
+                          até {formatDateInUserTimezone(profile.trial_end_date, 'dd/MM/yyyy')}
                         </span>
                       )}
                     </div>
