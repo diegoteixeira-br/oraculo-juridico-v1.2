@@ -6,9 +6,22 @@ export const useUserTimezone = () => {
   const { profile } = useAuth();
   const userTimezone = (profile as any)?.timezone || 'America/Sao_Paulo';
 
-  const formatDateInUserTimezone = (date: Date | string, format: string) => {
+  const formatDateInUserTimezone = (date: Date | string | null | undefined, format: string) => {
+    if (!date) return '';
+    
     const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return formatInTimeZone(dateObj, userTimezone, format, { locale: ptBR });
+    
+    // Check if the date is valid
+    if (isNaN(dateObj.getTime())) {
+      return '';
+    }
+    
+    try {
+      return formatInTimeZone(dateObj, userTimezone, format, { locale: ptBR });
+    } catch (error) {
+      console.warn('Error formatting date in timezone:', error);
+      return '';
+    }
   };
 
   const getCurrentDateInUserTimezone = () => {
