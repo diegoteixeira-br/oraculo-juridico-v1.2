@@ -468,9 +468,53 @@ Se você não conseguir acessar o conteúdo dos arquivos, explique especificamen
               console.log(`Extracting text from image: ${file.name}`);
               const extractedText = await extractTextFromImage(file.data, file.name, openAIKey);
               allExtractedContent.push(`\n\n=== CONTEÚDO EXTRAÍDO DO ARQUIVO "${file.name}" ===\n${extractedText}\n=== FIM DO CONTEÚDO ===\n`);
+            } else if (file.type === 'application/pdf') {
+              // Para PDFs, usar a função extract-text-from-pdf
+              console.log(`Extracting text from PDF: ${file.name}`);
+              try {
+                // Converter base64 para FormData
+                let binaryData;
+                if (file.data.includes(',')) {
+                  const base64Data = file.data.split(',')[1];
+                  binaryData = atob(base64Data);
+                } else {
+                  binaryData = atob(file.data);
+                }
+                
+                const bytes = new Uint8Array(binaryData.length);
+                for (let i = 0; i < binaryData.length; i++) {
+                  bytes[i] = binaryData.charCodeAt(i);
+                }
+                
+                const formData = new FormData();
+                formData.append('file', new Blob([bytes], { type: 'application/pdf' }), file.name);
+                
+                // Chamar a função extract-text-from-pdf
+                const pdfResponse = await fetch(`${supabaseUrl}/functions/v1/extract-text-from-pdf`, {
+                  method: 'POST',
+                  headers: {
+                    'Authorization': `Bearer ${supabaseKey}`,
+                  },
+                  body: formData,
+                });
+                
+                if (pdfResponse.ok) {
+                  const pdfData = await pdfResponse.json();
+                  if (pdfData.success && pdfData.text) {
+                    allExtractedContent.push(`\n\n=== CONTEÚDO EXTRAÍDO DO PDF "${file.name}" ===\n${pdfData.text}\n=== FIM DO CONTEÚDO ===\n`);
+                  } else {
+                    allExtractedContent.push(`\n\n=== ERRO AO PROCESSAR PDF "${file.name}" ===\nNão foi possível extrair o texto do PDF. Por favor, forneça informações adicionais sobre o documento.\n=== FIM ===\n`);
+                  }
+                } else {
+                  throw new Error(`Erro HTTP ${pdfResponse.status}`);
+                }
+              } catch (pdfError) {
+                console.error(`Error extracting PDF ${file.name}:`, pdfError);
+                allExtractedContent.push(`\n\n=== ERRO AO PROCESSAR PDF "${file.name}" ===\nNão foi possível extrair o texto do PDF: ${pdfError.message}. Por favor, forneça informações adicionais sobre o documento.\n=== FIM ===\n`);
+              }
             } else {
-              // Para outros tipos, vamos tentar extrair via OCR usando Vision API (convertendo para imagem)
-              console.log(`Trying to extract content from document: ${file.name}`);
+              // Para outros tipos de documento
+              console.log(`Unsupported document type: ${file.name} (${file.type})`);
               allExtractedContent.push(`\n\n=== ARQUIVO ANEXADO: "${file.name}" ===\nArquivo do tipo ${file.type} foi anexado mas não pôde ser lido diretamente. Por favor, forneça mais detalhes sobre o conteúdo ou questões específicas sobre este documento.\n=== FIM ===\n`);
             }
           } catch (extractError) {
