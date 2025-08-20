@@ -40,7 +40,7 @@ serve(async (req) => {
     const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
     if (webhookSecret && signature) {
       try {
-        event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+        event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
         console.log("[STRIPE-WEBHOOK] Assinatura verificada com sucesso");
       } catch (err) {
         console.error("[STRIPE-WEBHOOK] Erro de verificação de assinatura:", err);
