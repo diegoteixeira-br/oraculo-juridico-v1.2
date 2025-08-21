@@ -377,15 +377,7 @@ const BlogJuridico = () => {
               </ul>
             </div>
             
-            <div>
-              <h3 className="font-semibold mb-4 text-slate-200">Categorias</h3>
-              <ul className="space-y-2 text-slate-400">
-                <li><a href="#" className="hover:text-blue-400 transition-colors">Direito Digital</a></li>
-                <li><a href="#" className="hover:text-blue-400 transition-colors">LGPD</a></li>
-                <li><a href="#" className="hover:text-blue-400 transition-colors">Direito Trabalhista</a></li>
-                <li><a href="#" className="hover:text-blue-400 transition-colors">Direito Civil</a></li>
-              </ul>
-            </div>
+            
           </div>
           
           <div className="border-t border-slate-700/50 mt-8 pt-8 text-center text-slate-400">
