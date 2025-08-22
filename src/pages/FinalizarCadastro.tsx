@@ -191,11 +191,11 @@ export default function FinalizarCadastro() {
                       </li>
                       <li className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-green-400 rounded-full"></div>
-                        <strong>Cobrança no ato • Reembolso integral se cancelar antes do 8º dia</strong>
+                        <strong>Cobrança no ato • Reembolso total se cancelar antes do 8º dia</strong>
                       </li>
                       <li className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
-                        Experimente por 7 dias com reembolso garantido
+                        A partir do 8º dia, cobrança mensal sem reembolso
                       </li>
                       <li className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-purple-400 rounded-full"></div>
@@ -256,7 +256,7 @@ export default function FinalizarCadastro() {
               <div className="text-center p-4 bg-slate-700/20 rounded-lg">
                 <p className="text-sm text-slate-300">
                   <Shield className="w-4 h-4 inline mr-1 text-green-400" />
-                  Reembolso integral em 7 dias • Pagamento seguro via Stripe
+                  Cobrança no ato • Reembolso total se cancelar antes do 8º dia • Pagamento seguro via Stripe
                 </p>
               </div>
             </CardContent>

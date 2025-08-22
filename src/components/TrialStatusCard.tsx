@@ -58,7 +58,7 @@ export function TrialStatusCard({ profile, daysRemaining }: TrialStatusCardProps
                   </span>
                 </div>
                 <p className="text-xs text-amber-200 font-medium">
-                  ⚠️ Cadastre um cartão para não perder acesso
+                  ⚠️ Cobrança no ato • Reembolso total se cancelar antes do 8º dia
                 </p>
               </div>
             </div>
@@ -90,7 +90,7 @@ export function TrialStatusCard({ profile, daysRemaining }: TrialStatusCardProps
                   </span>
                 </div>
                 <p className="text-xs text-blue-200 font-medium">
-                  ✓ Cartão cadastrado
+                  ✓ Cartão cadastrado • Reembolso total até 7º dia
                 </p>
               </div>
             </div>

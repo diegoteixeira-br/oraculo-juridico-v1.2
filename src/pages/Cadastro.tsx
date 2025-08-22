@@ -180,8 +180,8 @@ function CadastroForm() {
                 </div>
                 <ul className="text-xs text-yellow-100 space-y-1">
                   <li>• Para finalizar o cadastro, é necessário adicionar um cartão</li>
-                  <li>• <strong>7 dias grátis, cobrança inicia no 8º dia</strong></li>
-                  <li>• Cancele a qualquer momento sem cobrança</li>
+                  <li>• <strong>Cobrança no ato • Reembolso total se cancelar antes do 8º dia</strong></li>
+                  <li>• A partir do 8º dia, não há reembolso se cancelar</li>
                   <li>• Acesso completo a todos os recursos durante o teste</li>
                 </ul>
               </div>
