@@ -307,18 +307,82 @@ const CalculoPensaoAlimenticia = () => {
                 <div className="space-y-4 border-t border-slate-600 pt-4">
                   <div className="flex items-center justify-between">
                     <Label className="text-sm text-slate-300 font-semibold">Histórico de Pagamentos</Label>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        const novosPagamentos = [...formData.pagamentos, { data: '', valor: '', observacao: '' }];
-                        handleInputChange('pagamentos', novosPagamentos);
-                      }}
-                      className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
-                    >
-                      Adicionar Pagamento
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          if (!formData.dataInicioObrigacao) {
+                            toast.error("Informe a data de início da obrigação primeiro");
+                            return;
+                          }
+                          
+                          const dataInicio = new Date(formData.dataInicioObrigacao);
+                          const hoje = new Date();
+                          const diaVencimento = parseInt(formData.diaVencimento);
+                          const valorEstipulado = formData.valorEstipulado;
+                          
+                          const pagamentosGerados: Pagamento[] = [];
+                          
+                          // Começar do mês de início da obrigação
+                          let dataAtual = new Date(dataInicio.getFullYear(), dataInicio.getMonth(), diaVencimento);
+                          
+                          // Se a data de início for depois do dia de vencimento no mês, começar no próximo mês
+                          if (dataInicio.getDate() > diaVencimento) {
+                            dataAtual = new Date(dataAtual.getFullYear(), dataAtual.getMonth() + 1, diaVencimento);
+                          }
+                          
+                          // Gerar até o mês atual
+                          while (dataAtual <= hoje) {
+                            // Ajustar para próximo dia útil se cair em fim de semana
+                            let dataVencimentoAjustada = new Date(dataAtual);
+                            while (dataVencimentoAjustada.getDay() === 0 || dataVencimentoAjustada.getDay() === 6) {
+                              dataVencimentoAjustada.setDate(dataVencimentoAjustada.getDate() + 1);
+                            }
+                            
+                            pagamentosGerados.push({
+                              data: dataVencimentoAjustada.toISOString().split('T')[0],
+                              valor: valorEstipulado,
+                              observacao: ''
+                            });
+                            
+                            // Próximo mês
+                            dataAtual = new Date(dataAtual.getFullYear(), dataAtual.getMonth() + 1, diaVencimento);
+                          }
+                          
+                          // Adicionar mais um mês (próximo vencimento)
+                          let dataVencimentoAjustada = new Date(dataAtual);
+                          while (dataVencimentoAjustada.getDay() === 0 || dataVencimentoAjustada.getDay() === 6) {
+                            dataVencimentoAjustada.setDate(dataVencimentoAjustada.getDate() + 1);
+                          }
+                          
+                          pagamentosGerados.push({
+                            data: dataVencimentoAjustada.toISOString().split('T')[0],
+                            valor: valorEstipulado,
+                            observacao: 'Próximo vencimento'
+                          });
+                          
+                          handleInputChange('pagamentos', pagamentosGerados);
+                          toast.success(`${pagamentosGerados.length} datas de pagamento geradas automaticamente!`);
+                        }}
+                        className="bg-primary/10 border-primary/30 text-primary hover:bg-primary/20"
+                      >
+                        Gerar Datas
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const novosPagamentos = [...formData.pagamentos, { data: '', valor: '', observacao: '' }];
+                          handleInputChange('pagamentos', novosPagamentos);
+                        }}
+                        className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
+                      >
+                        Adicionar Manual
+                      </Button>
+                    </div>
                   </div>
                   
                    {formData.pagamentos.map((pagamento, index) => {
