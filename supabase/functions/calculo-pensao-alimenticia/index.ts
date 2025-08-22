@@ -117,8 +117,8 @@ function gerarVencimentos(dataInicioObrigacao: string, diaVencimento: number, da
     const vencimentoSomenteData = new Date(vencimentoAjustado.getFullYear(), vencimentoAjustado.getMonth(), vencimentoAjustado.getDate());
     const hojeSomenteData = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
     
-    // Se o vencimento for posterior à data atual, parar de gerar
-    if (vencimentoSomenteData > hojeSomenteData) {
+    // Se o vencimento for igual ou posterior à data atual, parar de gerar
+    if (vencimentoSomenteData >= hojeSomenteData) {
       break;
     }
     
