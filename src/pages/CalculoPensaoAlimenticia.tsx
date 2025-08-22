@@ -325,13 +325,25 @@ const CalculoPensaoAlimenticia = () => {
                      const valorDue = parseFloat(formData.valorEstipulado) || 0;
                      const valorPago = parseFloat(pagamento.valor) || 0;
                      
-                     // Buscar saldo acumulado de meses anteriores
-                     const saldoAcumuladoAnterior = formData.pagamentos.slice(0, index).reduce((saldo, pagAnterior) => {
-                       const valorDevido = parseFloat(formData.valorEstipulado) || 0;
-                       const valorPagoAnterior = parseFloat(pagAnterior.valor) || 0;
-                       const diferenca = valorDevido - valorPagoAnterior;
-                       return saldo + (diferenca > 0 ? diferenca : 0);
-                     }, 0);
+                      // Buscar saldo acumulado de meses anteriores com juros
+                      const saldoAcumuladoAnterior = formData.pagamentos.slice(0, index).reduce((saldo, pagAnterior, indexAnterior) => {
+                        const valorDevido = parseFloat(formData.valorEstipulado) || 0;
+                        const valorPagoAnterior = parseFloat(pagAnterior.valor) || 0;
+                        const diferenca = valorDevido - valorPagoAnterior;
+                        
+                        if (diferenca > 0) { // Se ficou falta
+                          // Calcular quantos meses passou desde essa falta até o mês atual
+                          const mesesDecorridos = index - indexAnterior;
+                          
+                          // Aplicar juros de 1% ao mês sobre a diferença em falta
+                          const jurosMensais = diferenca * 0.01 * mesesDecorridos;
+                          const multaInicial = diferenca * 0.02; // Multa de 2% no primeiro mês de atraso
+                          
+                          return saldo + diferenca + multaInicial + jurosMensais;
+                        }
+                        
+                        return saldo;
+                      }, 0);
                      
                      // Valor total devido para este mês (valor base + saldo acumulado)
                      const valorTotalDevido = valorDue + saldoAcumuladoAnterior;
