@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { CalendarIcon, Calculator, Download, Clock, Shield, Scale } from "lucide-react";
+import { CalendarIcon, Calculator, Download, Clock, Shield, Scale, ArrowLeft } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -14,6 +14,7 @@ import UserMenu from "@/components/UserMenu";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useSEO } from "@/hooks/useSEO";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface ResultadoCalculo {
   dataProgressao: Date;
@@ -32,6 +33,7 @@ export default function CalculoPena() {
   });
 
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Estados do formulário
   const [penananos, setPenaAnos] = useState<string>("");
@@ -173,6 +175,15 @@ export default function CalculoPena() {
         <div className="container max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/dashboard')}
+                className="text-slate-300 hover:text-white hover:bg-slate-700/50"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Voltar
+              </Button>
               <img 
                 src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" 
                 alt="Oráculo Jurídico"
