@@ -71,7 +71,7 @@ function calcularJurosEMulta(valorPrincipal: number, mesesAtraso: number): { jur
   return { juros, multa };
 }
 
-function gerarVencimentos(dataInicioObrigacao: string, diaVencimento: number, dataFinal: string): Date[] {
+function gerarVencimentos(dataInicioObrigacao: string, diaVencimento: number, dataFinal: string, mesesEspecificados?: number): Date[] {
   const vencimentos: Date[] = [];
   const dataInicio = new Date(dataInicioObrigacao);
   const hoje = new Date();
@@ -100,33 +100,55 @@ function gerarVencimentos(dataInicioObrigacao: string, diaVencimento: number, da
     return data;
   };
   
-  // Gerar vencimentos até hoje, verificando se já venceram
-  while (true) {
-    // Ajustar para o dia do vencimento específico
-    const ultimoDiaDoMes = new Date(mesAtual.getFullYear(), mesAtual.getMonth() + 1, 0).getDate();
-    if (diaVencimento <= ultimoDiaDoMes) {
-      mesAtual.setDate(diaVencimento);
-    } else {
-      mesAtual.setDate(ultimoDiaDoMes);
+  // Se meses especificados, gerar apenas essa quantidade de vencimentos
+  if (mesesEspecificados && mesesEspecificados > 0) {
+    for (let i = 0; i < mesesEspecificados; i++) {
+      // Ajustar para o dia do vencimento específico
+      const ultimoDiaDoMes = new Date(mesAtual.getFullYear(), mesAtual.getMonth() + 1, 0).getDate();
+      if (diaVencimento <= ultimoDiaDoMes) {
+        mesAtual.setDate(diaVencimento);
+      } else {
+        mesAtual.setDate(ultimoDiaDoMes);
+      }
+      
+      // Ajustar para primeiro dia útil se cair em fim de semana
+      const vencimentoAjustado = ajustarParaDiaUtil(new Date(mesAtual));
+      
+      // Adicionar vencimento
+      vencimentos.push(vencimentoAjustado);
+      
+      // Ir para o próximo mês
+      mesAtual.setMonth(mesAtual.getMonth() + 1);
     }
-    
-    // Ajustar para primeiro dia útil se cair em fim de semana
-    const vencimentoAjustado = ajustarParaDiaUtil(new Date(mesAtual));
-    
-    // Verificar se este vencimento já passou (comparando só as datas, não horários)
-    const vencimentoSomenteData = new Date(vencimentoAjustado.getFullYear(), vencimentoAjustado.getMonth(), vencimentoAjustado.getDate());
-    const hojeSomenteData = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
-    
-    // Se o vencimento for igual ou posterior à data atual, parar de gerar
-    if (vencimentoSomenteData >= hojeSomenteData) {
-      break;
+  } else {
+    // Gerar vencimentos até hoje, verificando se já venceram
+    while (true) {
+      // Ajustar para o dia do vencimento específico
+      const ultimoDiaDoMes = new Date(mesAtual.getFullYear(), mesAtual.getMonth() + 1, 0).getDate();
+      if (diaVencimento <= ultimoDiaDoMes) {
+        mesAtual.setDate(diaVencimento);
+      } else {
+        mesAtual.setDate(ultimoDiaDoMes);
+      }
+      
+      // Ajustar para primeiro dia útil se cair em fim de semana
+      const vencimentoAjustado = ajustarParaDiaUtil(new Date(mesAtual));
+      
+      // Verificar se este vencimento já passou (comparando só as datas, não horários)
+      const vencimentoSomenteData = new Date(vencimentoAjustado.getFullYear(), vencimentoAjustado.getMonth(), vencimentoAjustado.getDate());
+      const hojeSomenteData = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+      
+      // Se o vencimento for igual ou posterior à data atual, parar de gerar
+      if (vencimentoSomenteData >= hojeSomenteData) {
+        break;
+      }
+      
+      // Adicionar vencimento que já passou
+      vencimentos.push(vencimentoAjustado);
+      
+      // Ir para o próximo mês
+      mesAtual.setMonth(mesAtual.getMonth() + 1);
     }
-    
-    // Adicionar vencimento que já passou
-    vencimentos.push(vencimentoAjustado);
-    
-    // Ir para o próximo mês
-    mesAtual.setMonth(mesAtual.getMonth() + 1);
   }
   
   return vencimentos;
@@ -337,7 +359,14 @@ serve(async (req) => {
     if (data.dataInicioObrigacao && data.valorEstipulado) {
       // Novo cálculo detalhado
       const dataFinalCalculo = data.dataFim || dataAtual;
-      const vencimentos = gerarVencimentos(data.dataInicioObrigacao, diaVencimento, dataFinalCalculo);
+      
+      // Verificar se foi especificado manualmente o número de meses em atraso
+      let mesesEspecificados = undefined;
+      if (data.mesesAtraso && parseInt(data.mesesAtraso) > 0) {
+        mesesEspecificados = parseInt(data.mesesAtraso);
+      }
+      
+      const vencimentos = gerarVencimentos(data.dataInicioObrigacao, diaVencimento, dataFinalCalculo, mesesEspecificados);
       totalParcelas = vencimentos.length;
       
       const calculoDetalhado = calcularAtrasoDetalhado(
