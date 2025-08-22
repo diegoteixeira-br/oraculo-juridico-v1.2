@@ -28,6 +28,7 @@ import HistoricoTransacoesPage from "./pages/HistoricoTransacoesPage";
 import ContatoPage from "./pages/ContatoPage";
 import CalculoContratoBancario from "./pages/CalculoContratoBancario";
 import CalculoPensaoAlimenticia from "./pages/CalculoPensaoAlimenticia";
+import CalculoPena from "./pages/CalculoPena";
 import ComprarCreditosPage from "./pages/ComprarCreditosPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import PaymentSuccess from "./pages/PaymentSuccess";
@@ -58,6 +59,7 @@ function AppContent() {
       <Route path="/contato" element={<PageWrapper><ContatoPage /></PageWrapper>} />
       <Route path="/calculo-contrato-bancario" element={<PageWrapper><ProtectedRoute gate="premium"><CalculoContratoBancario /></ProtectedRoute></PageWrapper>} />
       <Route path="/calculo-pensao-alimenticia" element={<PageWrapper><ProtectedRoute gate="premium"><CalculoPensaoAlimenticia /></ProtectedRoute></PageWrapper>} />
+      <Route path="/calculo-pena" element={<PageWrapper><ProtectedRoute gate="premium"><CalculoPena /></ProtectedRoute></PageWrapper>} />
       <Route path="/dashboard" element={<PageWrapper><ProtectedRoute gate="dashboard"><Dashboard /></ProtectedRoute></PageWrapper>} />
       <Route path="/chat" element={<PageWrapper><Chat /></PageWrapper>} />
       <Route path="/minha-conta" element={<PageWrapper><ProtectedRoute gate="dashboard"><MinhaContaPage /></ProtectedRoute></PageWrapper>} />

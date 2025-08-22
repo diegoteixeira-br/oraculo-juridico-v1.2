@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CreditCard, History, Plus, MessageSquare, FileText, Calculator, Heart, DollarSign, Calendar, TrendingUp, Zap, Clock, Users, Award, Bell, BellOff, Wrench, Eye } from "lucide-react";
+import { CreditCard, History, Plus, MessageSquare, FileText, Calculator, Heart, DollarSign, Calendar, TrendingUp, Zap, Clock, Users, Award, Bell, BellOff, Wrench, Eye, Scale } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -606,7 +606,7 @@ const openTemplateEditor = async (documentId: string) => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div className="group p-4 bg-gradient-to-br from-blue-600/10 to-blue-600/5 rounded-xl border border-blue-500/20 hover:border-blue-500/40 transition-all cursor-pointer"
                          onClick={() => {
                            logFeatureUsage('calculator_accessed', { type: 'contrato_bancario' });
@@ -644,6 +644,27 @@ const openTemplateEditor = async (documentId: string) => {
                       </div>
                       <div className="flex items-center justify-between">
                         <Button size="sm" className="bg-purple-600 hover:bg-purple-500 text-xs">
+                          Calcular
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="group p-4 bg-gradient-to-br from-orange-600/10 to-orange-600/5 rounded-xl border border-orange-500/20 hover:border-orange-500/40 transition-all cursor-pointer"
+                         onClick={() => {
+                           logFeatureUsage('calculator_accessed', { type: 'calculo_pena' });
+                           navigate("/calculo-pena");
+                         }}>
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="p-2 bg-orange-600/20 rounded-lg group-hover:bg-orange-600/30 transition-colors">
+                          <Scale className="w-6 h-6 text-orange-400" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-orange-200">Cálculo de Pena</h3>
+                          <p className="text-xs text-orange-300/80">Progressão e livramento</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <Button size="sm" className="bg-orange-600 hover:bg-orange-500 text-xs">
                           Calcular
                         </Button>
                       </div>
