@@ -74,9 +74,10 @@ function calcularJurosEMulta(valorPrincipal: number, mesesAtraso: number): { jur
 function gerarVencimentos(dataInicioObrigacao: string, diaVencimento: number, dataFinal: string): Date[] {
   const vencimentos: Date[] = [];
   const dataInicio = new Date(dataInicioObrigacao);
-  const agora = new Date();
+  const hoje = new Date();
+  
   // Usar a data atual se dataFinal for futura, para gerar apenas parcelas atrasadas
-  const dataFim = new Date(dataFinal) > agora ? agora : new Date(dataFinal);
+  const dataFim = new Date(dataFinal) > hoje ? hoje : new Date(dataFinal);
   
   // Primeiro vencimento baseado no mês da data de início mas no dia específico de vencimento
   let mesAtual = new Date(dataInicio.getFullYear(), dataInicio.getMonth(), diaVencimento);
@@ -102,13 +103,9 @@ function gerarVencimentos(dataInicioObrigacao: string, diaVencimento: number, da
     return data;
   };
   
-  // Obter data atual para considerar apenas vencimentos já passados
-  const hoje = new Date();
-  
   // Gerar vencimentos até a data final
   while (mesAtual <= dataFim) {
-    // Ajustar para o dia do vencimento específico no próximo mês
-    // Se o dia não existir no próximo mês (ex: 31), usar o último dia do mês
+    // Ajustar para o dia do vencimento específico
     const ultimoDiaDoMes = new Date(mesAtual.getFullYear(), mesAtual.getMonth() + 1, 0).getDate();
     if (diaVencimento <= ultimoDiaDoMes) {
       mesAtual.setDate(diaVencimento);
@@ -119,13 +116,11 @@ function gerarVencimentos(dataInicioObrigacao: string, diaVencimento: number, da
     // Ajustar para primeiro dia útil se cair em fim de semana
     const vencimentoAjustado = ajustarParaDiaUtil(new Date(mesAtual));
     
-    // Só incluir vencimentos que já passaram
-    // Comparar apenas ano, mês e dia (sem horário)
-    const agora = new Date();
+    // Só incluir vencimentos que já venceram (data anterior à data atual)
     const vencimento = new Date(vencimentoAjustado);
+    vencimento.setHours(23, 59, 59, 999); // Final do dia de vencimento
     
-    // Se o vencimento é anterior à data atual, incluir
-    if (vencimento < agora) {
+    if (vencimento < hoje) {
       vencimentos.push(vencimentoAjustado);
     }
     
