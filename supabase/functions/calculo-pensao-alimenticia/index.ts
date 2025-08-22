@@ -384,8 +384,34 @@ serve(async (req) => {
       calcularMesesEntreDatas(data.dataInicio || data.dataInicioObrigacao, dataAtual);
     
     // Gerar detalhamento
-    const proximoVencimento = data.dataInicioObrigacao ? 
-      new Date(new Date().getFullYear(), new Date().getMonth() + 1, diaVencimento).toLocaleDateString('pt-BR') : '';
+    let proximoVencimento = '';
+    let proximoVencimentoAjustado = '';
+    
+    if (data.dataInicioObrigacao) {
+      // Calcular próximo vencimento
+      const dataProximoVencimento = new Date();
+      dataProximoVencimento.setMonth(dataProximoVencimento.getMonth() + 1);
+      dataProximoVencimento.setDate(diaVencimento);
+      
+      // Função para ajustar para o primeiro dia útil
+      const ajustarParaDiaUtil = (data: Date): Date => {
+        const diaSemana = data.getDay(); // 0 = Domingo, 6 = Sábado
+        
+        // Se cair no sábado (6), mover para segunda (adicionar 2 dias)
+        if (diaSemana === 6) {
+          data.setDate(data.getDate() + 2);
+        }
+        // Se cair no domingo (0), mover para segunda (adicionar 1 dia)
+        else if (diaSemana === 0) {
+          data.setDate(data.getDate() + 1);
+        }
+        
+        return data;
+      };
+      
+      proximoVencimento = dataProximoVencimento.toLocaleDateString('pt-BR');
+      proximoVencimentoAjustado = ajustarParaDiaUtil(new Date(dataProximoVencimento)).toLocaleDateString('pt-BR');
+    }
     
     const detalhamento = `CÁLCULO DE PENSÃO ALIMENTÍCIA - ATRASOS E CORREÇÕES
 
@@ -396,6 +422,12 @@ ${idadeFilho ? `- Idade do Filho: ${idadeFilho} anos` : ''}
 - Início da Obrigação: ${new Date(data.dataInicioObrigacao).toLocaleDateString('pt-BR')}
 - Dia do Vencimento: ${diaVencimento}
 ${totalParcelas > 0 ? `- Total de Parcelas: ${totalParcelas}` : ''}
+
+${proximoVencimento ? `PRÓXIMO VENCIMENTO:
+- Data Original: ${proximoVencimento}
+${proximoVencimento !== proximoVencimentoAjustado ? `- Data Ajustada (dia útil): ${proximoVencimentoAjustado}` : ''}
+- Valor a Pagar: R$ ${valorPensao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+` : ''}
 
 Cálculos de Regularização:
 1. Valor da Pensão Mensal: R$ ${valorPensao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
