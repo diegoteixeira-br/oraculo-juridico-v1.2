@@ -120,49 +120,101 @@ function calcularAtrasoDetalhado(
     .map(p => ({
       data: new Date(p.data),
       valor: parseFloat(p.valor) || 0,
-      observacao: p.observacao || ''
+      observacao: p.observacao || '',
+      utilizado: false
     }))
     .sort((a, b) => a.data.getTime() - b.data.getTime());
   
-  let saldoParaPagamentos = pagamentosOrdenados.reduce((soma, p) => soma + p.valor, 0);
-  totalPago = saldoParaPagamentos;
+  totalPago = pagamentosOrdenados.reduce((soma, p) => soma + p.valor, 0);
+  
+  // Estrutura para controlar débitos por vencimento
+  const debitosPorVencimento: {
+    vencimento: Date;
+    valorDevido: number;
+    valorPago: number;
+    valorRestante: number;
+    diasAtraso: number;
+    datasPagamentos: string[];
+  }[] = [];
   
   // Processar cada vencimento
   for (const vencimento of vencimentos) {
     if (vencimento <= dataCalculo) {
       totalDevido += valorMensal;
-      let valorParcela = valorMensal;
       
-      // Verificar se há pagamentos para esta parcela
-      if (saldoParaPagamentos > 0) {
-        const valorUtilizado = Math.min(saldoParaPagamentos, valorParcela);
-        valorParcela -= valorUtilizado;
-        saldoParaPagamentos -= valorUtilizado;
-      }
+      const debito = {
+        vencimento,
+        valorDevido: valorMensal,
+        valorPago: 0,
+        valorRestante: valorMensal,
+        diasAtraso: Math.max(0, Math.floor((dataCalculo.getTime() - vencimento.getTime()) / (1000 * 60 * 60 * 24))),
+        datasPagamentos: [] as string[]
+      };
       
-      // Se ainda há saldo devedor para esta parcela
-      if (valorParcela > 0) {
-        const diasAtraso = Math.max(0, Math.floor((dataCalculo.getTime() - vencimento.getTime()) / (1000 * 60 * 60 * 24)));
-        const mesesAtraso = Math.max(0, Math.floor(diasAtraso / 30));
-        
-        if (mesesAtraso > 0) {
-          // Multa de 2% sobre o valor em atraso
-          const multaParcela = valorParcela * 0.02;
-          // Juros de 1% ao mês sobre o valor em atraso
-          const jurosParcela = valorParcela * 0.01 * mesesAtraso;
+      // Aplicar pagamentos a este vencimento (priorizando pagamentos mais próximos do vencimento)
+      for (const pagamento of pagamentosOrdenados) {
+        if (!pagamento.utilizado && pagamento.valor > 0 && debito.valorRestante > 0) {
+          // Calcular quanto deste pagamento pode ser aplicado a este vencimento
+          const valorAplicado = Math.min(pagamento.valor, debito.valorRestante);
           
-          multa += multaParcela;
-          juros += jurosParcela;
+          debito.valorPago += valorAplicado;
+          debito.valorRestante -= valorAplicado;
+          debito.datasPagamentos.push(`${pagamento.data.toLocaleDateString('pt-BR')}: R$ ${valorAplicado.toFixed(2)}`);
           
-          detalhePagamentos += `Vencimento: ${vencimento.toLocaleDateString('pt-BR')} - `;
-          detalhePagamentos += `Valor: R$ ${valorMensal.toFixed(2)} - `;
-          detalhePagamentos += `Atraso: ${diasAtraso} dias (${mesesAtraso} meses) - `;
-          detalhePagamentos += `Multa: R$ ${multaParcela.toFixed(2)} - `;
-          detalhePagamentos += `Juros: R$ ${jurosParcela.toFixed(2)}\n`;
+          // Reduzir o valor disponível do pagamento
+          pagamento.valor -= valorAplicado;
+          if (pagamento.valor <= 0) {
+            pagamento.utilizado = true;
+          }
         }
-        
-        saldoDevedor += valorParcela;
       }
+      
+      // Calcular juros e multas sobre o valor restante (se houver atraso)
+      if (debito.valorRestante > 0 && debito.diasAtraso > 0) {
+        const mesesAtraso = Math.max(1, Math.ceil(debito.diasAtraso / 30));
+        
+        // Multa de 2% sobre o valor em atraso
+        const multaParcela = debito.valorRestante * 0.02;
+        // Juros de 1% ao mês sobre o valor em atraso
+        const jurosParcela = debito.valorRestante * 0.01 * mesesAtraso;
+        
+        multa += multaParcela;
+        juros += jurosParcela;
+        
+        detalhePagamentos += `\nVencimento: ${vencimento.toLocaleDateString('pt-BR')}\n`;
+        detalhePagamentos += `  Valor devido: R$ ${debito.valorDevido.toFixed(2)}\n`;
+        detalhePagamentos += `  Valor pago: R$ ${debito.valorPago.toFixed(2)}\n`;
+        if (debito.datasPagamentos.length > 0) {
+          detalhePagamentos += `  Pagamentos: ${debito.datasPagamentos.join(', ')}\n`;
+        }
+        detalhePagamentos += `  Valor em atraso: R$ ${debito.valorRestante.toFixed(2)}\n`;
+        detalhePagamentos += `  Dias de atraso: ${debito.diasAtraso} dias (${mesesAtraso} meses)\n`;
+        detalhePagamentos += `  Multa (2%): R$ ${multaParcela.toFixed(2)}\n`;
+        detalhePagamentos += `  Juros (1% a.m.): R$ ${jurosParcela.toFixed(2)}\n`;
+        detalhePagamentos += `  Total desta parcela: R$ ${(debito.valorRestante + multaParcela + jurosParcela).toFixed(2)}\n`;
+      } else if (debito.valorPago > 0) {
+        detalhePagamentos += `\nVencimento: ${vencimento.toLocaleDateString('pt-BR')}\n`;
+        detalhePagamentos += `  Valor devido: R$ ${debito.valorDevido.toFixed(2)}\n`;
+        detalhePagamentos += `  Valor pago: R$ ${debito.valorPago.toFixed(2)}\n`;
+        if (debito.datasPagamentos.length > 0) {
+          detalhePagamentos += `  Pagamentos: ${debito.datasPagamentos.join(', ')}\n`;
+        }
+        if (debito.valorRestante === 0) {
+          detalhePagamentos += `  Status: PAGO EM DIA\n`;
+        }
+      }
+      
+      saldoDevedor += debito.valorRestante;
+      debitosPorVencimento.push(debito);
+    }
+  }
+  
+  // Adicionar resumo dos pagamentos não utilizados (antecipados)
+  const pagamentosNaoUtilizados = pagamentosOrdenados.filter(p => p.valor > 0);
+  if (pagamentosNaoUtilizados.length > 0) {
+    detalhePagamentos += `\nPAGAMENTOS ANTECIPADOS:\n`;
+    for (const pagamento of pagamentosNaoUtilizados) {
+      detalhePagamentos += `  ${pagamento.data.toLocaleDateString('pt-BR')}: R$ ${pagamento.valor.toFixed(2)} (crédito para próximas parcelas)\n`;
     }
   }
   
