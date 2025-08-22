@@ -180,7 +180,10 @@ function calcularAtrasoDetalhado(
       }
       
       const valorRestante = valorMensal - valorPagoVencimento;
-      saldoDevedor += valorRestante;
+      // Acumular APENAS os valores que realmente estão em falta
+      if (valorRestante > 0) {
+        saldoDevedor += valorRestante;
+      }
       
       // Calcular dias de atraso apenas se houver valor restante
       let diasAtraso = 0;
