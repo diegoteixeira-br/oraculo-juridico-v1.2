@@ -7,6 +7,12 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+interface Pagamento {
+  data: string;
+  valor: string;
+  observacao: string;
+}
+
 interface PensaoAlimenticiaData {
   rendaAlimentante: string;
   numeroFilhos: string;
@@ -17,7 +23,11 @@ interface PensaoAlimenticiaData {
   dataFim: string;
   valorFixo: string;
   tipoCalculo: string;
-  mesesAtraso: string;
+  valorEstipulado: string;
+  diaVencimento: string;
+  dataInicioObrigacao: string;
+  pagamentos: Pagamento[];
+  mesesAtraso: string; // Manter para compatibilidade
   observacoes: string;
 }
 
@@ -59,6 +69,111 @@ function calcularJurosEMulta(valorPrincipal: number, mesesAtraso: number): { jur
   const juros = valorPrincipal * 0.01 * mesesAtraso;
   
   return { juros, multa };
+}
+
+function gerarVencimentos(dataInicioObrigacao: string, diaVencimento: number, dataFinal: string): Date[] {
+  const vencimentos: Date[] = [];
+  const dataInicio = new Date(dataInicioObrigacao);
+  const dataFim = new Date(dataFinal);
+  
+  // Primeiro vencimento baseado na data de início da obrigação
+  let mesAtual = new Date(dataInicio.getFullYear(), dataInicio.getMonth(), diaVencimento);
+  
+  // Se a data de início for depois do dia de vencimento do mês, começar no próximo mês
+  if (dataInicio.getDate() > diaVencimento) {
+    mesAtual.setMonth(mesAtual.getMonth() + 1);
+  }
+  
+  // Gerar vencimentos até a data final
+  while (mesAtual <= dataFim) {
+    vencimentos.push(new Date(mesAtual));
+    mesAtual.setMonth(mesAtual.getMonth() + 1);
+  }
+  
+  return vencimentos;
+}
+
+function calcularAtrasoDetalhado(
+  vencimentos: Date[], 
+  valorMensal: number, 
+  pagamentos: Pagamento[], 
+  dataCalculoStr: string
+): {
+  totalDevido: number;
+  totalPago: number;
+  saldoDevedor: number;
+  multa: number;
+  juros: number;
+  detalhePagamentos: string;
+} {
+  const dataCalculo = new Date(dataCalculoStr);
+  let totalDevido = 0;
+  let totalPago = 0;
+  let saldoDevedor = 0;
+  let multa = 0;
+  let juros = 0;
+  let detalhePagamentos = "\nDETALHAMENTO POR VENCIMENTO:\n";
+  
+  // Converter pagamentos para Date e ordenar
+  const pagamentosOrdenados = pagamentos
+    .filter(p => p.data && p.valor)
+    .map(p => ({
+      data: new Date(p.data),
+      valor: parseFloat(p.valor) || 0,
+      observacao: p.observacao || ''
+    }))
+    .sort((a, b) => a.data.getTime() - b.data.getTime());
+  
+  let saldoParaPagamentos = pagamentosOrdenados.reduce((soma, p) => soma + p.valor, 0);
+  totalPago = saldoParaPagamentos;
+  
+  // Processar cada vencimento
+  for (const vencimento of vencimentos) {
+    if (vencimento <= dataCalculo) {
+      totalDevido += valorMensal;
+      let valorParcela = valorMensal;
+      
+      // Verificar se há pagamentos para esta parcela
+      if (saldoParaPagamentos > 0) {
+        const valorUtilizado = Math.min(saldoParaPagamentos, valorParcela);
+        valorParcela -= valorUtilizado;
+        saldoParaPagamentos -= valorUtilizado;
+      }
+      
+      // Se ainda há saldo devedor para esta parcela
+      if (valorParcela > 0) {
+        const diasAtraso = Math.max(0, Math.floor((dataCalculo.getTime() - vencimento.getTime()) / (1000 * 60 * 60 * 24)));
+        const mesesAtraso = Math.max(0, Math.floor(diasAtraso / 30));
+        
+        if (mesesAtraso > 0) {
+          // Multa de 2% sobre o valor em atraso
+          const multaParcela = valorParcela * 0.02;
+          // Juros de 1% ao mês sobre o valor em atraso
+          const jurosParcela = valorParcela * 0.01 * mesesAtraso;
+          
+          multa += multaParcela;
+          juros += jurosParcela;
+          
+          detalhePagamentos += `Vencimento: ${vencimento.toLocaleDateString('pt-BR')} - `;
+          detalhePagamentos += `Valor: R$ ${valorMensal.toFixed(2)} - `;
+          detalhePagamentos += `Atraso: ${diasAtraso} dias (${mesesAtraso} meses) - `;
+          detalhePagamentos += `Multa: R$ ${multaParcela.toFixed(2)} - `;
+          detalhePagamentos += `Juros: R$ ${jurosParcela.toFixed(2)}\n`;
+        }
+        
+        saldoDevedor += valorParcela;
+      }
+    }
+  }
+  
+  return {
+    totalDevido,
+    totalPago,
+    saldoDevedor,
+    multa,
+    juros,
+    detalhePagamentos
+  };
 }
 
 serve(async (req) => {
@@ -110,12 +225,21 @@ serve(async (req) => {
     
     const numeroFilhos = parseInt(data.numeroFilhos);
     const idadeFilho = data.idadeFilho ? parseInt(data.idadeFilho) : undefined;
-    const mesesAtraso = data.mesesAtraso ? parseInt(data.mesesAtraso) : 0;
+    const diaVencimento = parseInt(data.diaVencimento) || 5;
     
     let valorPensao = 0;
     let percentualRenda = 0;
     
-    if (data.tipoCalculo === 'percentual') {
+    // Calcular valor da pensão baseado no tipo
+    if (data.valorEstipulado) {
+      // Novo modelo: valor estipulado
+      valorPensao = parseFloat(data.valorEstipulado);
+      if (data.rendaAlimentante) {
+        const renda = parseFloat(data.rendaAlimentante);
+        percentualRenda = (valorPensao / renda) * 100;
+      }
+    } else if (data.tipoCalculo === 'percentual') {
+      // Modelo antigo: percentual da renda
       const rendaAlimentante = parseFloat(data.rendaAlimentante);
       percentualRenda = data.percentualPensao ? 
         parseFloat(data.percentualPensao) : 
@@ -123,62 +247,100 @@ serve(async (req) => {
       
       valorPensao = rendaAlimentante * (percentualRenda / 100);
     } else {
+      // Modelo antigo: valor fixo
       valorPensao = parseFloat(data.valorFixo);
-      // Para valor fixo, calcular o percentual baseado na renda se informada
       if (data.rendaAlimentante) {
         const renda = parseFloat(data.rendaAlimentante);
         percentualRenda = (valorPensao / renda) * 100;
       }
     }
     
-    // Calcular valores em atraso se houver
+    // Calcular atrasos baseado nos pagamentos detalhados se disponível
     let valorTotalAtrasado = 0;
     let multa = 0;
     let juros = 0;
+    let detalhePagamentos = '';
+    let saldoDevedor = 0;
+    let totalParcelas = 0;
     
-    if (mesesAtraso > 0) {
-      valorTotalAtrasado = valorPensao * mesesAtraso;
-      const penalidades = calcularJurosEMulta(valorTotalAtrasado, mesesAtraso);
-      multa = penalidades.multa;
-      juros = penalidades.juros;
+    const agora = new Date();
+    const dataAtual = agora.toLocaleDateString('en-CA', { timeZone: userTimezone });
+    
+    if (data.dataInicioObrigacao && data.valorEstipulado) {
+      // Novo cálculo detalhado
+      const dataFinalCalculo = data.dataFim || dataAtual;
+      const vencimentos = gerarVencimentos(data.dataInicioObrigacao, diaVencimento, dataFinalCalculo);
+      totalParcelas = vencimentos.length;
+      
+      const calculoDetalhado = calcularAtrasoDetalhado(
+        vencimentos, 
+        valorPensao, 
+        data.pagamentos || [], 
+        dataFinalCalculo
+      );
+      
+      valorTotalAtrasado = calculoDetalhado.totalDevido - calculoDetalhado.totalPago;
+      saldoDevedor = calculoDetalhado.saldoDevedor;
+      multa = calculoDetalhado.multa;
+      juros = calculoDetalhado.juros;
+      detalhePagamentos = calculoDetalhado.detalhePagamentos;
+    } else if (data.mesesAtraso) {
+      // Cálculo antigo para compatibilidade
+      const mesesAtraso = parseInt(data.mesesAtraso);
+      if (mesesAtraso > 0) {
+        valorTotalAtrasado = valorPensao * mesesAtraso;
+        const penalidades = calcularJurosEMulta(valorTotalAtrasado, mesesAtraso);
+        multa = penalidades.multa;
+        juros = penalidades.juros;
+      }
     }
     
     // Valor total corrigido
-    const valorCorrigido = valorPensao + valorTotalAtrasado + multa + juros;
+    const valorCorrigido = valorPensao + Math.max(0, saldoDevedor) + multa + juros;
     
-    // Calcular período total se as datas foram informadas
-    const agora = new Date();
-    const dataAtual = agora.toLocaleDateString('en-CA', { timeZone: userTimezone }); // Formato YYYY-MM-DD no timezone do usuário
+    // Calcular período total se as datas foram informadas (usar variáveis já declaradas)
     const mesesPeriodo = data.dataFim ? 
-      calcularMesesEntreDatas(data.dataInicio, data.dataFim) : 
-      calcularMesesEntreDatas(data.dataInicio, dataAtual);
+      calcularMesesEntreDatas(data.dataInicio || data.dataInicioObrigacao, data.dataFim) : 
+      calcularMesesEntreDatas(data.dataInicio || data.dataInicioObrigacao, dataAtual);
     
     // Gerar detalhamento
+    const proximoVencimento = data.dataInicioObrigacao ? 
+      new Date(new Date().getFullYear(), new Date().getMonth() + 1, diaVencimento).toLocaleDateString('pt-BR') : '';
+    
     const detalhamento = `CÁLCULO DE PENSÃO ALIMENTÍCIA
 
 Dados da Pensão:
-- Tipo de Cálculo: ${data.tipoCalculo === 'percentual' ? 'Percentual da Renda' : 'Valor Fixo'}
+${data.valorEstipulado ? `- Valor Estipulado Mensal: R$ ${parseFloat(data.valorEstipulado).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : `- Tipo de Cálculo: ${data.tipoCalculo === 'percentual' ? 'Percentual da Renda' : 'Valor Fixo'}`}
 ${data.rendaAlimentante ? `- Renda do Alimentante: R$ ${parseFloat(data.rendaAlimentante).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : ''}
 - Número de Filhos: ${numeroFilhos}
 ${idadeFilho ? `- Idade do Filho: ${idadeFilho} anos` : ''}
-- Data de Início: ${new Date(data.dataInicio).toLocaleDateString('pt-BR')}
+${data.dataInicioObrigacao ? `- Início da Obrigação: ${new Date(data.dataInicioObrigacao).toLocaleDateString('pt-BR')}` : data.dataInicio ? `- Data de Início: ${new Date(data.dataInicio).toLocaleDateString('pt-BR')}` : ''}
+${data.diaVencimento ? `- Dia do Vencimento: ${data.diaVencimento}` : ''}
 ${data.dataFim ? `- Data de Fim: ${new Date(data.dataFim).toLocaleDateString('pt-BR')}` : ''}
-- Período: ${mesesPeriodo} meses
+${totalParcelas > 0 ? `- Total de Parcelas: ${totalParcelas}` : mesesPeriodo ? `- Período: ${mesesPeriodo} meses` : ''}
 
 Cálculos:
 1. Valor da Pensão Mensal: R$ ${valorPensao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
 2. Percentual da Renda: ${percentualRenda.toFixed(1)}%
 
-${mesesAtraso > 0 ? `
+${saldoDevedor > 0 || valorTotalAtrasado > 0 ? `
 Valores em Atraso:
-3. Meses em Atraso: ${mesesAtraso}
-4. Valor Total Atrasado: R$ ${valorTotalAtrasado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-5. Multa (2%): R$ ${multa.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-6. Juros (1% a.m.): R$ ${juros.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-7. Total com Correções: R$ ${valorCorrigido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+3. Valor Total em Atraso: R$ ${Math.max(valorTotalAtrasado, saldoDevedor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+4. Multa (2%): R$ ${multa.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+5. Juros (1% a.m.): R$ ${juros.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+6. Total com Correções: R$ ${valorCorrigido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+
+${data.pagamentos && data.pagamentos.length > 0 ? `
+Histórico de Pagamentos:
+${data.pagamentos.map((p, i) => `${i + 1}. ${new Date(p.data).toLocaleDateString('pt-BR')}: R$ ${parseFloat(p.valor || '0').toLocaleString('pt-BR', { minimumFractionDigits: 2 })} ${p.observacao ? `(${p.observacao})` : ''}`).join('\n')}
+` : ''}
+
+${detalhePagamentos}
 ` : `
 3. Total Mensal: R$ ${valorCorrigido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
 `}
+
+${proximoVencimento ? `Próximo Vencimento: ${proximoVencimento}` : ''}
 
 Observações Legais:
 - A pensão alimentícia é devida até que o filho complete 18 anos, podendo se estender até os 24 anos se estiver cursando ensino superior
@@ -194,11 +356,14 @@ Ferramenta: Oráculo Jurídico - Calculadora de Pensão Alimentícia`;
     const result = {
       valorPensao,
       percentualRenda,
-      valorTotalAtrasado,
+      valorTotalAtrasado: Math.max(valorTotalAtrasado, saldoDevedor),
       multa,
       juros,
       valorCorrigido,
-      detalhamento
+      detalhamento,
+      totalParcelas,
+      saldoDevedor,
+      proximoVencimento
     };
 
     // Salvar no histórico se usuário autenticado

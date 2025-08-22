@@ -18,6 +18,12 @@ import HistoricoPensaoModal from "@/components/HistoricoPensaoModal";
 import { useUserTimezone } from "@/hooks/useUserTimezone";
 
 
+interface Pagamento {
+  data: string;
+  valor: string;
+  observacao: string;
+}
+
 interface CalculoResult {
   valorPensao: number;
   percentualRenda: number;
@@ -26,6 +32,9 @@ interface CalculoResult {
   juros: number;
   valorCorrigido: number;
   detalhamento: string;
+  totalParcelas?: number;
+  saldoDevedor?: number;
+  proximoVencimento?: string;
 }
 
 const CalculoPensaoAlimenticia = () => {
@@ -47,22 +56,27 @@ const CalculoPensaoAlimenticia = () => {
     dataFim: '',
     valorFixo: '',
     tipoCalculo: 'percentual',
-    mesesAtraso: '',
+    valorEstipulado: '',
+    diaVencimento: '5',
+    dataInicioObrigacao: '',
+    pagamentos: [] as Pagamento[],
     observacoes: ''
   });
 
-  const handleInputChange = (field: string, value: string) => {
-    if (field === 'numeroFilhos') {
+  const handleInputChange = (field: string, value: string | Pagamento[]) => {
+    if (field === 'numeroFilhos' && typeof value === 'string') {
       const numFilhos = parseInt(value);
       const novasIdades = Array.from({ length: numFilhos }, (_, i) => 
         formData.idadesFilhos[i] || ''
       );
       setFormData(prev => ({ 
         ...prev, 
-        [field]: value,
+        numeroFilhos: value,
         idadesFilhos: novasIdades
       }));
-    } else {
+    } else if (field === 'pagamentos' && Array.isArray(value)) {
+      setFormData(prev => ({ ...prev, pagamentos: value }));
+    } else if (typeof value === 'string') {
       setFormData(prev => ({ ...prev, [field]: value }));
     }
   };
@@ -74,18 +88,8 @@ const CalculoPensaoAlimenticia = () => {
   };
 
   const handleCalcular = async () => {
-    if (!formData.dataInicio || !formData.numeroFilhos) {
+    if (!formData.valorEstipulado || !formData.dataInicioObrigacao) {
       toast.error("Preencha todos os campos obrigatórios");
-      return;
-    }
-
-    if (formData.tipoCalculo === 'percentual' && !formData.rendaAlimentante) {
-      toast.error("Informe a renda do alimentante para cálculo percentual");
-      return;
-    }
-
-    if (formData.tipoCalculo === 'fixo' && !formData.valorFixo) {
-      toast.error("Informe o valor fixo da pensão");
       return;
     }
 
@@ -348,16 +352,128 @@ const CalculoPensaoAlimenticia = () => {
                   </div>
                 </div>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="valorEstipulado" className="text-sm text-slate-300">Valor Estipulado por Mês *</Label>
+                    <Input
+                      id="valorEstipulado"
+                      type="number"
+                      step="0.01"
+                      placeholder="500.00"
+                      value={formData.valorEstipulado}
+                      onChange={(e) => handleInputChange('valorEstipulado', e.target.value)}
+                      className="bg-slate-700 border-slate-600 focus:border-primary text-white"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="diaVencimento" className="text-sm text-slate-300">Dia do Vencimento *</Label>
+                    <Select value={formData.diaVencimento} onValueChange={(value) => handleInputChange('diaVencimento', value)}>
+                      <SelectTrigger className="bg-slate-700 border-slate-600 focus:border-primary text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 28 }, (_, i) => i + 1).map(dia => (
+                          <SelectItem key={dia} value={dia.toString()}>Dia {dia}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
                 <div className="space-y-2">
-                  <Label htmlFor="mesesAtraso" className="text-sm text-slate-300">Meses em Atraso</Label>
+                  <Label htmlFor="dataInicioObrigacao" className="text-sm text-slate-300">Data de Início da Obrigação *</Label>
                   <Input
-                    id="mesesAtraso"
-                    type="number"
-                    placeholder="3"
-                    value={formData.mesesAtraso}
-                    onChange={(e) => handleInputChange('mesesAtraso', e.target.value)}
+                    id="dataInicioObrigacao"
+                    type="date"
+                    value={formData.dataInicioObrigacao}
+                    onChange={(e) => handleInputChange('dataInicioObrigacao', e.target.value)}
                     className="bg-slate-700 border-slate-600 focus:border-primary text-white"
                   />
+                </div>
+
+                {/* Seção de Pagamentos */}
+                <div className="space-y-4 border-t border-slate-600 pt-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm text-slate-300 font-semibold">Histórico de Pagamentos</Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const novosPagamentos = [...formData.pagamentos, { data: '', valor: '', observacao: '' }];
+                        handleInputChange('pagamentos', novosPagamentos);
+                      }}
+                      className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
+                    >
+                      Adicionar Pagamento
+                    </Button>
+                  </div>
+                  
+                  {formData.pagamentos.map((pagamento, index) => (
+                    <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 bg-slate-700/30 rounded-lg">
+                      <div className="space-y-1">
+                        <Label className="text-xs text-slate-400">Data do Pagamento</Label>
+                        <Input
+                          type="date"
+                          value={pagamento.data}
+                          onChange={(e) => {
+                            const novosPagamentos = [...formData.pagamentos];
+                            novosPagamentos[index].data = e.target.value;
+                            handleInputChange('pagamentos', novosPagamentos);
+                          }}
+                          className="bg-slate-700 border-slate-600 focus:border-primary text-white"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs text-slate-400">Valor Pago</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="250.00"
+                          value={pagamento.valor}
+                          onChange={(e) => {
+                            const novosPagamentos = [...formData.pagamentos];
+                            novosPagamentos[index].valor = e.target.value;
+                            handleInputChange('pagamentos', novosPagamentos);
+                          }}
+                          className="bg-slate-700 border-slate-600 focus:border-primary text-white"
+                        />
+                      </div>
+                      <div className="flex gap-2 items-end">
+                        <div className="flex-1 space-y-1">
+                          <Label className="text-xs text-slate-400">Observação</Label>
+                          <Input
+                            placeholder="Pagamento parcial"
+                            value={pagamento.observacao}
+                            onChange={(e) => {
+                              const novosPagamentos = [...formData.pagamentos];
+                              novosPagamentos[index].observacao = e.target.value;
+                              handleInputChange('pagamentos', novosPagamentos);
+                            }}
+                            className="bg-slate-700 border-slate-600 focus:border-primary text-white"
+                          />
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            const novosPagamentos = formData.pagamentos.filter((_, i) => i !== index);
+                            handleInputChange('pagamentos', novosPagamentos);
+                          }}
+                          className="text-red-400 hover:bg-red-900/20 px-2"
+                        >
+                          ×
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {formData.pagamentos.length === 0 && (
+                    <div className="text-center py-4 text-slate-400 text-sm">
+                      Adicione os pagamentos realizados para calcular o valor em atraso
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -405,32 +521,54 @@ const CalculoPensaoAlimenticia = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {/* Cards de resultados principais */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-4 bg-gradient-to-br from-purple-600/20 to-purple-600/10 border border-purple-500/30 rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-xs text-purple-300 font-medium">Valor da Pensão</p>
-                          <p className="text-2xl font-bold text-purple-400">
-                            R$ {result.valorPensao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                          </p>
-                        </div>
-                        <Heart className="w-8 h-8 text-purple-400" />
-                      </div>
-                    </div>
+                   {/* Cards de resultados principais */}
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div className="p-4 bg-gradient-to-br from-purple-600/20 to-purple-600/10 border border-purple-500/30 rounded-lg">
+                       <div className="flex items-center justify-between">
+                         <div>
+                           <p className="text-xs text-purple-300 font-medium">Valor da Pensão</p>
+                           <p className="text-2xl font-bold text-purple-400">
+                             R$ {result.valorPensao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                           </p>
+                         </div>
+                         <Heart className="w-8 h-8 text-purple-400" />
+                       </div>
+                     </div>
 
-                    <div className="p-4 bg-gradient-to-br from-blue-600/20 to-blue-600/10 border border-blue-500/30 rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-xs text-blue-300 font-medium">Percentual da Renda</p>
-                          <p className="text-2xl font-bold text-blue-400">
-                            {result.percentualRenda.toFixed(1)}%
-                          </p>
-                        </div>
-                        <TrendingUp className="w-8 h-8 text-blue-400" />
-                      </div>
-                    </div>
-                  </div>
+                     <div className="p-4 bg-gradient-to-br from-blue-600/20 to-blue-600/10 border border-blue-500/30 rounded-lg">
+                       <div className="flex items-center justify-between">
+                         <div>
+                           <p className="text-xs text-blue-300 font-medium">Percentual da Renda</p>
+                           <p className="text-2xl font-bold text-blue-400">
+                             {result.percentualRenda.toFixed(1)}%
+                           </p>
+                         </div>
+                         <TrendingUp className="w-8 h-8 text-blue-400" />
+                       </div>
+                     </div>
+                   </div>
+
+                   {/* Informações adicionais se disponíveis */}
+                   {(result.totalParcelas || result.proximoVencimento) && (
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                       {result.totalParcelas && (
+                         <div className="p-3 bg-indigo-900/20 border border-indigo-500/30 rounded-lg">
+                           <p className="text-xs text-indigo-300">Total de Parcelas</p>
+                           <p className="text-lg font-semibold text-indigo-400">
+                             {result.totalParcelas} vencimentos
+                           </p>
+                         </div>
+                       )}
+                       {result.proximoVencimento && (
+                         <div className="p-3 bg-cyan-900/20 border border-cyan-500/30 rounded-lg">
+                           <p className="text-xs text-cyan-300">Próximo Vencimento</p>
+                           <p className="text-lg font-semibold text-cyan-400">
+                             {result.proximoVencimento}
+                           </p>
+                         </div>
+                       )}
+                     </div>
+                   )}
 
                   {result.valorTotalAtrasado > 0 && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -556,7 +694,10 @@ const CalculoPensaoAlimenticia = () => {
             idadesFilhos: calculo.idades_filhos.map(idade => idade.toString()),
             dataInicio: calculo.data_inicio,
             dataFim: calculo.data_fim || '',
-            mesesAtraso: calculo.meses_atraso?.toString() || '',
+            valorEstipulado: '',
+            diaVencimento: '5',
+            dataInicioObrigacao: '',
+            pagamentos: [],
             observacoes: calculo.observacoes || ''
           });
           toast.success('Dados do histórico carregados!');
