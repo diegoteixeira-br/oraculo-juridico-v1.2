@@ -446,12 +446,10 @@ Ferramenta: Oráculo Jurídico - Calculadora de Pensão Alimentícia`;
     
     let valorProximaPensao = valorPensao;
     
-    // Se houver saldo devedor, aplicar a correção na próxima pensão
+    // Se houver saldo devedor, incluir na próxima pensão
     if (saldoDevedor > 0) {
-      // Aplicar correção de 2% de multa + 1% de juros ao mês
-      const multaProximaPensao = valorPensao * 0.02;
-      const jurosProximaPensao = valorPensao * 0.01; // 1% ao mês
-      valorProximaPensao = valorPensao + multaProximaPensao + jurosProximaPensao;
+      // Somar o valor da pensão normal com o saldo devedor acumulado
+      valorProximaPensao = valorPensao + saldoDevedor;
     }
 
     const result = {
