@@ -321,65 +321,82 @@ const CalculoPensaoAlimenticia = () => {
                     </Button>
                   </div>
                   
-                  {formData.pagamentos.map((pagamento, index) => (
-                    <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 bg-slate-700/30 rounded-lg">
-                      <div className="space-y-1">
-                        <Label className="text-xs text-slate-400">Data do Pagamento</Label>
-                        <Input
-                          type="date"
-                          value={pagamento.data}
-                          onChange={(e) => {
-                            const novosPagamentos = [...formData.pagamentos];
-                            novosPagamentos[index].data = e.target.value;
-                            handleInputChange('pagamentos', novosPagamentos);
-                          }}
-                          className="bg-slate-700 border-slate-600 focus:border-primary text-white"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <Label className="text-xs text-slate-400">Valor Pago</Label>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          placeholder="250.00"
-                          value={pagamento.valor}
-                          onChange={(e) => {
-                            const novosPagamentos = [...formData.pagamentos];
-                            novosPagamentos[index].valor = e.target.value;
-                            handleInputChange('pagamentos', novosPagamentos);
-                          }}
-                          className="bg-slate-700 border-slate-600 focus:border-primary text-white"
-                        />
-                      </div>
-                      <div className="flex gap-2 items-end">
-                        <div className="flex-1 space-y-1">
-                          <Label className="text-xs text-slate-400">Observação</Label>
+                  {formData.pagamentos.map((pagamento, index) => {
+                    const valorDue = parseFloat(formData.valorEstipulado) || 0;
+                    const valorPago = parseFloat(pagamento.valor) || 0;
+                    const diferenca = valorPago - valorDue;
+                    
+                    return (
+                      <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-3 p-3 bg-slate-700/30 rounded-lg">
+                        <div className="space-y-1">
+                          <Label className="text-xs text-slate-400">Data do Pagamento</Label>
                           <Input
-                            placeholder="Pagamento parcial"
-                            value={pagamento.observacao}
+                            type="date"
+                            value={pagamento.data}
                             onChange={(e) => {
                               const novosPagamentos = [...formData.pagamentos];
-                              novosPagamentos[index].observacao = e.target.value;
+                              novosPagamentos[index].data = e.target.value;
                               handleInputChange('pagamentos', novosPagamentos);
                             }}
                             className="bg-slate-700 border-slate-600 focus:border-primary text-white"
                           />
                         </div>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            const novosPagamentos = formData.pagamentos.filter((_, i) => i !== index);
-                            handleInputChange('pagamentos', novosPagamentos);
-                          }}
-                          className="text-red-400 hover:bg-red-900/20 px-2"
-                        >
-                          ×
-                        </Button>
+                        <div className="space-y-1">
+                          <Label className="text-xs text-slate-400">Valor Pago</Label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            placeholder="250.00"
+                            value={pagamento.valor}
+                            onChange={(e) => {
+                              const novosPagamentos = [...formData.pagamentos];
+                              novosPagamentos[index].valor = e.target.value;
+                              handleInputChange('pagamentos', novosPagamentos);
+                            }}
+                            className="bg-slate-700 border-slate-600 focus:border-primary text-white"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs text-slate-400">Diferença</Label>
+                          <div className={`px-3 py-2 rounded text-sm font-medium ${
+                            diferenca === 0 ? 'bg-slate-600 text-slate-300' :
+                            diferenca > 0 ? 'bg-green-600/20 text-green-400' : 'bg-red-600/20 text-red-400'
+                          }`}>
+                            {diferenca === 0 ? 'Em dia' : 
+                             diferenca > 0 ? `+R$ ${diferenca.toFixed(2)}` : 
+                             `R$ ${Math.abs(diferenca).toFixed(2)} em falta`}
+                          </div>
+                        </div>
+                        <div className="flex gap-2 items-end">
+                          <div className="flex-1 space-y-1">
+                            <Label className="text-xs text-slate-400">Observação</Label>
+                            <Input
+                              placeholder="Pagamento parcial"
+                              value={pagamento.observacao}
+                              onChange={(e) => {
+                                const novosPagamentos = [...formData.pagamentos];
+                                novosPagamentos[index].observacao = e.target.value;
+                                handleInputChange('pagamentos', novosPagamentos);
+                              }}
+                              className="bg-slate-700 border-slate-600 focus:border-primary text-white"
+                            />
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              const novosPagamentos = formData.pagamentos.filter((_, i) => i !== index);
+                              handleInputChange('pagamentos', novosPagamentos);
+                            }}
+                            className="text-red-400 hover:bg-red-900/20 px-2"
+                          >
+                            ×
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                   
                   {formData.pagamentos.length === 0 && (
                     <div className="text-center py-4 text-slate-400 text-sm">
