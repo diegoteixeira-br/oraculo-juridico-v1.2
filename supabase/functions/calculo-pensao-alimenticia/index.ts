@@ -84,11 +84,24 @@ function gerarVencimentos(dataInicioObrigacao: string, diaVencimento: number, da
     mesAtual.setMonth(mesAtual.getMonth() + 1);
   }
   
+  // Função para ajustar para o primeiro dia útil
+  const ajustarParaDiaUtil = (data: Date): Date => {
+    const diaSemana = data.getDay(); // 0 = Domingo, 6 = Sábado
+    
+    // Se cair no sábado (6), mover para segunda (adicionar 2 dias)
+    if (diaSemana === 6) {
+      data.setDate(data.getDate() + 2);
+    }
+    // Se cair no domingo (0), mover para segunda (adicionar 1 dia)
+    else if (diaSemana === 0) {
+      data.setDate(data.getDate() + 1);
+    }
+    
+    return data;
+  };
+  
   // Gerar vencimentos até a data final
   while (mesAtual <= dataFim) {
-    vencimentos.push(new Date(mesAtual));
-    mesAtual.setMonth(mesAtual.getMonth() + 1);
-    
     // Ajustar para o dia do vencimento específico no próximo mês
     // Se o dia não existir no próximo mês (ex: 31), usar o último dia do mês
     const ultimoDiaDoMes = new Date(mesAtual.getFullYear(), mesAtual.getMonth() + 1, 0).getDate();
@@ -97,6 +110,12 @@ function gerarVencimentos(dataInicioObrigacao: string, diaVencimento: number, da
     } else {
       mesAtual.setDate(ultimoDiaDoMes);
     }
+    
+    // Ajustar para primeiro dia útil se cair em fim de semana
+    const vencimentoAjustado = ajustarParaDiaUtil(new Date(mesAtual));
+    vencimentos.push(vencimentoAjustado);
+    
+    mesAtual.setMonth(mesAtual.getMonth() + 1);
   }
   
   return vencimentos;
