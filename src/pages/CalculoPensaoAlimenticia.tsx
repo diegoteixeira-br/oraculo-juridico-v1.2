@@ -39,6 +39,7 @@ interface CalculoResult {
   totalPagamentosRealizados?: number;
   parcelasEmAtraso?: number;
   valorTotalOriginal?: number;
+  valorProximaPensao?: number;
 }
 
 const CalculoPensaoAlimenticia = () => {
@@ -532,26 +533,49 @@ const CalculoPensaoAlimenticia = () => {
                        return saldo + (diferenca > 0 ? diferenca : 0);
                      }, 0);
                      
-                     if (saldoTotal > 0) {
-                       return (
-                         <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4">
-                           <div className="flex items-center justify-between">
-                             <div>
-                               <h4 className="text-sm font-semibold text-red-300">Saldo Devedor Acumulado</h4>
-                               <p className="text-xs text-red-400/80">Valor que deve ser quitado no próximo pagamento</p>
-                             </div>
-                             <div className="text-right">
-                               <div className="text-2xl font-bold text-red-400">
-                                 R$ {saldoTotal.toFixed(2)}
-                               </div>
-                               <div className="text-xs text-red-400/80">
-                                 + juros e multa sobre atraso
-                               </div>
-                             </div>
-                           </div>
-                         </div>
-                       );
-                     }
+                      if (saldoTotal > 0) {
+                        return (
+                          <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h4 className="text-sm font-semibold text-red-300">Saldo Devedor Acumulado</h4>
+                                <p className="text-xs text-red-400/80">Valor que deve ser quitado no próximo pagamento</p>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-2xl font-bold text-red-400">
+                                  R$ {saldoTotal.toFixed(2)}
+                                </div>
+                                <div className="text-xs text-red-400/80">
+                                  + juros e multa sobre atraso
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      } else {
+                        // Mostrar próxima pensão mesmo quando não há atraso
+                        const valorEstipulado = parseFloat(formData.valorEstipulado);
+                        if (valorEstipulado > 0 && formData.diaVencimento && formData.dataInicioObrigacao) {
+                          return (
+                            <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <h4 className="text-sm font-semibold text-blue-300">Próxima Pensão</h4>
+                                  <p className="text-xs text-blue-400/80">Valor a ser pago no próximo vencimento</p>
+                                </div>
+                                <div className="text-right">
+                                  <div className="text-2xl font-bold text-blue-400">
+                                    R$ {valorEstipulado.toFixed(2)}
+                                  </div>
+                                  <div className="text-xs text-blue-400/80">
+                                    Venc: {formData.diaVencimento}/mês
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        }
+                      }
                      return null;
                    })()}
                    
@@ -666,14 +690,22 @@ const CalculoPensaoAlimenticia = () => {
                                 <span className="text-sm font-semibold text-indigo-400">{result.totalParcelas}</span>
                               </div>
                             )}
-                            {result.proximoVencimento && (
-                              <div className="flex justify-between items-center py-2 border-b border-slate-700">
-                                <span className="text-sm text-slate-400">Próximo Vencimento</span>
-                                <span className="text-sm font-semibold text-cyan-400">
-                                  {new Date(result.proximoVencimento).toLocaleDateString('pt-BR')}
-                                </span>
-                              </div>
-                            )}
+                             {result.proximoVencimento && (
+                               <div className="flex justify-between items-center py-2 border-b border-slate-700">
+                                 <span className="text-sm text-slate-400">Próximo Vencimento</span>
+                                 <span className="text-sm font-semibold text-cyan-400">
+                                   {new Date(result.proximoVencimento).toLocaleDateString('pt-BR')}
+                                 </span>
+                               </div>
+                             )}
+                             {result.valorProximaPensao && (
+                               <div className="flex justify-between items-center py-2 border-b border-slate-700">
+                                 <span className="text-sm text-slate-400">Valor da Próxima Pensão</span>
+                                 <span className="text-sm font-semibold text-green-400">
+                                   R$ {result.valorProximaPensao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                 </span>
+                               </div>
+                             )}
                             {result.proximoValorTotal && (
                               <div className="bg-cyan-900/20 border border-cyan-500/30 rounded-lg p-3 mt-3">
                                 <p className="text-xs text-cyan-300 text-center">Próximo Pagamento Total</p>

@@ -434,6 +434,26 @@ ${data.observacoes ? `Observações Adicionais: ${data.observacoes}` : ''}
 Cálculo realizado em ${agora.toLocaleDateString('pt-BR', { timeZone: userTimezone, year: 'numeric', month: '2-digit', day: '2-digit' })} às ${agora.toLocaleTimeString('pt-BR', { timeZone: userTimezone, hour: '2-digit', minute: '2-digit', second: '2-digit' })}
 Ferramenta: Oráculo Jurídico - Calculadora de Pensão Alimentícia`;
 
+    // Calcular o valor da próxima pensão (próximo vencimento) com correção monetária se necessário
+    const dataCalculoObj = new Date(dataAtual);
+    const proximaDataVencimento = new Date(data.dataInicioObrigacao);
+    proximaDataVencimento.setDate(parseInt(diaVencimento));
+    
+    // Ajustar para o próximo mês se já passou do vencimento atual
+    if (proximaDataVencimento <= dataCalculoObj) {
+      proximaDataVencimento.setMonth(proximaDataVencimento.getMonth() + 1);
+    }
+    
+    let valorProximaPensao = valorPensao;
+    
+    // Se houver saldo devedor, aplicar a correção na próxima pensão
+    if (saldoDevedor > 0) {
+      // Aplicar correção de 2% de multa + 1% de juros ao mês
+      const multaProximaPensao = valorPensao * 0.02;
+      const jurosProximaPensao = valorPensao * 0.01; // 1% ao mês
+      valorProximaPensao = valorPensao + multaProximaPensao + jurosProximaPensao;
+    }
+
     const result = {
       valorPensao,
       percentualRenda,
@@ -444,7 +464,8 @@ Ferramenta: Oráculo Jurídico - Calculadora de Pensão Alimentícia`;
       detalhamento,
       totalParcelas,
       saldoDevedor,
-      proximoVencimento
+      proximoVencimento,
+      valorProximaPensao: valorProximaPensao
     };
 
     // Salvar no histórico se usuário autenticado
