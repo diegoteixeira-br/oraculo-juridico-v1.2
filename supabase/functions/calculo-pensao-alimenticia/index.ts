@@ -76,9 +76,6 @@ function gerarVencimentos(dataInicioObrigacao: string, diaVencimento: number, da
   const dataInicio = new Date(dataInicioObrigacao);
   const hoje = new Date();
   
-  // Usar a data atual se dataFinal for futura, para gerar apenas parcelas atrasadas
-  const dataFim = new Date(dataFinal) > hoje ? hoje : new Date(dataFinal);
-  
   // Primeiro vencimento baseado no mês da data de início mas no dia específico de vencimento
   let mesAtual = new Date(dataInicio.getFullYear(), dataInicio.getMonth(), diaVencimento);
   
@@ -103,8 +100,8 @@ function gerarVencimentos(dataInicioObrigacao: string, diaVencimento: number, da
     return data;
   };
   
-  // Gerar vencimentos até a data final
-  while (mesAtual <= dataFim) {
+  // Gerar vencimentos até hoje, verificando se já venceram
+  while (true) {
     // Ajustar para o dia do vencimento específico
     const ultimoDiaDoMes = new Date(mesAtual.getFullYear(), mesAtual.getMonth() + 1, 0).getDate();
     if (diaVencimento <= ultimoDiaDoMes) {
@@ -116,19 +113,19 @@ function gerarVencimentos(dataInicioObrigacao: string, diaVencimento: number, da
     // Ajustar para primeiro dia útil se cair em fim de semana
     const vencimentoAjustado = ajustarParaDiaUtil(new Date(mesAtual));
     
-    // Só incluir vencimentos que já venceram completamente
-    const vencimento = new Date(vencimentoAjustado);
-    const agora = new Date();
+    // Verificar se este vencimento já passou (comparando só as datas, não horários)
+    const vencimentoSomenteData = new Date(vencimentoAjustado.getFullYear(), vencimentoAjustado.getMonth(), vencimentoAjustado.getDate());
+    const hojeSomenteData = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
     
-    // Verificar se o vencimento é anterior ao dia atual (não incluir mesmo dia)
-    const vencimentoSomenteData = new Date(vencimento.getFullYear(), vencimento.getMonth(), vencimento.getDate());
-    const hojeSomenteData = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
-    
-    // Só adicionar se a data de vencimento for anterior à data atual
-    if (vencimentoSomenteData < hojeSomenteData) {
-      vencimentos.push(vencimentoAjustado);
+    // Se o vencimento for hoje ou futuro, parar de gerar
+    if (vencimentoSomenteData >= hojeSomenteData) {
+      break;
     }
     
+    // Adicionar vencimento que já passou
+    vencimentos.push(vencimentoAjustado);
+    
+    // Ir para o próximo mês
     mesAtual.setMonth(mesAtual.getMonth() + 1);
   }
   
