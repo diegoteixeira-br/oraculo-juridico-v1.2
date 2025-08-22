@@ -35,6 +35,10 @@ interface CalculoResult {
   totalParcelas?: number;
   saldoDevedor?: number;
   proximoVencimento?: string;
+  proximoValorTotal?: number;
+  totalPagamentosRealizados?: number;
+  parcelasEmAtraso?: number;
+  valorTotalOriginal?: number;
 }
 
 const CalculoPensaoAlimenticia = () => {
@@ -620,22 +624,58 @@ const CalculoPensaoAlimenticia = () => {
                      </div>
                    </div>
 
-                   {/* Informações adicionais se disponíveis */}
-                   {(result.totalParcelas || result.proximoVencimento) && (
+                   {/* Informações adicionais completas */}
+                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                     {result.totalParcelas && (
+                       <div className="p-3 bg-indigo-900/20 border border-indigo-500/30 rounded-lg">
+                         <p className="text-xs text-indigo-300">Total de Parcelas</p>
+                         <p className="text-lg font-semibold text-indigo-400">
+                           {result.totalParcelas} vencimentos
+                         </p>
+                       </div>
+                     )}
+                     {result.proximoVencimento && (
+                       <div className="p-3 bg-cyan-900/20 border border-cyan-500/30 rounded-lg">
+                         <p className="text-xs text-cyan-300">Próximo Vencimento</p>
+                         <p className="text-lg font-semibold text-cyan-400">
+                           {new Date(result.proximoVencimento).toLocaleDateString('pt-BR')}
+                         </p>
+                       </div>
+                     )}
+                     {result.proximoValorTotal && (
+                       <div className="p-3 bg-teal-900/20 border border-teal-500/30 rounded-lg">
+                         <p className="text-xs text-teal-300">Próximo Valor Total</p>
+                         <p className="text-lg font-semibold text-teal-400">
+                           R$ {result.proximoValorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                         </p>
+                       </div>
+                     )}
+                     {result.parcelasEmAtraso !== undefined && result.parcelasEmAtraso > 0 && (
+                       <div className="p-3 bg-rose-900/20 border border-rose-500/30 rounded-lg">
+                         <p className="text-xs text-rose-300">Parcelas em Atraso</p>
+                         <p className="text-lg font-semibold text-rose-400">
+                           {result.parcelasEmAtraso} parcelas
+                         </p>
+                       </div>
+                     )}
+                   </div>
+
+                   {/* Resumo financeiro adicional */}
+                   {(result.totalPagamentosRealizados || result.saldoDevedor) && (
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                       {result.totalParcelas && (
-                         <div className="p-3 bg-indigo-900/20 border border-indigo-500/30 rounded-lg">
-                           <p className="text-xs text-indigo-300">Total de Parcelas</p>
-                           <p className="text-lg font-semibold text-indigo-400">
-                             {result.totalParcelas} vencimentos
+                       {result.totalPagamentosRealizados && (
+                         <div className="p-3 bg-emerald-900/20 border border-emerald-500/30 rounded-lg">
+                           <p className="text-xs text-emerald-300">Total de Pagamentos</p>
+                           <p className="text-lg font-semibold text-emerald-400">
+                             R$ {result.totalPagamentosRealizados.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                            </p>
                          </div>
                        )}
-                       {result.proximoVencimento && (
-                         <div className="p-3 bg-cyan-900/20 border border-cyan-500/30 rounded-lg">
-                           <p className="text-xs text-cyan-300">Próximo Vencimento</p>
-                           <p className="text-lg font-semibold text-cyan-400">
-                             {result.proximoVencimento}
+                       {result.saldoDevedor && result.saldoDevedor > 0 && (
+                         <div className="p-3 bg-red-900/20 border border-red-500/30 rounded-lg">
+                           <p className="text-xs text-red-300">Saldo Devedor</p>
+                           <p className="text-lg font-semibold text-red-400">
+                             R$ {result.saldoDevedor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                            </p>
                          </div>
                        )}
