@@ -197,25 +197,13 @@ function calcularAtrasoDetalhado(
         }
       }
       
-      // Calcular dias de atraso apenas se houver valor restante
+      // Calcular dias de atraso apenas se houver valor restante E se a data atual for posterior ao vencimento
       if (debito.valorRestante > 0) {
-        // Se houve pagamentos, usar a data do último pagamento para calcular atraso
-        if (debito.valorPago > 0 && debito.datasPagamentos.length > 0) {
-          // Pegar a data do último pagamento aplicado a este vencimento
-          const ultimoPagamento = pagamentosOrdenados
-            .filter(p => p.utilizado || p.valor === 0) // Pagamentos que foram utilizados
-            .sort((a, b) => b.data.getTime() - a.data.getTime())[0]; // Mais recente primeiro
-          
-          if (ultimoPagamento) {
-            // Calcular atraso baseado na data do último pagamento
-            debito.diasAtraso = Math.max(0, Math.floor((ultimoPagamento.data.getTime() - vencimento.getTime()) / (1000 * 60 * 60 * 24)));
-          } else {
-            debito.diasAtraso = Math.max(0, Math.floor((dataCalculo.getTime() - vencimento.getTime()) / (1000 * 60 * 60 * 24)));
-          }
-        } else {
-          // Nenhum pagamento foi aplicado, calcular atraso até a data do cálculo
-          debito.diasAtraso = Math.max(0, Math.floor((dataCalculo.getTime() - vencimento.getTime()) / (1000 * 60 * 60 * 24)));
-        }
+        // Calcular atraso baseado na data atual ou data do cálculo, não na data do pagamento
+        debito.diasAtraso = Math.max(0, Math.floor((dataCalculo.getTime() - vencimento.getTime()) / (1000 * 60 * 60 * 24)));
+      } else {
+        // Se foi pago integralmente, não há atraso
+        debito.diasAtraso = 0;
       }
       
       // Calcular juros e multas sobre o valor restante (se houver atraso)
@@ -359,8 +347,8 @@ serve(async (req) => {
         dataFinalCalculo
       );
       
-      valorTotalAtrasado = calculoDetalhado.totalDevido - calculoDetalhado.totalPago;
       saldoDevedor = calculoDetalhado.saldoDevedor;
+      valorTotalAtrasado = saldoDevedor; // O saldo devedor já é o valor em atraso correto
       multa = calculoDetalhado.multa;
       juros = calculoDetalhado.juros;
       detalhePagamentos = calculoDetalhado.detalhePagamentos;
