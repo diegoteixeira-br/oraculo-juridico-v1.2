@@ -144,6 +144,7 @@ function calcularAtrasoDetalhado(
   multa: number;
   juros: number;
   detalhePagamentos: string;
+  mesesAtrasados: number;
 } {
   const dataCalculo = new Date(dataCalculoStr);
   let totalDevido = 0;
@@ -151,6 +152,7 @@ function calcularAtrasoDetalhado(
   let saldoDevedor = 0;
   let multa = 0;
   let juros = 0;
+  let mesesAtrasados = 0;
   let detalhePagamentos = "\nDETALHAMENTO POR VENCIMENTO:\n";
   
   // Converter pagamentos para Date e ordenar
@@ -194,6 +196,7 @@ function calcularAtrasoDetalhado(
       // Acumular APENAS os valores que realmente estão em falta
       if (valorRestante > 0) {
         saldoDevedor += valorRestante;
+        mesesAtrasados++; // Contar apenas meses com valor em atraso
       }
       
       // Calcular dias de atraso apenas se houver valor restante
@@ -204,12 +207,12 @@ function calcularAtrasoDetalhado(
       
       // Calcular juros e multas sobre o valor restante (se houver atraso)
       if (valorRestante > 0 && diasAtraso > 0) {
-        const mesesAtraso = Math.max(1, Math.ceil(diasAtraso / 30));
+        const mesesAtrasoCalculo = Math.max(1, Math.ceil(diasAtraso / 30));
         
         // Multa de 2% sobre o valor em atraso
         const multaParcela = valorRestante * 0.02;
         // Juros de 1% ao mês sobre o valor em atraso
-        const jurosParcela = valorRestante * 0.01 * mesesAtraso;
+        const jurosParcela = valorRestante * 0.01 * mesesAtrasoCalculo;
         
         multa += multaParcela;
         juros += jurosParcela;
@@ -221,7 +224,7 @@ function calcularAtrasoDetalhado(
           detalhePagamentos += `  Pagamentos: ${datasPagamentos.join(', ')}\n`;
         }
         detalhePagamentos += `  Valor em atraso: R$ ${valorRestante.toFixed(2)}\n`;
-        detalhePagamentos += `  Dias de atraso: ${diasAtraso} dias (${mesesAtraso} meses)\n`;
+        detalhePagamentos += `  Dias de atraso: ${diasAtraso} dias (${mesesAtrasoCalculo} meses)\n`;
         detalhePagamentos += `  Multa (2%): R$ ${multaParcela.toFixed(2)}\n`;
         detalhePagamentos += `  Juros (1% a.m.): R$ ${jurosParcela.toFixed(2)}\n`;
         detalhePagamentos += `  Total desta parcela: R$ ${(valorRestante + multaParcela + jurosParcela).toFixed(2)}\n`;
@@ -256,7 +259,8 @@ function calcularAtrasoDetalhado(
     saldoDevedor,
     multa,
     juros,
-    detalhePagamentos
+    detalhePagamentos,
+    mesesAtrasados
   };
 }
 
@@ -325,6 +329,7 @@ serve(async (req) => {
     let detalhePagamentos = '';
     let saldoDevedor = 0;
     let totalParcelas = 0;
+    let mesesAtrasados = 0;
     
     const agora = new Date();
     const dataAtual = agora.toLocaleDateString('en-CA', { timeZone: userTimezone });
@@ -347,6 +352,7 @@ serve(async (req) => {
       multa = calculoDetalhado.multa;
       juros = calculoDetalhado.juros;
       detalhePagamentos = calculoDetalhado.detalhePagamentos;
+      mesesAtrasados = calculoDetalhado.mesesAtrasados;
     } else if (data.mesesAtraso) {
       // Cálculo antigo para compatibilidade
       const mesesAtraso = parseInt(data.mesesAtraso);
@@ -417,6 +423,7 @@ Cálculos de Regularização:
 
 ${saldoDevedor > 0 || valorTotalAtrasado > 0 ? `
 Valores em Atraso:
+2. Meses em Atraso: ${mesesAtrasados} ${mesesAtrasados === 1 ? 'mês' : 'meses'}
 3. Valor Total em Atraso: R$ ${Math.max(valorTotalAtrasado, saldoDevedor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
 4. Multa (2%): R$ ${multa.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
 5. Juros (1% a.m.): R$ ${juros.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
