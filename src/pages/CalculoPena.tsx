@@ -177,12 +177,11 @@ export default function CalculoPena() {
             <div className="flex items-center gap-3">
               <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
                 onClick={() => navigate('/dashboard')}
-                className="text-slate-300 hover:text-white hover:bg-slate-700/50"
+                className="text-white hover:bg-slate-700"
               >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Voltar
+                <ArrowLeft className="h-5 w-5" />
               </Button>
               <img 
                 src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" 
