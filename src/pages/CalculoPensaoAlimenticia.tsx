@@ -321,82 +321,116 @@ const CalculoPensaoAlimenticia = () => {
                     </Button>
                   </div>
                   
-                  {formData.pagamentos.map((pagamento, index) => {
-                    const valorDue = parseFloat(formData.valorEstipulado) || 0;
-                    const valorPago = parseFloat(pagamento.valor) || 0;
-                    const diferenca = valorPago - valorDue;
-                    
-                    return (
-                      <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-3 p-3 bg-slate-700/30 rounded-lg">
-                        <div className="space-y-1">
-                          <Label className="text-xs text-slate-400">Data do Pagamento</Label>
-                          <Input
-                            type="date"
-                            value={pagamento.data}
-                            onChange={(e) => {
-                              const novosPagamentos = [...formData.pagamentos];
-                              novosPagamentos[index].data = e.target.value;
-                              handleInputChange('pagamentos', novosPagamentos);
-                            }}
-                            className="bg-slate-700 border-slate-600 focus:border-primary text-white"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <Label className="text-xs text-slate-400">Valor Pago</Label>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            placeholder="250.00"
-                            value={pagamento.valor}
-                            onChange={(e) => {
-                              const novosPagamentos = [...formData.pagamentos];
-                              novosPagamentos[index].valor = e.target.value;
-                              handleInputChange('pagamentos', novosPagamentos);
-                            }}
-                            className="bg-slate-700 border-slate-600 focus:border-primary text-white"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <Label className="text-xs text-slate-400">Diferença</Label>
-                          <div className={`px-3 py-2 rounded text-sm font-medium ${
-                            diferenca === 0 ? 'bg-slate-600 text-slate-300' :
-                            diferenca > 0 ? 'bg-green-600/20 text-green-400' : 'bg-red-600/20 text-red-400'
-                          }`}>
-                            {diferenca === 0 ? 'Em dia' : 
-                             diferenca > 0 ? `+R$ ${diferenca.toFixed(2)}` : 
-                             `R$ ${Math.abs(diferenca).toFixed(2)} em falta`}
-                          </div>
-                        </div>
-                        <div className="flex gap-2 items-end">
-                          <div className="flex-1 space-y-1">
-                            <Label className="text-xs text-slate-400">Observação</Label>
-                            <Input
-                              placeholder="Pagamento parcial"
-                              value={pagamento.observacao}
-                              onChange={(e) => {
-                                const novosPagamentos = [...formData.pagamentos];
-                                novosPagamentos[index].observacao = e.target.value;
-                                handleInputChange('pagamentos', novosPagamentos);
-                              }}
-                              className="bg-slate-700 border-slate-600 focus:border-primary text-white"
-                            />
-                          </div>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              const novosPagamentos = formData.pagamentos.filter((_, i) => i !== index);
-                              handleInputChange('pagamentos', novosPagamentos);
-                            }}
-                            className="text-red-400 hover:bg-red-900/20 px-2"
-                          >
-                            ×
-                          </Button>
-                        </div>
-                      </div>
-                    );
-                  })}
+                   {formData.pagamentos.map((pagamento, index) => {
+                     const valorDue = parseFloat(formData.valorEstipulado) || 0;
+                     const valorPago = parseFloat(pagamento.valor) || 0;
+                     const diferenca = valorPago - valorDue;
+                     
+                     // Calcular dias em atraso
+                     const calcularDiasAtraso = () => {
+                       if (!pagamento.data || !formData.diaVencimento) return 0;
+                       
+                       const dataPagamento = new Date(pagamento.data);
+                       const mes = dataPagamento.getMonth();
+                       const ano = dataPagamento.getFullYear();
+                       const dataVencimento = new Date(ano, mes, parseInt(formData.diaVencimento));
+                       
+                       // Se pagou antes do vencimento, não há atraso
+                       if (dataPagamento <= dataVencimento) return 0;
+                       
+                       const diffTime = dataPagamento.getTime() - dataVencimento.getTime();
+                       return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                     };
+                     
+                     const diasAtraso = calcularDiasAtraso();
+                     
+                     // Calcular valor corrigido se houver atraso
+                     const calcularValorCorrigido = () => {
+                       if (diasAtraso <= 0) return valorPago;
+                       
+                       // Multa de 2% + juros de 1% ao mês (0.033% ao dia)
+                       const multa = valorDue * 0.02; // 2% de multa
+                       const jurosDiarios = valorDue * 0.01 * (diasAtraso / 30); // Juros proporcionais aos dias
+                       
+                       return valorDue + multa + jurosDiarios;
+                     };
+                     
+                     const valorCorrigido = calcularValorCorrigido();
+                     
+                     return (
+                       <div key={index} className="grid grid-cols-1 md:grid-cols-5 gap-3 p-3 bg-slate-700/30 rounded-lg">
+                         <div className="space-y-1">
+                           <Label className="text-xs text-slate-400">Data do Pagamento</Label>
+                           <Input
+                             type="date"
+                             value={pagamento.data}
+                             onChange={(e) => {
+                               const novosPagamentos = [...formData.pagamentos];
+                               novosPagamentos[index].data = e.target.value;
+                               handleInputChange('pagamentos', novosPagamentos);
+                             }}
+                             className="bg-slate-700 border-slate-600 focus:border-primary text-white"
+                           />
+                         </div>
+                         <div className="space-y-1">
+                           <Label className="text-xs text-slate-400">Valor Pago</Label>
+                           <Input
+                             type="number"
+                             step="0.01"
+                             placeholder="250.00"
+                             value={pagamento.valor}
+                             onChange={(e) => {
+                               const novosPagamentos = [...formData.pagamentos];
+                               novosPagamentos[index].valor = e.target.value;
+                               handleInputChange('pagamentos', novosPagamentos);
+                             }}
+                             className="bg-slate-700 border-slate-600 focus:border-primary text-white"
+                           />
+                         </div>
+                         <div className="space-y-1">
+                           <Label className="text-xs text-slate-400">Diferença</Label>
+                           <div className={`px-3 py-2 rounded text-sm font-medium ${
+                             diferenca === 0 ? 'bg-slate-600 text-slate-300' :
+                             diferenca > 0 ? 'bg-green-600/20 text-green-400' : 'bg-red-600/20 text-red-400'
+                           }`}>
+                             {diferenca === 0 ? 'Em dia' : 
+                              diferenca > 0 ? `+R$ ${diferenca.toFixed(2)}` : 
+                              `R$ ${Math.abs(diferenca).toFixed(2)} em falta`}
+                           </div>
+                         </div>
+                         <div className="space-y-1">
+                           <Label className="text-xs text-slate-400">Dias em Atraso</Label>
+                           <div className={`px-3 py-2 rounded text-sm font-medium ${
+                             diasAtraso === 0 ? 'bg-slate-600 text-slate-300' : 'bg-orange-600/20 text-orange-400'
+                           }`}>
+                             {diasAtraso === 0 ? 'Em dia' : `${diasAtraso} dias`}
+                           </div>
+                         </div>
+                         <div className="space-y-1">
+                           <Label className="text-xs text-slate-400">Valor Corrigido</Label>
+                           <div className={`px-3 py-2 rounded text-sm font-medium ${
+                             diasAtraso === 0 ? 'bg-slate-600 text-slate-300' : 'bg-red-600/20 text-red-400'
+                           }`}>
+                             {diasAtraso === 0 ? 'N/A' : `R$ ${valorCorrigido.toFixed(2)}`}
+                           </div>
+                         </div>
+                         <div className="flex justify-end items-end">
+                           <Button
+                             type="button"
+                             variant="ghost"
+                             size="sm"
+                             onClick={() => {
+                               const novosPagamentos = formData.pagamentos.filter((_, i) => i !== index);
+                               handleInputChange('pagamentos', novosPagamentos);
+                             }}
+                             className="text-red-400 hover:bg-red-900/20 px-2"
+                           >
+                             ×
+                           </Button>
+                         </div>
+                       </div>
+                     );
+                   })}
                   
                   {formData.pagamentos.length === 0 && (
                     <div className="text-center py-4 text-slate-400 text-sm">
@@ -405,16 +439,6 @@ const CalculoPensaoAlimenticia = () => {
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="observacoes" className="text-sm text-slate-300">Observações</Label>
-                  <Textarea
-                    id="observacoes"
-                    placeholder="Informações adicionais sobre a pensão..."
-                    value={formData.observacoes}
-                    onChange={(e) => handleInputChange('observacoes', e.target.value)}
-                    className="min-h-[80px] bg-slate-700 border-slate-600 focus:border-primary text-white"
-                  />
-                </div>
 
                 <Button 
                   onClick={handleCalcular} 
