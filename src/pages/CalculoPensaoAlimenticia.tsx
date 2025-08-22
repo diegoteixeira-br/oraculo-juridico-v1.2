@@ -324,7 +324,18 @@ const CalculoPensaoAlimenticia = () => {
                    {formData.pagamentos.map((pagamento, index) => {
                      const valorDue = parseFloat(formData.valorEstipulado) || 0;
                      const valorPago = parseFloat(pagamento.valor) || 0;
-                     const diferenca = valorPago - valorDue;
+                     
+                     // Buscar saldo acumulado de meses anteriores
+                     const saldoAcumuladoAnterior = formData.pagamentos.slice(0, index).reduce((saldo, pagAnterior) => {
+                       const valorDevido = parseFloat(formData.valorEstipulado) || 0;
+                       const valorPagoAnterior = parseFloat(pagAnterior.valor) || 0;
+                       const diferenca = valorDevido - valorPagoAnterior;
+                       return saldo + (diferenca > 0 ? diferenca : 0);
+                     }, 0);
+                     
+                     // Valor total devido para este mês (valor base + saldo acumulado)
+                     const valorTotalDevido = valorDue + saldoAcumuladoAnterior;
+                     const diferenca = valorPago - valorTotalDevido;
                      
                      // Calcular dias em atraso
                      const calcularDiasAtraso = () => {
@@ -344,15 +355,15 @@ const CalculoPensaoAlimenticia = () => {
                      
                      const diasAtraso = calcularDiasAtraso();
                      
-                     // Calcular valor corrigido se houver atraso
+                     // Calcular valor corrigido se houver atraso (aplicar juros sobre o valor total devido)
                      const calcularValorCorrigido = () => {
-                       if (diasAtraso <= 0) return valorPago;
+                       if (diasAtraso <= 0) return valorTotalDevido;
                        
                        // Multa de 2% + juros de 1% ao mês (0.033% ao dia)
-                       const multa = valorDue * 0.02; // 2% de multa
-                       const jurosDiarios = valorDue * 0.01 * (diasAtraso / 30); // Juros proporcionais aos dias
+                       const multa = valorTotalDevido * 0.02; // 2% de multa
+                       const jurosDiarios = valorTotalDevido * 0.01 * (diasAtraso / 30); // Juros proporcionais aos dias
                        
-                       return valorDue + multa + jurosDiarios;
+                       return valorTotalDevido + multa + jurosDiarios;
                      };
                      
                      const valorCorrigido = calcularValorCorrigido();
@@ -432,11 +443,43 @@ const CalculoPensaoAlimenticia = () => {
                      );
                    })}
                   
-                  {formData.pagamentos.length === 0 && (
-                    <div className="text-center py-4 text-slate-400 text-sm">
-                      Adicione os pagamentos realizados para calcular o valor em atraso
-                    </div>
-                  )}
+                   {/* Resumo de saldo acumulado */}
+                   {formData.pagamentos.length > 0 && (() => {
+                     const saldoTotal = formData.pagamentos.reduce((saldo, pagamento) => {
+                       const valorDevido = parseFloat(formData.valorEstipulado) || 0;
+                       const valorPago = parseFloat(pagamento.valor) || 0;
+                       const diferenca = valorDevido - valorPago;
+                       return saldo + (diferenca > 0 ? diferenca : 0);
+                     }, 0);
+                     
+                     if (saldoTotal > 0) {
+                       return (
+                         <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4">
+                           <div className="flex items-center justify-between">
+                             <div>
+                               <h4 className="text-sm font-semibold text-red-300">Saldo Devedor Acumulado</h4>
+                               <p className="text-xs text-red-400/80">Valor que deve ser quitado no próximo pagamento</p>
+                             </div>
+                             <div className="text-right">
+                               <div className="text-2xl font-bold text-red-400">
+                                 R$ {saldoTotal.toFixed(2)}
+                               </div>
+                               <div className="text-xs text-red-400/80">
+                                 + juros e multa sobre atraso
+                               </div>
+                             </div>
+                           </div>
+                         </div>
+                       );
+                     }
+                     return null;
+                   })()}
+                   
+                   {formData.pagamentos.length === 0 && (
+                     <div className="text-center py-4 text-slate-400 text-sm">
+                       Adicione os pagamentos realizados para calcular o valor em atraso
+                     </div>
+                   )}
                 </div>
 
 
