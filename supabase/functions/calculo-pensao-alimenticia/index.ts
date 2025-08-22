@@ -116,11 +116,16 @@ function gerarVencimentos(dataInicioObrigacao: string, diaVencimento: number, da
     // Ajustar para primeiro dia útil se cair em fim de semana
     const vencimentoAjustado = ajustarParaDiaUtil(new Date(mesAtual));
     
-    // Só incluir vencimentos que já venceram (data anterior à data atual)
+    // Só incluir vencimentos que já venceram completamente
     const vencimento = new Date(vencimentoAjustado);
-    vencimento.setHours(23, 59, 59, 999); // Final do dia de vencimento
+    const agora = new Date();
     
-    if (vencimento < hoje) {
+    // Verificar se o vencimento é anterior ao dia atual (não incluir mesmo dia)
+    const vencimentoSomenteData = new Date(vencimento.getFullYear(), vencimento.getMonth(), vencimento.getDate());
+    const hojeSomenteData = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
+    
+    // Só adicionar se a data de vencimento for anterior à data atual
+    if (vencimentoSomenteData < hojeSomenteData) {
       vencimentos.push(vencimentoAjustado);
     }
     
