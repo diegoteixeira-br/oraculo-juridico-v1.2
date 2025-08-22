@@ -51,6 +51,7 @@ const CalculoPensaoAlimenticia = () => {
     numeroFilhos: '1',
     idadesFilhos: [''],
     valorEstipulado: '',
+    diaVencimento: '5',
     dataInicioObrigacao: '',
     pagamentos: [] as Pagamento[],
     observacoes: ''
@@ -276,6 +277,21 @@ const CalculoPensaoAlimenticia = () => {
                 </div>
 
                 <div className="space-y-2">
+                  <Label htmlFor="diaVencimento" className="text-sm text-slate-300">Dia do Vencimento *</Label>
+                  <Select value={formData.diaVencimento} onValueChange={(value) => handleInputChange('diaVencimento', value)}>
+                    <SelectTrigger className="bg-slate-700 border-slate-600 focus:border-primary text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 28 }, (_, i) => i + 1).map(dia => (
+                        <SelectItem key={dia} value={dia.toString()}>Dia {dia}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-slate-400">Dia específico para vencimentos mensais (evita feriados)</p>
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="dataInicioObrigacao" className="text-sm text-slate-300">Data de Início da Obrigação *</Label>
                   <Input
                     id="dataInicioObrigacao"
@@ -284,7 +300,7 @@ const CalculoPensaoAlimenticia = () => {
                     onChange={(e) => handleInputChange('dataInicioObrigacao', e.target.value)}
                     className="bg-slate-700 border-slate-600 focus:border-primary text-white"
                   />
-                  <p className="text-xs text-slate-400">Esta data define o primeiro vencimento da pensão</p>
+                  <p className="text-xs text-slate-400">Data da determinação judicial ou acordo</p>
                 </div>
 
                 {/* Seção de Pagamentos */}
@@ -585,6 +601,7 @@ const CalculoPensaoAlimenticia = () => {
             numeroFilhos: calculo.numero_filhos.toString(),
             idadesFilhos: calculo.idades_filhos.map(idade => idade.toString()),
             valorEstipulado: calculo.valor_fixo?.toString() || '',
+            diaVencimento: '5',
             dataInicioObrigacao: calculo.data_inicio || '',
             pagamentos: [],
             observacoes: calculo.observacoes || ''
