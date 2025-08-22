@@ -71,23 +71,34 @@ function calcularJurosEMulta(valorPrincipal: number, mesesAtraso: number): { jur
   return { juros, multa };
 }
 
-function gerarVencimentos(dataInicioObrigacao: string, diaVencimento: number, dataFinal: string): Date[] {
+function gerarVencimentos(dataInicioObrigacao: string, dataFinal: string): Date[] {
   const vencimentos: Date[] = [];
   const dataInicio = new Date(dataInicioObrigacao);
   const dataFim = new Date(dataFinal);
   
-  // Primeiro vencimento baseado na data de início da obrigação
-  let mesAtual = new Date(dataInicio.getFullYear(), dataInicio.getMonth(), diaVencimento);
-  
-  // Se a data de início for depois do dia de vencimento do mês, começar no próximo mês
-  if (dataInicio.getDate() > diaVencimento) {
-    mesAtual.setMonth(mesAtual.getMonth() + 1);
-  }
+  // Primeiro vencimento é a própria data de início da obrigação
+  let mesAtual = new Date(dataInicio);
   
   // Gerar vencimentos até a data final
   while (mesAtual <= dataFim) {
     vencimentos.push(new Date(mesAtual));
-    mesAtual.setMonth(mesAtual.getMonth() + 1);
+    
+    // Próximo vencimento: mesmo dia do mês seguinte
+    // Se o dia não existir no próximo mês (ex: 31), usar o último dia do mês
+    const proximoMes = new Date(mesAtual);
+    proximoMes.setMonth(proximoMes.getMonth() + 1);
+    
+    // Verificar se o dia existe no próximo mês
+    const diaOriginal = dataInicio.getDate();
+    const ultimoDiaProximoMes = new Date(proximoMes.getFullYear(), proximoMes.getMonth() + 1, 0).getDate();
+    
+    if (diaOriginal <= ultimoDiaProximoMes) {
+      proximoMes.setDate(diaOriginal);
+    } else {
+      proximoMes.setDate(ultimoDiaProximoMes);
+    }
+    
+    mesAtual = proximoMes;
   }
   
   return vencimentos;
@@ -277,7 +288,6 @@ serve(async (req) => {
     
     const numeroFilhos = parseInt(data.numeroFilhos);
     const idadeFilho = data.idadeFilho ? parseInt(data.idadeFilho) : undefined;
-    const diaVencimento = parseInt(data.diaVencimento) || 5;
     
     let valorPensao = 0;
     let percentualRenda = 0;
@@ -300,7 +310,7 @@ serve(async (req) => {
     if (data.dataInicioObrigacao && data.valorEstipulado) {
       // Novo cálculo detalhado
       const dataFinalCalculo = data.dataFim || dataAtual;
-      const vencimentos = gerarVencimentos(data.dataInicioObrigacao, diaVencimento, dataFinalCalculo);
+      const vencimentos = gerarVencimentos(data.dataInicioObrigacao, dataFinalCalculo);
       totalParcelas = vencimentos.length;
       
       const calculoDetalhado = calcularAtrasoDetalhado(
@@ -336,7 +346,7 @@ serve(async (req) => {
     
     // Gerar detalhamento
     const proximoVencimento = data.dataInicioObrigacao ? 
-      new Date(new Date().getFullYear(), new Date().getMonth() + 1, diaVencimento).toLocaleDateString('pt-BR') : '';
+      new Date(new Date().getFullYear(), new Date().getMonth() + 1, new Date(data.dataInicioObrigacao).getDate()).toLocaleDateString('pt-BR') : '';
     
     const detalhamento = `CÁLCULO DE PENSÃO ALIMENTÍCIA - ATRASOS E CORREÇÕES
 
@@ -345,7 +355,6 @@ Dados da Pensão:
 - Número de Filhos: ${numeroFilhos}
 ${idadeFilho ? `- Idade do Filho: ${idadeFilho} anos` : ''}
 - Início da Obrigação: ${new Date(data.dataInicioObrigacao).toLocaleDateString('pt-BR')}
-- Dia do Vencimento: ${data.diaVencimento}
 ${totalParcelas > 0 ? `- Total de Parcelas: ${totalParcelas}` : ''}
 
 Cálculos de Regularização:
