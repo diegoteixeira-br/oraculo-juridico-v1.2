@@ -230,30 +230,9 @@ serve(async (req) => {
     let valorPensao = 0;
     let percentualRenda = 0;
     
-    // Calcular valor da pensão baseado no tipo
-    if (data.valorEstipulado) {
-      // Novo modelo: valor estipulado
-      valorPensao = parseFloat(data.valorEstipulado);
-      if (data.rendaAlimentante) {
-        const renda = parseFloat(data.rendaAlimentante);
-        percentualRenda = (valorPensao / renda) * 100;
-      }
-    } else if (data.tipoCalculo === 'percentual') {
-      // Modelo antigo: percentual da renda
-      const rendaAlimentante = parseFloat(data.rendaAlimentante);
-      percentualRenda = data.percentualPensao ? 
-        parseFloat(data.percentualPensao) : 
-        calcularPercentualSugerido(numeroFilhos, idadeFilho);
-      
-      valorPensao = rendaAlimentante * (percentualRenda / 100);
-    } else {
-      // Modelo antigo: valor fixo
-      valorPensao = parseFloat(data.valorFixo);
-      if (data.rendaAlimentante) {
-        const renda = parseFloat(data.rendaAlimentante);
-        percentualRenda = (valorPensao / renda) * 100;
-      }
-    }
+    // Calcular valor da pensão
+    valorPensao = parseFloat(data.valorEstipulado);
+    percentualRenda = 0; // Não calculamos mais percentual da renda
     
     // Calcular atrasos baseado nos pagamentos detalhados se disponível
     let valorTotalAtrasado = 0;
@@ -307,21 +286,18 @@ serve(async (req) => {
     const proximoVencimento = data.dataInicioObrigacao ? 
       new Date(new Date().getFullYear(), new Date().getMonth() + 1, diaVencimento).toLocaleDateString('pt-BR') : '';
     
-    const detalhamento = `CÁLCULO DE PENSÃO ALIMENTÍCIA
+    const detalhamento = `CÁLCULO DE PENSÃO ALIMENTÍCIA - ATRASOS E CORREÇÕES
 
 Dados da Pensão:
-${data.valorEstipulado ? `- Valor Estipulado Mensal: R$ ${parseFloat(data.valorEstipulado).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : `- Tipo de Cálculo: ${data.tipoCalculo === 'percentual' ? 'Percentual da Renda' : 'Valor Fixo'}`}
-${data.rendaAlimentante ? `- Renda do Alimentante: R$ ${parseFloat(data.rendaAlimentante).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : ''}
+- Valor Mensal Estipulado: R$ ${parseFloat(data.valorEstipulado).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
 - Número de Filhos: ${numeroFilhos}
 ${idadeFilho ? `- Idade do Filho: ${idadeFilho} anos` : ''}
-${data.dataInicioObrigacao ? `- Início da Obrigação: ${new Date(data.dataInicioObrigacao).toLocaleDateString('pt-BR')}` : data.dataInicio ? `- Data de Início: ${new Date(data.dataInicio).toLocaleDateString('pt-BR')}` : ''}
-${data.diaVencimento ? `- Dia do Vencimento: ${data.diaVencimento}` : ''}
-${data.dataFim ? `- Data de Fim: ${new Date(data.dataFim).toLocaleDateString('pt-BR')}` : ''}
-${totalParcelas > 0 ? `- Total de Parcelas: ${totalParcelas}` : mesesPeriodo ? `- Período: ${mesesPeriodo} meses` : ''}
+- Início da Obrigação: ${new Date(data.dataInicioObrigacao).toLocaleDateString('pt-BR')}
+- Dia do Vencimento: ${data.diaVencimento}
+${totalParcelas > 0 ? `- Total de Parcelas: ${totalParcelas}` : ''}
 
-Cálculos:
+Cálculos de Regularização:
 1. Valor da Pensão Mensal: R$ ${valorPensao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-2. Percentual da Renda: ${percentualRenda.toFixed(1)}%
 
 ${saldoDevedor > 0 || valorTotalAtrasado > 0 ? `
 Valores em Atraso:
@@ -374,19 +350,19 @@ Ferramenta: Oráculo Jurídico - Calculadora de Pensão Alimentícia`;
           .from('calculo_pensao_historico')
           .insert({
             user_id: userId,
-            tipo_calculo: data.tipoCalculo,
-            renda_alimentante: data.rendaAlimentante ? parseFloat(data.rendaAlimentante) : null,
-            percentual_pensao: data.percentualPensao ? parseFloat(data.percentualPensao) : null,
-            valor_fixo: data.valorFixo ? parseFloat(data.valorFixo) : null,
+            tipo_calculo: 'fixo',
+            renda_alimentante: null,
+            percentual_pensao: null,
+            valor_fixo: valorPensao,
             numero_filhos: parseInt(data.numeroFilhos),
             idades_filhos: (data.idadesFilhos || []).map((idade: string) => parseInt(idade)).filter((idade: number) => !isNaN(idade)),
-            data_inicio: data.dataInicio,
-            data_fim: data.dataFim || null,
-            meses_atraso: data.mesesAtraso ? parseInt(data.mesesAtraso) : null,
+            data_inicio: data.dataInicioObrigacao,
+            data_fim: null,
+            meses_atraso: null,
             observacoes: data.observacoes || null,
             valor_pensao: valorPensao,
-            percentual_renda: percentualRenda,
-            valor_total_atrasado: valorTotalAtrasado,
+            percentual_renda: 0,
+            valor_total_atrasado: Math.max(valorTotalAtrasado, saldoDevedor),
             multa: multa,
             juros: juros,
             valor_corrigido: valorCorrigido,

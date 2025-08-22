@@ -48,14 +48,8 @@ const CalculoPensaoAlimenticia = () => {
   const { userTimezone } = useUserTimezone();
   
   const [formData, setFormData] = useState({
-    rendaAlimentante: '',
     numeroFilhos: '1',
     idadesFilhos: [''],
-    percentualPensao: '',
-    dataInicio: '',
-    dataFim: '',
-    valorFixo: '',
-    tipoCalculo: 'percentual',
     valorEstipulado: '',
     diaVencimento: '5',
     dataInicioObrigacao: '',
@@ -101,7 +95,8 @@ const CalculoPensaoAlimenticia = () => {
       const dadosEnvio = {
         ...formData,
         idadeFilho: formData.idadesFilhos[0] || '', // Primeira idade para compatibilidade
-        idadesFilhos: formData.idadesFilhos
+        idadesFilhos: formData.idadesFilhos,
+        tipoCalculo: 'fixo' // Sempre valor fixo agora
       };
 
       const { data, error } = await supabase.functions.invoke('calculo-pensao-alimenticia', {
@@ -203,11 +198,7 @@ const CalculoPensaoAlimenticia = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="text-center p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-purple-400">Percentual</div>
-                  <div className="text-xs text-slate-400">da Renda</div>
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center p-3 bg-white/5 rounded-lg">
                   <div className="text-lg font-bold text-pink-400">Atrasos</div>
                   <div className="text-xs text-slate-400">Juros e Multa</div>
@@ -240,61 +231,17 @@ const CalculoPensaoAlimenticia = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="tipoCalculo" className="text-sm text-slate-300">Tipo de Cálculo</Label>
-                  <Select value={formData.tipoCalculo} onValueChange={(value) => handleInputChange('tipoCalculo', value)}>
-                    <SelectTrigger className="bg-slate-700 border-slate-600 focus:border-primary text-white">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="percentual">Percentual da Renda</SelectItem>
-                      <SelectItem value="fixo">Valor Fixo</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="valorEstipulado" className="text-sm text-slate-300">Valor Estipulado da Pensão *</Label>
+                  <Input
+                    id="valorEstipulado"
+                    type="number"
+                    step="0.01"
+                    placeholder="500.00"
+                    value={formData.valorEstipulado}
+                    onChange={(e) => handleInputChange('valorEstipulado', e.target.value)}
+                    className="bg-slate-700 border-slate-600 focus:border-primary text-white"
+                  />
                 </div>
-
-                {formData.tipoCalculo === 'percentual' && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="rendaAlimentante" className="text-sm text-slate-300">Renda do Alimentante *</Label>
-                      <Input
-                        id="rendaAlimentante"
-                        type="number"
-                        step="0.01"
-                        placeholder="5000.00"
-                        value={formData.rendaAlimentante}
-                        onChange={(e) => handleInputChange('rendaAlimentante', e.target.value)}
-                        className="bg-slate-700 border-slate-600 focus:border-primary text-white"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="percentualPensao" className="text-sm text-slate-300">Percentual (%)</Label>
-                      <Input
-                        id="percentualPensao"
-                        type="number"
-                        step="0.1"
-                        placeholder="30"
-                        value={formData.percentualPensao}
-                        onChange={(e) => handleInputChange('percentualPensao', e.target.value)}
-                        className="bg-slate-700 border-slate-600 focus:border-primary text-white"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {formData.tipoCalculo === 'fixo' && (
-                  <div className="space-y-2">
-                    <Label htmlFor="valorFixo" className="text-sm text-slate-300">Valor Fixo da Pensão *</Label>
-                    <Input
-                      id="valorFixo"
-                      type="number"
-                      step="0.01"
-                      placeholder="1500.00"
-                      value={formData.valorFixo}
-                      onChange={(e) => handleInputChange('valorFixo', e.target.value)}
-                      className="bg-slate-700 border-slate-600 focus:border-primary text-white"
-                    />
-                  </div>
-                )}
 
                 <div className="space-y-2">
                   <Label htmlFor="numeroFilhos" className="text-sm text-slate-300">Número de Filhos *</Label>
@@ -329,55 +276,18 @@ const CalculoPensaoAlimenticia = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="dataInicio" className="text-sm text-slate-300">Data de Início *</Label>
-                    <Input
-                      id="dataInicio"
-                      type="date"
-                      value={formData.dataInicio}
-                      onChange={(e) => handleInputChange('dataInicio', e.target.value)}
-                      className="bg-slate-700 border-slate-600 focus:border-primary text-white"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="dataFim" className="text-sm text-slate-300">Data de Fim</Label>
-                    <Input
-                      id="dataFim"
-                      type="date"
-                      value={formData.dataFim}
-                      onChange={(e) => handleInputChange('dataFim', e.target.value)}
-                      className="bg-slate-700 border-slate-600 focus:border-primary text-white"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="valorEstipulado" className="text-sm text-slate-300">Valor Estipulado por Mês *</Label>
-                    <Input
-                      id="valorEstipulado"
-                      type="number"
-                      step="0.01"
-                      placeholder="500.00"
-                      value={formData.valorEstipulado}
-                      onChange={(e) => handleInputChange('valorEstipulado', e.target.value)}
-                      className="bg-slate-700 border-slate-600 focus:border-primary text-white"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="diaVencimento" className="text-sm text-slate-300">Dia do Vencimento *</Label>
-                    <Select value={formData.diaVencimento} onValueChange={(value) => handleInputChange('diaVencimento', value)}>
-                      <SelectTrigger className="bg-slate-700 border-slate-600 focus:border-primary text-white">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Array.from({ length: 28 }, (_, i) => i + 1).map(dia => (
-                          <SelectItem key={dia} value={dia.toString()}>Dia {dia}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="diaVencimento" className="text-sm text-slate-300">Dia do Vencimento *</Label>
+                  <Select value={formData.diaVencimento} onValueChange={(value) => handleInputChange('diaVencimento', value)}>
+                    <SelectTrigger className="bg-slate-700 border-slate-600 focus:border-primary text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 28 }, (_, i) => i + 1).map(dia => (
+                        <SelectItem key={dia} value={dia.toString()}>Dia {dia}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
@@ -686,17 +596,11 @@ const CalculoPensaoAlimenticia = () => {
         onSelectCalculation={(calculo) => {
           // Preencher formulário com dados do histórico
           setFormData({
-            tipoCalculo: calculo.tipo_calculo,
-            rendaAlimentante: calculo.renda_alimentante?.toString() || '',
-            percentualPensao: calculo.percentual_pensao?.toString() || '',
-            valorFixo: calculo.valor_fixo?.toString() || '',
             numeroFilhos: calculo.numero_filhos.toString(),
             idadesFilhos: calculo.idades_filhos.map(idade => idade.toString()),
-            dataInicio: calculo.data_inicio,
-            dataFim: calculo.data_fim || '',
-            valorEstipulado: '',
+            valorEstipulado: calculo.valor_fixo?.toString() || '',
             diaVencimento: '5',
-            dataInicioObrigacao: '',
+            dataInicioObrigacao: calculo.data_inicio || '',
             pagamentos: [],
             observacoes: calculo.observacoes || ''
           });
