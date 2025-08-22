@@ -58,6 +58,7 @@ const CalculoPensaoAlimenticia = () => {
     valorEstipulado: '',
     diaVencimento: '5',
     dataInicioObrigacao: '',
+    mesesAtrasados: '', // Novo campo para meses atrasados
     pagamentos: [] as Pagamento[],
     observacoes: ''
   });
@@ -101,6 +102,7 @@ const CalculoPensaoAlimenticia = () => {
         ...formData,
         idadeFilho: formData.idadesFilhos[0] || '', // Primeira idade para compatibilidade
         idadesFilhos: formData.idadesFilhos,
+        mesesAtraso: formData.mesesAtrasados, // Enviar meses atrasados se informado
         tipoCalculo: 'fixo' // Sempre valor fixo agora
       };
 
@@ -306,6 +308,20 @@ const CalculoPensaoAlimenticia = () => {
                     className="bg-slate-700 border-slate-600 focus:border-primary text-white"
                   />
                   <p className="text-xs text-slate-400">Data da determinação judicial ou acordo</p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="mesesAtrasados" className="text-sm text-slate-300">Meses em Atraso (opcional)</Label>
+                  <Input
+                    id="mesesAtrasados"
+                    type="number"
+                    min="0"
+                    placeholder="Ex: 3"
+                    value={formData.mesesAtrasados}
+                    onChange={(e) => handleInputChange('mesesAtrasados', e.target.value)}
+                    className="bg-slate-700 border-slate-600 focus:border-primary text-white"
+                  />
+                  <p className="text-xs text-slate-400">Quantos meses estão em atraso (deixe vazio para cálculo automático)</p>
                 </div>
 
                 {/* Seção de Pagamentos */}
@@ -937,6 +953,7 @@ const CalculoPensaoAlimenticia = () => {
             valorEstipulado: calculo.valor_fixo?.toString() || '',
             diaVencimento: '5',
             dataInicioObrigacao: calculo.data_inicio || '',
+            mesesAtrasados: '', // Resetar campo de meses atrasados
             pagamentos: [],
             observacoes: calculo.observacoes || ''
           });
