@@ -587,127 +587,229 @@ const CalculoPensaoAlimenticia = () => {
             {/* Resultado */}
             {result ? (
               <Card className="bg-slate-800/50 border-slate-700">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-white">
-                    <TrendingUp className="w-5 h-5 text-green-400" />
-                    Resultado do Cálculo
-                  </CardTitle>
-                  <CardDescription>
-                    Valores calculados conforme os dados informados
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                   {/* Cards de resultados principais */}
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                     <div className="p-4 bg-gradient-to-br from-purple-600/20 to-purple-600/10 border border-purple-500/30 rounded-lg">
-                       <div className="flex items-center justify-between">
-                         <div>
-                           <p className="text-xs text-purple-300 font-medium">Valor da Pensão</p>
-                           <p className="text-2xl font-bold text-purple-400">
-                             R$ {result.valorPensao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                           </p>
-                         </div>
-                         <Heart className="w-8 h-8 text-purple-400" />
-                       </div>
-                     </div>
-
-                     <div className="p-4 bg-gradient-to-br from-blue-600/20 to-blue-600/10 border border-blue-500/30 rounded-lg">
-                       <div className="flex items-center justify-between">
-                         <div>
-                           <p className="text-xs text-blue-300 font-medium">Percentual da Renda</p>
-                           <p className="text-2xl font-bold text-blue-400">
-                             {result.percentualRenda.toFixed(1)}%
-                           </p>
-                         </div>
-                         <TrendingUp className="w-8 h-8 text-blue-400" />
-                       </div>
-                     </div>
-                   </div>
-
-                   {/* Informações adicionais completas */}
-                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                     {result.totalParcelas && (
-                       <div className="p-3 bg-indigo-900/20 border border-indigo-500/30 rounded-lg">
-                         <p className="text-xs text-indigo-300">Total de Parcelas</p>
-                         <p className="text-lg font-semibold text-indigo-400">
-                           {result.totalParcelas} vencimentos
-                         </p>
-                       </div>
-                     )}
-                     {result.proximoVencimento && (
-                       <div className="p-3 bg-cyan-900/20 border border-cyan-500/30 rounded-lg">
-                         <p className="text-xs text-cyan-300">Próximo Vencimento</p>
-                         <p className="text-lg font-semibold text-cyan-400">
-                           {new Date(result.proximoVencimento).toLocaleDateString('pt-BR')}
-                         </p>
-                       </div>
-                     )}
-                     {result.proximoValorTotal && (
-                       <div className="p-3 bg-teal-900/20 border border-teal-500/30 rounded-lg">
-                         <p className="text-xs text-teal-300">Próximo Valor Total</p>
-                         <p className="text-lg font-semibold text-teal-400">
-                           R$ {result.proximoValorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                         </p>
-                       </div>
-                     )}
-                     {result.parcelasEmAtraso !== undefined && result.parcelasEmAtraso > 0 && (
-                       <div className="p-3 bg-rose-900/20 border border-rose-500/30 rounded-lg">
-                         <p className="text-xs text-rose-300">Parcelas em Atraso</p>
-                         <p className="text-lg font-semibold text-rose-400">
-                           {result.parcelasEmAtraso} parcelas
-                         </p>
-                       </div>
-                     )}
-                   </div>
-
-                   {/* Resumo financeiro adicional */}
-                   {(result.totalPagamentosRealizados || result.saldoDevedor) && (
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                       {result.totalPagamentosRealizados && (
-                         <div className="p-3 bg-emerald-900/20 border border-emerald-500/30 rounded-lg">
-                           <p className="text-xs text-emerald-300">Total de Pagamentos</p>
-                           <p className="text-lg font-semibold text-emerald-400">
-                             R$ {result.totalPagamentosRealizados.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                           </p>
-                         </div>
-                       )}
-                       {result.saldoDevedor && result.saldoDevedor > 0 && (
-                         <div className="p-3 bg-red-900/20 border border-red-500/30 rounded-lg">
-                           <p className="text-xs text-red-300">Saldo Devedor</p>
-                           <p className="text-lg font-semibold text-red-400">
-                             R$ {result.saldoDevedor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                           </p>
-                         </div>
-                       )}
-                     </div>
-                   )}
-
-                  {result.valorTotalAtrasado > 0 && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="p-3 bg-red-900/20 border border-red-500/30 rounded-lg">
-                        <p className="text-xs text-red-300">Total em Atraso</p>
-                        <p className="text-lg font-semibold text-red-400">
-                          R$ {result.valorTotalAtrasado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                        </p>
-                      </div>
-                      <div className="p-3 bg-orange-900/20 border border-orange-500/30 rounded-lg">
-                        <p className="text-xs text-orange-300">Multa + Juros</p>
-                        <p className="text-lg font-semibold text-orange-400">
-                          R$ {(result.multa + result.juros).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                        </p>
+                 <CardHeader>
+                   <CardTitle className="flex items-center gap-2 text-white">
+                     <FileText className="w-5 h-5 text-primary" />
+                     Relatório Executivo de Pensão Alimentícia
+                   </CardTitle>
+                   <CardDescription>
+                     Análise técnica completa dos valores devidos, atrasados e correções monetárias
+                   </CardDescription>
+                 </CardHeader>
+                 <CardContent className="space-y-6">
+                    {/* Resumo Executivo */}
+                    <div className="bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/30 rounded-lg p-6">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                        <Calculator className="w-5 h-5 text-primary" />
+                        Resumo Executivo
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                        <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-600">
+                          <p className="text-xs text-slate-400 uppercase tracking-wide font-medium">Valor Mensal</p>
+                          <p className="text-2xl font-bold text-primary mt-1">
+                            R$ {result.valorPensao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          </p>
+                          <p className="text-xs text-slate-500 mt-1">{result.percentualRenda.toFixed(1)}% da renda base</p>
+                        </div>
+                        <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-600">
+                          <p className="text-xs text-slate-400 uppercase tracking-wide font-medium">Total Devido</p>
+                          <p className="text-2xl font-bold text-green-400 mt-1">
+                            R$ {result.valorCorrigido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          </p>
+                          <p className="text-xs text-slate-500 mt-1">Valor corrigido atual</p>
+                        </div>
+                        {result.valorTotalAtrasado > 0 && (
+                          <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-600">
+                            <p className="text-xs text-slate-400 uppercase tracking-wide font-medium">Em Atraso</p>
+                            <p className="text-2xl font-bold text-red-400 mt-1">
+                              R$ {result.valorTotalAtrasado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                            </p>
+                            <p className="text-xs text-slate-500 mt-1">Principal em atraso</p>
+                          </div>
+                        )}
+                        <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-600">
+                          <p className="text-xs text-slate-400 uppercase tracking-wide font-medium">Encargos</p>
+                          <p className="text-2xl font-bold text-orange-400 mt-1">
+                            R$ {(result.multa + result.juros).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          </p>
+                          <p className="text-xs text-slate-500 mt-1">Multa + Juros moratórios</p>
+                        </div>
                       </div>
                     </div>
-                  )}
 
-                  {/* Valor total corrigido */}
-                  <div className="p-4 bg-gradient-to-r from-green-600/20 to-emerald-600/20 border border-green-500/30 rounded-lg">
-                    <div className="text-center">
-                      <p className="text-sm text-green-300 mb-1">Valor Total Corrigido</p>
-                      <p className="text-3xl font-bold text-green-400">
-                        R$ {result.valorCorrigido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                      </p>
+                    {/* Detalhamento Financeiro Avançado */}
+                    <div className="bg-slate-800/30 border border-slate-600 rounded-lg p-6">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                        <TrendingUp className="w-5 h-5 text-blue-400" />
+                        Análise Financeira Detalhada
+                      </h3>
+                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        {/* Coluna 1 - Informações Base */}
+                        <div className="space-y-4">
+                          <h4 className="text-sm font-medium text-slate-300 uppercase tracking-wide border-b border-slate-600 pb-2">
+                            Dados Base da Obrigação
+                          </h4>
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-center py-2 border-b border-slate-700">
+                              <span className="text-sm text-slate-400">Valor Mensal Estipulado</span>
+                              <span className="text-sm font-semibold text-white">
+                                R$ {result.valorPensao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center py-2 border-b border-slate-700">
+                              <span className="text-sm text-slate-400">Percentual da Renda</span>
+                              <span className="text-sm font-semibold text-primary">{result.percentualRenda.toFixed(1)}%</span>
+                            </div>
+                            {result.totalParcelas && (
+                              <div className="flex justify-between items-center py-2 border-b border-slate-700">
+                                <span className="text-sm text-slate-400">Total de Vencimentos</span>
+                                <span className="text-sm font-semibold text-indigo-400">{result.totalParcelas}</span>
+                              </div>
+                            )}
+                            {result.proximoVencimento && (
+                              <div className="flex justify-between items-center py-2 border-b border-slate-700">
+                                <span className="text-sm text-slate-400">Próximo Vencimento</span>
+                                <span className="text-sm font-semibold text-cyan-400">
+                                  {new Date(result.proximoVencimento).toLocaleDateString('pt-BR')}
+                                </span>
+                              </div>
+                            )}
+                            {result.proximoValorTotal && (
+                              <div className="bg-cyan-900/20 border border-cyan-500/30 rounded-lg p-3 mt-3">
+                                <p className="text-xs text-cyan-300 text-center">Próximo Pagamento Total</p>
+                                <p className="text-xl font-bold text-cyan-400 text-center">
+                                  R$ {result.proximoValorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Coluna 2 - Valores em Atraso */}
+                        {result.valorTotalAtrasado > 0 && (
+                          <div className="space-y-4">
+                            <h4 className="text-sm font-medium text-red-300 uppercase tracking-wide border-b border-red-500/30 pb-2">
+                              Análise de Inadimplência
+                            </h4>
+                            <div className="space-y-3">
+                              <div className="flex justify-between items-center py-2 border-b border-slate-700">
+                                <span className="text-sm text-slate-400">Principal em Atraso</span>
+                                <span className="text-sm font-semibold text-red-400">
+                                  R$ {result.valorTotalAtrasado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                </span>
+                              </div>
+                              <div className="flex justify-between items-center py-2 border-b border-slate-700">
+                                <span className="text-sm text-slate-400">Multa Moratória (2%)</span>
+                                <span className="text-sm font-semibold text-orange-400">
+                                  R$ {result.multa.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                </span>
+                              </div>
+                              <div className="flex justify-between items-center py-2 border-b border-slate-700">
+                                <span className="text-sm text-slate-400">Juros de Mora (1% a.m.)</span>
+                                <span className="text-sm font-semibold text-orange-400">
+                                  R$ {result.juros.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                </span>
+                              </div>
+                              {result.parcelasEmAtraso && result.parcelasEmAtraso > 0 && (
+                                <div className="flex justify-between items-center py-2 border-b border-slate-700">
+                                  <span className="text-sm text-slate-400">Parcelas Inadimplentes</span>
+                                  <span className="text-sm font-semibold text-red-400">{result.parcelasEmAtraso}</span>
+                                </div>
+                              )}
+                              <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-3 mt-3">
+                                <p className="text-xs text-red-300 text-center">Total de Encargos</p>
+                                <p className="text-xl font-bold text-red-400 text-center">
+                                  R$ {(result.multa + result.juros).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Coluna 3 - Status Financeiro */}
+                        <div className="space-y-4">
+                          <h4 className="text-sm font-medium text-green-300 uppercase tracking-wide border-b border-green-500/30 pb-2">
+                            Posição Financeira
+                          </h4>
+                          <div className="space-y-3">
+                            {result.totalPagamentosRealizados && (
+                              <div className="flex justify-between items-center py-2 border-b border-slate-700">
+                                <span className="text-sm text-slate-400">Total de Pagamentos</span>
+                                <span className="text-sm font-semibold text-green-400">
+                                  R$ {result.totalPagamentosRealizados.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                </span>
+                              </div>
+                            )}
+                            {result.saldoDevedor && result.saldoDevedor > 0 && (
+                              <div className="flex justify-between items-center py-2 border-b border-slate-700">
+                                <span className="text-sm text-slate-400">Saldo Devedor</span>
+                                <span className="text-sm font-semibold text-red-400">
+                                  R$ {result.saldoDevedor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                </span>
+                              </div>
+                            )}
+                            <div className="flex justify-between items-center py-2 border-b border-slate-700">
+                              <span className="text-sm text-slate-400">Status da Obrigação</span>
+                              <span className={`text-sm font-semibold px-2 py-1 rounded ${
+                                result.valorTotalAtrasado > 0 
+                                  ? 'bg-red-900/20 text-red-400' 
+                                  : 'bg-green-900/20 text-green-400'
+                              }`}>
+                                {result.valorTotalAtrasado > 0 ? 'Inadimplente' : 'Em Dia'}
+                              </span>
+                            </div>
+                            <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-4 mt-4">
+                              <p className="text-xs text-green-300 text-center mb-1">Valor Total a Receber</p>
+                              <p className="text-2xl font-bold text-green-400 text-center">
+                                R$ {result.valorCorrigido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                              </p>
+                              <p className="text-xs text-green-400/70 text-center mt-1">
+                                Valor atualizado com correções
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+
+                    {/* Resumo Executivo Final */}
+                    <div className="bg-gradient-to-r from-green-600/20 to-emerald-600/10 border border-green-500/30 rounded-lg p-6">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                        <FileText className="w-5 h-5 text-green-400" />
+                        Conclusão da Análise
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-medium text-green-300">Valor Total Devido</h4>
+                          <p className="text-3xl font-bold text-green-400">
+                            R$ {result.valorCorrigido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          </p>
+                          <p className="text-sm text-slate-400">
+                            Este valor representa o montante total atualizado incluindo principal, 
+                            {result.valorTotalAtrasado > 0 && ' valores em atraso,'} multa e juros de mora.
+                          </p>
+                        </div>
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-medium text-blue-300">Situação Jurídica</h4>
+                          <div className="space-y-2 text-sm text-slate-300">
+                            {result.valorTotalAtrasado > 0 ? (
+                              <>
+                                <p className="text-red-400">⚠ Obrigação em inadimplência</p>
+                                <p>• Sujeita à execução judicial</p>
+                                <p>• Possível prisão civil do devedor</p>
+                                <p>• Incidência de novos encargos</p>
+                              </>
+                            ) : (
+                              <>
+                                <p className="text-green-400">✓ Obrigação em dia</p>
+                                <p>• Cumprimento regular dos pagamentos</p>
+                                <p>• Situação juridicamente adequada</p>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
 
                    {/* Detalhamento */}
                    <div className="bg-slate-900/50 rounded-lg border border-slate-600 p-4">
