@@ -74,7 +74,9 @@ function calcularJurosEMulta(valorPrincipal: number, mesesAtraso: number): { jur
 function gerarVencimentos(dataInicioObrigacao: string, diaVencimento: number, dataFinal: string): Date[] {
   const vencimentos: Date[] = [];
   const dataInicio = new Date(dataInicioObrigacao);
-  const dataFim = new Date(dataFinal);
+  const agora = new Date();
+  // Usar a data atual se dataFinal for futura, para gerar apenas parcelas atrasadas
+  const dataFim = new Date(dataFinal) > agora ? agora : new Date(dataFinal);
   
   // Primeiro vencimento baseado no mês da data de início mas no dia específico de vencimento
   let mesAtual = new Date(dataInicio.getFullYear(), dataInicio.getMonth(), diaVencimento);
