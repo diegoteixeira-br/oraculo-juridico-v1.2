@@ -102,9 +102,8 @@ function gerarVencimentos(dataInicioObrigacao: string, diaVencimento: number, da
     return data;
   };
   
-  // Obter data atual
+  // Obter data atual para considerar apenas vencimentos já passados
   const hoje = new Date();
-  hoje.setHours(23, 59, 59, 999); // Final do dia atual para comparação
   
   // Gerar vencimentos até a data final
   while (mesAtual <= dataFim) {
@@ -120,12 +119,13 @@ function gerarVencimentos(dataInicioObrigacao: string, diaVencimento: number, da
     // Ajustar para primeiro dia útil se cair em fim de semana
     const vencimentoAjustado = ajustarParaDiaUtil(new Date(mesAtual));
     
-    // Só incluir vencimentos que já passaram (considerando que hoje é final do dia)
-    const dataVencimento = new Date(vencimentoAjustado);
-    dataVencimento.setHours(23, 59, 59, 999); // Final do dia do vencimento
+    // Só incluir vencimentos que já passaram
+    // Comparar apenas ano, mês e dia (sem horário)
+    const agora = new Date();
+    const vencimento = new Date(vencimentoAjustado);
     
-    // Só adicionar se o vencimento for anterior ou igual ao dia de hoje
-    if (dataVencimento < hoje) {
+    // Se o vencimento é anterior à data atual, incluir
+    if (vencimento < agora) {
       vencimentos.push(vencimentoAjustado);
     }
     

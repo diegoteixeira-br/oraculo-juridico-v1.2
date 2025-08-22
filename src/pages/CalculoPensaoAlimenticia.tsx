@@ -587,24 +587,24 @@ const CalculoPensaoAlimenticia = () => {
                 </div>
 
 
-                <Button 
-                  onClick={handleCalcular} 
-                  disabled={loading}
-                  className="w-full bg-primary hover:bg-primary/90 py-3 text-lg font-semibold"
-                  size="lg"
-                >
-                  {loading ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Calculando...
-                    </div>
-                  ) : (
-                    <>
-                      <Calculator className="h-5 w-5 mr-2" />
-                      Calcular
-                    </>
-                  )}
-                </Button>
+                 <Button 
+                   onClick={handleCalcular} 
+                   disabled={loading}
+                   className="w-full bg-primary hover:bg-primary/90 py-3 text-lg font-semibold"
+                   size="lg"
+                 >
+                   {loading ? (
+                     <div className="flex items-center gap-2">
+                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                       Gerando Relatório...
+                     </div>
+                   ) : (
+                     <>
+                       <FileText className="h-5 w-5 mr-2" />
+                       Gerar Relatório
+                     </>
+                   )}
+                 </Button>
               </CardContent>
             </Card>
 
