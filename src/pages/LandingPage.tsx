@@ -57,7 +57,7 @@ const LandingPage = () => {
     answer: "Não. O saldo de 15.000 tokens do teste é único para o período de 7 dias e não é cumulativo após o término do teste."
   }, {
     question: "Preciso cadastrar um cartão de crédito para usar o plano gratuito?",
-    answer: "Sim. Para ativar o teste de 7 dias é necessário cadastrar um cartão de crédito. Não haverá cobrança até o 8º dia caso você não cancele."
+    answer: "Sim. Para ativar o teste de 7 dias é necessário cadastrar um cartão de crédito. A cobrança é feita no ato, mas você tem reembolso integral se cancelar antes do 8º dia."
   }, {
     question: "As informações da IA são confiáveis?",
     answer: "Nossa IA integra-se com a LexML, base oficial de jurisprudência do governo brasileiro. IMPORTANTE: As informações sempre precisam ser revisadas e adaptadas às necessidades específicas de cada caso pelo advogado responsável, pois a base LexML pode não estar 100% atualizada e cada situação jurídica é única."
@@ -191,7 +191,7 @@ const LandingPage = () => {
                 1
               </div>
               <h3 className="text-xl font-semibold mb-4 text-foreground">Cadastre-se Gratuitamente</h3>
-              <p className="text-muted-foreground">Crie sua conta gratuita e ative o teste de 7 dias com 15.000 tokens. Requer cartão; cobrança apenas no 8º dia se não cancelar.</p>
+              <p className="text-muted-foreground">Crie sua conta e teste 7 dias com 15.000 tokens. Cobrança no ato com reembolso integral se cancelar antes do 8º dia.</p>
             </div>
             
             <div className="text-center">

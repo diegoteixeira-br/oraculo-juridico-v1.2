@@ -104,7 +104,7 @@ export default function FinalizarCadastro() {
                 <div className="mt-6 p-4 bg-slate-700/20 rounded-lg">
                   <p className="text-sm text-slate-300">
                     <Shield className="w-4 h-4 inline mr-1 text-green-400" />
-                    Sua assinatura está ativa • 7 dias de teste gratuito
+                    Sua assinatura está ativa • 7 dias com reembolso garantido
                   </p>
                 </div>
               </CardContent>
@@ -128,7 +128,7 @@ export default function FinalizarCadastro() {
                   Finalizar Cadastro
                 </h1>
                 <p className="text-xs text-slate-300 hidden md:block">
-                  Um último passo para começar seu teste gratuito
+                  Finalize e experimente 7 dias com reembolso garantido
                 </p>
               </div>
             </Link>
@@ -164,7 +164,7 @@ export default function FinalizarCadastro() {
                 Plano Gratuito
               </CardTitle>
               <CardDescription>
-                Complete seu cadastro para começar seus 7 dias grátis
+                Complete seu cadastro • Cobrança no ato com reembolso em 7 dias
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -174,7 +174,7 @@ export default function FinalizarCadastro() {
                 <div className="text-4xl font-bold text-blue-400 mb-2">R$ 37,90</div>
                 <div className="text-sm text-slate-300">por mês • 30.000 tokens</div>
                 <div className="text-lg font-semibold text-yellow-400 mt-2">
-                  7 Dias Grátis para Testar!
+                  7 Dias com Reembolso Garantido!
                 </div>
               </div>
 
@@ -191,11 +191,11 @@ export default function FinalizarCadastro() {
                       </li>
                       <li className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-green-400 rounded-full"></div>
-                        <strong>7 dias grátis, cobrança inicia no 8º dia</strong>
+                        <strong>Cobrança no ato • Reembolso integral se cancelar antes do 8º dia</strong>
                       </li>
                       <li className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
-                        Cancele a qualquer momento sem cobrança durante o teste
+                        Experimente por 7 dias com reembolso garantido
                       </li>
                       <li className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-purple-400 rounded-full"></div>
@@ -256,7 +256,7 @@ export default function FinalizarCadastro() {
               <div className="text-center p-4 bg-slate-700/20 rounded-lg">
                 <p className="text-sm text-slate-300">
                   <Shield className="w-4 h-4 inline mr-1 text-green-400" />
-                  Garantia de 7 dias grátis • Pagamento seguro via Stripe
+                  Reembolso integral em 7 dias • Pagamento seguro via Stripe
                 </p>
               </div>
             </CardContent>

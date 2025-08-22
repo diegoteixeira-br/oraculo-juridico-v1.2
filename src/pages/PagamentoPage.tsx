@@ -67,7 +67,7 @@ export default function PagamentoPage() {
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Clock className="w-4 h-4" />
-                Período gratuito de 7 dias ativo
+                Período de 7 dias com reembolso garantido ativo
               </div>
               <div className="text-sm text-muted-foreground">
                 <strong>Email:</strong> {user.email}
@@ -116,7 +116,7 @@ export default function PagamentoPage() {
             variant="ghost" 
             onClick={() => navigate('/dashboard')}
           >
-            Voltar ao Dashboard (Período Gratuito)
+            Voltar ao Dashboard (Período de Teste)
           </Button>
         </div>
       </div>

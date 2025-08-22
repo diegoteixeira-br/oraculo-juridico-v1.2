@@ -278,7 +278,7 @@ export default function ComprarCreditosPage() {
                     </div>
                     <div className="flex items-center gap-2 text-base">
                       <Check className="w-5 h-5 text-primary" />
-                      <span>7 dias grátis: 15.000 tokens no período de teste</span>
+                      <span>7 dias com reembolso: 15.000 tokens no período de teste</span>
                     </div>
                   </div>
                   <div className="flex flex-col items-center justify-center gap-3">
