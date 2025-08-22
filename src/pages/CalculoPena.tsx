@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { CalendarIcon, Calculator, Download, Clock, Shield, Scale, ArrowLeft } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -15,6 +16,7 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { useSEO } from "@/hooks/useSEO";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import HistoricoCustodia from "@/components/pena/HistoricoCustodia";
 
 interface ResultadoCalculo {
   dataProgressao: Date;
@@ -207,7 +209,20 @@ export default function CalculoPena() {
 
       {/* Conteúdo principal */}
       <div className="container max-w-7xl mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        {/* Tabs para alternar entre as versões */}
+        <Tabs defaultValue="dados-sentenca" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="dados-sentenca" className="data-[state=active]:bg-primary">
+              Dados da Sentença
+            </TabsTrigger>
+            <TabsTrigger value="historico-custodia" className="data-[state=active]:bg-primary">
+              Histórico de Custódia
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="dados-sentenca">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           
           {/* Formulário */}
           <Card className="bg-slate-800/50 border-slate-700">
@@ -499,7 +514,13 @@ export default function CalculoPena() {
               )}
             </CardContent>
           </Card>
-        </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="historico-custodia">
+            <HistoricoCustodia />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
