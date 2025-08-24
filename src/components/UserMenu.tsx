@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { User, LogOut, Settings, MessageSquare, CreditCard, Calculator, Heart, Shield, History, Calendar, BookOpen } from "lucide-react";
+import { User, LogOut, Settings, MessageSquare, CreditCard, Calculator, Heart, Shield, History, Calendar, BookOpen, Scale } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -66,6 +66,7 @@ export default function UserMenu({ hideOptions = [] }: UserMenuProps) {
     '/agenda-juridica': 'agenda',
     '/calculo-contrato-bancario': 'calc-contrato',
     '/calculo-pensao-alimenticia': 'calc-pensao',
+    '/calculo-pena': 'calc-pena',
     '/historico-transacoes': 'historico',
     '/minha-conta': 'account',
     '/admin': 'admin'
@@ -115,6 +116,13 @@ export default function UserMenu({ hideOptions = [] }: UserMenuProps) {
       icon: Heart,
       onClick: () => navigate("/calculo-pensao-alimenticia"),
       show: !hideOptions.includes("calc-pensao") && currentPageKey !== "calc-pensao",
+    },
+    {
+      key: "calc-pena",
+      label: "Calc. de Pena",
+      icon: Scale,
+      onClick: () => navigate("/calculo-pena"),
+      show: !hideOptions.includes("calc-pena") && currentPageKey !== "calc-pena",
     },
     {
       key: "historico",
