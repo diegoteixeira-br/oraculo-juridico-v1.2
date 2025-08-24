@@ -9,6 +9,7 @@ import { useSEO } from '@/hooks/useSEO';
 import { supabase } from '@/integrations/supabase/client';
 import AdDisplay from '@/components/AdDisplay';
 import GoogleAdsPlaceholder from '@/components/GoogleAdsPlaceholder';
+import AdCarousel from '@/components/AdCarousel';
 import { useAuth } from '@/contexts/AuthContext';
 import UserMenu from '@/components/UserMenu';
 interface BlogPost {
@@ -140,8 +141,8 @@ const BlogJuridico = () => {
               Mantenha-se atualizado com as últimas notícias jurídicas, análises de legislação e dicas práticas para advogados
             </p>
             
-            {/* Google AdSense - Topo do Conteúdo */}
-            <GoogleAdsPlaceholder format="banner" position="Topo da página (Hero)" className="mb-8" />
+            {/* Topo do Conteúdo - Carrossel de Anúncios */}
+            <AdCarousel format="banner" position="hero_top" className="mb-8" />
             
             {/* Search Bar */}
             <div className="max-w-md mx-auto relative mb-8">
@@ -223,8 +224,8 @@ const BlogJuridico = () => {
                     </Link>)}
                 </div>
                 
-                {/* Google AdSense - Entre os artigos em destaque */}
-                <GoogleAdsPlaceholder format="mobile_banner" position="Entre artigos em destaque" className="mb-8" />
+                {/* Entre artigos - Carrossel de Anúncios */}
+                <AdCarousel format="mobile_banner" position="between_articles" className="mb-8" />
               </section>}
 
             {/* All Posts */}
@@ -300,8 +301,8 @@ const BlogJuridico = () => {
 
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-6">
-            {/* Google AdSense - Sidebar Topo */}
-            <GoogleAdsPlaceholder format="mobile_banner" position="Sidebar - Topo" />
+            {/* Sidebar Topo - Carrossel de Anúncios */}
+            <AdCarousel format="mobile_banner" position="sidebar_top" />
 
             {/* Categories */}
             <Card className="bg-slate-800/50 border-slate-700">
@@ -317,8 +318,8 @@ const BlogJuridico = () => {
               </CardContent>
             </Card>
 
-            {/* Google AdSense - Sidebar Meio */}
-            <GoogleAdsPlaceholder format="mobile_banner" position="Sidebar - Meio" />
+            {/* Sidebar Meio - Carrossel de Anúncios */}
+            <AdCarousel format="mobile_banner" position="sidebar_middle" />
 
             {/* Newsletter */}
             <Card className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border-blue-500/30">
@@ -336,15 +337,15 @@ const BlogJuridico = () => {
               </CardContent>
             </Card>
 
-            {/* Google AdSense - Sidebar Rodapé */}
-            <GoogleAdsPlaceholder format="mobile_banner" position="Sidebar - Rodapé" />
+            {/* Sidebar Rodapé - Carrossel de Anúncios */}
+            <AdCarousel format="mobile_banner" position="sidebar_bottom" />
           </div>
         </div>
       </div>
 
-      {/* Google AdSense - Rodapé do Conteúdo */}
+      {/* Rodapé do Conteúdo - Carrossel de Anúncios */}
       <div className="container mx-auto px-4 pb-8">
-        <GoogleAdsPlaceholder format="banner" position="Rodapé do conteúdo principal" />
+        <AdCarousel format="banner" position="content_footer" />
       </div>
 
       {/* Footer */}
