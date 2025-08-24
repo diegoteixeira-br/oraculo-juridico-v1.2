@@ -279,22 +279,22 @@ export default function CalculoPena() {
         
         {/* Tabs para alternar entre as versões */}
         <Tabs defaultValue="dados-sentenca" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6 bg-slate-800/50 p-1 rounded-lg">
+          <TabsList className="grid w-full grid-cols-3 mb-6 bg-slate-800/50 p-1 rounded-lg h-auto">
             <TabsTrigger 
               value="dados-sentenca" 
-              className="data-[state=active]:bg-primary text-xs md:text-sm font-medium px-2 py-2 data-[state=active]:text-white text-slate-300"
+              className="data-[state=active]:bg-primary text-[10px] sm:text-xs md:text-sm font-medium px-1 py-1.5 data-[state=active]:text-white text-slate-300 whitespace-nowrap"
             >
               Dados da Sentença
             </TabsTrigger>
             <TabsTrigger 
               value="dados-sentenca-simples" 
-              className="data-[state=active]:bg-primary text-xs md:text-sm font-medium px-2 py-2 data-[state=active]:text-white text-slate-300"
+              className="data-[state=active]:bg-primary text-[10px] sm:text-xs md:text-sm font-medium px-1 py-1.5 data-[state=active]:text-white text-slate-300 whitespace-nowrap"
             >
               Cálculo Simples
             </TabsTrigger>
             <TabsTrigger 
               value="historico-custodia" 
-              className="data-[state=active]:bg-primary text-xs md:text-sm font-medium px-2 py-2 data-[state=active]:text-white text-slate-300"
+              className="data-[state=active]:bg-primary text-[10px] sm:text-xs md:text-sm font-medium px-1 py-1.5 data-[state=active]:text-white text-slate-300 whitespace-nowrap"
             >
               Histórico de Custódia
             </TabsTrigger>
