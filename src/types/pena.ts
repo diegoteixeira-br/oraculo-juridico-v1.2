@@ -22,12 +22,29 @@ export type EventoProcessual = {
   observacao?: string;
 };
 
+export type Crime = {
+  id: string;
+  descricao: string;
+  artigo: string;
+  penaAnos: number;
+  penaMeses: number;
+  penaDias: number;
+  tipoPercentual: 'primario' | 'reincidente' | 'hediondo_primario' | 'hediondo_reincidente';
+  observacoes?: string;
+};
+
 export type DadosSentenca = {
+  crimes: Crime[];
   totalDias: number;        // total da pena em dias (converter anos/meses/dias p/ dias)
   regimeInicial: 'Fechado' | 'Semiaberto' | 'Aberto';
   fracaoProgressao: number; // ex.: 1/6 = 0.1667, 2/5 = 0.4, 3/5 = 0.6 (editável)
   fracaoLivramento?: number; // opcional, ex.: 1/3, 1/2, 2/3
   dataInicioTeorica?: string; // opcional (inicio do cumprimento, se existir)
+  numeroProcesso?: string;
+  vara?: string;
+  juiz?: string;
+  dataTransito?: string; // data do trânsito em julgado
+  observacoes?: string;
 };
 
 export type ResultadoCalculoV2 = {

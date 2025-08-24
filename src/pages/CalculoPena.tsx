@@ -17,6 +17,8 @@ import { useSEO } from "@/hooks/useSEO";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import HistoricoCustodia from "@/components/pena/HistoricoCustodia";
+import DadosSentencaAvancados from "@/components/pena/DadosSentencaAvancados";
+import type { DadosSentenca } from "@/types/pena";
 
 interface ResultadoCalculo {
   dataProgressao: Date;
@@ -159,6 +161,71 @@ export default function CalculoPena() {
     });
   };
 
+  const handleCalculoAvancado = (dadosSentenca: DadosSentenca) => {
+    setLoading(true);
+    try {
+      // Calcular datas baseado nos dados da sentença
+      const totalDias = dadosSentenca.totalDias;
+      const fracaoProgressao = dadosSentenca.fracaoProgressao;
+      const fracaoLivramento = dadosSentenca.fracaoLivramento || dadosSentenca.fracaoProgressao * 2;
+
+      // Se tem data de início, usar ela, senão usar data atual
+      const dataInicioCalculo = dadosSentenca.dataInicioTeorica 
+        ? new Date(dadosSentenca.dataInicioTeorica) 
+        : new Date();
+
+      const diasParaProgressao = Math.floor(totalDias * fracaoProgressao);
+      const diasParaLivramento = Math.floor(totalDias * fracaoLivramento);
+
+      const dataProgressao = new Date(dataInicioCalculo);
+      dataProgressao.setDate(dataProgressao.getDate() + diasParaProgressao);
+
+      const dataLivramentoCondicional = new Date(dataInicioCalculo);
+      dataLivramentoCondicional.setDate(dataLivramentoCondicional.getDate() + diasParaLivramento);
+
+      const dataFinalPena = new Date(dataInicioCalculo);
+      dataFinalPena.setDate(dataFinalPena.getDate() + totalDias);
+
+      // Determinar próximo regime
+      let regimeProgressao = "";
+      switch (dadosSentenca.regimeInicial) {
+        case "Fechado":
+          regimeProgressao = "Semiaberto";
+          break;
+        case "Semiaberto":
+          regimeProgressao = "Aberto";
+          break;
+        case "Aberto":
+          regimeProgressao = "Livramento Condicional";
+          break;
+      }
+
+      setResultado({
+        dataProgressao,
+        dataLivramentoCondicional,
+        dataFinalPena,
+        penatotalDias: totalDias,
+        diasRemidos: 0,
+        regimeProgressao
+      });
+
+      toast({
+        title: "Cálculo realizado",
+        description: "Os resultados foram calculados com base nos crimes informados"
+      });
+
+    } catch (error) {
+      console.error("Erro no cálculo:", error);
+      toast({
+        title: "Erro no cálculo",
+        description: "Ocorreu um erro ao processar os dados",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const limparFormulario = () => {
     setPenaAnos("");
     setPenaMeses("");
@@ -212,9 +279,12 @@ export default function CalculoPena() {
         
         {/* Tabs para alternar entre as versões */}
         <Tabs defaultValue="dados-sentenca" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
             <TabsTrigger value="dados-sentenca" className="data-[state=active]:bg-primary">
               Dados da Sentença
+            </TabsTrigger>
+            <TabsTrigger value="dados-sentenca-simples" className="data-[state=active]:bg-primary">
+              Cálculo Simples
             </TabsTrigger>
             <TabsTrigger value="historico-custodia" className="data-[state=active]:bg-primary">
               Histórico de Custódia
@@ -222,6 +292,10 @@ export default function CalculoPena() {
           </TabsList>
           
           <TabsContent value="dados-sentenca">
+            <DadosSentencaAvancados onCalcular={handleCalculoAvancado} />
+          </TabsContent>
+          
+          <TabsContent value="dados-sentenca-simples">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           
           {/* Formulário */}

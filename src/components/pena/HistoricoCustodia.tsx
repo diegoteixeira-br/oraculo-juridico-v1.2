@@ -23,6 +23,7 @@ export default function HistoricoCustodia() {
   
   // Estados principais
   const [dadosSentenca, setDadosSentenca] = useState<DadosSentenca>({
+    crimes: [],
     totalDias: 0,
     regimeInicial: 'Fechado',
     fracaoProgressao: 1/6,
