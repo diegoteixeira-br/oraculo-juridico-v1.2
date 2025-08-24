@@ -33,7 +33,7 @@ function CadastroForm() {
   // SEO
   useSEO({
     title: "Criar Conta Grátis | IA Jurídica — Oráculo Jurídico",
-    description: "Crie sua conta e aproveite 7 dias grátis com 15.000 tokens. Plano Mensal Essencial com 30.000 tokens/mês.",
+    description: "Crie sua conta e aproveite 7 dias grátis com 15.000 tokens. Plano Básico Mensal com 30.000 tokens/mês por R$ 44,59.",
   });
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -165,7 +165,7 @@ function CadastroForm() {
                     <Zap className="w-8 h-8 text-blue-400" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">Plano Mensal (Essencial)</h3>
+                    <h3 className="text-xl font-bold text-white">Plano Básico Mensal</h3>
                     <p className="text-sm text-slate-300">
                       IA jurídica completa, calculadoras, histórico e agenda com IA
                     </p>
@@ -452,7 +452,7 @@ function CadastroForm() {
                     Planos Disponíveis
                   </CardTitle>
                   <CardDescription>
-                    Comece no Plano Grátis e evolua para o Plano Mensal (Essencial)
+                    Comece no Plano Grátis e evolua para o Plano Básico Mensal
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -469,7 +469,7 @@ function CadastroForm() {
 
                   <div className="p-3 bg-purple-600/10 rounded-lg border border-purple-500/20">
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-purple-200">Plano Mensal (Essencial)</h4>
+                      <h4 className="font-semibold text-purple-200">Plano Básico Mensal</h4>
                       <span className="text-lg font-bold text-purple-400">R$ 37,90/mês</span>
                     </div>
                     <p className="text-xs text-purple-300/80 mb-2">30.000 tokens por mês</p>

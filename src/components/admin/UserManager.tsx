@@ -107,7 +107,7 @@ export default function UserManager() {
   const updatePlanType = async (userId: string, planType: string) => {
     try {
       // Determinar o subscription_status baseado no plano
-      const subscriptionStatus = planType === 'Essencial' ? 'active' : 'trial';
+      const subscriptionStatus = planType === 'Plano Básico' ? 'active' : 'trial';
       
       const { error } = await supabase
         .from('profiles')
@@ -181,7 +181,7 @@ export default function UserManager() {
                 <TableCell className="font-medium">{u.tokens || 0}</TableCell>
                 <TableCell>
                   <Select 
-                    value={u.plan_type === 'Essencial' ? 'Essencial' : 'gratuito'} 
+                    value={u.plan_type === 'Plano Básico' ? 'Plano Básico' : 'gratuito'} 
                     onValueChange={(v: string) => updatePlanType(u.id, v)}
                   >
                     <SelectTrigger className="w-[120px]">
@@ -189,12 +189,12 @@ export default function UserManager() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="gratuito">Gratuito</SelectItem>
-                      <SelectItem value="Essencial">Essencial</SelectItem>
+                      <SelectItem value="Plano Básico">Plano Básico</SelectItem>
                     </SelectContent>
                   </Select>
                 </TableCell>
                  <TableCell>
-                   {u.plan_type === 'Essencial' ? (
+                   {u.plan_type === 'Plano Básico' ? (
                      <Input 
                        type="date" 
                        defaultValue={u.subscription_activated_at ? toZonedTime(new Date(u.subscription_activated_at), 'America/Sao_Paulo').toISOString().split('T')[0] : ''} 

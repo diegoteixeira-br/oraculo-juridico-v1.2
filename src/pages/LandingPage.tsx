@@ -51,7 +51,7 @@ const LandingPage = () => {
   });
   const faqData = [{
     question: "Como funcionam os tokens?",
-    answer: "Tokens são usados apenas no chat com a IA. No Plano Gratuito de teste você recebe 15.000 tokens válidos por 7 dias; no Plano Essencial, 30.000 tokens por mês. Calculadoras e documentos seguem os limites do seu plano. A agenda é exclusiva do Plano Essencial."
+    answer: "Tokens são usados apenas no chat com a IA. No Plano Gratuito de teste você recebe 15.000 tokens válidos por 7 dias; no Plano Básico, 30.000 tokens por mês. Calculadoras e documentos seguem os limites do seu plano. A agenda é exclusiva do Plano Básico."
   }, {
     question: "Meus tokens gratuitos se acumulam se eu não usar?",
     answer: "Não. O saldo de 15.000 tokens do teste é único para o período de 7 dias e não é cumulativo após o término do teste."
@@ -63,10 +63,10 @@ const LandingPage = () => {
     answer: "Nossa IA integra-se com a LexML, base oficial de jurisprudência do governo brasileiro. IMPORTANTE: As informações sempre precisam ser revisadas e adaptadas às necessidades específicas de cada caso pelo advogado responsável, pois a base LexML pode não estar 100% atualizada e cada situação jurídica é única."
   }, {
     question: "Como posso adquirir mais tokens?",
-    answer: "Você pode assinar o Plano Essencial: de R$ 75,80/mês por R$ 37,90/mês (50% OFF) para liberar uso ilimitado de calculadoras, documentos e agenda (além de 30.000 tokens/mês para o chat). Pacotes avulsos de 75k e 150k tokens permanecem disponíveis de forma opcional."
+    answer: "Você pode assinar o Plano Básico: R$ 44,59/mês para liberar uso ilimitado de calculadoras, documentos e agenda (além de 30.000 tokens/mês para o chat). Pacotes avulsos de 75k e 150k tokens permanecem disponíveis de forma opcional."
   }, {
     question: "O que é a Agenda Jurídica?",
-    answer: "É uma ferramenta exclusiva do Plano Essencial para registrar manualmente prazos, audiências e compromissos. Quando houver itens agendados, você recebe um e-mail de lembrete diariamente no horário configurado na sua conta (respeitando seu fuso horário). Possui também extração automática de prazos via IA que consome mínimo 500 tokens, variando conforme o tamanho do texto."
+    answer: "É uma ferramenta exclusiva do Plano Básico para registrar manualmente prazos, audiências e compromissos. Quando houver itens agendados, você recebe um e-mail de lembrete diariamente no horário configurado na sua conta (respeitando seu fuso horário). Possui também extração automática de prazos via IA que consome mínimo 500 tokens, variando conforme o tamanho do texto."
   }];
   return <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-foreground">
       {/* Header */}
@@ -387,7 +387,7 @@ const LandingPage = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-10">
             <h2 className="text-4xl font-bold mb-4 text-foreground">Planos e Limites</h2>
-            <p className="text-muted-foreground">Entenda o que você pode fazer no Plano Gratuito e no Plano Essencial</p>
+            <p className="text-muted-foreground">Entenda o que você pode fazer no Plano Gratuito e no Plano Básico</p>
           </div>
           <div className="grid md:grid-cols-2 gap-6">
             <div className="p-6 card-signup border border-border">
@@ -401,13 +401,10 @@ const LandingPage = () => {
             </div>
             <div className="p-6 card-signup border border-border">
               <h3 className="text-xl font-semibold text-foreground mb-2 flex items-center gap-2 flex-wrap">
-                Plano Essencial
-                <span className="inline-flex items-center px-2 py-0.5 rounded bg-primary text-primary-foreground text-xs">50% OFF</span>
-                <span className="text-xs text-muted-foreground italic">Promoção por tempo limitado — pode acabar a qualquer momento.</span>
+                Plano Básico
               </h3>
               <div className="flex items-center gap-2 mb-2 animate-fade-in">
-                <span className="text-muted-foreground line-through text-sm">R$ 75,80/mês</span>
-                <span className="text-foreground font-bold text-lg">R$ 37,90/mês</span>
+                <span className="text-foreground font-bold text-lg">R$ 44,59/mês</span>
               </div>
               <ul className="list-disc ml-6 space-y-2 text-muted-foreground">
                 <li>Chat com IA: 30.000 tokens por mês</li>
@@ -505,7 +502,7 @@ const LandingPage = () => {
               <h3 className="text-xl font-bold mb-3 text-foreground">
                 Acesso às Calculadoras
               </h3>
-              <p className="text-muted-foreground">As calculadoras jurídicas estão disponíveis em sua conta após o login. No Plano Essencial o uso é ilimitado; no Plano Gratuito você pode realizar teste por 7 dias.</p>
+              <p className="text-muted-foreground">As calculadoras jurídicas estão disponíveis em sua conta após o login. No Plano Básico o uso é ilimitado; no Plano Gratuito você pode realizar teste por 7 dias.</p>
             </div>
           </div>
         </div>

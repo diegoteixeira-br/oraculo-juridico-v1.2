@@ -987,7 +987,7 @@ const openTemplateEditor = async (documentId: string) => {
                   {/* Status da Conta */}
                   <div className="pt-2">
                     <div className="text-xs text-slate-400 mb-1">Status da Conta</div>
-                     {planType === 'Essencial' && profile?.subscription_status === 'active' ? (
+                     {planType === 'Plano Básico' && profile?.subscription_status === 'active' ? (
                        <div className="flex items-center gap-2">
                          <Badge className="bg-primary text-white">Assinante</Badge>
                          {profile?.subscription_end_date && (
@@ -1029,7 +1029,7 @@ const openTemplateEditor = async (documentId: string) => {
                         className="w-full bg-primary hover:bg-primary/90"
                       >
                         <Plus className="w-4 h-4 mr-2" />
-                        Assinar Plano Essencial
+                        Assinar Plano Básico
                       </Button>
                     )}
                     <Button 

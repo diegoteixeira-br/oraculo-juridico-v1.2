@@ -104,7 +104,7 @@ export default function ComprarCreditosPage() {
       // Usar create-checkout para gerar URL com redirecionamento correto
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: { 
-          product_type_id: '443c946c-18a2-48b0-90bb-925518b11aaf' // ID do plano Essencial
+          product_type_id: '443c946c-18a2-48b0-90bb-925518b11aaf' // ID do Plano Básico
         }
       });
 
@@ -234,13 +234,13 @@ export default function ComprarCreditosPage() {
             </div>
           </div>
 
-          {/* Plano de Assinatura Essencial */}
+          {/* Plano de Assinatura Básico */}
           <div className="max-w-4xl mx-auto">
             <Card className="relative bg-slate-900/60 border-primary/50 shadow-lg shadow-primary/20 overflow-hidden">
               <CardHeader className="pt-6 pb-2 text-center">
                 <Badge className="bg-primary text-primary-foreground mb-2 w-fit mx-auto text-base px-3 py-1">
                   <Crown className="w-5 h-5 mr-1" />
-                  Plano Essencial
+                  Plano Básico
                 </Badge>
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <Badge className="bg-red-600 text-white px-2 py-1 text-sm">
@@ -325,7 +325,7 @@ export default function ComprarCreditosPage() {
                   <div className="flex items-center gap-2">
                     <Crown className="w-4 h-4 text-amber-400" />
                     <p className="text-sm text-amber-200">
-                      Pacotes de tokens extras estão disponíveis apenas para assinantes do plano Essencial.
+                      Pacotes de tokens extras estão disponíveis apenas para assinantes do Plano Básico.
                     </p>
                   </div>
                 </CardContent>

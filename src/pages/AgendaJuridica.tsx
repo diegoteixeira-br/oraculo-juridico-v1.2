@@ -375,7 +375,7 @@ const AgendaJuridica = () => {
         if ((count ?? 0) >= 20) {
           toast({
             title: 'Limite atingido',
-            description: 'Seu período gratuito expirou. Assine o Plano Essencial para usar a agenda de forma ilimitada.',
+            description: 'Seu período gratuito expirou. Assine o Plano Básico para usar a agenda de forma ilimitada.',
             variant: 'destructive',
           });
           return;

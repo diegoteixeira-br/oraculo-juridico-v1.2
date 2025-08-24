@@ -17,7 +17,7 @@ export function useAccessControl() {
 
   // Verificar o tipo de plano atual
   const planType = profile?.plan_type || 'gratuito';
-  const isEssentialSubscriber = isSubscriber && planType === 'Essencial';
+  const isEssentialSubscriber = isSubscriber && planType === 'Plano Básico';
   const isFreeUser = planType === 'Gratuito' || planType === 'gratuito';
 
   const canAccessPremiumTools = isSubscriber || isTrialActive;
@@ -33,9 +33,9 @@ export function useAccessControl() {
   // Informações sobre o plano atual
   const getCurrentPlanInfo = () => {
     // Se tem subscription_status active, mas plan_type é gratuito, há inconsistência
-    if (isSubscriber && planType === 'Essencial') {
+    if (isSubscriber && planType === 'Plano Básico') {
       return {
-        name: 'Essencial',
+        name: 'Plano Básico',
         type: 'subscription',
         badge: 'Assinante', 
         badgeColor: 'bg-amber-500/20 text-amber-200 border border-amber-400/30'

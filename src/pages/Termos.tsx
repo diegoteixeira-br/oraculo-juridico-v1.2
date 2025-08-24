@@ -57,15 +57,15 @@ const Termos = () => {
             <section>
               <h2 className="text-xl font-semibold text-foreground mb-4">3. Sistema de Tokens</h2>
               <p>
-                Tokens são utilizados para TODAS as funcionalidades com Inteligência Artificial: chat jurídico, conversão de texto em áudio (text-to-speech) e extração automática de prazos da agenda. No teste gratuito, o usuário recebe 15.000 tokens para utilizar ao longo de 7 dias (não renováveis diariamente). No Plano Essencial, o usuário recebe 30.000 tokens por mês.
+                Tokens são utilizados para TODAS as funcionalidades com Inteligência Artificial: chat jurídico, conversão de texto em áudio (text-to-speech) e extração automática de prazos da agenda. No teste gratuito, o usuário recebe 15.000 tokens para utilizar ao longo de 7 dias (não renováveis diariamente). No Plano Básico, o usuário recebe 30.000 tokens por mês.
               </p>
               <p className="mt-2">
                 Importante: calculadoras e cópia de documentos não consomem tokens. Esses recursos seguem os limites do plano conforme descrito abaixo.
               </p>
               
-              <h3 className="text-lg font-semibold text-foreground mt-6 mb-3">Regras Específicas do Plano Essencial</h3>
+              <h3 className="text-lg font-semibold text-foreground mt-6 mb-3">Regras Específicas do Plano Básico</h3>
               <p>
-                <strong>Acúmulo de Tokens:</strong> No Plano Essencial, tokens não utilizados são acumulados no próximo período de renovação mensal. Por exemplo, se o usuário utilizar apenas 20.000 tokens no primeiro mês, os 10.000 tokens restantes serão somados aos 30.000 tokens do segundo mês, totalizando 40.000 tokens disponíveis.
+                <strong>Acúmulo de Tokens:</strong> No Plano Básico, tokens não utilizados são acumulados no próximo período de renovação mensal. Por exemplo, se o usuário utilizar apenas 20.000 tokens no primeiro mês, os 10.000 tokens restantes serão somados aos 30.000 tokens do segundo mês, totalizando 40.000 tokens disponíveis.
               </p>
               <p className="mt-2">
                 <strong>Prazo de Renovação:</strong> Para manter o acúmulo de tokens, a renovação deve ser feita em até 7 dias após o vencimento da assinatura. Caso a renovação não seja realizada dentro deste prazo, todos os tokens acumulados não utilizados serão perdidos, e o usuário receberá apenas os 30.000 tokens padrão do novo período.
@@ -81,7 +81,7 @@ const Termos = () => {
                 Oferecemos um plano de assinatura mensal e pacotes opcionais de tokens:
               </p>
               <ul className="list-disc ml-6 mt-2 space-y-2">
-                <li><strong>Plano Essencial:</strong> R$ 37,90/mês, com 30.000 tokens mensais para funcionalidades de IA (chat jurídico, conversão de áudio em texto, extração automática de prazos de documentos) e uso ilimitado das calculadoras, documentos (cópia) e agenda.</li>
+                <li><strong>Plano Básico:</strong> R$ 44,59/mês, com 30.000 tokens mensais para funcionalidades de IA (chat jurídico, conversão de áudio em texto, extração automática de prazos de documentos) e uso ilimitado das calculadoras, documentos (cópia) e agenda.</li>
                 <li><strong>Teste Gratuito:</strong> 7 dias grátis com 15.000 tokens para funcionalidades de IA (chat jurídico, conversão de áudio em texto) e uso ilimitado das calculadoras e documentos.</li>
                 <li><strong>Pacotes Opcionais:</strong> 75.000 e 150.000 tokens avulsos para ampliar o uso das funcionalidades de IA conforme necessidade.</li>
               </ul>
@@ -115,7 +115,7 @@ const Termos = () => {
                 <li><strong>Cálculo de Pensão Alimentícia:</strong> Cálculo de valores em atraso com juros, correção monetária e relatórios detalhados</li>
               </ul>
               <p className="mt-2">
-                <strong>Limites por Plano:</strong> No Plano Essencial o uso é ilimitado. No teste gratuito de 7 dias, o uso também é ilimitado.
+                <strong>Limites por Plano:</strong> No Plano Básico o uso é ilimitado. No teste gratuito de 7 dias, o uso também é ilimitado.
               </p>
             </section>
 
@@ -131,7 +131,7 @@ const Termos = () => {
                 <li>Declarações</li>
               </ul>
               <p className="mt-2">
-                 <strong>Limites por Plano:</strong> No Plano Essencial, a cópia de documentos é ilimitada. No teste gratuito de 7 dias, a cópia também é ilimitada. A cópia de documentos não consome tokens.
+                 <strong>Limites por Plano:</strong> No Plano Básico, a cópia de documentos é ilimitada. No teste gratuito de 7 dias, a cópia também é ilimitada. A cópia de documentos não consome tokens.
                </p>
             </section>
 
@@ -159,7 +159,7 @@ const Termos = () => {
                 A Agenda Jurídica permite organizar prazos processuais, audiências, reuniões e compromissos personalizados.
               </p>
               <p className="mt-2">
-                 <strong>Limites por Plano:</strong> A Agenda Jurídica é exclusiva do Plano Essencial com uso ilimitado. Não está disponível no teste gratuito.
+                 <strong>Limites por Plano:</strong> A Agenda Jurídica é exclusiva do Plano Básico com uso ilimitado. Não está disponível no teste gratuito.
                </p>
               <p className="mt-2">
                 <strong>Extração Automática de Prazos:</strong> A funcionalidade de extração automática de prazos via IA consome um mínimo de 500 tokens por uso, com custo variável baseado no tamanho do texto analisado. Esta função analiza documentos jurídicos (texto, PDF ou imagem) e identifica automaticamente prazos processuais, criando compromissos na agenda.
@@ -176,7 +176,7 @@ const Termos = () => {
                 <li>Utilizar os serviços de forma ética e legal</li>
                 <li>Não compartilhar sua conta com terceiros</li>
                 <li>Verificar as informações obtidas com profissionais qualificados quando necessário</li>
-                <li>Respeitar os limites de uso conforme o plano (gratuito e Plano Essencial)</li>
+                <li>Respeitar os limites de uso conforme o plano (gratuito e Plano Básico)</li>
               </ul>
             </section>
 

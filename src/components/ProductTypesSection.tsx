@@ -113,7 +113,7 @@ export function ProductTypesSection() {
                 <div className="flex items-center gap-2">
                   <Crown className="w-4 h-4 text-amber-400" />
                   <p className="text-sm text-amber-200">
-                    Pacotes de tokens extras estão disponíveis apenas para assinantes do plano Essencial.
+                    Pacotes de tokens extras estão disponíveis apenas para assinantes do Plano Básico.
                   </p>
                 </div>
               </CardContent>
@@ -156,7 +156,7 @@ export function ProductTypesSection() {
                       className="w-full bg-blue-600 hover:bg-blue-700"
                       disabled={!canPurchaseTokens}
                     >
-                      {canPurchaseTokens ? 'Comprar Agora' : 'Assine o Essencial'}
+                      {canPurchaseTokens ? 'Comprar Agora' : 'Assine o Plano Básico'}
                     </Button>
                   </div>
                 </CardContent>
