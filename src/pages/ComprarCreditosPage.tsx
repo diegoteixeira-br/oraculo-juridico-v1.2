@@ -336,6 +336,11 @@ export default function ComprarCreditosPage() {
                   <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-6 pb-4 sm:pb-6">
                     <div className="text-center">
                       <div className="flex items-center justify-center gap-2 mb-1 sm:mb-2">
+                        {index === 1 && (
+                          <span className="text-sm sm:text-base lg:text-lg font-medium text-muted-foreground line-through">
+                            R$ 121,25
+                          </span>
+                        )}
                         <span className={`text-xl sm:text-2xl lg:text-3xl font-bold ${index === 0 ? 'text-blue-400' : 'text-green-400'}`}>
                           {formatPrice(tokenPack.price_cents)}
                         </span>
