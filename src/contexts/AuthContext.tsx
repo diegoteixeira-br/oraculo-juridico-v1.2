@@ -138,8 +138,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 
   const signUp = async (email: string, password: string, fullName?: string, cpf?: string) => {
-    // URL de redirecionamento para confirmar email
-    const redirectUrl = 'https://oraculojuridico.com.br/dashboard';
+    // URL de redirecionamento dinâmica baseada no ambiente atual
+    const redirectUrl = `${window.location.origin}/dashboard`;
     
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -173,9 +173,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error;
   };
 
-  // Nova função para redefinir senha
   const resetPassword = async (email: string) => {
-    const redirectUrl = 'https://oraculojuridico.com.br/login';
+    const redirectUrl = `${window.location.origin}/login`;
     
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: redirectUrl
@@ -195,7 +194,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Nova função para reenviar confirmação
   const resendConfirmation = async (email: string) => {
-    const redirectUrl = 'https://oraculojuridico.com.br/dashboard';
+    const redirectUrl = `${window.location.origin}/dashboard`;
     
     const { data, error } = await supabase.auth.resend({
       type: 'signup',
