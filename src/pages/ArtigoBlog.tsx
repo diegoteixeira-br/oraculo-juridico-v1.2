@@ -12,6 +12,7 @@ import AdDisplay from '@/components/AdDisplay';
 import { ArticleTextReader } from '@/components/ArticleTextReader';
 import { useAuth } from '@/contexts/AuthContext';
 import UserMenu from '@/components/UserMenu';
+import { BlogComments } from '@/components/BlogComments';
 
 interface BlogPost {
   id: string;
@@ -362,6 +363,9 @@ const ArtigoBlog = () => {
                 </div>
               </section>
             )}
+
+            {/* Comentários */}
+            <BlogComments postId={post.id} postTitle={post.title} />
           </article>
 
           {/* Sidebar */}
