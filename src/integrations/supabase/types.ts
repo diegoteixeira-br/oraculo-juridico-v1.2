@@ -77,6 +77,41 @@ export type Database = {
           },
         ]
       }
+      blog_post_votes: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          updated_at: string
+          user_id: string
+          vote_type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          updated_at?: string
+          user_id: string
+          vote_type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          updated_at?: string
+          user_id?: string
+          vote_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_post_votes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "blog_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       blog_posts: {
         Row: {
           author_name: string | null
@@ -84,9 +119,11 @@ export type Database = {
           content: string
           cover_image_url: string | null
           created_at: string
+          dislikes_count: number | null
           featured: boolean
           id: string
           is_published: boolean
+          likes_count: number | null
           meta_description: string | null
           meta_title: string | null
           published_at: string | null
@@ -104,9 +141,11 @@ export type Database = {
           content: string
           cover_image_url?: string | null
           created_at?: string
+          dislikes_count?: number | null
           featured?: boolean
           id?: string
           is_published?: boolean
+          likes_count?: number | null
           meta_description?: string | null
           meta_title?: string | null
           published_at?: string | null
@@ -124,9 +163,11 @@ export type Database = {
           content?: string
           cover_image_url?: string | null
           created_at?: string
+          dislikes_count?: number | null
           featured?: boolean
           id?: string
           is_published?: boolean
+          likes_count?: number | null
           meta_description?: string | null
           meta_title?: string | null
           published_at?: string | null

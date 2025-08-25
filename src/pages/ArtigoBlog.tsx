@@ -13,6 +13,7 @@ import { ArticleTextReader } from '@/components/ArticleTextReader';
 import { useAuth } from '@/contexts/AuthContext';
 import UserMenu from '@/components/UserMenu';
 import { BlogComments } from '@/components/BlogComments';
+import { BlogPostVotes } from '@/components/BlogPostVotes';
 
 interface BlogPost {
   id: string;
@@ -26,6 +27,8 @@ interface BlogPost {
   views_count: number;
   tags: string[];
   category: string;
+  likes_count: number;
+  dislikes_count: number;
   meta_title: string;
   meta_description: string;
   published_at: string;
@@ -363,6 +366,13 @@ const ArtigoBlog = () => {
                 </div>
               </section>
             )}
+
+            {/* Sistema de Votação */}
+            <BlogPostVotes 
+              postId={post.id}
+              initialLikes={post.likes_count || 0}
+              initialDislikes={post.dislikes_count || 0}
+            />
 
             {/* Comentários */}
             <BlogComments postId={post.id} postTitle={post.title} />
