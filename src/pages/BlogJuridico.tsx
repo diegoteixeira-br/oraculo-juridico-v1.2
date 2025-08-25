@@ -12,6 +12,8 @@ import GoogleAdsPlaceholder from '@/components/GoogleAdsPlaceholder';
 import AdCarousel from '@/components/AdCarousel';
 import { useAuth } from '@/contexts/AuthContext';
 import UserMenu from '@/components/UserMenu';
+import { BlogPostVotes } from '@/components/BlogPostVotes';
+
 interface BlogPost {
   id: string;
   title: string;
@@ -21,6 +23,8 @@ interface BlogPost {
   author_name: string;
   reading_time_minutes: number;
   views_count: number;
+  likes_count: number;
+  dislikes_count: number;
   tags: string[];
   category: string;
   published_at: string;
@@ -45,14 +49,14 @@ const BlogJuridico = () => {
       // Buscar posts em destaque
       const {
         data: featured
-      } = await supabase.from('blog_posts').select('*').eq('is_published', true).eq('featured', true).order('published_at', {
+      } = await supabase.from('blog_posts').select('id, title, slug, summary, cover_image_url, author_name, reading_time_minutes, views_count, likes_count, dislikes_count, tags, category, published_at').eq('is_published', true).eq('featured', true).order('published_at', {
         ascending: false
       }).limit(3);
 
       // Buscar todos os posts publicados
       const {
         data: allPosts
-      } = await supabase.from('blog_posts').select('*').eq('is_published', true).order('published_at', {
+      } = await supabase.from('blog_posts').select('id, title, slug, summary, cover_image_url, author_name, reading_time_minutes, views_count, likes_count, dislikes_count, tags, category, published_at').eq('is_published', true).order('published_at', {
         ascending: false
       }).limit(12);
       if (featured) setFeaturedPosts(featured);
@@ -214,9 +218,16 @@ const BlogJuridico = () => {
                               <ArrowRight className="w-4 h-4" />
                             </div>
                             
-                            <div className="flex items-center gap-1 text-sm text-slate-400">
-                              <Eye className="w-4 h-4" />
-                              {post.views_count}
+                            <div className="flex items-center gap-4 text-sm text-slate-400">
+                              <div className="flex items-center gap-1">
+                                <Eye className="w-4 h-4" />
+                                {post.views_count}
+                              </div>
+                              <BlogPostVotes 
+                                postId={post.id}
+                                initialLikes={post.likes_count || 0}
+                                initialDislikes={post.dislikes_count || 0}
+                              />
                             </div>
                           </div>
                         </CardContent>
@@ -281,10 +292,17 @@ const BlogJuridico = () => {
                                 {post.reading_time_minutes} min
                               </span>
                             </div>
-                            <span className="flex items-center">
-                              <Eye className="w-3 h-3 mr-1" />
-                              {post.views_count}
-                            </span>
+                            <div className="flex items-center space-x-4">
+                              <span className="flex items-center">
+                                <Eye className="w-3 h-3 mr-1" />
+                                {post.views_count}
+                              </span>
+                              <BlogPostVotes 
+                                postId={post.id}
+                                initialLikes={post.likes_count || 0}
+                                initialDislikes={post.dislikes_count || 0}
+                              />
+                            </div>
                           </div>
                           
                           <div className="flex items-center gap-2 text-slate-300 group-hover:text-blue-400 transition-colors">
