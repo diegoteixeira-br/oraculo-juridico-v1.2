@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, HeartOff } from 'lucide-react';
+import { ThumbsUp, ThumbsDown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -53,27 +53,20 @@ export const BlogPostVotes: React.FC<BlogPostVotesProps> = ({
   };
 
   const handleVote = async (voteType: 'like' | 'dislike') => {
-    if (!user) {
-      toast({
-        title: "Login necessário",
-        description: "Você precisa estar logado para votar nos artigos.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setLoading(true);
 
     try {
       // Se o usuário já votou no mesmo tipo, remover o voto
       if (userVote === voteType) {
-        const { error } = await supabase
-          .from('blog_post_votes')
-          .delete()
-          .eq('post_id', postId)
-          .eq('user_id', user.id);
+        if (user) {
+          const { error } = await supabase
+            .from('blog_post_votes')
+            .delete()
+            .eq('post_id', postId)
+            .eq('user_id', user.id);
 
-        if (error) throw error;
+          if (error) throw error;
+        }
 
         setUserVote(null);
         if (voteType === 'like') {
@@ -87,18 +80,20 @@ export const BlogPostVotes: React.FC<BlogPostVotesProps> = ({
           description: "Seu voto foi removido com sucesso.",
         });
       } else {
-        // Inserir ou atualizar voto
-        const { error } = await supabase
-          .from('blog_post_votes')
-          .upsert({
-            post_id: postId,
-            user_id: user.id,
-            vote_type: voteType
-          });
+        // Para usuários logados, inserir/atualizar no banco
+        if (user) {
+          const { error } = await supabase
+            .from('blog_post_votes')
+            .upsert({
+              post_id: postId,
+              user_id: user.id,
+              vote_type: voteType
+            });
 
-        if (error) throw error;
+          if (error) throw error;
+        }
 
-        // Atualizar contadores localmente
+        // Atualizar contadores localmente para todos os usuários
         if (userVote === 'like' && voteType === 'dislike') {
           setLikesCount(prev => prev - 1);
           setDislikesCount(prev => prev + 1);
@@ -117,7 +112,7 @@ export const BlogPostVotes: React.FC<BlogPostVotesProps> = ({
 
         toast({
           title: "Voto registrado",
-          description: `Você ${voteType === 'like' ? 'curtiu' : 'descurtiu'} este artigo.`,
+          description: `Você ${voteType === 'like' ? 'curtiu' : 'não curtiu'} este artigo.`,
         });
       }
     } catch (error) {
@@ -133,43 +128,34 @@ export const BlogPostVotes: React.FC<BlogPostVotesProps> = ({
   };
 
   return (
-    <div className="flex items-center gap-4 p-4 bg-card rounded-lg border">
-      <div className="flex items-center text-sm text-muted-foreground">
-        Avalie este artigo:
-      </div>
-      
-      <div className="flex items-center gap-2">
+    <div className="flex items-center space-x-4 text-sm text-slate-400">
+      <div className="flex items-center space-x-2">
         <Button
-          variant={userVote === 'like' ? 'default' : 'outline'}
+          variant="ghost"
           size="sm"
           onClick={() => handleVote('like')}
           disabled={loading}
-          className="flex items-center gap-2"
+          className={`h-auto p-1 text-slate-400 hover:text-green-400 ${
+            userVote === 'like' ? 'text-green-400' : ''
+          }`}
         >
-          <Heart className={`w-4 h-4 ${userVote === 'like' ? 'fill-current' : ''}`} />
+          <ThumbsUp className="w-4 h-4 mr-1" />
           <span>{likesCount}</span>
         </Button>
 
         <Button
-          variant={userVote === 'dislike' ? 'destructive' : 'outline'}
+          variant="ghost"
           size="sm"
           onClick={() => handleVote('dislike')}
           disabled={loading}
-          className="flex items-center gap-2"
+          className={`h-auto p-1 text-slate-400 hover:text-red-400 ${
+            userVote === 'dislike' ? 'text-red-400' : ''
+          }`}
         >
-          <HeartOff className={`w-4 h-4 ${userVote === 'dislike' ? 'fill-current' : ''}`} />
+          <ThumbsDown className="w-4 h-4 mr-1" />
           <span>{dislikesCount}</span>
         </Button>
       </div>
-
-      {!user && (
-        <div className="text-sm text-muted-foreground ml-2">
-          <a href="/login" className="text-primary hover:underline">
-            Faça login
-          </a>{' '}
-          para votar
-        </div>
-      )}
     </div>
   );
 };

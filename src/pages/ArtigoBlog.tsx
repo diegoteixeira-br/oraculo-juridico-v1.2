@@ -255,6 +255,13 @@ const ArtigoBlog = () => {
                     <Eye className="w-4 h-4 mr-2" />
                     {post.views_count + 1} visualizações
                   </span>
+                  
+                  {/* Sistema de Votação */}
+                  <BlogPostVotes 
+                    postId={post.id}
+                    initialLikes={post.likes_count || 0}
+                    initialDislikes={post.dislikes_count || 0}
+                  />
                 </div>
                 
                 <Button variant="outline" size="sm" onClick={shareArticle} className="border-slate-600 text-slate-300 hover:bg-blue-600 hover:border-blue-600 hover:text-white">
@@ -366,13 +373,6 @@ const ArtigoBlog = () => {
                 </div>
               </section>
             )}
-
-            {/* Sistema de Votação */}
-            <BlogPostVotes 
-              postId={post.id}
-              initialLikes={post.likes_count || 0}
-              initialDislikes={post.dislikes_count || 0}
-            />
 
             {/* Comentários */}
             <BlogComments postId={post.id} postTitle={post.title} />
