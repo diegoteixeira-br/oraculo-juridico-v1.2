@@ -83,7 +83,7 @@ const SuportePage = () => {
     },
     {
       question: "Como funciona o Plano Básico?",
-      answer: "O Plano Básico oferece 30.000 tokens mensais por R$ 44,59/mês, ideal para uso moderado a intenso da plataforma.",
+      answer: "O Plano Básico oferece 30.000 tokens mensais por R$ 59,90/mês, ideal para uso moderado a intenso da plataforma.",
       category: "tokens"
     },
     {

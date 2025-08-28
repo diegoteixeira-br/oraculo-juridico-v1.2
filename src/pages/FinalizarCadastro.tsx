@@ -13,7 +13,7 @@ export default function FinalizarCadastro() {
   // SEO
   useSEO({
     title: "Finalizar Cadastro - Teste Gratuito | Oráculo Jurídico",
-    description: "Complete seu cadastro e comece seu teste gratuito de 8 dias com 30.000 tokens/mês por apenas R$ 37,90."
+    description: "Complete seu cadastro e comece seu teste gratuito de 7 dias com 15.000 tokens. Plano Básico R$ 59,90/mês com 30.000 tokens."
   });
   const handleContinueToStripe = async () => {
     try {
@@ -161,7 +161,7 @@ export default function FinalizarCadastro() {
             <CardHeader className="text-center">
               <CardTitle className="flex items-center justify-center gap-2 text-white text-2xl">
                 <Zap className="w-6 h-6 text-blue-400" />
-                Plano Gratuito
+                Plano Básico
               </CardTitle>
               <CardDescription>
                 Complete seu cadastro • Cobrança no ato com reembolso em 7 dias
@@ -171,7 +171,7 @@ export default function FinalizarCadastro() {
               
               {/* Destaque do plano */}
               <div className="text-center p-6 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-xl border border-blue-500/30">
-                <div className="text-4xl font-bold text-blue-400 mb-2">R$ 37,90</div>
+                <div className="text-4xl font-bold text-blue-400 mb-2">R$ 59,90</div>
                 <div className="text-sm text-slate-300">por mês • 30.000 tokens</div>
                 <div className="text-lg font-semibold text-yellow-400 mt-2">
                   7 Dias com Reembolso Garantido!

@@ -33,7 +33,7 @@ function CadastroForm() {
   // SEO
   useSEO({
     title: "Criar Conta Grátis | IA Jurídica — Oráculo Jurídico",
-    description: "Crie sua conta e aproveite 7 dias grátis com 15.000 tokens. Plano Básico Mensal com 30.000 tokens/mês por R$ 44,59.",
+    description: "Crie sua conta e aproveite 7 dias grátis com 15.000 tokens. Plano Básico Mensal com 30.000 tokens/mês por R$ 59,90.",
   });
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -188,7 +188,7 @@ function CadastroForm() {
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="text-center p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-blue-400">R$ 37,90</div>
+                  <div className="text-lg font-bold text-blue-400">R$ 59,90</div>
                   <div className="text-xs text-slate-400">Por mês</div>
                 </div>
                 <div className="text-center p-3 bg-white/5 rounded-lg">
@@ -470,7 +470,7 @@ function CadastroForm() {
                   <div className="p-3 bg-purple-600/10 rounded-lg border border-purple-500/20">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-semibold text-purple-200">Plano Básico Mensal</h4>
-                      <span className="text-lg font-bold text-purple-400">R$ 37,90/mês</span>
+                      <span className="text-lg font-bold text-purple-400">R$ 59,90/mês</span>
                     </div>
                     <p className="text-xs text-purple-300/80 mb-2">30.000 tokens por mês</p>
                     <div className="text-xs text-slate-400">

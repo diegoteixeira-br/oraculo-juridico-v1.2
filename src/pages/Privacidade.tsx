@@ -51,8 +51,8 @@ const Privacidade = () => {
             <section>
               <h2 className="text-xl font-semibold text-foreground mb-4">2.1 Sistema de Tokens e Controle de Uso</h2>
               <p>
-                Para garantir o funcionamento adequado dos planos de assinatura (Plano Básico - R$ 44,59/mês com 30.000 tokens mensais para funcionalidades de IA, uso ilimitado de calculadoras, documentos e agenda) e pacotes avulsos opcionais (75.000 e 150.000 tokens), registramos automaticamente o consumo de tokens nas seguintes funcionalidades de IA: chat jurídico, conversão de áudio em texto, extração automática de prazos de documentos, e consultas à base LexML. Esses dados de utilização são processados exclusivamente para: (i) aplicar os limites contratuais de cada plano, (ii) prevenir uso indevido da plataforma, (iii) gerar relatórios de consumo para o usuário, e (iv) melhorar a performance dos serviços, sempre em conformidade com a LGPD.
-              </p>
+                Para garantir o funcionamento adequado dos planos de assinatura (Plano Básico - R$ 59,90/mês com 30.000 tokens mensais para funcionalidades de IA, uso ilimitado de calculadoras, documentos e agenda) e pacotes avulsos opcionais (Recarga Rápida 25k tokens - R$ 39,90; Recarga Inteligente 50k tokens - R$ 69,90), registramos automaticamente o consumo de tokens nas seguintes funcionalidades de IA: chat jurídico, conversão de áudio em texto, extração automática de prazos de documentos, e consultas à base LexML. Esses dados de utilização são processados exclusivamente para: (i) aplicar os limites contratuais de cada plano, (ii) prevenir uso indevido da plataforma, (iii) gerar relatórios de consumo para o usuário, e (iv) melhorar a performance dos serviços, sempre em conformidade com a LGPD.
+               </p>
             </section>
 
 
