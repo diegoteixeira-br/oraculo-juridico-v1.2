@@ -443,10 +443,10 @@ export default function ComprarCreditosPage() {
                 <CardContent className="space-y-4 px-6 pb-6">
                    <div className="text-center">
                      <span className="text-3xl font-bold text-blue-400">
-                       R$ 79,90
+                       R$ 39,90
                      </span>
                      <p className="text-xs text-muted-foreground">
-                       R$ 3,20 por 1k tokens
+                       R$ 1,60 por 1k tokens
                      </p>
                    </div>
 
@@ -512,17 +512,17 @@ export default function ComprarCreditosPage() {
                    <div className="text-center">
                      <div className="flex items-center justify-center gap-2 mb-2">
                        <span className="text-lg font-medium text-muted-foreground line-through">
-                         R$ 179,90
+                         R$ 89,90
                        </span>
                        <span className="text-3xl font-bold text-green-400">
-                         R$ 139,90
+                         R$ 69,90
                        </span>
                      </div>
                      <p className="text-xs text-muted-foreground">
-                       R$ 2,80 por 1k tokens
+                       R$ 1,40 por 1k tokens
                      </p>
                      <p className="text-xs text-green-400 font-medium">
-                       Economia de R$ 40,00
+                       Economia de R$ 20,00
                      </p>
                    </div>
 
