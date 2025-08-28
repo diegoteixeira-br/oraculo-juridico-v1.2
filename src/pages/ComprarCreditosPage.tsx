@@ -466,11 +466,11 @@ export default function ComprarCreditosPage() {
                   </div>
 
                   <Button 
-                    onClick={() => handlePurchaseRecharge('recarga-rapida')} 
+                    onClick={() => handlePurchaseRecharge('b0571fb3-1fdf-437d-9b00-19edd1e89a23')} 
                     disabled={isLoading || !canPurchaseTokens} 
                     className="w-full h-12 text-base bg-blue-600 hover:bg-blue-700"
                   >
-                    {isLoading && selectedPackage === 'recarga-rapida' ? (
+                    {isLoading && selectedPackage === 'b0571fb3-1fdf-437d-9b00-19edd1e89a23' ? (
                       <div className="flex items-center gap-2">
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         Redirecionando...
@@ -546,11 +546,11 @@ export default function ComprarCreditosPage() {
                   </div>
 
                   <Button 
-                    onClick={() => handlePurchaseRecharge('recarga-inteligente')} 
+                    onClick={() => handlePurchaseRecharge('9c75ed7c-8c4c-46c4-8576-931393d3f292')} 
                     disabled={isLoading || !canPurchaseTokens} 
                     className="w-full h-12 text-base bg-green-600 hover:bg-green-700"
                   >
-                    {isLoading && selectedPackage === 'recarga-inteligente' ? (
+                    {isLoading && selectedPackage === '9c75ed7c-8c4c-46c4-8576-931393d3f292' ? (
                       <div className="flex items-center gap-2">
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         Redirecionando...
