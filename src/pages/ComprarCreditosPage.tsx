@@ -66,13 +66,15 @@ export default function ComprarCreditosPage() {
       setIsLoading(true);
       setSelectedPackage(rechargeType);
       console.log("🚀 Iniciando compra de recarga:", rechargeType);
-
-      const { data, error } = await supabase.functions.invoke('create-payment', {
-        body: { packageId: rechargeType }
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('create-payment', {
+        body: {
+          packageId: rechargeType
+        }
       });
-
       if (error) throw error;
-
       if (data?.url) {
         console.log("✅ Redirecionando para Stripe:", data.url);
         // Redirecionar para o Stripe na mesma aba
@@ -95,13 +97,15 @@ export default function ComprarCreditosPage() {
   const handleSubscribeProfessional = async () => {
     try {
       setSubLoading(true);
-
-      const { data, error } = await supabase.functions.invoke('create-subscription', {
-        body: { planType: 'profissional' }
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('create-subscription', {
+        body: {
+          planType: 'profissional'
+        }
       });
-
       if (error) throw error;
-
       if (data?.url) {
         console.log("✅ Redirecionando para Stripe:", data.url);
         // Redirecionar para o Stripe na mesma aba
@@ -120,17 +124,18 @@ export default function ComprarCreditosPage() {
       setSubLoading(false);
     }
   };
-
   const handleSubscribe = async () => {
     try {
       setSubLoading(true);
-
-      const { data, error } = await supabase.functions.invoke('create-subscription', {
-        body: { planType: 'basico' }
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('create-subscription', {
+        body: {
+          planType: 'basico'
+        }
       });
-
       if (error) throw error;
-
       if (data?.url) {
         console.log("✅ Redirecionando para Stripe:", data.url);
         // Redirecionar para o Stripe na mesma aba
@@ -294,30 +299,22 @@ export default function ComprarCreditosPage() {
                   
                   <div className="mt-6 space-y-3">
                     <Button onClick={handleSubscribe} disabled={subLoading} className="w-full h-12 text-lg">
-                      {subLoading ? (
-                        <div className="flex items-center gap-2">
+                      {subLoading ? <div className="flex items-center gap-2">
                           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                           Redirecionando...
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
+                        </div> : <div className="flex items-center gap-2">
                           <CreditCard className="w-5 h-5" />
                           Assinar Plano Básico
-                        </div>
-                      )}
+                        </div>}
                     </Button>
                     <Button onClick={handleManageSubscription} disabled={portalLoading} variant="secondary" className="w-full">
-                      {portalLoading ? (
-                        <div className="flex items-center gap-2">
+                      {portalLoading ? <div className="flex items-center gap-2">
                           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                           Abrindo portal...
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
+                        </div> : <div className="flex items-center gap-2">
                           <RefreshCw className="w-4 h-4" />
                           Gerenciar assinatura
-                        </div>
-                      )}
+                        </div>}
                     </Button>
                   </div>
                 </CardContent>
@@ -377,30 +374,22 @@ export default function ComprarCreditosPage() {
                   
                    <div className="mt-6 space-y-3">
                      <Button onClick={handleSubscribeProfessional} disabled={subLoading} className="w-full h-12 text-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg">
-                       {subLoading ? (
-                         <div className="flex items-center gap-2">
+                       {subLoading ? <div className="flex items-center gap-2">
                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                            Redirecionando...
-                         </div>
-                       ) : (
-                         <div className="flex items-center gap-2">
+                         </div> : <div className="flex items-center gap-2">
                            <Crown className="w-5 h-5" />
                            Assinar Plano Profissional
-                         </div>
-                       )}
+                         </div>}
                      </Button>
                      <Button onClick={handleManageSubscription} disabled={portalLoading} variant="secondary" className="w-full">
-                       {portalLoading ? (
-                         <div className="flex items-center gap-2">
+                       {portalLoading ? <div className="flex items-center gap-2">
                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                            Abrindo portal...
-                         </div>
-                       ) : (
-                         <div className="flex items-center gap-2">
+                         </div> : <div className="flex items-center gap-2">
                            <RefreshCw className="w-4 h-4" />
                            Gerenciar assinatura
-                         </div>
-                       )}
+                         </div>}
                      </Button>
                    </div>
                 </CardContent>
@@ -415,8 +404,7 @@ export default function ComprarCreditosPage() {
               <p className="text-slate-300 text-sm">Disponível apenas para assinantes do Plano Básico</p>
             </div>
 
-            {!canPurchaseTokens && (
-              <Card className="bg-amber-500/10 border-amber-500/30 mb-6">
+            {!canPurchaseTokens && <Card className="bg-amber-500/10 border-amber-500/30 mb-6">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2">
                     <Crown className="w-4 h-4 text-amber-400" />
@@ -425,8 +413,7 @@ export default function ComprarCreditosPage() {
                     </p>
                   </div>
                 </CardContent>
-              </Card>
-            )}
+              </Card>}
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Recarga Rápida */}
@@ -465,22 +452,14 @@ export default function ComprarCreditosPage() {
                     </div>
                   </div>
 
-                  <Button 
-                    onClick={() => handlePurchaseRecharge('b0571fb3-1fdf-437d-9b00-19edd1e89a23')} 
-                    disabled={isLoading || !canPurchaseTokens} 
-                    className="w-full h-12 text-base bg-blue-600 hover:bg-blue-700"
-                  >
-                    {isLoading && selectedPackage === 'b0571fb3-1fdf-437d-9b00-19edd1e89a23' ? (
-                      <div className="flex items-center gap-2">
+                  <Button onClick={() => handlePurchaseRecharge('b0571fb3-1fdf-437d-9b00-19edd1e89a23')} disabled={isLoading || !canPurchaseTokens} className="w-full h-12 text-base bg-blue-600 hover:bg-blue-700">
+                    {isLoading && selectedPackage === 'b0571fb3-1fdf-437d-9b00-19edd1e89a23' ? <div className="flex items-center gap-2">
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         Redirecionando...
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
+                      </div> : <div className="flex items-center gap-2">
                         <CreditCard className="w-4 h-4" />
                         Comprar Recarga
-                      </div>
-                    )}
+                      </div>}
                   </Button>
                 </CardContent>
               </Card>
@@ -511,9 +490,7 @@ export default function ComprarCreditosPage() {
                 <CardContent className="space-y-4 px-6 pb-6">
                    <div className="text-center">
                      <div className="flex items-center justify-center gap-2 mb-2">
-                       <span className="text-lg font-medium text-muted-foreground line-through">
-                         R$ 89,90
-                       </span>
+                       <span className="text-lg font-medium text-muted-foreground line-through">R$ 87,38</span>
                        <span className="text-3xl font-bold text-green-400">
                          R$ 69,90
                        </span>
@@ -545,22 +522,14 @@ export default function ComprarCreditosPage() {
                     </div>
                   </div>
 
-                  <Button 
-                    onClick={() => handlePurchaseRecharge('9c75ed7c-8c4c-46c4-8576-931393d3f292')} 
-                    disabled={isLoading || !canPurchaseTokens} 
-                    className="w-full h-12 text-base bg-green-600 hover:bg-green-700"
-                  >
-                    {isLoading && selectedPackage === '9c75ed7c-8c4c-46c4-8576-931393d3f292' ? (
-                      <div className="flex items-center gap-2">
+                  <Button onClick={() => handlePurchaseRecharge('9c75ed7c-8c4c-46c4-8576-931393d3f292')} disabled={isLoading || !canPurchaseTokens} className="w-full h-12 text-base bg-green-600 hover:bg-green-700">
+                    {isLoading && selectedPackage === '9c75ed7c-8c4c-46c4-8576-931393d3f292' ? <div className="flex items-center gap-2">
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         Redirecionando...
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
+                      </div> : <div className="flex items-center gap-2">
                         <CreditCard className="w-4 h-4" />
                         Comprar Recarga
-                      </div>
-                    )}
+                      </div>}
                   </Button>
                 </CardContent>
               </Card>
