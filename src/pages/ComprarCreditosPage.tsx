@@ -252,68 +252,149 @@ export default function ComprarCreditosPage() {
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {subscriptions.map((subscription) => (
-                <Card key={subscription.id} className="relative bg-slate-900/60 border-primary/50 shadow-lg shadow-primary/20 overflow-hidden">
-                  <CardHeader className="pt-6 pb-2 text-center">
-                    <Badge className="bg-primary text-primary-foreground mb-2 w-fit mx-auto text-base px-3 py-1">
-                      <Crown className="w-5 h-5 mr-1" />
-                      {subscription.name}
+              {/* Plano Básico */}
+              <Card className="relative bg-slate-900/60 border-primary/50 shadow-lg shadow-primary/20 overflow-hidden">
+                <CardHeader className="pt-6 pb-2 text-center">
+                  <Badge className="bg-primary text-primary-foreground mb-2 w-fit mx-auto text-base px-3 py-1">
+                    <Crown className="w-5 h-5 mr-1" />
+                    Plano Básico
+                  </Badge>
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Badge className="bg-red-600 text-white px-2 py-1 text-sm">
+                      50% OFF
                     </Badge>
-                    <CardDescription className="text-white text-2xl lg:text-3xl font-bold">
-                      {formatPrice(subscription.price_cents)}/mês
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="px-4 sm:px-6 pb-6">
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2 text-base">
-                        <Check className="w-5 h-5 text-primary" />
-                        <span>{subscription.tokens_included?.toLocaleString()} tokens por mês</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-base">
-                        <Check className="w-5 h-5 text-primary" />
-                        <span>Calculadoras ilimitadas</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-base">
-                        <Check className="w-5 h-5 text-primary" />
-                        <span>Documentos Jurídicos ilimitados</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-base">
-                        <Check className="w-5 h-5 text-primary" />
-                        <span>Agenda de Compromissos com IA ilimitada</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-base">
-                        <Check className="w-5 h-5 text-primary" />
-                        <span>Renovação automática. Cancele quando quiser.</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-base">
-                        <Check className="w-5 h-5 text-primary" />
-                        <span>7 dias com reembolso garantido</span>
-                      </div>
+                  </div>
+                  <CardDescription className="text-white text-2xl lg:text-3xl font-bold flex items-center justify-center gap-3">
+                    <span className="line-through text-lg text-muted-foreground">R$ 119,80/mês</span>
+                    <span>R$ 59,90/mês</span>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="px-4 sm:px-6 pb-6">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-base">
+                      <Check className="w-5 h-5 text-primary" />
+                      <span>30.000 tokens por mês</span>
                     </div>
-                    
-                    <div className="mt-6 space-y-3">
-                      <Button onClick={handleSubscribe} disabled={subLoading} className="w-full h-12 text-lg">
-                        {subLoading ? <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            Redirecionando...
-                          </div> : <div className="flex items-center gap-2">
-                            <CreditCard className="w-5 h-5" />
-                            Assinar {subscription.name}
-                          </div>}
-                      </Button>
-                      <Button onClick={handleManageSubscription} disabled={portalLoading} variant="secondary" className="w-full">
-                        {portalLoading ? <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            Abrindo portal...
-                          </div> : <div className="flex items-center gap-2">
-                            <RefreshCw className="w-4 h-4" />
-                            Gerenciar assinatura
-                          </div>}
-                      </Button>
+                    <div className="flex items-center gap-2 text-base">
+                      <Check className="w-5 h-5 text-primary" />
+                      <span>Calculadoras ilimitadas</span>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    <div className="flex items-center gap-2 text-base">
+                      <Check className="w-5 h-5 text-primary" />
+                      <span>Documentos Jurídicos ilimitados</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-base">
+                      <Check className="w-5 h-5 text-primary" />
+                      <span>Agenda de Compromissos com IA ilimitada</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-base">
+                      <Check className="w-5 h-5 text-primary" />
+                      <span>Renovação automática. Cancele quando quiser.</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-base">
+                      <Check className="w-5 h-5 text-primary" />
+                      <span>7 dias com reembolso garantido</span>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-6 space-y-3">
+                    <Button onClick={handleSubscribe} disabled={subLoading} className="w-full h-12 text-lg">
+                      {subLoading ? <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          Redirecionando...
+                        </div> : <div className="flex items-center gap-2">
+                          <CreditCard className="w-5 h-5" />
+                          Assinar Plano Básico
+                        </div>}
+                    </Button>
+                    <Button onClick={handleManageSubscription} disabled={portalLoading} variant="secondary" className="w-full">
+                      {portalLoading ? <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          Abrindo portal...
+                        </div> : <div className="flex items-center gap-2">
+                          <RefreshCw className="w-4 h-4" />
+                          Gerenciar assinatura
+                        </div>}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Plano Profissional */}
+              <Card className="relative bg-gradient-to-br from-amber-900/20 to-amber-800/20 border-amber-500/50 shadow-lg shadow-amber-500/20 overflow-hidden">
+                <div className="absolute -top-2 left-1/2 -translate-x-1/2">
+                  <Badge className="bg-amber-600 text-white px-3 py-1 text-sm">
+                    <Star className="w-4 h-4 mr-1" />
+                    Recomendado
+                  </Badge>
+                </div>
+                
+                <CardHeader className="pt-8 pb-2 text-center">
+                  <Badge className="bg-amber-600 text-white mb-2 w-fit mx-auto text-base px-3 py-1">
+                    <Crown className="w-5 h-5 mr-1" />
+                    Plano Profissional
+                  </Badge>
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Badge className="bg-green-600 text-white px-2 py-1 text-sm">
+                      50% OFF
+                    </Badge>
+                  </div>
+                  <CardDescription className="text-white text-2xl lg:text-3xl font-bold flex items-center justify-center gap-3">
+                    <span className="line-through text-lg text-muted-foreground">R$ 194,00/mês</span>
+                    <span className="text-amber-400">R$ 97,00/mês</span>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="px-4 sm:px-6 pb-6">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-base">
+                      <Check className="w-5 h-5 text-amber-400" />
+                      <span className="text-amber-100"><strong>Tokens Ilimitados</strong> (política de uso justo)</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-base">
+                      <Check className="w-5 h-5 text-amber-400" />
+                      <span>Calculadoras ilimitadas</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-base">
+                      <Check className="w-5 h-5 text-amber-400" />
+                      <span>Documentos Jurídicos ilimitados</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-base">
+                      <Check className="w-5 h-5 text-amber-400" />
+                      <span>Agenda de Compromissos com IA ilimitada</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-base">
+                      <Check className="w-5 h-5 text-amber-400" />
+                      <span>Suporte prioritário</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-base">
+                      <Check className="w-5 h-5 text-amber-400" />
+                      <span>7 dias com reembolso garantido</span>
+                    </div>
+                  </div>
+                  
+                   <div className="mt-6 space-y-3">
+                     <Button onClick={handleSubscribeProfessional} disabled={subLoading} className="w-full h-12 text-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg">
+                       {subLoading ? <div className="flex items-center gap-2">
+                           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                           Redirecionando...
+                         </div> : <div className="flex items-center gap-2">
+                           <Crown className="w-5 h-5" />
+                           Assinar Plano Profissional
+                         </div>}
+                     </Button>
+                     <Button onClick={handleManageSubscription} disabled={portalLoading} variant="secondary" className="w-full">
+                       {portalLoading ? <div className="flex items-center gap-2">
+                           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                           Abrindo portal...
+                         </div> : <div className="flex items-center gap-2">
+                           <RefreshCw className="w-4 h-4" />
+                           Gerenciar assinatura
+                         </div>}
+                     </Button>
+                   </div>
+                </CardContent>
+              </Card>
+            </div>
 
             </div>
           </div>
@@ -337,90 +418,121 @@ export default function ComprarCreditosPage() {
               </Card>}
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {tokenPacks.map((tokenPack, index) => {
-                const costPerThousand = (tokenPack.price_cents / 100) / (tokenPack.tokens_included / 1000);
-                const isRecommended = index === 1; // Second package is recommended
+              {/* Recarga Rápida */}
+              <Card className={`relative bg-slate-800 border-slate-700 transition-all duration-300 ${!canPurchaseTokens ? 'opacity-60' : ''}`}>
+                <CardHeader className="text-center pt-6 pb-3">
+                  <CardTitle className="text-lg font-bold text-blue-400">
+                    Recarga Rápida
+                  </CardTitle>
+                  <CardDescription className="text-2xl font-bold text-white">
+                    25.000 tokens
+                  </CardDescription>
+                </CardHeader>
+
+                <CardContent className="space-y-4 px-6 pb-6">
+                   <div className="text-center">
+                     <span className="text-3xl font-bold text-blue-400">
+                       R$ 39,90
+                     </span>
+                     <p className="text-xs text-muted-foreground">
+                       R$ 1,60 por 1k tokens
+                     </p>
+                   </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                      <span>25.000 tokens</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                      <span>Sem expiração</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                      <span>Ativação imediata</span>
+                    </div>
+                  </div>
+
+                  <Button onClick={() => handlePurchaseRecharge('b0571fb3-1fdf-437d-9b00-19edd1e89a23')} disabled={isLoading || !canPurchaseTokens} className="w-full h-12 text-base bg-blue-600 hover:bg-blue-700">
+                    {isLoading && selectedPackage === 'b0571fb3-1fdf-437d-9b00-19edd1e89a23' ? <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Redirecionando...
+                      </div> : <div className="flex items-center gap-2">
+                        <CreditCard className="w-4 h-4" />
+                        Comprar Recarga
+                      </div>}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Recarga Inteligente */}
+              <Card className={`relative bg-slate-800 border-green-500 shadow-lg shadow-green-500/20 transition-all duration-300 ${!canPurchaseTokens ? 'opacity-60' : ''}`}>
+                <div className="absolute -top-2 left-1/2 -translate-x-1/2">
+                  <Badge className="bg-green-600 text-white px-3 py-1 text-sm">
+                    <Star className="w-4 h-4 mr-1" />
+                    Mais Vantajoso
+                  </Badge>
+                </div>
                 
-                return (
-                  <Card key={tokenPack.id} className={`relative transition-all duration-300 ${!canPurchaseTokens ? 'opacity-60' : ''} ${
-                    isRecommended 
-                      ? 'bg-slate-800 border-green-500 shadow-lg shadow-green-500/20' 
-                      : 'bg-slate-800 border-slate-700'
-                  }`}>
-                    {isRecommended && (
-                      <div className="absolute -top-2 left-1/2 -translate-x-1/2">
-                        <Badge className="bg-green-600 text-white px-3 py-1 text-sm">
-                          <Star className="w-4 h-4 mr-1" />
-                          Mais Vantajoso
-                        </Badge>
-                      </div>
-                    )}
-                    
-                    <CardHeader className={`text-center ${isRecommended ? 'pt-8' : 'pt-6'} pb-3`}>
-                      <CardTitle className={`text-lg font-bold ${isRecommended ? 'text-green-400' : 'text-blue-400'}`}>
-                        {tokenPack.name}
-                      </CardTitle>
-                      <CardDescription className="text-2xl font-bold text-white">
-                        {tokenPack.tokens_included?.toLocaleString()} tokens
-                      </CardDescription>
-                    </CardHeader>
+                <CardHeader className="text-center pt-8 pb-3">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Badge className="bg-green-600 text-white px-2 py-1 text-xs">
+                      20% OFF
+                    </Badge>
+                  </div>
+                  <CardTitle className="text-lg font-bold text-green-400">
+                    Recarga Inteligente
+                  </CardTitle>
+                  <CardDescription className="text-2xl font-bold text-white">
+                    50.000 tokens
+                  </CardDescription>
+                </CardHeader>
 
-                    <CardContent className="space-y-4 px-6 pb-6">
-                       <div className="text-center">
-                         <span className={`text-3xl font-bold ${isRecommended ? 'text-green-400' : 'text-blue-400'}`}>
-                           {formatPrice(tokenPack.price_cents)}
-                         </span>
-                         <p className="text-xs text-muted-foreground">
-                           R$ {costPerThousand.toFixed(2)} por 1k tokens
-                         </p>
-                       </div>
+                <CardContent className="space-y-4 px-6 pb-6">
+                   <div className="text-center">
+                     <div className="flex items-center justify-center gap-2 mb-2">
+                       <span className="text-lg font-medium text-muted-foreground line-through">R$ 87,38</span>
+                       <span className="text-3xl font-bold text-green-400">
+                         R$ 69,90
+                       </span>
+                     </div>
+                     <p className="text-xs text-muted-foreground">
+                       R$ 1,40 por 1k tokens
+                     </p>
+                     <p className="text-xs text-green-400 font-medium">Economia de R$ 17,48</p>
+                   </div>
 
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-sm">
-                          <Check className={`w-4 h-4 flex-shrink-0 ${isRecommended ? 'text-green-400' : 'text-blue-400'}`} />
-                          <span>{tokenPack.tokens_included?.toLocaleString()} tokens</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <Check className={`w-4 h-4 flex-shrink-0 ${isRecommended ? 'text-green-400' : 'text-blue-400'}`} />
-                          <span>Sem expiração</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <Check className={`w-4 h-4 flex-shrink-0 ${isRecommended ? 'text-green-400' : 'text-blue-400'}`} />
-                          <span>Ativação imediata</span>
-                        </div>
-                        {isRecommended && (
-                          <div className="flex items-center gap-2 text-sm">
-                            <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
-                            <span className="font-medium">Melhor custo-benefício</span>
-                          </div>
-                        )}
-                      </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
+                      <span>50.000 tokens</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
+                      <span>Sem expiração</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
+                      <span>Ativação imediata</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
+                      <span className="font-medium">Melhor custo-benefício</span>
+                    </div>
+                  </div>
 
-                      <Button 
-                        onClick={() => handlePurchaseRecharge(tokenPack.id)} 
-                        disabled={isLoading || !canPurchaseTokens} 
-                        className={`w-full h-12 text-base ${
-                          isRecommended 
-                            ? 'bg-green-600 hover:bg-green-700' 
-                            : 'bg-blue-600 hover:bg-blue-700'
-                        }`}
-                      >
-                        {isLoading && selectedPackage === tokenPack.id ? (
-                          <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            Redirecionando...
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-2">
-                            <CreditCard className="w-4 h-4" />
-                            Comprar Recarga
-                          </div>
-                        )}
-                      </Button>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                  <Button onClick={() => handlePurchaseRecharge('9c75ed7c-8c4c-46c4-8576-931393d3f292')} disabled={isLoading || !canPurchaseTokens} className="w-full h-12 text-base bg-green-600 hover:bg-green-700">
+                    {isLoading && selectedPackage === '9c75ed7c-8c4c-46c4-8576-931393d3f292' ? <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Redirecionando...
+                      </div> : <div className="flex items-center gap-2">
+                        <CreditCard className="w-4 h-4" />
+                        Comprar Recarga
+                      </div>}
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
           </div>
 
