@@ -441,14 +441,14 @@ export default function ComprarCreditosPage() {
                 </CardHeader>
 
                 <CardContent className="space-y-4 px-6 pb-6">
-                  <div className="text-center">
-                    <span className="text-3xl font-bold text-blue-400">
-                      R$ 29,90
-                    </span>
-                    <p className="text-xs text-muted-foreground">
-                      R$ 1,20 por 1k tokens
-                    </p>
-                  </div>
+                   <div className="text-center">
+                     <span className="text-3xl font-bold text-blue-400">
+                       R$ 79,90
+                     </span>
+                     <p className="text-xs text-muted-foreground">
+                       R$ 3,20 por 1k tokens
+                     </p>
+                   </div>
 
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm">
@@ -509,22 +509,22 @@ export default function ComprarCreditosPage() {
                 </CardHeader>
 
                 <CardContent className="space-y-4 px-6 pb-6">
-                  <div className="text-center">
-                    <div className="flex items-center justify-center gap-2 mb-2">
-                      <span className="text-lg font-medium text-muted-foreground line-through">
-                        R$ 49,90
-                      </span>
-                      <span className="text-3xl font-bold text-green-400">
-                        R$ 39,90
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      R$ 0,80 por 1k tokens
-                    </p>
-                    <p className="text-xs text-green-400 font-medium">
-                      Economia de R$ 10,00
-                    </p>
-                  </div>
+                   <div className="text-center">
+                     <div className="flex items-center justify-center gap-2 mb-2">
+                       <span className="text-lg font-medium text-muted-foreground line-through">
+                         R$ 179,90
+                       </span>
+                       <span className="text-3xl font-bold text-green-400">
+                         R$ 139,90
+                       </span>
+                     </div>
+                     <p className="text-xs text-muted-foreground">
+                       R$ 2,80 por 1k tokens
+                     </p>
+                     <p className="text-xs text-green-400 font-medium">
+                       Economia de R$ 40,00
+                     </p>
+                   </div>
 
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm">
