@@ -110,15 +110,14 @@ const ContatoForm = () => {
         <div className="container max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Link to="/blog">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-white hover:bg-slate-700"
-                >
-                  <ArrowLeft className="h-5 w-5" />
-                </Button>
-              </Link>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-white hover:bg-slate-700"
+                onClick={() => navigate(-1)}
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
               <img 
                 src="/lovable-uploads/8fc8748b-d056-4136-b669-07bbd1bc2327.png" 
                 alt="Oráculo Jurídico" 
