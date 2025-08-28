@@ -1,9 +1,11 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useSEO } from "@/hooks/useSEO";
 
 
 const Privacidade = () => {
+  const navigate = useNavigate();
+  
   useSEO({
     title: "Política de Privacidade | Oráculo Jurídico",
     description: "Política de Privacidade — Stripe, LexML e dados de uso para limites e antifraude.",
@@ -12,12 +14,13 @@ const Privacidade = () => {
     <div className="min-h-screen bg-background">
       <header className="py-6 px-4 border-b border-border">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <Link to="/blog">
-            <button className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors">
-              <ArrowLeft size={20} />
-              <span>Voltar para Home</span>
-            </button>
-          </Link>
+          <button 
+            onClick={() => navigate(-1)}
+            className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft size={20} />
+            <span>Voltar</span>
+          </button>
           <img 
             src="/lovable-uploads/c69e5a84-404e-4cbe-9d84-d19d95158721.png" 
             alt="Oráculo Jurídico" 
