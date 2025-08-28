@@ -498,9 +498,7 @@ export default function ComprarCreditosPage() {
                      <p className="text-xs text-muted-foreground">
                        R$ 1,40 por 1k tokens
                      </p>
-                     <p className="text-xs text-green-400 font-medium">
-                       Economia de R$ 20,00
-                     </p>
+                     <p className="text-xs text-green-400 font-medium">Economia de R$ 17,48</p>
                    </div>
 
                   <div className="space-y-2">
