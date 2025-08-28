@@ -12,6 +12,7 @@ import AgendaCronManager from "@/components/admin/AgendaCronManager";
 import BlogManager from "@/components/admin/BlogManager";
 import BlogSettings from "@/components/admin/BlogSettings";
 import AdsManager from "@/components/admin/AdsManager";
+import AdSenseManager from "@/components/admin/AdSenseManager";
 import LandingPageSettings from "@/components/admin/LandingPageSettings";
 import { Users, FileText, Upload, Undo2, ArrowLeft, Coins, Mail, BookOpen, Settings2, Wrench, Globe, Settings } from "lucide-react";
 import { usePageTitle } from "@/hooks/usePageTitle";
@@ -206,7 +207,7 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <Tabs value={activeBlogTab} onValueChange={setActiveBlogTab} className="space-y-6">
-                <TabsList className="grid w-full grid-cols-3 h-auto">
+                <TabsList className="grid w-full grid-cols-4 h-auto">
                   <TabsTrigger value="articles" className="flex items-center gap-2 p-3">
                     <FileText className="w-4 h-4" />
                     <span>Artigos</span>
@@ -214,6 +215,10 @@ export default function AdminDashboard() {
                   <TabsTrigger value="ads" className="flex items-center gap-2 p-3">
                     <Settings2 className="w-4 h-4" />
                     <span>Anúncios</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="adsense" className="flex items-center gap-2 p-3">
+                    <Globe className="w-4 h-4" />
+                    <span>AdSense</span>
                   </TabsTrigger>
                   <TabsTrigger value="settings" className="flex items-center gap-2 p-3">
                     <Settings2 className="w-4 h-4" />
@@ -244,6 +249,19 @@ export default function AdminDashboard() {
                     </div>
                     
                     <AdsManager />
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="adsense">
+                  <div className="space-y-4 sm:space-y-6">
+                    <div>
+                      <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2">Gerenciar Sites do AdSense</h2>
+                      <p className="text-muted-foreground text-xs sm:text-sm lg:text-base">
+                        Adicione sites com que você quer gerar receita no Google AdSense
+                      </p>
+                    </div>
+                    
+                    <AdSenseManager />
                   </div>
                 </TabsContent>
 

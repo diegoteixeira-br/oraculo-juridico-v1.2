@@ -29,6 +29,39 @@ export type Database = {
         }
         Relationships: []
       }
+      adsense_sites: {
+        Row: {
+          ads_txt_status: string
+          approval_status: string
+          created_at: string
+          id: string
+          last_updated: string
+          status_details: string | null
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          ads_txt_status?: string
+          approval_status?: string
+          created_at?: string
+          id?: string
+          last_updated?: string
+          status_details?: string | null
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          ads_txt_status?: string
+          approval_status?: string
+          created_at?: string
+          id?: string
+          last_updated?: string
+          status_details?: string | null
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       blog_comments: {
         Row: {
           content: string

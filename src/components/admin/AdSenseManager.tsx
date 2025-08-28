@@ -40,12 +40,12 @@ export default function AdSenseManager() {
   const fetchSites = async () => {
     try {
       const { data, error } = await supabase
-        .from('adsense_sites')
+        .from('adsense_sites' as any)
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setSites(data || []);
+      setSites((data as unknown as AdSenseSite[]) || []);
     } catch (error) {
       console.error('Erro ao buscar sites:', error);
       toast.error('Erro ao carregar sites do AdSense');
@@ -59,7 +59,7 @@ export default function AdSenseManager() {
     
     try {
       const { error } = await supabase
-        .from('adsense_sites')
+        .from('adsense_sites' as any)
         .insert({
           ...formData,
           last_updated: new Date().toISOString()
@@ -82,7 +82,7 @@ export default function AdSenseManager() {
 
     try {
       const { error } = await supabase
-        .from('adsense_sites')
+        .from('adsense_sites' as any)
         .delete()
         .eq('id', id);
 
