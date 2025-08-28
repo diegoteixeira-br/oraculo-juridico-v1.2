@@ -240,9 +240,11 @@ export default function FinalizarCadastro() {
 
               {/* Botões */}
               <div className="space-y-3 px-4 md:px-0">
-                <Button onClick={handleContinueToStripe} className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 py-3 px-3 text-sm sm:text-base md:text-lg min-h-[48px] whitespace-normal leading-tight" size="lg">
-                  <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0" />
-                  <span className="text-center flex-1">Continuar para Finalizar Cadastro</span>
+                <Button asChild className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 py-3 px-3 text-sm sm:text-base md:text-lg min-h-[48px] whitespace-normal leading-tight" size="lg">
+                  <Link to="/comprar-creditos">
+                    <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0" />
+                    <span className="text-center flex-1">Continuar para Finalizar Cadastro</span>
+                  </Link>
                 </Button>
                 
                 <div className="text-center">
