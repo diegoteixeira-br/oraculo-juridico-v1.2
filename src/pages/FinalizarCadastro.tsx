@@ -171,8 +171,8 @@ export default function FinalizarCadastro() {
               
               {/* Destaque da oferta */}
               <div className="text-center p-6 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-xl border border-blue-500/30">
-                <div className="text-2xl font-bold text-blue-400 mb-2">Planos a partir de R$ 29,90</div>
-                <div className="text-sm text-slate-300">Escolha o plano ideal para você</div>
+                <div className="text-2xl font-bold text-blue-400 mb-2">2 Planos Disponíveis</div>
+                <div className="text-sm text-slate-300">Básico R$ 59,90 • Profissional R$ 97,00</div>
                 <div className="text-lg font-semibold text-yellow-400 mt-2">
                   7 Dias com Reembolso Garantido!
                 </div>
