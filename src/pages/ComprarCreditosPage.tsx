@@ -339,11 +339,11 @@ export default function ComprarCreditosPage() {
                   </Badge>
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <Badge className="bg-green-600 text-white px-2 py-1 text-sm">
-                      20% OFF
+                      50% OFF
                     </Badge>
                   </div>
                   <CardDescription className="text-white text-2xl lg:text-3xl font-bold flex items-center justify-center gap-3">
-                    <span className="line-through text-lg text-muted-foreground">R$ 121,25/mês</span>
+                    <span className="line-through text-lg text-muted-foreground">R$ 194,00/mês</span>
                     <span className="text-amber-400">R$ 97,00/mês</span>
                   </CardDescription>
                 </CardHeader>
