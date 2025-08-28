@@ -376,7 +376,7 @@ export default function ComprarCreditosPage() {
                   </div>
                   
                    <div className="mt-6 space-y-3">
-                     <Button onClick={handleSubscribeProfessional} disabled={subLoading} className="w-full h-12 text-lg bg-amber-600 hover:bg-amber-700">
+                     <Button onClick={handleSubscribeProfessional} disabled={subLoading} className="w-full h-12 text-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg">
                        {subLoading ? (
                          <div className="flex items-center gap-2">
                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
