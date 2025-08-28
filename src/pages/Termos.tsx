@@ -5,7 +5,7 @@ import { useSEO } from "@/hooks/useSEO";
 const Termos = () => {
   useSEO({
     title: "Termos de Uso | Oráculo Jurídico",
-    description: "Termos de Uso do Oráculo Jurídico — teste gratuito de 7 dias com 15.000 tokens.",
+    description: "Termos de Uso do Oráculo Jurídico — teste gratuito de 7 dias com 15.000 tokens. Plano Básico R$ 59,90/mês e Plano Profissional R$ 97,00/mês.",
   });
   return (
     <div className="min-h-screen bg-background">
@@ -78,12 +78,13 @@ const Termos = () => {
             <section>
               <h2 className="text-xl font-semibold text-foreground mb-4">4. Planos e Preços</h2>
               <p>
-                Oferecemos um plano de assinatura mensal e pacotes opcionais de tokens:
+                Oferecemos planos de assinatura mensal e pacotes opcionais de tokens:
               </p>
               <ul className="list-disc ml-6 mt-2 space-y-2">
-                <li><strong>Plano Básico:</strong> R$ 44,59/mês, com 30.000 tokens mensais para funcionalidades de IA (chat jurídico, conversão de áudio em texto, extração automática de prazos de documentos) e uso ilimitado das calculadoras, documentos (cópia) e agenda.</li>
+                <li><strong>Plano Básico:</strong> R$ 59,90/mês, com 30.000 tokens mensais para funcionalidades de IA (chat jurídico, conversão de áudio em texto, extração automática de prazos de documentos) e uso ilimitado das calculadoras, documentos (cópia) e agenda.</li>
+                <li><strong>Plano Profissional:</strong> R$ 97,00/mês, com tokens ilimitados (política de uso justo) e suporte prioritário.</li>
                 <li><strong>Teste Gratuito:</strong> 7 dias grátis com 15.000 tokens para funcionalidades de IA (chat jurídico, conversão de áudio em texto) e uso ilimitado das calculadoras e documentos.</li>
-                <li><strong>Pacotes Opcionais:</strong> 75.000 e 150.000 tokens avulsos para ampliar o uso das funcionalidades de IA conforme necessidade.</li>
+                <li><strong>Pacotes Opcionais:</strong> Recarga Rápida de 25.000 tokens por R$ 39,90 e Recarga Inteligente de 50.000 tokens por R$ 69,90 (disponíveis apenas para assinantes do Plano Básico).</li>
               </ul>
             </section>
 
@@ -159,7 +160,7 @@ const Termos = () => {
                 A Agenda Jurídica permite organizar prazos processuais, audiências, reuniões e compromissos personalizados.
               </p>
               <p className="mt-2">
-                 <strong>Limites por Plano:</strong> A Agenda Jurídica é exclusiva do Plano Básico com uso ilimitado. Não está disponível no teste gratuito.
+                 <strong>Limites por Plano:</strong> A Agenda Jurídica está disponível nos Planos Básico e Profissional com uso ilimitado. Não está disponível no teste gratuito.
                </p>
               <p className="mt-2">
                 <strong>Extração Automática de Prazos:</strong> A funcionalidade de extração automática de prazos via IA consome um mínimo de 500 tokens por uso, com custo variável baseado no tamanho do texto analisado. Esta função analiza documentos jurídicos (texto, PDF ou imagem) e identifica automaticamente prazos processuais, criando compromissos na agenda.
@@ -176,7 +177,7 @@ const Termos = () => {
                 <li>Utilizar os serviços de forma ética e legal</li>
                 <li>Não compartilhar sua conta com terceiros</li>
                 <li>Verificar as informações obtidas com profissionais qualificados quando necessário</li>
-                <li>Respeitar os limites de uso conforme o plano (gratuito e Plano Básico)</li>
+                <li>Respeitar os limites de uso conforme o plano (gratuito, Plano Básico e Plano Profissional)</li>
               </ul>
             </section>
 
