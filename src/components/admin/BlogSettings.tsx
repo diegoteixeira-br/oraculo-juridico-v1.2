@@ -149,33 +149,52 @@ export default function BlogSettings() {
           </div>
           
           {settings.googleAdsenseEnabled && (
-            <div className="space-y-2">
-              <Label htmlFor="adsense-client" className="flex items-center gap-2">
-                ID do Cliente AdSense
-                {settings.googleAdsenseClientId && (
-                  <Check className="h-4 w-4 text-green-500" />
-                )}
-              </Label>
-              <div className="relative">
-                <Input
-                  id="adsense-client"
-                  placeholder="ca-pub-xxxxxxxxxxxxxxxxx"
-                  value={settings.googleAdsenseClientId}
-                  onChange={(e) => 
-                    setSettings(prev => ({ ...prev, googleAdsenseClientId: e.target.value }))
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="adsense-client" className="flex items-center gap-2">
+                  ID do Cliente AdSense
+                  {settings.googleAdsenseClientId && (
+                    <Check className="h-4 w-4 text-green-500" />
+                  )}
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="adsense-client"
+                    placeholder="ca-pub-xxxxxxxxxxxxxxxxx"
+                    value={settings.googleAdsenseClientId}
+                    onChange={(e) => 
+                      setSettings(prev => ({ ...prev, googleAdsenseClientId: e.target.value }))
+                    }
+                    className={settings.googleAdsenseClientId ? "pr-10" : ""}
+                  />
+                  {settings.googleAdsenseClientId && (
+                    <Check className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-500" />
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {settings.googleAdsenseClientId 
+                    ? "✓ ID do cliente configurado. Os anúncios aparecerão automaticamente para usuários gratuitos." 
+                    : "Encontre seu ID do cliente na sua conta do Google AdSense. Cole o código ca-pub-XXXXXXXXXXXXXXXXX"
                   }
-                  className={settings.googleAdsenseClientId ? "pr-10" : ""}
-                />
-                {settings.googleAdsenseClientId && (
-                  <Check className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-500" />
-                )}
+                </p>
               </div>
-              <p className="text-xs text-muted-foreground">
-                {settings.googleAdsenseClientId 
-                  ? "✓ ID do cliente configurado" 
-                  : "Encontre seu ID do cliente na sua conta do Google AdSense"
-                }
-              </p>
+              
+              <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
+                  ℹ️ Como configurar os anúncios
+                </h4>
+                <div className="text-sm text-blue-800 dark:text-blue-200 space-y-2">
+                  <p>1. <strong>Crie unidades de anúncio</strong> no seu painel do Google AdSense</p>
+                  <p>2. <strong>Configure os slots</strong> diretamente no código (src/components/AdSenseAd.tsx)</p>
+                  <p>3. <strong>Locais dos anúncios:</strong></p>
+                  <ul className="ml-4 space-y-1">
+                    <li>• Dashboard: sidebar superior e inferior</li>
+                    <li>• Blog: sidebar dos artigos</li>
+                    <li>• Páginas: entre conteúdos</li>
+                  </ul>
+                  <p className="font-medium">Os anúncios só aparecem para usuários com plano gratuito.</p>
+                </div>
+              </div>
             </div>
           )}
         </CardContent>

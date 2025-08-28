@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import AdSenseScript from "@/components/AdSenseScript";
 import { usePageTitle } from "./hooks/usePageTitle";
 import { useSmoothScrollTop } from "./hooks/useSmoothScrollTop";
 
@@ -94,6 +95,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <AdSenseScript />
           <AppContent />
         </AuthProvider>
       </BrowserRouter>

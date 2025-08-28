@@ -14,6 +14,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import UserMenu from '@/components/UserMenu';
 import { BlogComments } from '@/components/BlogComments';
 import { BlogPostVotes } from '@/components/BlogPostVotes';
+import AdSenseAd from '@/components/AdSenseAd';
 
 interface BlogPost {
   id: string;
@@ -384,20 +385,11 @@ const ArtigoBlog = () => {
             <AdDisplay position="sidebar_top" />
 
             {/* Google AdSense - Topo */}
-            <Card className="bg-slate-800/50 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-sm text-center text-slate-400">
-                  Publicidade
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-slate-700/30 rounded-lg h-64 flex items-center justify-center text-slate-400 text-sm">
-                  Espaço para Google AdSense
-                  <br />
-                  (300x250)
-                </div>
-              </CardContent>
-            </Card>
+            <AdSenseAd 
+              format="rectangle" 
+              slot="1234567890"
+              className="mb-4"
+            />
 
             {/* Navegação do Blog */}
             <Card className="bg-slate-800/50 border-slate-700">
@@ -424,20 +416,11 @@ const ArtigoBlog = () => {
             <AdDisplay position="sidebar_middle" />
 
             {/* Google AdSense - Meio */}
-            <Card className="bg-slate-800/50 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-sm text-center text-slate-400">
-                  Publicidade
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-slate-700/30 rounded-lg h-64 flex items-center justify-center text-slate-400 text-sm">
-                  Espaço para Google AdSense
-                  <br />
-                  (300x250)
-                </div>
-              </CardContent>
-            </Card>
+            <AdSenseAd 
+              format="rectangle" 
+              slot="0987654321"
+              className="mb-4"
+            />
 
             {/* CTA */}
             <Card className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border-blue-500/30">
