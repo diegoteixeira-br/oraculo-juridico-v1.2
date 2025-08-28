@@ -395,8 +395,6 @@ export default function ComprarCreditosPage() {
                 </CardContent>
               </Card>
             </div>
-
-            </div>
           </div>
 
           {/* Pacotes de Recarga para Plano Básico */}
@@ -550,5 +548,5 @@ export default function ComprarCreditosPage() {
           </div>
         </div>
       </div>
-    </div>;
+    </div>
 }
