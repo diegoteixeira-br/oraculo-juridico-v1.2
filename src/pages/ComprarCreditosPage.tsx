@@ -67,20 +67,19 @@ export default function ComprarCreditosPage() {
       setSelectedPackage(rechargeType);
       console.log("🚀 Iniciando compra de recarga:", rechargeType);
 
-      let stripeUrl = '';
+      const { data, error } = await supabase.functions.invoke('create-payment', {
+        body: { packageId: rechargeType }
+      });
 
-      // Links diretos para os novos pacotes de recarga
-      if (rechargeType === 'recarga-rapida') {
-        stripeUrl = 'https://buy.stripe.com/test_28o1632bv7G209O000'; // Link temporário para teste
-      } else if (rechargeType === 'recarga-inteligente') {
-        stripeUrl = 'https://buy.stripe.com/test_7sI163gZT6hy5qg000'; // Link temporário para teste
+      if (error) throw error;
+
+      if (data?.url) {
+        console.log("✅ Redirecionando para Stripe:", data.url);
+        // Redirecionar para o Stripe na mesma aba
+        window.location.href = data.url;
       } else {
-        throw new Error('Link de pagamento não configurado para este produto');
+        throw new Error('URL de pagamento não recebida');
       }
-      
-      console.log("✅ Redirecionando para:", stripeUrl);
-      // Redirecionar para o link do Stripe na mesma aba
-      window.location.href = stripeUrl;
     } catch (error) {
       console.error('❌ Erro ao processar pagamento:', error);
       toast({
@@ -97,25 +96,19 @@ export default function ComprarCreditosPage() {
     try {
       setSubLoading(true);
 
-      // Usar create-checkout para gerar URL com redirecionamento correto
-      const {
-        data,
-        error
-      } = await supabase.functions.invoke('create-checkout', {
-        body: {
-          product_type_id: '443c946c-18a2-48b0-90bb-925518b11aaf' // ID do Plano Básico
-        }
+      const { data, error } = await supabase.functions.invoke('create-subscription', {
+        body: { planType: 'basico' }
       });
-      if (error) {
-        console.error('Erro ao criar checkout:', error);
-        // Fallback para link direto
-        const stripeUrl = 'https://buy.stripe.com/cNi00k4Hf2lE1xZbwy5AQ02';
-        window.location.href = stripeUrl;
-        return;
+
+      if (error) throw error;
+
+      if (data?.url) {
+        console.log("✅ Redirecionando para Stripe:", data.url);
+        // Redirecionar para o Stripe na mesma aba
+        window.location.href = data.url;
+      } else {
+        throw new Error('URL de assinatura não recebida');
       }
-      console.log("✅ Redirecionando para assinatura:", data.url);
-      // Redirecionar para o Stripe na mesma aba
-      window.location.href = data.url;
     } catch (error) {
       console.error('❌ Erro ao iniciar assinatura:', error);
       toast({

@@ -8,29 +8,41 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-// Handle CORS preflight requests
+  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    console.log("🚀 Iniciando criação de pagamento...");
+    console.log("🚀 Iniciando criação de assinatura...");
     
-    const { packageId } = await req.json();
-    console.log("📦 Package ID recebido:", packageId);
+    const { planType } = await req.json();
+    console.log("📦 Plano ID recebido:", planType);
     
-    // Validate package
-    const packages = {
-      "recarga-rapida": { name: "Recarga Rápida", tokens: 25000, price: 2990, planType: "token-recharge" },
-      "recarga-inteligente": { name: "Recarga Inteligente", tokens: 50000, price: 3990, planType: "token-recharge" }
+    // Validate plan
+    const plans = {
+      "basico": { 
+        name: "Plano Básico", 
+        price: 5990, 
+        originalPrice: 11980,
+        description: "30.000 tokens por mês + todas as funcionalidades",
+        interval: "month"
+      },
+      "profissional": { 
+        name: "Plano Profissional", 
+        price: 9700, 
+        originalPrice: 12125,
+        description: "Tokens ilimitados + todas as funcionalidades",
+        interval: "month"
+      }
     };
 
-    const selectedPackage = packages[packageId as keyof typeof packages];
-    if (!selectedPackage) {
-      throw new Error("Pacote de tokens inválido");
+    const selectedPlan = plans[planType as keyof typeof plans];
+    if (!selectedPlan) {
+      throw new Error("Plano de assinatura inválido");
     }
     
-    console.log("✅ Pacote selecionado:", selectedPackage);
+    console.log("✅ Plano selecionado:", selectedPlan);
 
     // Create Supabase client
     const supabaseClient = createClient(
@@ -69,7 +81,7 @@ serve(async (req) => {
       console.log("👤 Criando novo cliente...");
     }
 
-    // Create a one-time payment session
+    // Create a subscription session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -78,33 +90,35 @@ serve(async (req) => {
           price_data: {
             currency: "brl",
             product_data: { 
-              name: selectedPackage.name,
-              description: `${selectedPackage.tokens.toLocaleString()} tokens para o Oráculo Jurídico`
+              name: selectedPlan.name,
+              description: selectedPlan.description
             },
-            unit_amount: selectedPackage.price, // Preço em centavos
+            unit_amount: selectedPlan.price, // Preço em centavos
+            recurring: {
+              interval: selectedPlan.interval as 'month'
+            }
           },
           quantity: 1,
         },
       ],
-      mode: "payment",
+      mode: "subscription",
       success_url: `${req.headers.get("origin")}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get("origin")}/comprar-creditos`,
       metadata: {
         user_id: user.id,
-        package_id: packageId,
-        tokens: selectedPackage.tokens.toString(),
-        plan_type: selectedPackage.planType
+        plan_type: planType,
+        subscription_type: selectedPlan.name
       }
     });
 
-    console.log("💳 Sessão de checkout criada:", session.id);
+    console.log("💳 Sessão de assinatura criada:", session.id);
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
   } catch (error) {
-    console.error("❌ Erro ao criar pagamento:", error);
+    console.error("❌ Erro ao criar assinatura:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
