@@ -92,6 +92,35 @@ export default function ComprarCreditosPage() {
       setSelectedPackage(null);
     }
   };
+  const handleSubscribeProfessional = async () => {
+    try {
+      setSubLoading(true);
+
+      const { data, error } = await supabase.functions.invoke('create-subscription', {
+        body: { planType: 'profissional' }
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        console.log("✅ Redirecionando para Stripe:", data.url);
+        // Redirecionar para o Stripe na mesma aba
+        window.location.href = data.url;
+      } else {
+        throw new Error('URL de assinatura não recebida');
+      }
+    } catch (error) {
+      console.error('❌ Erro ao iniciar assinatura:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível iniciar a assinatura. Tente novamente.',
+        variant: 'destructive'
+      });
+    } finally {
+      setSubLoading(false);
+    }
+  };
+
   const handleSubscribe = async () => {
     try {
       setSubLoading(true);
@@ -346,17 +375,34 @@ export default function ComprarCreditosPage() {
                     </div>
                   </div>
                   
-                  <div className="mt-6 space-y-3">
-                    <Button disabled className="w-full h-12 text-lg bg-amber-600 hover:bg-amber-700">
-                      <div className="flex items-center gap-2">
-                        <Crown className="w-5 h-5" />
-                        Em Breve
-                      </div>
-                    </Button>
-                    <p className="text-xs text-amber-200 text-center">
-                      Plano será lançado em breve
-                    </p>
-                  </div>
+                   <div className="mt-6 space-y-3">
+                     <Button onClick={handleSubscribeProfessional} disabled={subLoading} className="w-full h-12 text-lg bg-amber-600 hover:bg-amber-700">
+                       {subLoading ? (
+                         <div className="flex items-center gap-2">
+                           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                           Redirecionando...
+                         </div>
+                       ) : (
+                         <div className="flex items-center gap-2">
+                           <Crown className="w-5 h-5" />
+                           Assinar Plano Profissional
+                         </div>
+                       )}
+                     </Button>
+                     <Button onClick={handleManageSubscription} disabled={portalLoading} variant="secondary" className="w-full">
+                       {portalLoading ? (
+                         <div className="flex items-center gap-2">
+                           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                           Abrindo portal...
+                         </div>
+                       ) : (
+                         <div className="flex items-center gap-2">
+                           <RefreshCw className="w-4 h-4" />
+                           Gerenciar assinatura
+                         </div>
+                       )}
+                     </Button>
+                   </div>
                 </CardContent>
               </Card>
             </div>
