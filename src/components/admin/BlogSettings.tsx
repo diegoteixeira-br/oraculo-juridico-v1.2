@@ -173,7 +173,7 @@ export default function BlogSettings() {
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {settings.googleAdsenseClientId 
-                    ? "✓ ID do cliente configurado. Os anúncios aparecerão automaticamente para usuários gratuitos." 
+                    ? "✓ ID do cliente configurado. Os anúncios aparecerão para usuários gratuitos no Dashboard e Blog." 
                     : "Encontre seu ID do cliente na sua conta do Google AdSense. Cole o código ca-pub-XXXXXXXXXXXXXXXXX"
                   }
                 </p>
@@ -188,11 +188,10 @@ export default function BlogSettings() {
                   <p>2. <strong>Configure os slots</strong> diretamente no código (src/components/AdSenseAd.tsx)</p>
                   <p>3. <strong>Locais dos anúncios:</strong></p>
                   <ul className="ml-4 space-y-1">
-                    <li>• Dashboard: sidebar superior e inferior</li>
-                    <li>• Blog: sidebar dos artigos</li>
-                    <li>• Páginas: entre conteúdos</li>
+                    <li>• <strong>Dashboard:</strong> sidebar superior e inferior</li>
+                    <li>• <strong>Blog:</strong> sidebar dos artigos individuais</li>
                   </ul>
-                  <p className="font-medium">Os anúncios só aparecem para usuários com plano gratuito.</p>
+                  <p className="font-medium">⚠️ Os anúncios só aparecem para usuários gratuitos e apenas nas páginas /dashboard e /blog.</p>
                 </div>
               </div>
             </div>

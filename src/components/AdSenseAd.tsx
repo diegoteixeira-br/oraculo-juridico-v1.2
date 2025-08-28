@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccessControl } from '@/hooks/useAccessControl';
@@ -15,6 +16,13 @@ export default function AdSenseAd({ format, slot, className = '', style = {} }: 
   const [isAdSenseEnabled, setIsAdSenseEnabled] = useState(false);
   const { user } = useAuth();
   const { isFreeUser } = useAccessControl();
+  const location = useLocation();
+
+  // Páginas onde os anúncios devem aparecer
+  const allowedPages = ['/dashboard', '/blog'];
+  const isAllowedPage = allowedPages.some(page => 
+    location.pathname === page || location.pathname.startsWith('/blog/')
+  );
 
   useEffect(() => {
     const loadAdSenseConfig = async () => {
@@ -38,7 +46,7 @@ export default function AdSenseAd({ format, slot, className = '', style = {} }: 
 
   useEffect(() => {
     // Carregar anúncios quando o componente for montado e as configurações estiverem prontas
-    if (isAdSenseEnabled && adSenseClientId && isFreeUser) {
+    if (isAdSenseEnabled && adSenseClientId && isFreeUser && isAllowedPage) {
       try {
         // @ts-ignore
         if (window.adsbygoogle && window.adsbygoogle.loaded) {
@@ -49,10 +57,13 @@ export default function AdSenseAd({ format, slot, className = '', style = {} }: 
         console.error('Erro ao carregar anúncio:', error);
       }
     }
-  }, [isAdSenseEnabled, adSenseClientId, isFreeUser]);
+  }, [isAdSenseEnabled, adSenseClientId, isFreeUser, isAllowedPage]);
 
-  // Não mostrar anúncios para usuários pagos ou se AdSense não estiver configurado
-  if (!isAdSenseEnabled || !adSenseClientId || !isFreeUser) {
+  // Não mostrar anúncios se:
+  // - AdSense não estiver configurado
+  // - Usuário não for gratuito
+  // - Não estiver em uma página permitida
+  if (!isAdSenseEnabled || !adSenseClientId || !isFreeUser || !isAllowedPage) {
     return null;
   }
 
