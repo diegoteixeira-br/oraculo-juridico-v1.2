@@ -260,6 +260,9 @@ export default function FinalizarCadastro() {
                   <Shield className="w-4 h-4 inline mr-1 text-green-400" />
                   Cobrança no ato • Reembolso total se cancelar antes do 8º dia • Pagamento seguro via Stripe
                 </p>
+                <p className="text-xs text-slate-500 mt-2 opacity-70">
+                  Para acessar com plano gratuito de 7 dias, clique na logo acima
+                </p>
               </div>
             </CardContent>
           </Card>
