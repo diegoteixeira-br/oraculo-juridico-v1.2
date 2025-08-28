@@ -852,6 +852,39 @@ export type Database = {
         }
         Relationships: []
       }
+      profile_access_logs: {
+        Row: {
+          access_type: string
+          accessed_fields: string[] | null
+          accessed_user_id: string
+          accessor_user_id: string | null
+          created_at: string | null
+          id: string
+          ip_address: unknown | null
+          user_agent: string | null
+        }
+        Insert: {
+          access_type: string
+          accessed_fields?: string[] | null
+          accessed_user_id: string
+          accessor_user_id?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          user_agent?: string | null
+        }
+        Update: {
+          access_type?: string
+          accessed_fields?: string[] | null
+          accessed_user_id?: string
+          accessor_user_id?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -1227,6 +1260,20 @@ export type Database = {
           result: string
         }[]
       }
+      get_admin_user_list: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          created_at: string
+          is_active: boolean
+          masked_cpf: string
+          masked_full_name: string
+          plan_type: string
+          subscription_activated_at: string
+          subscription_status: string
+          tokens: number
+          user_id: string
+        }[]
+      }
       halfvec_avg: {
         Args: { "": number[] }
         Returns: unknown
@@ -1315,6 +1362,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      log_sensitive_access: {
+        Args: { access_type: string; accessed_user: string; fields: string[] }
+        Returns: undefined
+      }
       match_documents: {
         Args: { filter?: Json; match_count?: number; query_embedding: string }
         Returns: {
@@ -1348,6 +1399,15 @@ export type Database = {
       schedule_daily_agenda_emails: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      secure_update_profile: {
+        Args: {
+          new_cpf?: string
+          new_full_name?: string
+          new_timezone?: string
+          profile_user_id: string
+        }
+        Returns: boolean
       }
       sparsevec_out: {
         Args: { "": unknown }

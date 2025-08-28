@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { toZonedTime, fromZonedTime } from "date-fns-tz";
 
-interface UserRow { id: string; email: string; name?: string; created_at?: string; role?: string; is_active?: boolean; tokens?: number; plan_type?: string; subscription_activated_at?: string }
+interface UserRow { id: string; email: string; name?: string; cpf?: string; created_at?: string; role?: string; is_active?: boolean; tokens?: number; plan_type?: string; subscription_activated_at?: string }
 
 export default function UserManager() {
   const [users, setUsers] = useState<UserRow[]>([]);
