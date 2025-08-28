@@ -156,23 +156,23 @@ export default function FinalizarCadastro() {
             </CardContent>
           </Card>
 
-          {/* Card do plano */}
+          {/* Card de escolha do plano */}
           <Card className="bg-slate-800/50 border-slate-700">
             <CardHeader className="text-center">
               <CardTitle className="flex items-center justify-center gap-2 text-white text-2xl">
                 <Zap className="w-6 h-6 text-blue-400" />
-                Plano Básico
+                Escolha seu Plano
               </CardTitle>
               <CardDescription>
-                Complete seu cadastro • Cobrança no ato com reembolso em 7 dias
+                Complete seu cadastro • Diversos planos disponíveis
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               
-              {/* Destaque do plano */}
+              {/* Destaque da oferta */}
               <div className="text-center p-6 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-xl border border-blue-500/30">
-                <div className="text-4xl font-bold text-blue-400 mb-2">R$ 59,90</div>
-                <div className="text-sm text-slate-300">por mês • 30.000 tokens</div>
+                <div className="text-2xl font-bold text-blue-400 mb-2">Planos a partir de R$ 29,90</div>
+                <div className="text-sm text-slate-300">Escolha o plano ideal para você</div>
                 <div className="text-lg font-semibold text-yellow-400 mt-2">
                   7 Dias com Reembolso Garantido!
                 </div>
