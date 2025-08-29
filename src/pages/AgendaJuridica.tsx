@@ -18,7 +18,8 @@ import {
   Trash2, 
   Check, 
   X,
-  Copy
+  Copy,
+  Scale
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -94,6 +95,12 @@ const AgendaJuridica = () => {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showNotificationDialog, setShowNotificationDialog] = useState(false);
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
+  
+  // Estados para busca CNJ
+  const [showCnjDialog, setShowCnjDialog] = useState(false);
+  const [numeroProcessoCnj, setNumeroProcessoCnj] = useState("");
+  const [processoEncontrado, setProcessoEncontrado] = useState<any>(null);
+  const [isLoadingCnj, setIsLoadingCnj] = useState(false);
 
   // Estados para duplicação separados
   const [duplicateCommitment, setDuplicateCommitment] = useState<{
@@ -345,6 +352,67 @@ const AgendaJuridica = () => {
     } finally {
       setIsLoadingNotifications(false);
     }
+  };
+
+  // Função para buscar processo no CNJ
+  const handleBuscaProcessoCNJ = async () => {
+    if (!numeroProcessoCnj.trim()) {
+      toast({
+        title: "Erro",
+        description: "Por favor, digite o número do processo.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoadingCnj(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('consultar-processo-cnj', {
+        body: { numeroProcesso: numeroProcessoCnj.trim() }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data.success) {
+        setProcessoEncontrado(data.processo);
+        toast({
+          title: "Sucesso",
+          description: "Processo encontrado com sucesso!",
+        });
+      } else {
+        throw new Error(data.error || 'Erro desconhecido');
+      }
+    } catch (error: any) {
+      console.error('Erro na busca CNJ:', error);
+      toast({
+        title: "Erro",
+        description: error.message || "Não foi possível consultar o processo no CNJ.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingCnj(false);
+    }
+  };
+
+  // Função para agendar prazo a partir de movimentação CNJ
+  const agendarPrazoMovimentacao = (movimentacao: any) => {
+    setNewCommitment({
+      title: `Prazo - ${processoEncontrado?.numeroProcesso || ''}`,
+      description: movimentacao.descricao || '',
+      commitment_type: "prazo_processual",
+      deadline_type: "outras",
+      commitment_date: "",
+      end_date: "",
+      location: "",
+      is_virtual: false,
+      process_number: processoEncontrado?.numeroProcesso || '',
+      client_name: "",
+      priority: "normal"
+    });
+    setShowCnjDialog(false);
+    setShowAddDialog(true);
   };
 
   useEffect(() => {
@@ -1088,8 +1156,18 @@ const AgendaJuridica = () => {
                   </Select>
                 </div>
 
-                {/* Botões de ação */}
+                 {/* Botões de ação */}
                 <div className="flex gap-2 w-full lg:w-auto">
+                  {/* Botão CNJ */}
+                  <Dialog open={showCnjDialog} onOpenChange={setShowCnjDialog}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="flex-1 lg:flex-none border-slate-600 hover:bg-slate-700">
+                        <Scale className="h-4 w-4 mr-2" />
+                        Buscar CNJ
+                      </Button>
+                    </DialogTrigger>
+                  </Dialog>
+
                   {isEssentialSubscriber && (
                     <Dialog open={showExtractDialog} onOpenChange={setShowExtractDialog}>
                       <DialogTrigger asChild>
@@ -2011,6 +2089,135 @@ const AgendaJuridica = () => {
             </Button>
             <Button onClick={handleSaveDuplicate}>
               Duplicar Compromisso
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog de Busca CNJ */}
+      <Dialog open={showCnjDialog} onOpenChange={setShowCnjDialog}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Scale className="h-5 w-5" />
+              Buscar Processo no CNJ
+            </DialogTitle>
+            <DialogDescription>
+              Digite o número do processo para consultar na base de dados do CNJ e agendar prazos automaticamente.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6">
+            {/* Formulário de busca */}
+            <div className="space-y-4">
+              <div className="grid gap-2">
+                <Label htmlFor="numero-processo-cnj">Número do Processo</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="numero-processo-cnj"
+                    value={numeroProcessoCnj}
+                    onChange={(e) => setNumeroProcessoCnj(e.target.value)}
+                    placeholder="Ex: 0001234-56.2024.8.26.0001"
+                    className="flex-1"
+                  />
+                  <Button 
+                    onClick={handleBuscaProcessoCNJ}
+                    disabled={isLoadingCnj}
+                    className="px-6"
+                  >
+                    {isLoadingCnj ? "Buscando..." : "Buscar no CNJ"}
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Resultados da busca */}
+            {processoEncontrado && (
+              <div className="space-y-4 border-t pt-6">
+                <h3 className="text-lg font-semibold">Processo Encontrado</h3>
+                
+                {/* Dados básicos do processo */}
+                <Card className="bg-slate-50">
+                  <CardContent className="p-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium text-slate-600">Número</Label>
+                        <p className="text-base font-mono">{processoEncontrado.numeroProcesso}</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-slate-600">Tribunal</Label>
+                        <p className="text-base">{processoEncontrado.tribunal}</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-slate-600">Classe</Label>
+                        <p className="text-base">{processoEncontrado.classe}</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-slate-600">Assunto</Label>
+                        <p className="text-base">{processoEncontrado.assunto}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Partes do processo */}
+                {processoEncontrado.partes && processoEncontrado.partes.length > 0 && (
+                  <div>
+                    <Label className="text-sm font-medium text-slate-600">Partes Envolvidas</Label>
+                    <div className="mt-2 space-y-2">
+                      {processoEncontrado.partes.map((parte: any, index: number) => (
+                        <div key={index} className="bg-slate-50 p-3 rounded-lg">
+                          <div className="flex justify-between items-center">
+                            <span className="font-medium">{parte.nome}</span>
+                            <Badge variant="outline">{parte.tipo}</Badge>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Últimas movimentações */}
+                {processoEncontrado.movimentacoes && processoEncontrado.movimentacoes.length > 0 && (
+                  <div>
+                    <Label className="text-sm font-medium text-slate-600">Últimas 3 Movimentações</Label>
+                    <div className="mt-2 space-y-3">
+                      {processoEncontrado.movimentacoes.map((mov: any, index: number) => (
+                        <Card key={index} className="bg-slate-50">
+                          <CardContent className="p-4">
+                            <div className="flex justify-between items-start gap-4">
+                              <div className="flex-1">
+                                <p className="text-sm text-slate-600 mb-1">
+                                  {format(parseISO(mov.dataMovimentacao), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                                </p>
+                                <p className="text-base">{mov.descricao}</p>
+                              </div>
+                              <Button
+                                size="sm"
+                                onClick={() => agendarPrazoMovimentacao(mov)}
+                                className="shrink-0"
+                              >
+                                <Plus className="h-4 w-4 mr-1" />
+                                Agendar Prazo
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-end gap-2 mt-6">
+            <Button variant="outline" onClick={() => {
+              setShowCnjDialog(false);
+              setProcessoEncontrado(null);
+              setNumeroProcessoCnj("");
+            }}>
+              Fechar
             </Button>
           </div>
         </DialogContent>
