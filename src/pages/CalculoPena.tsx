@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import HistoricoCustodia from "@/components/pena/HistoricoCustodia";
 import DadosSentencaAvancados from "@/components/pena/DadosSentencaAvancados";
+import CalculadoraPenaSimplificada from "@/components/CalculadoraPenaSimplificada";
 import type { DadosSentenca } from "@/types/pena";
 
 interface ResultadoCalculo {
@@ -278,19 +279,19 @@ export default function CalculoPena() {
       <div className="container max-w-7xl mx-auto px-4 py-6">
         
         {/* Tabs para alternar entre as versões */}
-        <Tabs defaultValue="dados-sentenca" className="w-full">
+        <Tabs defaultValue="calculo-rapido" className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-6 bg-slate-800/50 p-1 rounded-lg h-auto">
+            <TabsTrigger 
+              value="calculo-rapido" 
+              className="data-[state=active]:bg-primary text-[10px] sm:text-xs md:text-sm font-medium px-1 py-1.5 data-[state=active]:text-white text-slate-300 whitespace-nowrap"
+            >
+              Cálculo Rápido
+            </TabsTrigger>
             <TabsTrigger 
               value="dados-sentenca" 
               className="data-[state=active]:bg-primary text-[10px] sm:text-xs md:text-sm font-medium px-1 py-1.5 data-[state=active]:text-white text-slate-300 whitespace-nowrap"
             >
-              Dados da Sentença
-            </TabsTrigger>
-            <TabsTrigger 
-              value="dados-sentenca-simples" 
-              className="data-[state=active]:bg-primary text-[10px] sm:text-xs md:text-sm font-medium px-1 py-1.5 data-[state=active]:text-white text-slate-300 whitespace-nowrap"
-            >
-              Cálculo Simples
+              Dados Avançados
             </TabsTrigger>
             <TabsTrigger 
               value="historico-custodia" 
@@ -300,305 +301,14 @@ export default function CalculoPena() {
             </TabsTrigger>
           </TabsList>
           
+          <TabsContent value="calculo-rapido">
+            <CalculadoraPenaSimplificada />
+          </TabsContent>
+          
           <TabsContent value="dados-sentenca">
             <DadosSentencaAvancados onCalcular={handleCalculoAvancado} />
           </TabsContent>
           
-          <TabsContent value="dados-sentenca-simples">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          
-          {/* Formulário */}
-          <Card className="bg-slate-800/50 border-slate-700">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <Calculator className="w-5 h-5 text-primary" />
-                Dados da Pena
-              </CardTitle>
-              <CardDescription className="text-slate-400">
-                Preencha os dados para calcular as datas importantes da execução penal
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              
-              {/* Pena total */}
-              <div className="space-y-2">
-                <Label className="text-slate-200">Pena Total *</Label>
-                <div className="grid grid-cols-3 gap-2">
-                  <div>
-                    <Label className="text-xs text-slate-400">Anos</Label>
-                    <Input
-                      type="number"
-                      placeholder="0"
-                      value={penananos}
-                      onChange={(e) => setPenaAnos(e.target.value)}
-                      className="bg-slate-700 border-slate-600 text-white"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-slate-400">Meses</Label>
-                    <Input
-                      type="number"
-                      placeholder="0"
-                      min="0"
-                      max="11"
-                      value={penaMeses}
-                      onChange={(e) => setPenaMeses(e.target.value)}
-                      className="bg-slate-700 border-slate-600 text-white"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-slate-400">Dias</Label>
-                    <Input
-                      type="number"
-                      placeholder="0"
-                      min="0"
-                      max="30"
-                      value={penaDias}
-                      onChange={(e) => setPenaDias(e.target.value)}
-                      className="bg-slate-700 border-slate-600 text-white"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Data de início */}
-              <div className="space-y-2">
-                <Label className="text-slate-200">Data de Início do Cumprimento *</Label>
-                <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal bg-slate-700 border-slate-600 text-white hover:bg-slate-600",
-                        !dataInicio && "text-slate-400"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {dataInicio ? format(dataInicio, "PPP", { locale: ptBR }) : "Selecione a data"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-slate-800 border-slate-700" align="start">
-                    <CalendarComponent
-                      mode="single"
-                      selected={dataInicio}
-                      onSelect={(date) => {
-                        setDataInicio(date);
-                        setIsCalendarOpen(false);
-                      }}
-                      initialFocus
-                      className="pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              {/* Regime inicial */}
-              <div className="space-y-2">
-                <Label className="text-slate-200">Regime Inicial *</Label>
-                <Select value={regimeInicial} onValueChange={setRegimeInicial}>
-                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                    <SelectValue placeholder="Selecione o regime" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-slate-800 border-slate-700">
-                    <SelectItem value="fechado">Fechado</SelectItem>
-                    <SelectItem value="semiaberto">Semiaberto</SelectItem>
-                    <SelectItem value="aberto">Aberto</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Tipo de percentual */}
-              <div className="space-y-2">
-                <Label className="text-slate-200">Tipo de Crime/Réu *</Label>
-                <Select value={tipoPercentual} onValueChange={setTipoPercentual}>
-                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                    <SelectValue placeholder="Selecione o tipo" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-slate-800 border-slate-700">
-                    <SelectItem value="primario">Réu Primário (1/6 e 1/3)</SelectItem>
-                    <SelectItem value="reincidente">Reincidente (1/4 e 1/2)</SelectItem>
-                    <SelectItem value="hediondo_primario">Hediondo - Primário (2/5 e 3/5)</SelectItem>
-                    <SelectItem value="hediondo_reincidente">Hediondo - Reincidente (3/5 e 4/5)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Dias remidos */}
-              <div className="space-y-2">
-                <Label className="text-slate-200">Dias Remidos (trabalho/estudo)</Label>
-                <Input
-                  type="number"
-                  placeholder="0"
-                  value={diasRemidos}
-                  onChange={(e) => setDiasRemidos(e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white"
-                />
-                <p className="text-xs text-slate-400">
-                  Dias reduzidos por trabalho ou estudo durante o cumprimento da pena
-                </p>
-              </div>
-
-              {/* Botões */}
-              <div className="flex gap-2 pt-4">
-                <Button 
-                  onClick={calcularPena} 
-                  disabled={loading}
-                  className="flex-1"
-                >
-                  <Calculator className="w-4 h-4 mr-2" />
-                  {loading ? "Calculando..." : "Calcular"}
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={limparFormulario}
-                  className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
-                >
-                  Limpar
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Resultados */}
-          <Card className="bg-slate-800/50 border-slate-700">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <Clock className="w-5 h-5 text-primary" />
-                Resultados do Cálculo
-              </CardTitle>
-              <CardDescription className="text-slate-400">
-                Datas importantes para a execução da pena
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {!resultado ? (
-                <div className="text-center py-8">
-                  <Shield className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-                  <p className="text-slate-400">
-                    Preencha o formulário e clique em "Calcular" para ver os resultados
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  
-                  {/* Cards de resultados */}
-                  <div className="grid gap-3">
-                    <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-xs text-primary font-medium">Progressão de Regime</p>
-                          <p className="text-lg font-bold text-primary">
-                            {format(resultado.dataProgressao, "dd/MM/yyyy", { locale: ptBR })}
-                          </p>
-                          <p className="text-xs text-slate-400">
-                            Para regime {resultado.regimeProgressao}
-                          </p>
-                        </div>
-                        <Shield className="w-8 h-8 text-primary" />
-                      </div>
-                    </div>
-
-                    <div className="bg-emerald-600/10 border border-emerald-600/30 rounded-lg p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-xs text-emerald-400 font-medium">Livramento Condicional</p>
-                          <p className="text-lg font-bold text-emerald-400">
-                            {format(resultado.dataLivramentoCondicional, "dd/MM/yyyy", { locale: ptBR })}
-                          </p>
-                        </div>
-                        <Clock className="w-8 h-8 text-emerald-400" />
-                      </div>
-                    </div>
-
-                    <div className="bg-blue-600/10 border border-blue-600/30 rounded-lg p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-xs text-blue-400 font-medium">Término da Pena</p>
-                          <p className="text-lg font-bold text-blue-400">
-                            {format(resultado.dataFinalPena, "dd/MM/yyyy", { locale: ptBR })}
-                          </p>
-                        </div>
-                        <CalendarIcon className="w-8 h-8 text-blue-400" />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Informações adicionais */}
-                  <div className="bg-slate-700/50 rounded-lg p-4 space-y-2">
-                    <p className="text-xs text-slate-300">
-                      <strong>Pena total:</strong> {resultado.penatotalDias} dias
-                    </p>
-                    {resultado.diasRemidos > 0 && (
-                      <p className="text-xs text-slate-300">
-                        <strong>Dias remidos:</strong> {resultado.diasRemidos} dias
-                      </p>
-                    )}
-                    <p className="text-xs text-slate-300">
-                      <strong>Pena líquida:</strong> {resultado.penatotalDias - resultado.diasRemidos} dias
-                    </p>
-                  </div>
-
-                  {/* Linha do tempo visual */}
-                  <div className="bg-slate-700/30 rounded-lg p-4">
-                    <h4 className="text-sm font-medium text-white mb-3">Linha do Tempo</h4>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                        <div className="flex-1">
-                          <p className="text-sm text-white">Início da pena</p>
-                          <p className="text-xs text-slate-400">
-                            {dataInicio ? format(dataInicio, "dd/MM/yyyy", { locale: ptBR }) : ""}
-                          </p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 bg-primary rounded-full"></div>
-                        <div className="flex-1">
-                          <p className="text-sm text-white">Progressão para {resultado.regimeProgressao}</p>
-                          <p className="text-xs text-slate-400">
-                            {format(resultado.dataProgressao, "dd/MM/yyyy", { locale: ptBR })}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 bg-emerald-400 rounded-full"></div>
-                        <div className="flex-1">
-                          <p className="text-sm text-white">Livramento Condicional</p>
-                          <p className="text-xs text-slate-400">
-                            {format(resultado.dataLivramentoCondicional, "dd/MM/yyyy", { locale: ptBR })}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
-                        <div className="flex-1">
-                          <p className="text-sm text-white">Término da pena</p>
-                          <p className="text-xs text-slate-400">
-                            {format(resultado.dataFinalPena, "dd/MM/yyyy", { locale: ptBR })}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Botão de exportar */}
-                  <Button 
-                    onClick={exportarPDF}
-                    className="w-full"
-                    variant="outline"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Exportar PDF
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-            </div>
-          </TabsContent>
           
           <TabsContent value="historico-custodia">
             <HistoricoCustodia />
