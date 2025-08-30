@@ -157,21 +157,22 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
         .from('query_history')
         .select('*')
         .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: true }); // Ordem crescente para montar conversa cronologicamente
 
       if (error) throw error;
 
-      // Agrupar mensagens por session_id e evitar duplicação
+      // Agrupar mensagens por session_id para formar conversas completas
       const sessionMap = new Map<string, ChatSession>();
       
       data?.forEach((query) => {
         const sessionId = query.session_id || query.id;
         
+        // Criar sessão se não existir
         if (!sessionMap.has(sessionId)) {
           sessionMap.set(sessionId, {
             id: sessionId,
             title: query.prompt_text.substring(0, 50) + (query.prompt_text.length > 50 ? "..." : ""),
-            lastMessage: query.response_text || query.prompt_text,
+            lastMessage: "",
             timestamp: new Date(query.created_at),
             messages: []
           });
@@ -179,31 +180,34 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
 
         const session = sessionMap.get(sessionId)!;
         
-        // Verificar se já existe uma mensagem do usuário para evitar duplicação
-        const userMessageExists = session.messages.some(msg => 
-          msg.type === 'user' && msg.content === query.prompt_text
-        );
-        
-        if (!userMessageExists) {
-          // Adicionar mensagem do usuário
-          session.messages.push({
-            id: `${query.id}-user`,
-            type: 'user',
-            content: query.prompt_text,
-            timestamp: new Date(query.created_at),
-            attachedFiles: Array.isArray(query.attached_files) ? (query.attached_files as unknown as AttachedFile[]) : []
-          });
+        // Adicionar mensagem do usuário (sempre presente)
+        session.messages.push({
+          id: `${query.id}-user`,
+          type: 'user',
+          content: query.prompt_text,
+          timestamp: new Date(query.created_at),
+          attachedFiles: Array.isArray(query.attached_files) ? (query.attached_files as unknown as AttachedFile[]) : []
+        });
 
-          // Adicionar resposta da IA se existir
-          if (query.response_text) {
-            session.messages.push({
-              id: `${query.id}-assistant`,
-              type: 'assistant',
-              content: query.response_text,
-              timestamp: new Date(query.created_at),
-              tokensConsumed: query.credits_consumed ? query.credits_consumed * 1000 : undefined
-            });
-          }
+        // Adicionar resposta da IA (se existir)
+        if (query.response_text) {
+          session.messages.push({
+            id: `${query.id}-assistant`,
+            type: 'assistant',
+            content: query.response_text,
+            timestamp: new Date(query.created_at),
+            tokensConsumed: query.credits_consumed ? query.credits_consumed * 1000 : undefined
+          });
+        }
+        
+        // Atualizar informações da sessão com dados mais recentes
+        session.lastMessage = query.response_text ? 
+          query.response_text.substring(0, 100) + (query.response_text.length > 100 ? "..." : "") :
+          query.prompt_text.substring(0, 100) + (query.prompt_text.length > 100 ? "..." : "");
+        
+        // Usar o timestamp mais recente
+        if (new Date(query.created_at) > session.timestamp) {
+          session.timestamp = new Date(query.created_at);
         }
       });
 
@@ -364,6 +368,13 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
     setSessions(prev => [newSession, ...prev]);
     setCurrentSessionId(newSessionId);
     
+    // Limpar o campo de mensagem e anexos
+    setMessage("");
+    setAttachedFiles([]);
+    
+    // Limpar transcript de voz se existir
+    resetTranscript();
+    
     // Fechar sidebar no mobile após criar nova sessão
     if (isMobile) {
       setSidebarOpen(false);
@@ -442,16 +453,16 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
     setIsLoading(true);
 
     try {
-      // Usar a sessão atual ou criar uma nova se não existir
+      // Garantir que existe uma sessão ativa
       let sessionId = currentSessionId;
       if (!sessionId) {
+        // Se não há sessão atual, criar uma nova
         sessionId = crypto.randomUUID();
         setCurrentSessionId(sessionId);
         
-        // Criar nova sessão se não existir
         const newSession: ChatSession = {
           id: sessionId,
-          title: "Nova Conversa",
+          title: message.substring(0, 50) + (message.length > 50 ? "..." : ""),
           lastMessage: "",
           timestamp: new Date(),
           messages: []
@@ -459,7 +470,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
         setSessions(prev => [newSession, ...prev]);
       }
 
-      // Adicionar mensagem do usuário imediatamente
+      // Adicionar mensagem do usuário à sessão atual
       const userMessage: Message = {
         id: crypto.randomUUID(),
         type: 'user',
@@ -468,36 +479,34 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
         attachedFiles: attachedFiles.length > 0 ? [...attachedFiles] : undefined
       };
 
-      // Atualizar sessão atual ou criar nova
+      // Atualizar a sessão atual com a nova mensagem
       setSessions(prev => {
-        const existingSessionIndex = prev.findIndex(s => s.id === sessionId);
-        if (existingSessionIndex >= 0) {
-          const updatedSessions = [...prev];
-          updatedSessions[existingSessionIndex].messages.push(userMessage);
-          updatedSessions[existingSessionIndex].lastMessage = message;
-          updatedSessions[existingSessionIndex].timestamp = new Date();
-          // Atualizar título se for a primeira mensagem
-          if (updatedSessions[existingSessionIndex].title === "Nova Conversa") {
-            updatedSessions[existingSessionIndex].title = message.substring(0, 50) + (message.length > 50 ? "..." : "");
+        const updatedSessions = [...prev];
+        const sessionIndex = updatedSessions.findIndex(s => s.id === sessionId);
+        if (sessionIndex >= 0) {
+          updatedSessions[sessionIndex].messages.push(userMessage);
+          updatedSessions[sessionIndex].lastMessage = message.substring(0, 100) + (message.length > 100 ? "..." : "");
+          updatedSessions[sessionIndex].timestamp = new Date();
+          
+          // Atualizar título apenas se for a primeira mensagem
+          if (updatedSessions[sessionIndex].title === "Nova Conversa" || updatedSessions[sessionIndex].messages.length === 1) {
+            updatedSessions[sessionIndex].title = message.substring(0, 50) + (message.length > 50 ? "..." : "");
           }
-          return updatedSessions;
-        } else {
-          const newSession: ChatSession = {
-            id: sessionId!,
-            title: message.substring(0, 50) + (message.length > 50 ? "..." : ""),
-            lastMessage: message,
-            timestamp: new Date(),
-            messages: [userMessage]
-          };
-          return [newSession, ...prev];
+          
+          // Mover a sessão para o topo da lista (conversa mais recente)
+          const currentSession = updatedSessions[sessionIndex];
+          updatedSessions.splice(sessionIndex, 1);
+          updatedSessions.unshift(currentSession);
         }
+        return updatedSessions;
       });
 
-      // Chamar a API
+      // Chamar a API passando o sessionId para continuar a conversa
       const { data, error } = await supabase.functions.invoke('legal-ai-chat', {
         body: {
           message,
           userId: user.id,
+          sessionId: sessionId, // Enviar o session_id atual para continuar a conversa
           attachedFiles: attachedFiles.length > 0 ? attachedFiles : undefined
         }
       });

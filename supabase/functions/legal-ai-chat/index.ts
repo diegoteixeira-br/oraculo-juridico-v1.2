@@ -191,7 +191,7 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { message, userId, attachedFiles } = await req.json();
+    const { message, userId, sessionId, attachedFiles } = await req.json();
     
     console.log('Processing legal query:', { message, userId, attachedFilesCount: attachedFiles?.length || 0 });
 
@@ -681,15 +681,18 @@ Seja sempre preciso e profissional em suas análises.`
       // Continua mesmo com erro nos tokens, pois a resposta já foi gerada
     }
 
-    // Salvar no histórico de consultas
+    // Salvar no histórico de consultas com session_id para agrupar conversas
+    const effectiveSessionId = sessionId || self.crypto.randomUUID(); // Usar sessionId fornecido ou gerar novo
     const { error: historyError } = await supabase
       .from('query_history')
       .insert({
         user_id: userId,
+        session_id: effectiveSessionId,
         prompt_text: promptContent,
         response_text: aiMessage,
         credits_consumed: Math.ceil(totalTokens / 1000), // Compatibilidade com histórico
-        message_type: 'ai_response'
+        message_type: 'ai_response',
+        attached_files: attachedFiles?.length > 0 ? attachedFiles : null
       });
 
     if (historyError) {
