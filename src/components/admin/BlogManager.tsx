@@ -14,6 +14,7 @@ import { ImageUpload } from '@/components/ui/image-upload';
 import { Plus, Edit, Trash2, Eye, Calendar, Clock, Tag } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { useBlogCategories } from '@/hooks/useBlogCategories';
 
 interface BlogPost {
   id: string;
@@ -37,6 +38,7 @@ interface BlogPost {
 }
 
 const BlogManager = () => {
+  const { categories } = useBlogCategories();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
@@ -324,26 +326,11 @@ const BlogManager = () => {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="geral">Geral</SelectItem>
-                          <SelectItem value="direito-digital">Direito Digital</SelectItem>
-                          <SelectItem value="lgpd">LGPD</SelectItem>
-                          <SelectItem value="tecnologia">Tecnologia Jurídica</SelectItem>
-                          <SelectItem value="compliance">Compliance</SelectItem>
-                          <SelectItem value="jurisprudencia">Jurisprudência</SelectItem>
-                          <SelectItem value="direito-civil">Direito Civil</SelectItem>
-                          <SelectItem value="direito-penal">Direito Penal</SelectItem>
-                          <SelectItem value="direito-trabalhista">Direito Trabalhista</SelectItem>
-                          <SelectItem value="direito-tributario">Direito Tributário</SelectItem>
-                          <SelectItem value="direito-empresarial">Direito Empresarial</SelectItem>
-                          <SelectItem value="direito-constitucional">Direito Constitucional</SelectItem>
-                          <SelectItem value="direito-administrativo">Direito Administrativo</SelectItem>
-                          <SelectItem value="direito-previdenciario">Direito Previdenciário</SelectItem>
-                          <SelectItem value="direito-consumidor">Direito do Consumidor</SelectItem>
-                          <SelectItem value="direito-familia">Direito de Família</SelectItem>
-                          <SelectItem value="direito-imobiliario">Direito Imobiliário</SelectItem>
-                          <SelectItem value="direito-processual">Direito Processual</SelectItem>
-                          <SelectItem value="advocacia">Advocacia</SelectItem>
-                          <SelectItem value="legislacao">Legislação</SelectItem>
+                          {categories.map((category) => (
+                            <SelectItem key={category.id} value={category.slug}>
+                              {category.name}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
