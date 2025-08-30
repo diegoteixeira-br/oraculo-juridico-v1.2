@@ -184,6 +184,7 @@ export type Database = {
       blog_posts: {
         Row: {
           author_name: string | null
+          auto_publish: boolean | null
           category: string | null
           content: string
           cover_image_url: string | null
@@ -197,6 +198,7 @@ export type Database = {
           meta_title: string | null
           published_at: string | null
           reading_time_minutes: number | null
+          scheduled_for: string | null
           slug: string
           summary: string | null
           tags: string[] | null
@@ -206,6 +208,7 @@ export type Database = {
         }
         Insert: {
           author_name?: string | null
+          auto_publish?: boolean | null
           category?: string | null
           content: string
           cover_image_url?: string | null
@@ -219,6 +222,7 @@ export type Database = {
           meta_title?: string | null
           published_at?: string | null
           reading_time_minutes?: number | null
+          scheduled_for?: string | null
           slug: string
           summary?: string | null
           tags?: string[] | null
@@ -228,6 +232,7 @@ export type Database = {
         }
         Update: {
           author_name?: string | null
+          auto_publish?: boolean | null
           category?: string | null
           content?: string
           cover_image_url?: string | null
@@ -241,6 +246,7 @@ export type Database = {
           meta_title?: string | null
           published_at?: string | null
           reading_time_minutes?: number | null
+          scheduled_for?: string | null
           slug?: string
           summary?: string | null
           tags?: string[] | null
@@ -1310,6 +1316,10 @@ export type Database = {
       admin_remove_tokens_from_user: {
         Args: { p_description?: string; p_tokens: number; p_user_id: string }
         Returns: boolean
+      }
+      auto_publish_scheduled_posts: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       binary_quantize: {
         Args: { "": string } | { "": unknown }

@@ -35,6 +35,8 @@ interface BlogPost {
   created_at: string;
   updated_at: string;
   published_at: string;
+  scheduled_for: string | null;
+  auto_publish: boolean;
 }
 
 const BlogManager = () => {
@@ -56,7 +58,9 @@ const BlogManager = () => {
     meta_title: '',
     meta_description: '',
     tags: [] as string[],
-    category: 'geral'
+    category: 'geral',
+    scheduled_for: '',
+    auto_publish: false
   });
 
   useEffect(() => {
@@ -109,7 +113,9 @@ const BlogManager = () => {
       meta_title: '',
       meta_description: '',
       tags: [],
-      category: 'geral'
+      category: 'geral',
+      scheduled_for: '',
+      auto_publish: false
     });
     setEditingPost(null);
   };
@@ -125,7 +131,8 @@ const BlogManager = () => {
         reading_time_minutes: calculateReadingTime(formData.content),
         meta_title: formData.meta_title || formData.title,
         meta_description: formData.meta_description || formData.summary,
-        published_at: formData.is_published ? new Date().toISOString() : null
+        published_at: formData.is_published && !formData.auto_publish ? new Date().toISOString() : null,
+        scheduled_for: formData.auto_publish && formData.scheduled_for ? new Date(formData.scheduled_for).toISOString() : null
       };
 
       if (editingPost) {
@@ -170,7 +177,9 @@ const BlogManager = () => {
       meta_title: post.meta_title || '',
       meta_description: post.meta_description || '',
       tags: post.tags || [],
-      category: post.category
+      category: post.category,
+      scheduled_for: post.scheduled_for ? new Date(post.scheduled_for).toISOString().slice(0, 16) : '',
+      auto_publish: post.auto_publish || false
     });
     setEditingPost(post);
     setIsCreateDialogOpen(true);
@@ -363,6 +372,35 @@ const BlogManager = () => {
                       />
                       <Label htmlFor="featured">Destaque</Label>
                     </div>
+                  </div>
+
+                  <div className="space-y-4 border-t pt-4">
+                    <h4 className="text-sm font-medium">Agendamento de Publicação</h4>
+                    
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="auto_publish"
+                        checked={formData.auto_publish}
+                        onCheckedChange={(checked) => setFormData({ ...formData, auto_publish: checked })}
+                      />
+                      <Label htmlFor="auto_publish">Ativar publicação automática</Label>
+                    </div>
+
+                    {formData.auto_publish && (
+                      <div>
+                        <Label htmlFor="scheduled_for">Data e Hora para Publicação</Label>
+                        <Input
+                          id="scheduled_for"
+                          type="datetime-local"
+                          value={formData.scheduled_for}
+                          onChange={(e) => setFormData({ ...formData, scheduled_for: e.target.value })}
+                          min={new Date().toISOString().slice(0, 16)}
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          O artigo será publicado automaticamente na data e hora especificadas
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </TabsContent>
 
