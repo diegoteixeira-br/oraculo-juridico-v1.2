@@ -95,22 +95,27 @@ serve(async (req) => {
     // Configurar baseado na categoria do produto
     if (productType.category === 'subscription') {
       // Buscar dados do usuário para calcular trial_end correto
-      const { data: userProfile } = await supabaseClient
+      const { data: userProfile, error: profileError } = await supabaseClient
         .from('profiles')
-        .select('trial_start_date, trial_end_date')
+        .select('trial_start_date, trial_end_date, subscription_status')
         .eq('user_id', user.id)
         .single();
 
-      let trialEnd = null;
-      if (userProfile?.trial_end_date) {
-        // Calcular quantos dias restam do trial original
+      console.log(`[create-checkout] User profile:`, { userProfile, profileError });
+
+      let trialDays = 0;
+      
+      // Se o usuário ainda está em trial, calcular dias restantes
+      if (userProfile?.subscription_status === 'trial' && userProfile?.trial_end_date) {
         const trialEndDate = new Date(userProfile.trial_end_date);
         const now = new Date();
         
+        console.log(`[create-checkout] Trial end: ${trialEndDate.toISOString()}, Now: ${now.toISOString()}`);
+        
         if (trialEndDate > now) {
-          // Se ainda está no período de trial, usar a data original
-          trialEnd = Math.floor((trialEndDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-          console.log(`[create-checkout] Trial restante: ${trialEnd} dias`);
+          // Calcular dias restantes (arredondar para cima)
+          trialDays = Math.ceil((trialEndDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+          console.log(`[create-checkout] Trial restante: ${trialDays} dias`);
         }
       }
 
@@ -120,13 +125,12 @@ serve(async (req) => {
       sessionConfig.success_url = `${origin}/finalizar-cadastro?success=true&email=${encodeURIComponent(user.email)}`;
       sessionConfig.metadata.plan = productType.name.toLowerCase();
       
-      // Se ainda há trial restante, configurar trial period no Stripe
-      if (trialEnd && trialEnd > 0) {
-        sessionConfig.subscription_data = {
-          trial_period_days: trialEnd
-        };
-        console.log(`[create-checkout] Configurando trial no Stripe: ${trialEnd} dias`);
-      }
+      // SEMPRE configurar trial period - mesmo que seja 0, é importante para controle
+      sessionConfig.subscription_data = {
+        trial_period_days: Math.max(trialDays, 0) // Garantir que nunca seja negativo
+      };
+      
+      console.log(`[create-checkout] Configurando trial no Stripe: ${trialDays} dias`);
     } else {
       sessionConfig.mode = "payment";
       sessionConfig.success_url = `${origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`;

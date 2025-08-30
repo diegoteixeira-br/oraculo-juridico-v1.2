@@ -191,7 +191,7 @@ export default function FinalizarCadastro() {
                       </li>
                       <li className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-green-400 rounded-full"></div>
-                        <strong>Cobrança no ato • Reembolso total se cancelar antes do 8º dia</strong>
+                        <strong>7 dias gratuitos • Cobrança apenas no 8º dia</strong>
                       </li>
                       <li className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
@@ -258,7 +258,7 @@ export default function FinalizarCadastro() {
               <div className="text-center p-4 bg-slate-700/20 rounded-lg">
                 <p className="text-sm text-slate-300">
                   <Shield className="w-4 h-4 inline mr-1 text-green-400" />
-                  Cobrança no ato • Reembolso total se cancelar antes do 8º dia • Pagamento seguro via Stripe
+                  7 dias gratuitos • Cobrança apenas no 8º dia • Pagamento seguro via Stripe
                 </p>
                 <p className="text-xs text-slate-500 mt-2 opacity-70">
                   Para acessar com plano gratuito de 7 dias, clique na logo acima
