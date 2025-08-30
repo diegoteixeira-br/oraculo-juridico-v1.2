@@ -334,7 +334,7 @@ const BlogManager = () => {
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-h-60 overflow-y-auto">
                           {categories.map((category) => (
                             <SelectItem key={category.id} value={category.slug}>
                               {category.name}
