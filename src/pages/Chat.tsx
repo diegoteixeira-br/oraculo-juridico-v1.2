@@ -1228,15 +1228,20 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
 
             {/* Formulário de envio */}
             <form onSubmit={handleSubmit} className="space-y-3">
-              <div className="flex gap-3">
-                <div className="flex-1">
+              <div className="flex gap-3 items-end">
+                {/* Área de texto com botões secundários dentro */}
+                <div className="flex-1 relative">
                   <Textarea
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder={listening ? "Escutando... Fale agora!" : "Digite ou fale sua pergunta. Pressione Enter para enviar..."}
+                    placeholder={listening ? "Escutando... Fale agora!" : "Digite sua pergunta aqui..."}
                     className={`${
-                      isMobile ? 'min-h-[50px] max-h-24' : 'min-h-[60px] max-h-32'
-                    } bg-slate-700 border-slate-600 focus:border-primary resize-none`}
+                      isMobile ? 'min-h-[80px] max-h-[200px] pb-12' : 'min-h-[100px] max-h-[200px] pb-14'
+                    } bg-slate-700 border-slate-600 focus:border-primary resize-none pr-4 pl-4 pt-4`}
+                    style={{
+                      scrollbarWidth: 'thin',
+                      scrollbarColor: 'rgb(71 85 105) transparent'
+                    }}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
@@ -1244,49 +1249,58 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
                       }
                     }}
                   />
+                  
+                  {/* Botões secundários dentro da textarea */}
+                  <div className={`absolute ${isMobile ? 'bottom-2 left-3' : 'bottom-3 left-4'} flex gap-2`}>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="h-8 w-8 p-0 text-slate-400 hover:text-white hover:bg-slate-600/50"
+                      title="Anexar arquivo"
+                    >
+                      <Paperclip className="w-4 h-4" />
+                    </Button>
+                    
+                    {/* Botão de microfone */}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleSpeechToggle}
+                      className={`h-8 w-8 p-0 ${
+                        listening 
+                          ? 'text-red-400 hover:text-red-300 animate-pulse' 
+                          : 'text-slate-400 hover:text-white hover:bg-slate-600/50'
+                      }`}
+                      title={listening ? "Parar gravação" : "Falar (reconhecimento de voz)"}
+                      disabled={isLoading}
+                    >
+                      {listening ? (
+                        <Square className="w-4 h-4" />
+                      ) : (
+                        <Mic className="w-4 h-4" />
+                      )}
+                    </Button>
+                  </div>
                 </div>
                 
-                <div className="flex flex-col gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="border-slate-600 hover:bg-slate-700"
-                    title="Anexar arquivo"
-                  >
-                    <Paperclip className="w-4 h-4" />
-                  </Button>
-                  
-                  {/* Botão de microfone */}
-                  <Button
-                    type="button"
-                    variant={listening ? "destructive" : "outline"}
-                    size="icon"
-                    onClick={handleSpeechToggle}
-                    className={`border-slate-600 ${listening ? 'animate-pulse' : 'hover:bg-slate-700'}`}
-                    title={listening ? "Parar gravação" : "Falar (reconhecimento de voz)"}
-                    disabled={isLoading}
-                  >
-                    {listening ? (
-                      <Square className="w-4 h-4" />
-                    ) : (
-                      <Mic className="w-4 h-4" />
-                    )}
-                  </Button>
-                  
-                  <Button
-                    type="submit"
-                    disabled={isLoading || (!message.trim() && attachedFiles.length === 0)}
-                    className="bg-primary hover:bg-primary/90"
-                  >
-                    {isLoading ? (
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                      <Send className="w-4 h-4" />
-                    )}
-                  </Button>
-                </div>
+                {/* Botão de enviar - proeminente */}
+                <Button
+                  type="submit"
+                  disabled={isLoading || (!message.trim() && attachedFiles.length === 0)}
+                  className={`bg-primary hover:bg-primary/90 ${
+                    isMobile ? 'h-12 w-12 p-0' : 'h-14 w-14 p-0'
+                  } flex-shrink-0`}
+                  title="Enviar mensagem"
+                >
+                  {isLoading ? (
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Send className="w-5 h-5" />
+                  )}
+                </Button>
               </div>
 
               {/* Informações de tokens */}
