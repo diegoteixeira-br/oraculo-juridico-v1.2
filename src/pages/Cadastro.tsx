@@ -11,6 +11,7 @@ import { ArrowLeft, Eye, EyeOff, UserPlus, Shield, Gift, Zap, Users, Award, Chec
 import ReCAPTCHA from "react-google-recaptcha";
 import ReCaptchaProvider, { useReCaptcha } from "@/components/ReCaptchaProvider";
 import { useSEO } from "@/hooks/useSEO";
+import { validateCPF, formatCPF } from '@/utils/cpfValidation';
 
 function CadastroForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -67,6 +68,17 @@ function CadastroForm() {
         toast({
           title: "Senhas não coincidem",
           description: "A senha e a confirmação devem ser iguais.",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Validar CPF
+      if (!validateCPF(cpf)) {
+        toast({
+          title: "CPF inválido",
+          description: "Por favor, digite um CPF válido.",
           variant: "destructive",
         });
         setLoading(false);
@@ -243,11 +255,7 @@ function CadastroForm() {
                       type="text"
                       placeholder="000.000.000-00"
                       value={cpf}
-                      onChange={(e) => {
-                        const value = e.target.value.replace(/\D/g, '');
-                        const formatted = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-                        setCpf(formatted);
-                      }}
+                      onChange={(e) => setCpf(formatCPF(e.target.value))}
                       maxLength={14}
                       required
                       className="bg-slate-700 border-slate-600 focus:border-primary text-white"

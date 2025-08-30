@@ -14,6 +14,7 @@ import { Plus, Edit, Trash2, Eye, BarChart3, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { sanitizeHTML, sanitizeURL } from '@/utils/sanitization';
 
 interface CustomAd {
   id: string;
@@ -108,11 +109,32 @@ export default function AdsManager() {
     e.preventDefault();
     
     try {
+      // Sanitize content based on ad type
+      let sanitizedContent = formData.content;
+      if (formData.ad_type === 'html') {
+        sanitizedContent = sanitizeHTML(formData.content);
+      }
+
+      // Validate and sanitize URL if provided
+      let sanitizedUrl = null;
+      if (formData.link_url) {
+        sanitizedUrl = sanitizeURL(formData.link_url);
+        if (!sanitizedUrl) {
+          toast({
+            title: "URL inválida",
+            description: "A URL fornecida não é válida ou não é segura.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
       const adData = {
         ...formData,
+        content: sanitizedContent,
         start_date: formData.start_date || null,
         end_date: formData.end_date || null,
-        link_url: formData.link_url || null,
+        link_url: sanitizedUrl,
       };
 
       if (editingAd) {
