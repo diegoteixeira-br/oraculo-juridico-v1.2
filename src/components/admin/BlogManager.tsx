@@ -330,6 +330,20 @@ const BlogManager = () => {
                           <SelectItem value="tecnologia">Tecnologia Jurídica</SelectItem>
                           <SelectItem value="compliance">Compliance</SelectItem>
                           <SelectItem value="jurisprudencia">Jurisprudência</SelectItem>
+                          <SelectItem value="direito-civil">Direito Civil</SelectItem>
+                          <SelectItem value="direito-penal">Direito Penal</SelectItem>
+                          <SelectItem value="direito-trabalhista">Direito Trabalhista</SelectItem>
+                          <SelectItem value="direito-tributario">Direito Tributário</SelectItem>
+                          <SelectItem value="direito-empresarial">Direito Empresarial</SelectItem>
+                          <SelectItem value="direito-constitucional">Direito Constitucional</SelectItem>
+                          <SelectItem value="direito-administrativo">Direito Administrativo</SelectItem>
+                          <SelectItem value="direito-previdenciario">Direito Previdenciário</SelectItem>
+                          <SelectItem value="direito-consumidor">Direito do Consumidor</SelectItem>
+                          <SelectItem value="direito-familia">Direito de Família</SelectItem>
+                          <SelectItem value="direito-imobiliario">Direito Imobiliário</SelectItem>
+                          <SelectItem value="direito-processual">Direito Processual</SelectItem>
+                          <SelectItem value="advocacia">Advocacia</SelectItem>
+                          <SelectItem value="legislacao">Legislação</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
