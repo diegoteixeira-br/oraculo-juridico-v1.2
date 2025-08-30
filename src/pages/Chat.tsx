@@ -316,13 +316,12 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
       stopListening();
       resetTranscript();
       
-      // Manter o texto como está (não limpar nem restaurar)
-      // Apenas sinalizar que a gravação parou
+      // Limpar a referência do texto original pois já foi processado
       setOriginalTextBeforeRecording('');
       
       toast({
         title: "Gravação parada",
-        description: "A gravação foi parada. Você pode continuar editando o texto manualmente.",
+        description: "Você pode editar o texto e clicar no microfone novamente para continuar.",
       });
     } else {
       if (!speechSupported) {
@@ -333,12 +332,12 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
         });
         return;
       }
-      // Salvar o texto atual antes de iniciar a gravação
+      // Salvar o texto atual (que pode ter sido editado) antes de iniciar nova gravação
       setOriginalTextBeforeRecording(message);
       startListening();
       toast({
         title: "Escutando...",
-        description: "Fale agora. Clique no botão de parar para finalizar a gravação.",
+        description: "Fale agora. O áudio será anexado ao texto existente.",
       });
     }
   };
