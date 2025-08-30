@@ -639,6 +639,56 @@ export type Database = {
         }
         Relationships: []
       }
+      eventos_processo: {
+        Row: {
+          created_at: string | null
+          descricao: string | null
+          fim: string | null
+          id: string
+          inicio: string
+          local: string | null
+          origem: string | null
+          processo_numero: string | null
+          tipo: string | null
+          titulo: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          descricao?: string | null
+          fim?: string | null
+          id?: string
+          inicio: string
+          local?: string | null
+          origem?: string | null
+          processo_numero?: string | null
+          tipo?: string | null
+          titulo?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          descricao?: string | null
+          fim?: string | null
+          id?: string
+          inicio?: string
+          local?: string | null
+          origem?: string | null
+          processo_numero?: string | null
+          tipo?: string | null
+          titulo?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "eventos_processo_processo_numero_fkey"
+            columns: ["processo_numero"]
+            isOneToOne: false
+            referencedRelation: "processos"
+            referencedColumns: ["numero_cnj"]
+          },
+        ]
+      }
       feature_usage: {
         Row: {
           created_at: string
@@ -884,6 +934,71 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      processos: {
+        Row: {
+          assunto: string[] | null
+          classe: string | null
+          created_at: string | null
+          id: string
+          numero_cnj: string
+          partes: Json | null
+          tribunal: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          assunto?: string[] | null
+          classe?: string | null
+          created_at?: string | null
+          id?: string
+          numero_cnj: string
+          partes?: Json | null
+          tribunal?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          assunto?: string[] | null
+          classe?: string | null
+          created_at?: string | null
+          id?: string
+          numero_cnj?: string
+          partes?: Json | null
+          tribunal?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      processos_usuarios: {
+        Row: {
+          apelido: string | null
+          created_at: string | null
+          id: string
+          processo_numero: string | null
+          user_id: string | null
+        }
+        Insert: {
+          apelido?: string | null
+          created_at?: string | null
+          id?: string
+          processo_numero?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          apelido?: string | null
+          created_at?: string | null
+          id?: string
+          processo_numero?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "processos_usuarios_processo_numero_fkey"
+            columns: ["processo_numero"]
+            isOneToOne: false
+            referencedRelation: "processos"
+            referencedColumns: ["numero_cnj"]
+          },
+        ]
       }
       product_types: {
         Row: {

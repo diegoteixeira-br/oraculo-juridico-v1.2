@@ -65,6 +65,63 @@ export function calcularRemissoesAte(remissoes: Remissao[], ate: string): number
     .reduce((total, remissao) => total + remissao.dias, 0);
 }
 
+// Função simplificada para entrada básica
+export function calcularPenaSimples(
+  penaAnos: number,
+  penaMeses: number,
+  penaDias: number,
+  tipoPercentual: 'primario' | 'reincidente' | 'hediondo_primario' | 'hediondo_reincidente',
+  regimeInicial: 'Fechado' | 'Semiaberto' | 'Aberto',
+  detraidosDias: number = 0,
+  dataBase: string = new Date().toISOString().split('T')[0]
+): ResultadoCalculoV2 {
+  // Converter pena para dias
+  const totalDias = converterParaDias({ anos: penaAnos, meses: penaMeses, dias: penaDias });
+  
+  // Definir frações por tipo
+  const fracoes = {
+    primario: { progressao: 1/6, livramento: 1/3 }, // 16.67%, 33.33%
+    reincidente: { progressao: 1/5, livramento: 1/2 }, // 20%, 50%
+    hediondo_primario: { progressao: 2/5, livramento: 2/3 }, // 40%, 66.67%
+    hediondo_reincidente: { progressao: 3/5, livramento: 4/5 } // 60%, 80%
+  };
+  
+  const fracao = fracoes[tipoPercentual];
+  
+  // Criar dados de sentença
+  const dadosSentenca: DadosSentenca = {
+    crimes: [{
+      id: crypto.randomUUID(),
+      descricao: 'Crime informado',
+      artigo: 'Art. XXX',
+      penaAnos,
+      penaMeses,
+      penaDias,
+      tipoPercentual,
+      observacoes: ''
+    }],
+    totalDias,
+    regimeInicial,
+    fracaoProgressao: fracao.progressao,
+    fracaoLivramento: fracao.livramento,
+    dataInicioTeorica: dataBase
+  };
+  
+  // Episódio de custódia para detração (se houver)
+  const episodios: EpisodioCustodia[] = detraidosDias > 0 ? [{
+    id: crypto.randomUUID(),
+    tipo: 'Cumprimento de Pena',
+    inicio: dayjs(dataBase).subtract(detraidosDias, 'day').format('YYYY-MM-DD'),
+    fim: dataBase,
+    computavel: true,
+    observacao: 'Detração (dias já cumpridos)'
+  }] : [];
+  
+  const remissoes: Remissao[] = [];
+  
+  return calcularDatasChave(dadosSentenca, episodios, remissoes, dataBase, false);
+}
+
 export function calcularDatasChave(
   dados: DadosSentenca,
   episodios: EpisodioCustodia[],

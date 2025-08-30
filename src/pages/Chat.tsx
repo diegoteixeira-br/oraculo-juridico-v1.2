@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Send, Paperclip, Trash2, MessageSquare, Plus, X, Download, Volume2, VolumeX, Menu, ArrowLeft, Zap } from "lucide-react";
+import { Send, Paperclip, Trash2, MessageSquare, Plus, X, Download, Volume2, VolumeX, Menu, ArrowLeft, Zap, Mic, Square } from "lucide-react";
 import { AudioPlayer } from '@/components/AudioPlayer';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,6 +16,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useAccessControl } from "@/hooks/useAccessControl";
 import InlineWordUnderlineOverlay from "@/components/InlineWordUnderlineOverlay";
 import { useUserTimezone } from "@/hooks/useUserTimezone";
+import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 
 interface Message {
   id: string;
@@ -72,6 +73,19 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
   const messageContainerRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [pendingNewSession, setPendingNewSession] = useState(false);
   const { formatDateInUserTimezone } = useUserTimezone();
+  
+  // Speech Recognition
+  const { 
+    listening, 
+    transcript, 
+    interimTranscript, 
+    isSupported: speechSupported, 
+    error: speechError,
+    start: startListening, 
+    stop: stopListening, 
+    reset: resetTranscript,
+    setTranscript: updateTranscript
+  } = useSpeechRecognition("pt-BR");
 
   const currentSession = sessions.find(s => s.id === currentSessionId);
   const messages = currentSession?.messages || [];
@@ -267,6 +281,45 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
       setPendingMessageId(null);
     }
   }, [messages.length, currentSessionId, pendingMessageId]);
+
+  // Sync transcript with message input
+  useEffect(() => {
+    if (transcript) {
+      const fullText = transcript + (interimTranscript ? ` ${interimTranscript}` : '');
+      setMessage(fullText);
+    }
+  }, [transcript, interimTranscript]);
+
+  // Handle speech recognition errors
+  useEffect(() => {
+    if (speechError) {
+      toast({
+        title: "Erro no reconhecimento de voz",
+        description: speechError,
+        variant: "destructive"
+      });
+    }
+  }, [speechError, toast]);
+
+  const handleSpeechToggle = () => {
+    if (listening) {
+      stopListening();
+    } else {
+      if (!speechSupported) {
+        toast({
+          title: "Reconhecimento de voz não suportado",
+          description: "Seu navegador não suporta reconhecimento de voz. Use Chrome ou Edge.",
+          variant: "destructive"
+        });
+        return;
+      }
+      startListening();
+      toast({
+        title: "Escutando...",
+        description: "Fale agora. O reconhecimento para automaticamente após 3 segundos de silêncio.",
+      });
+    }
+  };
   const deleteSession = async (sessionId: string) => {
     try {
       const { error } = await supabase
@@ -1171,7 +1224,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
                   <Textarea
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Digite sua pergunta aqui e pressione Enter..."
+                    placeholder={listening ? "Escutando... Fale agora!" : "Digite ou fale sua pergunta. Pressione Enter para enviar..."}
                     className={`${
                       isMobile ? 'min-h-[50px] max-h-24' : 'min-h-[60px] max-h-32'
                     } bg-slate-700 border-slate-600 focus:border-primary resize-none`}
@@ -1191,8 +1244,26 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
                     size="icon"
                     onClick={() => fileInputRef.current?.click()}
                     className="border-slate-600 hover:bg-slate-700"
+                    title="Anexar arquivo"
                   >
                     <Paperclip className="w-4 h-4" />
+                  </Button>
+                  
+                  {/* Botão de microfone */}
+                  <Button
+                    type="button"
+                    variant={listening ? "destructive" : "outline"}
+                    size="icon"
+                    onClick={handleSpeechToggle}
+                    className={`border-slate-600 ${listening ? 'animate-pulse' : 'hover:bg-slate-700'}`}
+                    title={listening ? "Parar gravação" : "Falar (reconhecimento de voz)"}
+                    disabled={isLoading}
+                  >
+                    {listening ? (
+                      <Square className="w-4 h-4" />
+                    ) : (
+                      <Mic className="w-4 h-4" />
+                    )}
                   </Button>
                   
                   <Button
