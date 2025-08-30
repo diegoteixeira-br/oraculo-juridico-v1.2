@@ -71,7 +71,7 @@ const BlogManager = () => {
     try {
       const { data, error } = await supabase
         .from('blog_posts')
-        .select('*')
+        .select('*, scheduled_for, auto_publish')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -486,12 +486,19 @@ const BlogManager = () => {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={post.is_published ? 'default' : 'secondary'}>
-                        {post.is_published ? 'Publicado' : 'Rascunho'}
-                      </Badge>
-                      {post.featured && (
-                        <Badge variant="outline">Destaque</Badge>
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2">
+                        <Badge variant={post.is_published ? 'default' : 'secondary'}>
+                          {post.is_published ? 'Publicado' : 'Rascunho'}
+                        </Badge>
+                        {post.featured && (
+                          <Badge variant="outline">Destaque</Badge>
+                        )}
+                      </div>
+                      {post.auto_publish && post.scheduled_for && !post.is_published && (
+                        <Badge variant="outline" className="text-xs bg-yellow-50 text-yellow-700 border-yellow-200">
+                          Agendado: {new Date(post.scheduled_for).toLocaleString('pt-BR')}
+                        </Badge>
                       )}
                     </div>
                   </TableCell>
