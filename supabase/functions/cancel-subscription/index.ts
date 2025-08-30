@@ -42,19 +42,23 @@ serve(async (req) => {
       const customerId = customers.data[0].id;
       console.log(`[CANCEL-SUBSCRIPTION] Found Stripe customer: ${customerId}`);
       
-      // Buscar assinaturas ativas do customer
+      // Buscar assinaturas ativas e em trial do customer
       const subscriptions = await stripe.subscriptions.list({
         customer: customerId,
-        status: "active",
+        status: "all", // Buscar todas, incluindo trialing
       });
       
-      // Cancelar todas as assinaturas ativas
+      // Cancelar todas as assinaturas (ativas e em trial)
+      let cancelledCount = 0;
       for (const subscription of subscriptions.data) {
-        console.log(`[CANCEL-SUBSCRIPTION] Cancelling subscription: ${subscription.id}`);
-        await stripe.subscriptions.cancel(subscription.id);
+        if (subscription.status === 'active' || subscription.status === 'trialing') {
+          console.log(`[CANCEL-SUBSCRIPTION] Cancelling subscription: ${subscription.id} (status: ${subscription.status})`);
+          await stripe.subscriptions.cancel(subscription.id);
+          cancelledCount++;
+        }
       }
       
-      console.log(`[CANCEL-SUBSCRIPTION] Cancelled ${subscriptions.data.length} subscription(s)`);
+      console.log(`[CANCEL-SUBSCRIPTION] Cancelled ${cancelledCount} subscription(s)`);
     } else {
       console.log(`[CANCEL-SUBSCRIPTION] No Stripe customer found for ${user.email}`);
     }
