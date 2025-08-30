@@ -72,6 +72,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   const messageContainerRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [pendingNewSession, setPendingNewSession] = useState(false);
+  const [originalTextBeforeRecording, setOriginalTextBeforeRecording] = useState<string>('');
   const { formatDateInUserTimezone } = useUserTimezone();
   
   // Speech Recognition
@@ -290,9 +291,13 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (transcript) {
       const fullText = transcript + (interimTranscript ? ` ${interimTranscript}` : '');
-      setMessage(fullText);
+      // Anexar o texto transcrito ao texto original, se houver
+      const finalText = originalTextBeforeRecording 
+        ? `${originalTextBeforeRecording} ${fullText}`.trim()
+        : fullText;
+      setMessage(finalText);
     }
-  }, [transcript, interimTranscript]);
+  }, [transcript, interimTranscript, originalTextBeforeRecording]);
 
   // Handle speech recognition errors
   useEffect(() => {
@@ -308,12 +313,13 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
   const handleSpeechToggle = () => {
     if (listening) {
       stopListening();
-      // Limpar transcript ao parar gravação
+      // Restaurar o texto original ao cancelar a gravação
+      setMessage(originalTextBeforeRecording);
+      setOriginalTextBeforeRecording('');
       resetTranscript();
-      setMessage("");
       toast({
         title: "Gravação cancelada",
-        description: "A gravação foi interrompida e o áudio foi descartado.",
+        description: "A gravação foi interrompida e o texto original foi restaurado.",
       });
     } else {
       if (!speechSupported) {
@@ -324,6 +330,8 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
         });
         return;
       }
+      // Salvar o texto atual antes de iniciar a gravação
+      setOriginalTextBeforeRecording(message);
       startListening();
       toast({
         title: "Escutando...",
@@ -549,6 +557,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
       // Limpar formulário
       setMessage("");
       setAttachedFiles([]);
+      setOriginalTextBeforeRecording(''); // Limpar texto original salvo
 
       toast({
         title: "Resposta recebida!",
