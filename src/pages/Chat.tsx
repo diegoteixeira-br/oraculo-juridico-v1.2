@@ -312,9 +312,8 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const handleSpeechToggle = () => {
     if (listening) {
-      // Parar a gravação
+      // Parar a gravação imediatamente
       stopListening();
-      resetTranscript();
       
       // Limpar a referência do texto original pois já foi processado
       setOriginalTextBeforeRecording('');

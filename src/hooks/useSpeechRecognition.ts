@@ -134,13 +134,16 @@ export function useSpeechRecognition(lang: string = "pt-BR") {
   }, [isSupported]);
 
   const stop = useCallback(() => {
-    if (recRef.current && listening) {
+    if (recRef.current) {
       recRef.current.stop();
     }
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-  }, [listening]);
+    // Forçar o reset do estado de listening
+    setListening(false);
+    setInterimTranscript("");
+  }, []);
 
   const reset = useCallback(() => {
     setTranscript("");
