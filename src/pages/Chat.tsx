@@ -308,6 +308,13 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
   const handleSpeechToggle = () => {
     if (listening) {
       stopListening();
+      // Limpar transcript ao parar gravação
+      resetTranscript();
+      setMessage("");
+      toast({
+        title: "Gravação cancelada",
+        description: "A gravação foi interrompida e o áudio foi descartado.",
+      });
     } else {
       if (!speechSupported) {
         toast({
@@ -320,7 +327,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
       startListening();
       toast({
         title: "Escutando...",
-        description: "Fale agora. O reconhecimento para automaticamente após 3 segundos de silêncio.",
+        description: "Fale agora. Clique no botão de parar para cancelar a gravação.",
       });
     }
   };
