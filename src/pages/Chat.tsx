@@ -289,7 +289,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Sync transcript with message input
   useEffect(() => {
-    if (transcript) {
+    if (transcript && listening) {
       const fullText = transcript + (interimTranscript ? ` ${interimTranscript}` : '');
       // Anexar o texto transcrito ao texto original, se houver
       const finalText = originalTextBeforeRecording 
@@ -297,7 +297,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
         : fullText;
       setMessage(finalText);
     }
-  }, [transcript, interimTranscript, originalTextBeforeRecording]);
+  }, [transcript, interimTranscript, originalTextBeforeRecording, listening]);
 
   // Handle speech recognition errors
   useEffect(() => {
@@ -312,14 +312,17 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const handleSpeechToggle = () => {
     if (listening) {
+      // Parar a gravação
       stopListening();
-      // Restaurar o texto original ao cancelar a gravação
-      setMessage(originalTextBeforeRecording);
-      setOriginalTextBeforeRecording('');
       resetTranscript();
+      
+      // Manter o texto como está (não limpar nem restaurar)
+      // Apenas sinalizar que a gravação parou
+      setOriginalTextBeforeRecording('');
+      
       toast({
-        title: "Gravação cancelada",
-        description: "A gravação foi interrompida e o texto original foi restaurado.",
+        title: "Gravação parada",
+        description: "A gravação foi parada. Você pode continuar editando o texto manualmente.",
       });
     } else {
       if (!speechSupported) {
@@ -335,7 +338,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
       startListening();
       toast({
         title: "Escutando...",
-        description: "Fale agora. Clique no botão de parar para cancelar a gravação.",
+        description: "Fale agora. Clique no botão de parar para finalizar a gravação.",
       });
     }
   };
