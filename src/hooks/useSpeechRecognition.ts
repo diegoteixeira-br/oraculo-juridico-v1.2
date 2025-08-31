@@ -198,17 +198,18 @@ export function useSpeechRecognition(lang: string = "pt-BR") {
         console.log('Currently listening, stopping first...');
         recRef.current.stop();
         
-        // Aguarda um pouco e tenta novamente
+        // Aguarda um pouco mais para garantir que parou completamente
         setTimeout(() => {
           if (recRef.current && !listening) {
             try {
+              console.log('Restarting speech recognition after stop');
               recRef.current.start();
             } catch (err) {
               console.error('Error restarting speech recognition:', err);
               setError("Erro ao reiniciar reconhecimento de voz");
             }
           }
-        }, 200);
+        }, 500);
       } else {
         console.log('Not currently listening, starting directly...');
         recRef.current.start();

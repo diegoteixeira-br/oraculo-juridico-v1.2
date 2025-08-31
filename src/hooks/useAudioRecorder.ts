@@ -92,38 +92,41 @@ export function useAudioRecorder(lang: string = "pt-BR") {
       throw new Error('Reconhecimento de voz não suportado neste navegador');
     }
 
-    // Capturar estado atual
-    captureCurrentState(currentText);
+    // Capturar estado atual sempre que iniciar
+    const cursorPos = captureCurrentState(currentText);
+    console.log('Captured state - cursor position:', cursorPos, 'text length:', currentText.length);
     
     // Limpar transcript anterior e resetar reconhecimento
     resetSpeech();
     updateTranscript('');
     
-    // Aguardar um pouco para garantir que foi resetado
+    // Atualizar estado imediatamente
+    setAudioState(prev => ({
+      ...prev,
+      isRecording: true
+    }));
+    
+    // Aguardar um pouco para garantir que foi resetado e depois iniciar
     setTimeout(() => {
-      // Atualizar estado primeiro
-      setAudioState(prev => ({
-        ...prev,
-        isRecording: true
-      }));
-      
-      // Depois iniciar reconhecimento
+      console.log('Starting speech recognition');
       startSpeech();
-    }, 200);
+    }, 300);
   }, [isSupported, captureCurrentState, resetSpeech, updateTranscript, startSpeech]);
 
   // Parar gravação
   const stopRecording = useCallback(() => {
     console.log('Stopping audio recording');
+    
+    // Atualizar estado imediatamente para feedback visual rápido
+    setAudioState(prev => ({
+      ...prev,
+      isRecording: false
+    }));
+    
+    // Parar o reconhecimento
     stopSpeech();
     
-    // Aguardar um pouco antes de resetar o estado para garantir que o speech recognition parou
-    setTimeout(() => {
-      setAudioState(prev => ({
-        ...prev,
-        isRecording: false
-      }));
-    }, 100);
+    console.log('Audio recording stopped, ready for next session');
   }, [stopSpeech]);
 
   // Retomar gravação (agora simplesmente inicia novamente)
