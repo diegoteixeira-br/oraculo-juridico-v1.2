@@ -304,7 +304,7 @@ export default function ComprarCreditosPage() {
                           Redirecionando...
                         </div> : <div className="flex items-center gap-2">
                           <CreditCard className="w-5 h-5" />
-                          Assinar Planos
+                          Assinar Plano Básico
                         </div>}
                     </Button>
                     <Button onClick={handleManageSubscription} disabled={portalLoading} variant="secondary" className="w-full">
