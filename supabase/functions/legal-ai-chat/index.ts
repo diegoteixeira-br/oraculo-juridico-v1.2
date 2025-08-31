@@ -155,7 +155,7 @@ async function extractTextFromImage(fileData: string, fileName: string, openAIKe
             ]
           }
         ],
-        max_tokens: 4000,
+        max_completion_tokens: 16000,
       }),
     });
 
@@ -560,8 +560,7 @@ Seja sempre preciso e profissional em suas análises.`
                 content: combinedPrompt
               }
             ],
-            max_tokens: 4000,
-            temperature: 0.3,
+            max_completion_tokens: 16000,
           }),
         });
 
@@ -618,8 +617,7 @@ Seja sempre preciso e profissional em suas análises.`
               content: promptContent
             }
           ],
-          max_tokens: 4000,
-          temperature: 0.3,
+          max_completion_tokens: 16000,
         }),
       });
 
