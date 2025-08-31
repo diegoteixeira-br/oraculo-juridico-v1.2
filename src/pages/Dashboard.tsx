@@ -1027,7 +1027,7 @@ const openTemplateEditor = async (documentId: string) => {
                         className="w-full bg-primary hover:bg-primary/90"
                       >
                         <Plus className="w-4 h-4 mr-2" />
-                        Assinar Plano Básico
+                        Assinar Planos
                       </Button>
                     )}
                     <Button 
