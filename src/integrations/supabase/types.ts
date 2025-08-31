@@ -689,6 +689,51 @@ export type Database = {
           },
         ]
       }
+      external_news: {
+        Row: {
+          author_name: string | null
+          created_at: string
+          created_by: string | null
+          display_order: number | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          original_url: string
+          snippet: string
+          source_name: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          original_url: string
+          snippet: string
+          source_name: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          original_url?: string
+          snippet?: string
+          source_name?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       feature_usage: {
         Row: {
           created_at: string

@@ -15,7 +15,8 @@ import BlogSettings from "@/components/admin/BlogSettings";
 import AdsManager from "@/components/admin/AdsManager";
 import AdSenseManager from "@/components/admin/AdSenseManager";
 import LandingPageSettings from "@/components/admin/LandingPageSettings";
-import { Users, FileText, Upload, Undo2, ArrowLeft, Coins, Mail, BookOpen, Settings2, Wrench, Globe, Settings, Tags } from "lucide-react";
+import { ExternalNewsManager } from "@/components/ExternalNewsManager";
+import { Users, FileText, Upload, Undo2, ArrowLeft, Coins, Mail, BookOpen, Settings2, Wrench, Globe, Settings, Tags, ExternalLink } from "lucide-react";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useSEO } from "@/hooks/useSEO";
 import { useNavigate } from "react-router-dom";
@@ -208,10 +209,14 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <Tabs value={activeBlogTab} onValueChange={setActiveBlogTab} className="space-y-6">
-                <TabsList className="grid w-full grid-cols-5 h-auto">
+                <TabsList className="grid w-full grid-cols-6 h-auto">
                   <TabsTrigger value="articles" className="flex items-center gap-2 p-3">
                     <FileText className="w-4 h-4" />
                     <span>Artigos</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="external-news" className="flex items-center gap-2 p-3">
+                    <ExternalLink className="w-4 h-4" />
+                    <span>Notícias</span>
                   </TabsTrigger>
                   <TabsTrigger value="categories" className="flex items-center gap-2 p-3">
                     <Tags className="w-4 h-4" />
@@ -241,6 +246,19 @@ export default function AdminDashboard() {
                     </div>
                     
                     <BlogManager />
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="external-news">
+                  <div className="space-y-4 sm:space-y-6">
+                    <div>
+                      <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2">Radar Jurídico - Notícias Externas</h2>
+                      <p className="text-muted-foreground text-xs sm:text-sm lg:text-base">
+                        Gerencie notícias de sites jurídicos externos de forma ética, com créditos e links para originais
+                      </p>
+                    </div>
+                    
+                    <ExternalNewsManager />
                   </div>
                 </TabsContent>
 

@@ -13,6 +13,7 @@ import AdCarousel from '@/components/AdCarousel';
 import { useAuth } from '@/contexts/AuthContext';
 import UserMenu from '@/components/UserMenu';
 import { BlogPostVotes } from '@/components/BlogPostVotes';
+import { ExternalNewsFeed } from '@/components/ExternalNewsFeed';
 
 interface BlogPost {
   id: string;
@@ -238,6 +239,9 @@ const BlogJuridico = () => {
                 {/* Entre artigos - Carrossel de Anúncios */}
                 <AdCarousel format="mobile_banner" position="between_articles" className="mb-8" />
               </section>}
+
+            {/* External News Feed */}
+            <ExternalNewsFeed className="mb-12" />
 
             {/* All Posts */}
             <section>
