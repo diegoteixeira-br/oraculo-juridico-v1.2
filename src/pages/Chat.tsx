@@ -324,8 +324,11 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const handleSpeechToggle = () => {
     if (listening) {
-      // Parar a gravação
+      // Parar a gravação e resetar estados
       stopListening();
+      
+      // Resetar os estados para permitir nova gravação
+      resetTranscript();
       
       toast({
         title: "Gravação parada",
@@ -346,8 +349,10 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
       setCursorPosition(currentCursorPos);
       setOriginalTextBeforeRecording(message);
       
-      // Limpar transcript anterior para começar nova transcrição
+      // Garantir que o transcript está limpo para nova gravação
       updateTranscript('');
+      
+      // Iniciar nova gravação
       startListening();
       
       toast({
