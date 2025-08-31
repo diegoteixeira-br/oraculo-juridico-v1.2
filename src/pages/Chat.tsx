@@ -312,10 +312,10 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const handleSpeechToggle = () => {
     if (listening) {
-      // Parar a gravação imediatamente
+      // Parar a gravação e sincronizar o transcript com o texto atual do input
       stopListening();
-      
-      // Limpar a referência do texto original pois já foi processado
+      // Atualizar o transcript do hook com o texto atual do input
+      updateTranscript(message);
       setOriginalTextBeforeRecording('');
       
       toast({
@@ -331,7 +331,8 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
         });
         return;
       }
-      // Salvar o texto atual (que pode ter sido editado) antes de iniciar nova gravação
+      // Sempre usar o texto atual do input como base
+      updateTranscript(message); // Sincronizar o hook com o input atual
       setOriginalTextBeforeRecording(message);
       startListening();
       toast({
