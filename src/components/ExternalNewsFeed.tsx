@@ -91,8 +91,9 @@ export const ExternalNewsFeed = ({ limit = 6, className = "" }: ExternalNewsFeed
         {news.map((item, index) => (
           <Card
             key={item.id}
-            className="group hover-scale bg-slate-800/40 border-slate-700 hover:border-blue-500/50 transition-all duration-300 animate-fade-in overflow-hidden"
+            className="group hover-scale bg-slate-800/40 border-slate-700 hover:border-blue-500/50 transition-all duration-300 animate-fade-in overflow-hidden cursor-pointer"
             style={{ animationDelay: `${index * 0.1}s` }}
+            onClick={() => window.open(item.original_url, '_blank', 'noopener,noreferrer')}
           >
             <CardContent className="p-0">
               <div className="flex h-full">
