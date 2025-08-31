@@ -86,6 +86,7 @@ export function useSpeechRecognition(lang: string = "pt-BR") {
   const [interimTranscript, setInterimTranscript] = useState("");
   const [isSupported, setIsSupported] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false); // Novo estado
   const recRef = useRef<SpeechRecognitionInstance | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -141,12 +142,16 @@ export function useSpeechRecognition(lang: string = "pt-BR") {
     };
 
     recognition.onstart = () => {
+      console.log('Speech recognition started');
       setListening(true);
+      setIsTransitioning(false);
       setError(null);
     };
 
     recognition.onend = () => {
+      console.log('Speech recognition ended');
       setListening(false);
+      setIsTransitioning(false);
       setInterimTranscript("");
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -169,47 +174,59 @@ export function useSpeechRecognition(lang: string = "pt-BR") {
   }, [lang, listening]);
 
   const start = useCallback(() => {
-    if (!recRef.current || !isSupported) {
-      setError("Reconhecimento de voz não disponível");
+    if (!recRef.current || !isSupported || isTransitioning) {
+      setError("Reconhecimento de voz não disponível ou em transição");
       return;
     }
 
+    console.log('Attempting to start speech recognition. Current state:', { listening, isTransitioning });
+    
     try {
       setError(null);
       setInterimTranscript("");
+      setIsTransitioning(true);
       
-      // Garantir que está parado antes de iniciar
+      // Se já está ouvindo, para primeiro e aguarda completar
       if (listening) {
+        console.log('Currently listening, stopping first...');
         recRef.current.stop();
-        // Aguardar um pouco antes de reiniciar
-        setTimeout(() => {
-          if (recRef.current) {
-            recRef.current.start();
+        
+        // Aguardar o evento onend ser disparado
+        const waitForStop = () => {
+          if (!listening && !isTransitioning) {
+            console.log('Successfully stopped, starting again...');
+            recRef.current?.start();
+          } else {
+            setTimeout(waitForStop, 50);
           }
-        }, 100);
+        };
+        setTimeout(waitForStop, 100);
       } else {
+        console.log('Not currently listening, starting directly...');
         recRef.current.start();
       }
     } catch (err) {
       setError("Erro ao iniciar reconhecimento de voz");
+      setIsTransitioning(false);
       console.error('Error starting speech recognition:', err);
     }
-  }, [isSupported, listening]);
+  }, [isSupported, listening, isTransitioning]);
 
   const stop = useCallback(() => {
+    console.log('Attempting to stop speech recognition');
+    setIsTransitioning(true);
+    
     if (recRef.current) {
       try {
         recRef.current.stop();
       } catch (err) {
         console.error('Error stopping speech recognition:', err);
+        setIsTransitioning(false);
       }
     }
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    // Forçar o reset do estado de listening
-    setListening(false);
-    setInterimTranscript("");
   }, []);
 
   const reset = useCallback(() => {
