@@ -291,8 +291,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Sync transcript with message input, inserindo na posição do cursor
   useEffect(() => {
-    if (transcript && listening) {
-      const currentText = message;
+    if (listening && (transcript || interimTranscript)) {
       const textBeforeCursor = originalTextBeforeRecording.substring(0, cursorPosition);
       const textAfterCursor = originalTextBeforeRecording.substring(cursorPosition);
       
@@ -310,7 +309,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
         }, 0);
       }
     }
-  }, [transcript, interimTranscript, originalTextBeforeRecording, listening, cursorPosition, message]);
+  }, [transcript, interimTranscript, listening]);
 
   // Handle speech recognition errors
   useEffect(() => {
@@ -350,8 +349,8 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
       setCursorPosition(currentCursorPos);
       setOriginalTextBeforeRecording(message);
       
-      // Limpar transcript anterior antes de iniciar nova gravação
-      updateTranscript('');
+      // NÃO limpar transcript ao retomar - manter o texto já transcrito
+      // updateTranscript(''); // Removido para manter continuidade
       startListening();
       
       toast({
