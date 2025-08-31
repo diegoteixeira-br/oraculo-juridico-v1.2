@@ -16,7 +16,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useAccessControl } from "@/hooks/useAccessControl";
 import InlineWordUnderlineOverlay from "@/components/InlineWordUnderlineOverlay";
 import { useUserTimezone } from "@/hooks/useUserTimezone";
-import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
+import { useAudioRecorder } from "@/hooks/useAudioRecorder";
 
 interface Message {
   id: string;
@@ -72,23 +72,10 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   const messageContainerRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [pendingNewSession, setPendingNewSession] = useState(false);
-  const [originalTextBeforeRecording, setOriginalTextBeforeRecording] = useState<string>('');
-  const [cursorPosition, setCursorPosition] = useState<number>(0);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { formatDateInUserTimezone } = useUserTimezone();
   
-  // Speech Recognition
-  const { 
-    listening, 
-    transcript, 
-    interimTranscript, 
-    isSupported: speechSupported, 
-    error: speechError,
-    start: startListening, 
-    stop: stopListening, 
-    reset: resetTranscript,
-    setTranscript: updateTranscript
-  } = useSpeechRecognition("pt-BR");
+  // Audio Recorder
+  const audioRecorder = useAudioRecorder("pt-BR");
 
   const currentSession = sessions.find(s => s.id === currentSessionId);
   const messages = currentSession?.messages || [];
@@ -289,75 +276,81 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
     }
   }, [messages.length, currentSessionId, pendingMessageId]);
 
-  // Sync transcript with message input, inserindo na posição do cursor
+  // Sync transcript with message input
   useEffect(() => {
-    if (listening && (transcript || interimTranscript)) {
-      const textBeforeCursor = originalTextBeforeRecording.substring(0, cursorPosition);
-      const textAfterCursor = originalTextBeforeRecording.substring(cursorPosition);
-      
-      // Inserir o texto transcrito na posição do cursor
-      const newText = textBeforeCursor + transcript + (interimTranscript ? ` ${interimTranscript}` : '') + textAfterCursor;
-      setMessage(newText);
-      
-      // Atualizar posição do cursor para depois do texto inserido
-      if (textareaRef.current) {
-        const newCursorPos = textBeforeCursor.length + transcript.length + (interimTranscript ? ` ${interimTranscript}`.length : 0);
-        setTimeout(() => {
-          if (textareaRef.current) {
-            textareaRef.current.setSelectionRange(newCursorPos, newCursorPos);
-          }
-        }, 0);
+    if (audioRecorder.isRecording) {
+      const processedText = audioRecorder.processTextChange(message);
+      if (processedText !== message) {
+        setMessage(processedText);
       }
     }
-  }, [transcript, interimTranscript, listening]);
+  }, [audioRecorder.transcript, audioRecorder.interimTranscript, audioRecorder.isRecording]);
 
-  // Handle speech recognition errors
+  // Handle audio recorder errors
   useEffect(() => {
-    if (speechError) {
+    if (audioRecorder.error) {
       toast({
         title: "Erro no reconhecimento de voz",
-        description: speechError,
+        description: audioRecorder.error,
         variant: "destructive"
       });
     }
-  }, [speechError, toast]);
+  }, [audioRecorder.error, toast]);
+
+  // Atalho de teclado para microfone (Ctrl+M ou Cmd+M)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'm') {
+        e.preventDefault();
+        handleSpeechToggle();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [audioRecorder.isRecording, audioRecorder.isPaused, message]);
 
   const handleSpeechToggle = () => {
-    if (listening) {
-      // Parar a gravação e resetar estados
-      stopListening();
-      
-      // Resetar os estados para permitir nova gravação
-      resetTranscript();
-      
-      toast({
-        title: "Gravação parada",
-        description: "Você pode editar o texto e clicar no microfone novamente para continuar.",
-      });
-    } else {
-      if (!speechSupported) {
+    try {
+      if (audioRecorder.isRecording) {
+        // Parar a gravação
+        audioRecorder.stopRecording();
+        
         toast({
-          title: "Reconhecimento de voz não suportado",
-          description: "Seu navegador não suporta reconhecimento de voz. Use Chrome ou Edge.",
-          variant: "destructive"
+          title: "Gravação parada",
+          description: "Você pode editar o texto e clicar no microfone novamente para continuar.",
         });
-        return;
+      } else if (audioRecorder.isPaused) {
+        // Retomar gravação
+        audioRecorder.resumeRecording(message);
+        
+        toast({
+          title: "Gravação retomada",
+          description: "Fale agora. O áudio será inserido na posição do cursor.",
+        });
+      } else {
+        // Iniciar nova gravação
+        if (!audioRecorder.isSupported) {
+          toast({
+            title: "Reconhecimento de voz não suportado",
+            description: "Seu navegador não suporta reconhecimento de voz. Use Chrome ou Edge.",
+            variant: "destructive"
+          });
+          return;
+        }
+        
+        audioRecorder.startRecording(message);
+        
+        toast({
+          title: "Gravação iniciada",
+          description: "Fale agora. O áudio será inserido na posição do cursor.",
+        });
       }
-      
-      // Capturar posição do cursor e texto atual quando iniciar a gravação
-      const currentCursorPos = textareaRef.current?.selectionStart || message.length;
-      setCursorPosition(currentCursorPos);
-      setOriginalTextBeforeRecording(message);
-      
-      // Garantir que o transcript está limpo para nova gravação
-      updateTranscript('');
-      
-      // Iniciar nova gravação
-      startListening();
-      
+    } catch (error) {
       toast({
-        title: "Escutando...",
-        description: "Fale agora. O áudio será inserido na posição do cursor.",
+        title: "Erro na gravação",
+        description: error instanceof Error ? error.message : "Erro desconhecido",
+        variant: "destructive"
       });
     }
   };
@@ -409,8 +402,8 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
     setMessage("");
     setAttachedFiles([]);
     
-    // Limpar transcript de voz se existir
-    resetTranscript();
+    // Limpar gravação de voz se existir
+    audioRecorder.resetRecording();
     
     // Fechar sidebar no mobile após criar nova sessão
     if (isMobile) {
@@ -579,7 +572,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
       // Limpar formulário
       setMessage("");
       setAttachedFiles([]);
-      setOriginalTextBeforeRecording(''); // Limpar texto original salvo
+      audioRecorder.resetRecording(); // Limpar gravação
 
       toast({
         title: "Resposta recebida!",
@@ -1270,10 +1263,10 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
                 {/* Área de texto com botões secundários dentro */}
                 <div className="flex-1 relative">
                   <Textarea
-                    ref={textareaRef}
+                    ref={audioRecorder.textareaRef}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder={listening ? "Escutando... Fale agora!" : "Digite sua pergunta aqui..."}
+                    placeholder={audioRecorder.isRecording ? "Escutando... Fale agora!" : "Digite sua pergunta aqui..."}
                     className={`${
                       isMobile ? 'min-h-[80px] max-h-[200px] pb-12' : 'min-h-[100px] max-h-[200px] pb-14'
                     } bg-slate-700 border-slate-600 focus:border-primary resize-none pr-4 pl-4 pt-4`}
@@ -1309,14 +1302,16 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
                       size="sm"
                       onClick={handleSpeechToggle}
                       className={`h-8 w-8 p-0 ${
-                        listening 
+                        audioRecorder.isRecording 
                           ? 'text-red-400 hover:text-red-300 animate-pulse' 
-                          : 'text-slate-400 hover:text-white hover:bg-slate-600/50'
+                          : audioRecorder.isPaused
+                            ? 'text-orange-400 hover:text-orange-300'
+                            : 'text-slate-400 hover:text-white hover:bg-slate-600/50'
                       }`}
-                      title={listening ? "Parar gravação" : "Falar (reconhecimento de voz)"}
+                      title={audioRecorder.isRecording ? "Parar gravação" : audioRecorder.isPaused ? "Retomar gravação" : "Falar (reconhecimento de voz)"}
                       disabled={isLoading}
                     >
-                      {listening ? (
+                      {audioRecorder.isRecording ? (
                         <Square className="w-4 h-4" />
                       ) : (
                         <Mic className="w-4 h-4" />
@@ -1341,6 +1336,24 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
                   )}
                 </Button>
               </div>
+
+              {/* Status da gravação */}
+              {(audioRecorder.isRecording || audioRecorder.isPaused) && (
+                <div className={`flex items-center gap-2 text-xs ${
+                  audioRecorder.isRecording ? 'text-red-400' : 'text-orange-400'
+                }`}>
+                  <div className={`w-2 h-2 rounded-full ${
+                    audioRecorder.isRecording ? 'bg-red-400 animate-pulse' : 'bg-orange-400'
+                  }`} />
+                  <span>
+                    {audioRecorder.isRecording 
+                      ? 'Gravando... Fale agora ou clique no microfone para parar'
+                      : 'Gravação pausada. Clique no microfone para continuar ou digite com o teclado'
+                    }
+                  </span>
+                  <span className="text-slate-500">(Ctrl+M para alternar)</span>
+                </div>
+              )}
 
               {/* Informações de tokens */}
               <div className={`flex items-center justify-between text-xs text-slate-400 ${
