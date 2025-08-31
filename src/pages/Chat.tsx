@@ -73,6 +73,8 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
   const messageContainerRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [pendingNewSession, setPendingNewSession] = useState(false);
   const [originalTextBeforeRecording, setOriginalTextBeforeRecording] = useState<string>('');
+  const [cursorPosition, setCursorPosition] = useState<number>(0);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { formatDateInUserTimezone } = useUserTimezone();
   
   // Speech Recognition
@@ -287,17 +289,28 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
     }
   }, [messages.length, currentSessionId, pendingMessageId]);
 
-  // Sync transcript with message input
+  // Sync transcript with message input, inserindo na posição do cursor
   useEffect(() => {
     if (transcript && listening) {
-      const fullText = transcript + (interimTranscript ? ` ${interimTranscript}` : '');
-      // Anexar o texto transcrito ao texto original, se houver
-      const finalText = originalTextBeforeRecording 
-        ? `${originalTextBeforeRecording} ${fullText}`.trim()
-        : fullText;
-      setMessage(finalText);
+      const currentText = message;
+      const textBeforeCursor = originalTextBeforeRecording.substring(0, cursorPosition);
+      const textAfterCursor = originalTextBeforeRecording.substring(cursorPosition);
+      
+      // Inserir o texto transcrito na posição do cursor
+      const newText = textBeforeCursor + transcript + (interimTranscript ? ` ${interimTranscript}` : '') + textAfterCursor;
+      setMessage(newText);
+      
+      // Atualizar posição do cursor para depois do texto inserido
+      if (textareaRef.current) {
+        const newCursorPos = textBeforeCursor.length + transcript.length + (interimTranscript ? ` ${interimTranscript}`.length : 0);
+        setTimeout(() => {
+          if (textareaRef.current) {
+            textareaRef.current.setSelectionRange(newCursorPos, newCursorPos);
+          }
+        }, 0);
+      }
     }
-  }, [transcript, interimTranscript, originalTextBeforeRecording, listening]);
+  }, [transcript, interimTranscript, originalTextBeforeRecording, listening, cursorPosition, message]);
 
   // Handle speech recognition errors
   useEffect(() => {
@@ -331,13 +344,19 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
         });
         return;
       }
-      // Sempre usar o texto atual do input como base
-      updateTranscript(message); // Sincronizar o hook com o input atual
+      
+      // Capturar posição do cursor e texto atual
+      const currentCursorPos = textareaRef.current?.selectionStart || message.length;
+      setCursorPosition(currentCursorPos);
       setOriginalTextBeforeRecording(message);
+      
+      // Limpar transcript anterior antes de iniciar nova gravação
+      updateTranscript('');
       startListening();
+      
       toast({
         title: "Escutando...",
-        description: "Fale agora. O áudio será anexado ao texto existente.",
+        description: "Fale agora. O áudio será inserido na posição do cursor.",
       });
     }
   };
@@ -1250,6 +1269,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
                 {/* Área de texto com botões secundários dentro */}
                 <div className="flex-1 relative">
                   <Textarea
+                    ref={textareaRef}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder={listening ? "Escutando... Fale agora!" : "Digite sua pergunta aqui..."}
