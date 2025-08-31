@@ -33,6 +33,53 @@ declare global {
   }
 }
 
+// Função para processar comandos de pontuação
+const processPunctuationCommands = (text: string): string => {
+  let processedText = text;
+  
+  // Comandos de pontuação em português
+  const punctuationCommands = {
+    'vírgula': ',',
+    'virgula': ',',
+    'ponto': '.',
+    'ponto final': '.',
+    'interrogação': '?',
+    'interogação': '?',
+    'interogaçao': '?',
+    'exclamação': '!',
+    'exclamaçao': '!',
+    'dois pontos': ':',
+    'ponto e vírgula': ';',
+    'ponto e virgula': ';',
+    'aspas': '"',
+    'abre parênteses': '(',
+    'abre parenteses': '(',
+    'fecha parênteses': ')',
+    'fecha parenteses': ')',
+    'travessão': '—',
+    'travessao': '—',
+    'nova linha': '\n',
+    'quebra linha': '\n',
+    'parágrafo': '\n\n',
+    'paragrafo': '\n\n'
+  };
+  
+  // Aplicar substituições
+  Object.entries(punctuationCommands).forEach(([command, punctuation]) => {
+    const regex = new RegExp(`\\b${command}\\b`, 'gi');
+    processedText = processedText.replace(regex, punctuation);
+  });
+  
+  // Limpar espaços extras ao redor da pontuação
+  processedText = processedText
+    .replace(/\s+([,.!?;:])/g, '$1') // Remove espaços antes da pontuação
+    .replace(/([,.!?;:])\s*([,.!?;:])/g, '$1 $2') // Adiciona espaço entre pontuações consecutivas
+    .replace(/\s+/g, ' ') // Remove espaços múltiplos
+    .trim();
+  
+  return processedText;
+};
+
 export function useSpeechRecognition(lang: string = "pt-BR") {
   const [listening, setListening] = useState(false);
   const [transcript, setTranscript] = useState("");
@@ -70,11 +117,15 @@ export function useSpeechRecognition(lang: string = "pt-BR") {
         }
       }
 
+      // Processar comandos de pontuação no texto final
       if (finalTranscript) {
-        setTranscript(prev => prev + finalTranscript);
+        const processedText = processPunctuationCommands(finalTranscript);
+        setTranscript(prev => prev + processedText);
         setInterimTranscript("");
       } else {
-        setInterimTranscript(interimText);
+        // Processar comandos também no texto provisório
+        const processedInterim = processPunctuationCommands(interimText);
+        setInterimTranscript(processedInterim);
       }
 
       // Reset timeout para parar automaticamente após silêncio
