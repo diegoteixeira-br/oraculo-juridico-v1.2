@@ -3,7 +3,6 @@ import { useSpeechRecognition } from './useSpeechRecognition';
 
 interface AudioRecorderState {
   isRecording: boolean;
-  isPaused: boolean;
   hasText: boolean;
   cursorPosition: number;
   originalText: string;
@@ -12,7 +11,6 @@ interface AudioRecorderState {
 export function useAudioRecorder(lang: string = "pt-BR") {
   const [audioState, setAudioState] = useState<AudioRecorderState>({
     isRecording: false,
-    isPaused: false,
     hasText: false,
     cursorPosition: 0,
     originalText: ''
@@ -84,8 +82,7 @@ export function useAudioRecorder(lang: string = "pt-BR") {
     // Atualizar estado
     setAudioState(prev => ({
       ...prev,
-      isRecording: true,
-      isPaused: false
+      isRecording: true
     }));
 
     // Iniciar reconhecimento
@@ -98,34 +95,14 @@ export function useAudioRecorder(lang: string = "pt-BR") {
     
     setAudioState(prev => ({
       ...prev,
-      isRecording: false,
-      isPaused: true
+      isRecording: false
     }));
   }, [stopSpeech]);
 
-  // Retomar gravação
+  // Retomar gravação (agora simplesmente inicia novamente)
   const resumeRecording = useCallback((currentText: string) => {
-    if (!isSupported) {
-      throw new Error('Reconhecimento de voz não suportado neste navegador');
-    }
-
-    // Capturar nova posição do cursor
-    captureCurrentState(currentText);
-    
-    // Limpar transcript para nova captura
-    resetSpeech();
-    updateTranscript('');
-    
-    // Atualizar estado
-    setAudioState(prev => ({
-      ...prev,
-      isRecording: true,
-      isPaused: false
-    }));
-
-    // Reiniciar reconhecimento
-    startSpeech();
-  }, [isSupported, captureCurrentState, resetSpeech, updateTranscript, startSpeech]);
+    return startRecording(currentText);
+  }, [startRecording]);
 
   // Resetar completamente
   const resetRecording = useCallback(() => {
@@ -134,7 +111,6 @@ export function useAudioRecorder(lang: string = "pt-BR") {
     
     setAudioState({
       isRecording: false,
-      isPaused: false,
       hasText: false,
       cursorPosition: 0,
       originalText: ''
@@ -152,7 +128,6 @@ export function useAudioRecorder(lang: string = "pt-BR") {
   return {
     // Estados
     isRecording: audioState.isRecording,
-    isPaused: audioState.isPaused,
     hasText: audioState.hasText,
     listening,
     transcript,
@@ -171,6 +146,6 @@ export function useAudioRecorder(lang: string = "pt-BR") {
     processTextChange,
     
     // Status readable
-    status: audioState.isRecording ? 'recording' : audioState.isPaused ? 'paused' : 'idle'
+    status: audioState.isRecording ? 'recording' : 'idle'
   };
 }

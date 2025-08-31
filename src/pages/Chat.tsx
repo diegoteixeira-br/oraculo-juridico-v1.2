@@ -308,7 +308,7 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [audioRecorder.isRecording, audioRecorder.isPaused, message]);
+  }, [audioRecorder.isRecording, message]);
 
   const handleSpeechToggle = () => {
     try {
@@ -318,18 +318,10 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
         
         toast({
           title: "Gravação parada",
-          description: "Você pode editar o texto e clicar no microfone novamente para continuar.",
-        });
-      } else if (audioRecorder.isPaused) {
-        // Retomar gravação
-        audioRecorder.resumeRecording(message);
-        
-        toast({
-          title: "Gravação retomada",
-          description: "Fale agora. O áudio será inserido na posição do cursor.",
+          description: "Clique no microfone novamente para gravar.",
         });
       } else {
-        // Iniciar nova gravação
+        // Iniciar gravação (sempre do zero)
         if (!audioRecorder.isSupported) {
           toast({
             title: "Reconhecimento de voz não suportado",
@@ -1304,11 +1296,9 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
                       className={`h-8 w-8 p-0 ${
                         audioRecorder.isRecording 
                           ? 'text-red-400 hover:text-red-300 animate-pulse' 
-                          : audioRecorder.isPaused
-                            ? 'text-orange-400 hover:text-orange-300'
-                            : 'text-slate-400 hover:text-white hover:bg-slate-600/50'
+                          : 'text-slate-400 hover:text-white hover:bg-slate-600/50'
                       }`}
-                      title={audioRecorder.isRecording ? "Parar gravação" : audioRecorder.isPaused ? "Retomar gravação" : "Falar (reconhecimento de voz)"}
+                      title={audioRecorder.isRecording ? "Parar gravação" : "Falar (reconhecimento de voz)"}
                       disabled={isLoading}
                     >
                       {audioRecorder.isRecording ? (
@@ -1337,19 +1327,12 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
                 </Button>
               </div>
 
-              {/* Status da gravação */}
-              {(audioRecorder.isRecording || audioRecorder.isPaused) && (
-                <div className={`flex items-center gap-2 text-xs ${
-                  audioRecorder.isRecording ? 'text-red-400' : 'text-orange-400'
-                }`}>
-                  <div className={`w-2 h-2 rounded-full ${
-                    audioRecorder.isRecording ? 'bg-red-400 animate-pulse' : 'bg-orange-400'
-                  }`} />
-                  <span>
-                    {audioRecorder.isRecording 
-                      ? 'Gravando... Fale agora ou clique no microfone para parar'
-                      : 'Gravação pausada. Clique no microfone para continuar ou digite com o teclado'
-                    }
+               {/* Status da gravação */}
+               {audioRecorder.isRecording && (
+                 <div className="flex items-center gap-2 text-xs text-red-400">
+                   <div className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
+                   <span>
+                     Gravando... Fale agora ou clique no microfone para parar
                   </span>
                   <span className="text-slate-500">(Ctrl+M para alternar)</span>
                 </div>
