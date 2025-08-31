@@ -324,11 +324,8 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const handleSpeechToggle = () => {
     if (listening) {
-      // Parar a gravação e sincronizar o transcript com o texto atual do input
+      // Parar a gravação
       stopListening();
-      // Atualizar o transcript do hook com o texto atual do input
-      updateTranscript(message);
-      setOriginalTextBeforeRecording('');
       
       toast({
         title: "Gravação parada",
@@ -344,13 +341,13 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
         return;
       }
       
-      // Capturar posição do cursor e texto atual
+      // Capturar posição do cursor e texto atual quando iniciar a gravação
       const currentCursorPos = textareaRef.current?.selectionStart || message.length;
       setCursorPosition(currentCursorPos);
       setOriginalTextBeforeRecording(message);
       
-      // NÃO limpar transcript ao retomar - manter o texto já transcrito
-      // updateTranscript(''); // Removido para manter continuidade
+      // Limpar transcript anterior para começar nova transcrição
+      updateTranscript('');
       startListening();
       
       toast({
