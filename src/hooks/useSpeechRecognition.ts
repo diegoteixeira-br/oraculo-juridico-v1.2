@@ -214,18 +214,22 @@ export function useSpeechRecognition(lang: string = "pt-BR") {
 
   const stop = useCallback(() => {
     console.log('Attempting to stop speech recognition');
-    setIsTransitioning(true);
+    
+    // Immediately update UI state for better responsiveness
+    setListening(false);
+    setIsTransitioning(false);
+    setInterimTranscript("");
+    
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
     
     if (recRef.current) {
       try {
         recRef.current.stop();
       } catch (err) {
         console.error('Error stopping speech recognition:', err);
-        setIsTransitioning(false);
       }
-    }
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
     }
   }, []);
 
