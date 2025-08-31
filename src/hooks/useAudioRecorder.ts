@@ -49,11 +49,29 @@ export function useAudioRecorder(lang: string = "pt-BR") {
     const textBeforeCursor = originalText.substring(0, cursorPosition);
     const textAfterCursor = originalText.substring(cursorPosition);
     
-    // Construir o novo texto inserindo na posição do cursor
-    const finalText = textBeforeCursor + newTranscript + (interim ? ` ${interim}` : '') + textAfterCursor;
+    // Verificar se precisa adicionar espaço antes do novo texto
+    const needsSpaceBefore = textBeforeCursor.length > 0 && 
+                            !textBeforeCursor.endsWith(' ') && 
+                            !textBeforeCursor.endsWith('\n') &&
+                            newTranscript.length > 0 &&
+                            !newTranscript.startsWith(' ');
+    
+    // Verificar se precisa adicionar espaço depois do texto interim
+    const needsSpaceAfterInterim = interim.length > 0 && 
+                                  textAfterCursor.length > 0 && 
+                                  !textAfterCursor.startsWith(' ') &&
+                                  !textAfterCursor.startsWith('\n') &&
+                                  !interim.endsWith(' ');
+    
+    // Construir o novo texto com espaçamento correto
+    const spaceBefore = needsSpaceBefore ? ' ' : '';
+    const spaceAfterInterim = needsSpaceAfterInterim ? ' ' : '';
+    const interimText = interim ? ` ${interim}${spaceAfterInterim}` : '';
+    
+    const finalText = textBeforeCursor + spaceBefore + newTranscript + interimText + textAfterCursor;
     
     // Calcular nova posição do cursor
-    const newCursorPos = textBeforeCursor.length + newTranscript.length + (interim ? ` ${interim}`.length : 0);
+    const newCursorPos = textBeforeCursor.length + spaceBefore.length + newTranscript.length + interimText.length;
     
     // Atualizar posição do cursor no DOM
     setTimeout(() => {
