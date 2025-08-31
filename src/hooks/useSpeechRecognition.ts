@@ -126,16 +126,32 @@ export function useSpeechRecognition(lang: string = "pt-BR") {
     try {
       setError(null);
       setInterimTranscript("");
-      recRef.current.start();
+      
+      // Garantir que está parado antes de iniciar
+      if (listening) {
+        recRef.current.stop();
+        // Aguardar um pouco antes de reiniciar
+        setTimeout(() => {
+          if (recRef.current) {
+            recRef.current.start();
+          }
+        }, 100);
+      } else {
+        recRef.current.start();
+      }
     } catch (err) {
       setError("Erro ao iniciar reconhecimento de voz");
       console.error('Error starting speech recognition:', err);
     }
-  }, [isSupported]);
+  }, [isSupported, listening]);
 
   const stop = useCallback(() => {
     if (recRef.current) {
-      recRef.current.stop();
+      try {
+        recRef.current.stop();
+      } catch (err) {
+        console.error('Error stopping speech recognition:', err);
+      }
     }
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
