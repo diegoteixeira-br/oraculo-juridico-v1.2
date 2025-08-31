@@ -96,21 +96,26 @@ export function useAudioRecorder(lang: string = "pt-BR") {
     const cursorPos = captureCurrentState(currentText);
     console.log('Captured state - cursor position:', cursorPos, 'text length:', currentText.length);
     
-    // Limpar transcript anterior e resetar reconhecimento
+    // Garantir reset completo antes de iniciar
     resetSpeech();
     updateTranscript('');
     
-    // Atualizar estado imediatamente
+    // Atualizar estado imediatamente para feedback visual
     setAudioState(prev => ({
       ...prev,
       isRecording: true
     }));
     
-    // Aguardar um pouco para garantir que foi resetado e depois iniciar
+    // Delay maior para garantir que o reset foi processado completamente
     setTimeout(() => {
-      console.log('Starting speech recognition');
-      startSpeech();
-    }, 300);
+      console.log('Starting fresh speech recognition session');
+      try {
+        startSpeech();
+      } catch (error) {
+        console.error('Error starting speech recognition:', error);
+        setAudioState(prev => ({ ...prev, isRecording: false }));
+      }
+    }, 500);
   }, [isSupported, captureCurrentState, resetSpeech, updateTranscript, startSpeech]);
 
   // Parar gravação

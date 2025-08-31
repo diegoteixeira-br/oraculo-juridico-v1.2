@@ -193,26 +193,40 @@ export function useSpeechRecognition(lang: string = "pt-BR") {
       setError(null);
       setInterimTranscript("");
       
-      // Se já está ouvindo, para primeiro
-      if (listening) {
+      // Sempre para primeiro para garantir estado limpo
+      if (listening && recRef.current) {
         console.log('Currently listening, stopping first...');
-        recRef.current.stop();
+        try {
+          recRef.current.stop();
+        } catch (err) {
+          console.log('Error stopping current recognition (ignoring):', err);
+        }
         
-        // Aguarda um pouco mais para garantir que parou completamente
+        // Espera mais tempo para garantir parada completa
         setTimeout(() => {
-          if (recRef.current && !listening) {
-            try {
-              console.log('Restarting speech recognition after stop');
+          try {
+            console.log('Starting fresh speech recognition session');
+            if (recRef.current) {
               recRef.current.start();
-            } catch (err) {
-              console.error('Error restarting speech recognition:', err);
-              setError("Erro ao reiniciar reconhecimento de voz");
             }
+          } catch (err) {
+            console.error('Error starting fresh speech recognition:', err);
+            setError("Erro ao iniciar reconhecimento de voz");
           }
-        }, 500);
+        }, 800);
       } else {
         console.log('Not currently listening, starting directly...');
-        recRef.current.start();
+        // Pequeno delay mesmo quando não está ouvindo para garantir estabilidade
+        setTimeout(() => {
+          try {
+            if (recRef.current) {
+              recRef.current.start();
+            }
+          } catch (err) {
+            console.error('Error starting speech recognition:', err);
+            setError("Erro ao iniciar reconhecimento de voz");
+          }
+        }, 100);
       }
     } catch (err) {
       setError("Erro ao iniciar reconhecimento de voz");
