@@ -85,8 +85,8 @@ serve(async (req) => {
 
     console.log(`Text-to-speech request: ${text.length} characters divided into ${chunks.length} chunks`)
 
-    // Calcular tokens necessários baseado no tamanho total do texto
-    const tokensNeeded = Math.ceil(text.length / 4) // 1 token por 4 caracteres aproximadamente
+    // Calcular tokens necessários baseado no tamanho total do texto (removendo limitação artificial)
+    const tokensNeeded = Math.ceil(text.length / 10) // Reduzir custo por token para textos longos
 
     // Verificar se o usuário tem tokens suficientes
     const { data: profile, error: profileError } = await supabaseClient
