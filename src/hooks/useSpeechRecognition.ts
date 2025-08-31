@@ -160,6 +160,14 @@ export function useSpeechRecognition(lang: string = "pt-BR") {
 
     recognition.onerror = (event) => {
       setListening(false);
+      setIsTransitioning(false);
+      
+      // Ignorar erros "aborted" que são normais quando paramos manualmente
+      if (event.error === 'aborted') {
+        console.log('Speech recognition aborted (normal behavior)');
+        return;
+      }
+      
       setError(`Erro no reconhecimento de voz: ${event.error}`);
       console.error('Speech recognition error:', event);
     };
@@ -174,8 +182,8 @@ export function useSpeechRecognition(lang: string = "pt-BR") {
   }, [lang, listening]);
 
   const start = useCallback(() => {
-    if (!recRef.current || !isSupported || isTransitioning) {
-      setError("Reconhecimento de voz não disponível ou em transição");
+    if (!recRef.current || !isSupported) {
+      setError("Reconhecimento de voz não disponível");
       return;
     }
 
@@ -184,33 +192,32 @@ export function useSpeechRecognition(lang: string = "pt-BR") {
     try {
       setError(null);
       setInterimTranscript("");
-      setIsTransitioning(true);
       
-      // Se já está ouvindo, para primeiro e aguarda completar
+      // Se já está ouvindo, para primeiro
       if (listening) {
         console.log('Currently listening, stopping first...');
         recRef.current.stop();
         
-        // Aguardar o evento onend ser disparado
-        const waitForStop = () => {
-          if (!listening && !isTransitioning) {
-            console.log('Successfully stopped, starting again...');
-            recRef.current?.start();
-          } else {
-            setTimeout(waitForStop, 50);
+        // Aguarda um pouco e tenta novamente
+        setTimeout(() => {
+          if (recRef.current && !listening) {
+            try {
+              recRef.current.start();
+            } catch (err) {
+              console.error('Error restarting speech recognition:', err);
+              setError("Erro ao reiniciar reconhecimento de voz");
+            }
           }
-        };
-        setTimeout(waitForStop, 100);
+        }, 200);
       } else {
         console.log('Not currently listening, starting directly...');
         recRef.current.start();
       }
     } catch (err) {
       setError("Erro ao iniciar reconhecimento de voz");
-      setIsTransitioning(false);
       console.error('Error starting speech recognition:', err);
     }
-  }, [isSupported, listening, isTransitioning]);
+  }, [isSupported, listening]);
 
   const stop = useCallback(() => {
     console.log('Attempting to stop speech recognition');
