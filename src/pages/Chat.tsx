@@ -56,7 +56,6 @@ export default function Chat() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [readingMsgId, setReadingMsgId] = useState<string | null>(null);
   const [readingProgress, setReadingProgress] = useState(0);
-  const [autoPlayAudio, setAutoPlayAudio] = useState(false);
   
   // Estado para áudios salvos de cada mensagem (7 dias de cache)
   const [messageAudios, setMessageAudios] = useState<Map<string, { audioUrl: string; text: string }>>(new Map());
@@ -572,13 +571,6 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
         }
         return updatedSessions;
       });
-
-      // Se o áudio automático estiver ativado, gerar áudio para a nova resposta
-      if (autoPlayAudio) {
-        setTimeout(() => {
-          playTextToSpeech(assistantMessage.id, data.response);
-        }, 500);
-      }
 
       // Atualizar perfil para mostrar tokens atualizados
       await refreshProfile();
@@ -1309,22 +1301,6 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
                       <Paperclip className="w-4 h-4" />
                     </Button>
                     
-                    {/* Botão de áudio automático */}
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setAutoPlayAudio(!autoPlayAudio)}
-                      className={`h-8 w-8 p-0 ${
-                        autoPlayAudio 
-                          ? 'text-green-400 hover:text-green-300 bg-green-400/20' 
-                          : 'text-slate-400 hover:text-white hover:bg-slate-600/50'
-                      }`}
-                      title={autoPlayAudio ? "Desativar áudio automático" : "Ativar áudio automático"}
-                    >
-                      {autoPlayAudio ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-                    </Button>
-                    
                     {/* Botão de microfone */}
                     <Button
                       type="button"
@@ -1365,19 +1341,13 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
                 </Button>
               </div>
 
-              {/* Informações de tokens e funcionalidades */}
+              {/* Informações de tokens */}
               <div className={`flex items-center justify-between text-xs text-slate-400 ${
                 isMobile ? 'flex-col gap-1' : ''
               }`}>
                 <div className="flex items-center gap-4">
                   <span>💰 {Math.floor(totalTokens).toLocaleString()} tokens</span>
                   <span>(custo variável por consulta)</span>
-                  {autoPlayAudio && (
-                    <span className="text-green-400 flex items-center gap-1">
-                      <Volume2 className="w-3 h-3" />
-                      Áudio automático ativo
-                    </span>
-                  )}
                 </div>
                 {!isMobile && <span>Shift + Enter para nova linha</span>}
               </div>
