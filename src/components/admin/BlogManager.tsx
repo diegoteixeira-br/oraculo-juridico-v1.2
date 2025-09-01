@@ -131,8 +131,11 @@ const BlogManager = () => {
         reading_time_minutes: calculateReadingTime(formData.content),
         meta_title: formData.meta_title || formData.title,
         meta_description: formData.meta_description || formData.summary,
+        // Se tem agendamento, nunca publica imediatamente - só agenda
+        is_published: formData.auto_publish ? false : formData.is_published,
         published_at: formData.is_published && !formData.auto_publish ? new Date().toISOString() : null,
-        scheduled_for: formData.auto_publish && formData.scheduled_for ? new Date(formData.scheduled_for).toISOString() : null
+        scheduled_for: formData.auto_publish && formData.scheduled_for ? new Date(formData.scheduled_for).toISOString() : null,
+        status: formData.auto_publish ? 'agendado' : (formData.is_published ? 'publicado' : 'rascunho')
       };
 
       if (editingPost) {
