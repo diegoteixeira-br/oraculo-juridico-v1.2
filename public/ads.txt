@@ -1,0 +1,10 @@
+# ads.txt file for oraculojuridico.com.br
+# This file is required by Google AdSense to verify authorized sellers
+# Add your Google AdSense publisher ID here when you have it
+# Format: google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+
+# Example (replace with your actual publisher ID):
+# google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0
+
+# For more information about ads.txt, visit:
+# https://iabtechlab.com/ads-txt/
