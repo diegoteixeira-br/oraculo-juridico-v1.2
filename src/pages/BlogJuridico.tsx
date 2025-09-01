@@ -14,7 +14,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import UserMenu from '@/components/UserMenu';
 import { BlogPostVotes } from '@/components/BlogPostVotes';
 import { ExternalNewsFeed } from '@/components/ExternalNewsFeed';
-
 interface BlogPost {
   id: string;
   title: string;
@@ -100,11 +99,7 @@ const BlogJuridico = () => {
 
             <nav className="hidden md:flex items-center space-x-6">
               {user ? <UserMenu /> : <>
-                  <Link to="/login" state={{
-                from: 'blog'
-              }} className="text-slate-300 hover:text-blue-400 transition-colors font-medium">
-                    Login
-                  </Link>
+                  
                   <Link to="/">
                     <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium px-6">
                       Conheça nossa ferramenta
@@ -224,11 +219,7 @@ const BlogJuridico = () => {
                                 <Eye className="w-4 h-4" />
                                 {post.views_count}
                               </div>
-                              <BlogPostVotes 
-                                postId={post.id}
-                                initialLikes={post.likes_count || 0}
-                                initialDislikes={post.dislikes_count || 0}
-                              />
+                              <BlogPostVotes postId={post.id} initialLikes={post.likes_count || 0} initialDislikes={post.dislikes_count || 0} />
                             </div>
                           </div>
                         </CardContent>
@@ -301,11 +292,7 @@ const BlogJuridico = () => {
                                 <Eye className="w-3 h-3 mr-1" />
                                 {post.views_count}
                               </span>
-                              <BlogPostVotes 
-                                postId={post.id}
-                                initialLikes={post.likes_count || 0}
-                                initialDislikes={post.dislikes_count || 0}
-                              />
+                              <BlogPostVotes postId={post.id} initialLikes={post.likes_count || 0} initialDislikes={post.dislikes_count || 0} />
                             </div>
                           </div>
                           
