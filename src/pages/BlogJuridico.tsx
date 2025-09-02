@@ -86,7 +86,7 @@ const BlogJuridico = () => {
       <header className="border-b border-slate-700/50 bg-slate-900/90 backdrop-blur-md sticky top-0 z-40">
         <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center space-x-2 sm:space-x-3 group">
+            <Link to={user ? "/dashboard" : "/"} className="flex items-center space-x-2 sm:space-x-3 group">
               <img src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" alt="Oráculo Jurídico" className="h-8 sm:h-10 w-auto group-hover:scale-105 transition-transform duration-200" />
               <div className="hidden sm:block">
                 <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent">

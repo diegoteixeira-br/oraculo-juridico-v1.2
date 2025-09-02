@@ -149,7 +149,7 @@ const ArtigoBlog = () => {
       <header className="border-b border-slate-700/50 bg-slate-900/90 backdrop-blur-md sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link to="/blog" className="flex items-center space-x-3 group">
+            <Link to={user ? "/dashboard" : "/blog"} className="flex items-center space-x-3 group">
               <img 
                 src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" 
                 alt="Oráculo Jurídico" 
