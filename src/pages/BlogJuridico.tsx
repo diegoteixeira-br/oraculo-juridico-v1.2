@@ -7,9 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useSEO } from '@/hooks/useSEO';
 import { supabase } from '@/integrations/supabase/client';
-import AdDisplay from '@/components/AdDisplay';
-import GoogleAdsPlaceholder from '@/components/GoogleAdsPlaceholder';
-import AdCarousel from '@/components/AdCarousel';
+import CustomAdCarousel from '@/components/CustomAdCarousel';
 import { useAuth } from '@/contexts/AuthContext';
 import UserMenu from '@/components/UserMenu';
 import { BlogPostVotes } from '@/components/BlogPostVotes';
@@ -240,11 +238,11 @@ const BlogJuridico = () => {
                     </Link>)}
                 </div>
                 
-                {/* AdSense - Entre Artigos */}
-                <AdSenseAd 
-                  format="banner" 
-                  slot="5555555555"
+                {/* Carrossel de Anúncios Customizados - Entre Artigos */}
+                <CustomAdCarousel 
+                  position="blog_between_articles" 
                   className="mb-8"
+                  intervalMs={5000}
                 />
               </section>}
 
@@ -376,16 +374,16 @@ const BlogJuridico = () => {
               </CardContent>
             </Card>
 
-            {/* Sidebar Rodapé - Carrossel de Anúncios */}
-            <AdCarousel format="mobile_banner" position="sidebar_bottom" />
+            {/* Carrossel de Anúncios Customizados - Sidebar */}
+            <CustomAdCarousel 
+              position="blog_sidebar_custom" 
+              className="mb-4 sm:mb-6"
+              intervalMs={6000}
+            />
           </div>
         </div>
       </div>
 
-      {/* Rodapé do Conteúdo - Carrossel de Anúncios */}
-      <div className="container mx-auto px-4 pb-8">
-        <AdCarousel format="banner" position="content_footer" />
-      </div>
 
       {/* Footer */}
       <footer className="bg-slate-900/90 border-t border-slate-700/50 py-12 px-4">
