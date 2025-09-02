@@ -209,30 +209,30 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <Tabs value={activeBlogTab} onValueChange={setActiveBlogTab} className="space-y-6">
-                <TabsList className="grid w-full grid-cols-6 h-auto">
-                  <TabsTrigger value="articles" className="flex items-center gap-2 p-3">
-                    <FileText className="w-4 h-4" />
-                    <span>Artigos</span>
+                <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 h-auto gap-1">
+                  <TabsTrigger value="articles" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3 text-xs sm:text-sm">
+                    <FileText className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden xs:inline">Artigos</span>
                   </TabsTrigger>
-                  <TabsTrigger value="external-news" className="flex items-center gap-2 p-3">
-                    <ExternalLink className="w-4 h-4" />
-                    <span>Notícias</span>
+                  <TabsTrigger value="external-news" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3 text-xs sm:text-sm">
+                    <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden xs:inline">Notícias</span>
                   </TabsTrigger>
-                  <TabsTrigger value="categories" className="flex items-center gap-2 p-3">
-                    <Tags className="w-4 h-4" />
-                    <span>Categorias</span>
+                  <TabsTrigger value="categories" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3 text-xs sm:text-sm">
+                    <Tags className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden xs:inline">Categorias</span>
                   </TabsTrigger>
-                  <TabsTrigger value="ads" className="flex items-center gap-2 p-3">
-                    <Settings2 className="w-4 h-4" />
-                    <span>Anúncios</span>
+                  <TabsTrigger value="ads" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3 text-xs sm:text-sm">
+                    <Settings2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden xs:inline">Anúncios</span>
                   </TabsTrigger>
-                  <TabsTrigger value="adsense" className="flex items-center gap-2 p-3">
-                    <Globe className="w-4 h-4" />
-                    <span>AdSense</span>
+                  <TabsTrigger value="adsense" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3 text-xs sm:text-sm">
+                    <Globe className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden xs:inline">AdSense</span>
                   </TabsTrigger>
-                  <TabsTrigger value="settings" className="flex items-center gap-2 p-3">
-                    <Settings2 className="w-4 h-4" />
-                    <span>Configurações</span>
+                  <TabsTrigger value="settings" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3 text-xs sm:text-sm">
+                    <Settings2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden xs:inline">Configurações</span>
                   </TabsTrigger>
                 </TabsList>
 
