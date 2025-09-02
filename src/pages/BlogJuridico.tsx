@@ -7,14 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useSEO } from '@/hooks/useSEO';
 import { supabase } from '@/integrations/supabase/client';
-import AdDisplay from '@/components/AdDisplay';
-import GoogleAdsPlaceholder from '@/components/GoogleAdsPlaceholder';
 import AdCarousel from '@/components/AdCarousel';
 import { useAuth } from '@/contexts/AuthContext';
 import UserMenu from '@/components/UserMenu';
 import { BlogPostVotes } from '@/components/BlogPostVotes';
 import { ExternalNewsFeed } from '@/components/ExternalNewsFeed';
-import AdSenseAd from '@/components/AdSenseAd';
 interface BlogPost {
   id: string;
   title: string;
@@ -142,12 +139,14 @@ const BlogJuridico = () => {
               Mantenha-se atualizado com as últimas notícias jurídicas, análises de legislação e dicas práticas para advogados
             </p>
             
-            {/* AdSense - Hero */}
-            <AdSenseAd 
-              format="banner" 
-              slot="2222222222"
-              className="mb-6 sm:mb-8"
-            />
+            {/* Anúncios - Hero */}
+            <div className="mb-6 sm:mb-8">
+              <AdCarousel 
+                position="blog_hero"
+                format="banner"
+                className="max-w-full"
+              />
+            </div>
             
             {/* Search Bar */}
             <div className="max-w-sm sm:max-w-md mx-auto relative mb-6 sm:mb-8 px-4">
@@ -240,12 +239,14 @@ const BlogJuridico = () => {
                     </Link>)}
                 </div>
                 
-                {/* AdSense - Entre Artigos */}
-                <AdSenseAd 
-                  format="banner" 
-                  slot="5555555555"
-                  className="mb-8"
-                />
+                {/* Anúncios - Entre Artigos */}
+                <div className="mb-8">
+                  <AdCarousel 
+                    position="blog_between_articles"
+                    format="banner"
+                    className="max-w-full"
+                  />
+                </div>
               </section>}
 
             {/* External News Feed */}
@@ -329,12 +330,14 @@ const BlogJuridico = () => {
 
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-4 sm:space-y-6">
-            {/* AdSense - Sidebar Topo */}
-            <AdSenseAd 
-              format="rectangle" 
-              slot="6666666666"
-              className="mb-4 sm:mb-6"
-            />
+            {/* Anúncios - Sidebar Topo */}
+            <div className="mb-4 sm:mb-6">
+              <AdCarousel 
+                position="blog_sidebar_top"
+                format="rectangle"
+                className="max-w-full"
+              />
+            </div>
 
             {/* Categories */}
             <Card className="bg-slate-800/50 border-slate-700">
@@ -350,12 +353,14 @@ const BlogJuridico = () => {
               </CardContent>
             </Card>
 
-            {/* AdSense - Sidebar Meio */}
-            <AdSenseAd 
-              format="mobile" 
-              slot="7777777777"
-              className="mb-4 sm:mb-6"
-            />
+            {/* Anúncios - Sidebar Meio */}
+            <div className="mb-4 sm:mb-6">
+              <AdCarousel 
+                position="blog_sidebar_middle"
+                format="mobile"
+                className="max-w-full"
+              />
+            </div>
 
             {/* Newsletter */}
             <Card className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border-blue-500/30">
