@@ -55,21 +55,15 @@ export default function AdsManager() {
     ad_type: "image" as const,
     content: "",
     link_url: "",
-    position: "sidebar_top",
+    position: "blog_between_articles",
     is_active: true,
     start_date: "",
     end_date: "",
   });
 
   const positions = [
-    { value: "header", label: "Cabeçalho" },
-    { value: "sidebar_top", label: "Sidebar - Topo" },
-    { value: "sidebar_middle", label: "Sidebar - Meio" },
-    { value: "sidebar_bottom", label: "Sidebar - Rodapé" },
-    { value: "content_top", label: "Conteúdo - Topo" },
-    { value: "content_middle", label: "Conteúdo - Meio" },
-    { value: "content_bottom", label: "Conteúdo - Rodapé" },
-    { value: "footer", label: "Rodapé" },
+    { value: "blog_between_articles", label: "📖 Blog - Entre Artigos" },
+    { value: "blog_sidebar_custom", label: "📊 Blog - Sidebar Lateral" },
   ];
 
   const adTypes = [
@@ -247,7 +241,7 @@ export default function AdsManager() {
       ad_type: "image",
       content: "",
       link_url: "",
-      position: "sidebar_top",
+      position: "blog_between_articles",
       is_active: true,
       start_date: "",
       end_date: "",
@@ -263,9 +257,11 @@ export default function AdsManager() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Gerenciar Anúncios</h2>
+          <h2 className="text-2xl font-bold">Gerenciar Anúncios Customizados</h2>
           <p className="text-muted-foreground">
-            Adicione seus próprios anúncios ou de terceiros no blog
+            Adicione seus próprios anúncios nas duas posições disponíveis: entre artigos e na sidebar do blog.
+            <br />
+            <span className="text-sm text-amber-600">⚠️ Outros locais usam apenas Google AdSense</span>
           </p>
         </div>
         
@@ -335,10 +331,9 @@ export default function AdsManager() {
                     folder="ads"
                   />
                   <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-md">
-                    <strong>📏 Tamanhos por posição:</strong>
-                    <br />• <strong>Sidebar:</strong> 300×250px (padrão)
-                    <br />• <strong>Content:</strong> 728×90px (banner horizontal)  
-                    <br />• <strong>Header/Footer:</strong> 970×90px ou 728×90px
+                    <strong>📏 Tamanhos recomendados:</strong>
+                    <br />• <strong>Entre Artigos:</strong> 728×90px (banner horizontal) ou 300×250px
+                    <br />• <strong>Sidebar Lateral:</strong> 300×250px (retângulo médio)
                     <br /><strong>Formato:</strong> JPG, PNG ou GIF • <strong>Máximo:</strong> 2MB
                   </div>
                 </div>
@@ -388,6 +383,9 @@ export default function AdsManager() {
                     ))}
                   </SelectContent>
                 </Select>
+                <p className="text-xs text-muted-foreground">
+                  ✅ Apenas essas 2 posições suportam anúncios customizados. Outros locais usam Google AdSense.
+                </p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
