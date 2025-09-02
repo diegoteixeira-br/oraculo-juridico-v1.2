@@ -20,7 +20,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import MarkdownEditor from "@/components/MarkdownEditor";
 import { useAccessControl } from "@/hooks/useAccessControl";
 import { TrialStatusCard } from "@/components/TrialStatusCard";
-import AdCarousel from "@/components/AdCarousel";
+import AdSenseAd from "@/components/AdSenseAd";
 
 
 // CONFIGURAÇÃO DE MANUTENÇÃO - Altere para false quando quiser reativar
@@ -410,14 +410,12 @@ const openTemplateEditor = async (documentId: string) => {
       <div className="flex-1 overflow-y-auto">
         <div className="container max-w-7xl mx-auto px-4 py-6 space-y-6">
           
-            {/* Anúncios - Topo do Dashboard */}
-            <div className="mb-6">
-              <AdCarousel 
-                position="dashboard_top"
-                format="banner"
-                className="max-w-full"
-              />
-            </div>
+            {/* AdSense - Topo do Dashboard */}
+            <AdSenseAd 
+              format="banner" 
+              slot="1111111111"
+              className="mb-6"
+            />
 
             {/* Cards de estatísticas principais */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -594,14 +592,12 @@ const openTemplateEditor = async (documentId: string) => {
               {/* Agenda com Calendário */}
               <CalendarAgendaWidget />
 
-              {/* Anúncios Sidebar Principal */}
-              <div className="my-4">
-                <AdCarousel 
-                  position="dashboard_main_sidebar"
-                  format="leaderboard"
-                  className="max-w-full"
-                />
-              </div>
+              {/* Anúncio para usuários gratuitos */}
+              <AdSenseAd 
+                format="leaderboard" 
+                slot="3333333333"
+                className="my-4"
+              />
 
               {/* Calculadoras Jurídicas */}
               <Card className="bg-slate-800/50 border-slate-700">
@@ -950,14 +946,12 @@ const openTemplateEditor = async (documentId: string) => {
                 </Card>
                {/* end unlocked section */}
 
-              {/* Anúncios - Meio do Conteúdo Principal */}
-              <div className="mt-6">
-                <AdCarousel 
-                  position="dashboard_middle_content"
-                  format="banner"
-                  className="max-w-full"
-                />
-              </div>
+              {/* AdSense - Meio do Conteúdo Principal */}
+              <AdSenseAd 
+                format="banner" 
+                slot="8888888888"
+                className="mt-6"
+              />
             </div>
 
             {/* Coluna direita - Informações e ações */}
@@ -1164,14 +1158,12 @@ const openTemplateEditor = async (documentId: string) => {
                 </CardContent>
               </Card>
 
-              {/* Anúncios - Rodapé da Sidebar */}
-              <div className="mt-4">
-                <AdCarousel 
-                  position="dashboard_sidebar_footer"
-                  format="rectangle"
-                  className="max-w-full"
-                />
-              </div>
+              {/* AdSense - Rodapé da Sidebar */}
+              <AdSenseAd 
+                format="rectangle" 
+                slot="4444444444"
+                className="mt-4"
+              />
               
             </div>
           </div>
