@@ -14,6 +14,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import UserMenu from '@/components/UserMenu';
 import { BlogPostVotes } from '@/components/BlogPostVotes';
 import { ExternalNewsFeed } from '@/components/ExternalNewsFeed';
+import AdSenseAd from '@/components/AdSenseAd';
 interface BlogPost {
   id: string;
   title: string;
@@ -141,8 +142,12 @@ const BlogJuridico = () => {
               Mantenha-se atualizado com as últimas notícias jurídicas, análises de legislação e dicas práticas para advogados
             </p>
             
-            {/* Topo do Conteúdo - Carrossel de Anúncios */}
-            <AdCarousel format="banner" position="hero_top" className="mb-8" />
+            {/* AdSense - Hero */}
+            <AdSenseAd 
+              format="banner" 
+              slot="2222222222"
+              className="mb-8"
+            />
             
             {/* Search Bar */}
             <div className="max-w-md mx-auto relative mb-8">
@@ -227,8 +232,12 @@ const BlogJuridico = () => {
                     </Link>)}
                 </div>
                 
-                {/* Entre artigos - Carrossel de Anúncios */}
-                <AdCarousel format="mobile_banner" position="between_articles" className="mb-8" />
+                {/* AdSense - Entre Artigos */}
+                <AdSenseAd 
+                  format="banner" 
+                  slot="5555555555"
+                  className="mb-8"
+                />
               </section>}
 
             {/* External News Feed */}
@@ -310,8 +319,12 @@ const BlogJuridico = () => {
 
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-6">
-            {/* Sidebar Topo - Carrossel de Anúncios */}
-            <AdCarousel format="mobile_banner" position="sidebar_top" />
+            {/* AdSense - Sidebar Topo */}
+            <AdSenseAd 
+              format="rectangle" 
+              slot="6666666666"
+              className="mb-6"
+            />
 
             {/* Categories */}
             <Card className="bg-slate-800/50 border-slate-700">
@@ -327,8 +340,12 @@ const BlogJuridico = () => {
               </CardContent>
             </Card>
 
-            {/* Sidebar Meio - Carrossel de Anúncios */}
-            <AdCarousel format="mobile_banner" position="sidebar_middle" />
+            {/* AdSense - Sidebar Meio */}
+            <AdSenseAd 
+              format="mobile" 
+              slot="7777777777"
+              className="mb-6"
+            />
 
             {/* Newsletter */}
             <Card className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border-blue-500/30">

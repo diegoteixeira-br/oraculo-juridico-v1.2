@@ -410,8 +410,15 @@ const openTemplateEditor = async (documentId: string) => {
       <div className="flex-1 overflow-y-auto">
         <div className="container max-w-7xl mx-auto px-4 py-6 space-y-6">
           
-          {/* Cards de estatísticas principais */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* AdSense - Topo do Dashboard */}
+            <AdSenseAd 
+              format="banner" 
+              slot="1111111111"
+              className="mb-6"
+            />
+
+            {/* Cards de estatísticas principais */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card className="bg-gradient-to-br from-primary/20 to-primary/10 border-primary/30">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -938,6 +945,13 @@ const openTemplateEditor = async (documentId: string) => {
                   )}
                 </Card>
                {/* end unlocked section */}
+
+              {/* AdSense - Meio do Conteúdo Principal */}
+              <AdSenseAd 
+                format="banner" 
+                slot="8888888888"
+                className="mt-6"
+              />
             </div>
 
             {/* Coluna direita - Informações e ações */}
@@ -1144,7 +1158,7 @@ const openTemplateEditor = async (documentId: string) => {
                 </CardContent>
               </Card>
 
-              {/* Segundo anúncio para usuários gratuitos */}
+              {/* AdSense - Rodapé da Sidebar */}
               <AdSenseAd 
                 format="rectangle" 
                 slot="4444444444"
