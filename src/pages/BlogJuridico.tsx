@@ -86,12 +86,12 @@ const BlogJuridico = () => {
   return <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900/20 text-foreground">
       {/* Header */}
       <header className="border-b border-slate-700/50 bg-slate-900/90 backdrop-blur-md sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center space-x-3 group">
-              <img src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" alt="Oráculo Jurídico" className="h-10 w-auto group-hover:scale-105 transition-transform duration-200" />
-              <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent">
+            <Link to="/" className="flex items-center space-x-2 sm:space-x-3 group">
+              <img src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" alt="Oráculo Jurídico" className="h-8 sm:h-10 w-auto group-hover:scale-105 transition-transform duration-200" />
+              <div className="hidden sm:block">
+                <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent">
                   Oráculo Jurídico
                 </h1>
                 <p className="text-sm text-slate-400">Blog Jurídico</p>
@@ -111,8 +111,8 @@ const BlogJuridico = () => {
 
             <div className="md:hidden">
               {user ? <UserMenu /> : <Link to="/">
-                  <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-[10px] px-2 py-1 h-7 min-w-0">
-                    Conheça nossa ferramenta
+                  <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-xs px-3 py-2 h-8">
+                    Ferramenta
                   </Button>
                 </Link>}
             </div>
@@ -121,24 +121,24 @@ const BlogJuridico = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="relative py-20 px-4 overflow-hidden">
+      <section className="relative py-12 sm:py-16 md:py-20 px-3 sm:px-4 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-blue-600/10"></div>
         <div className="container mx-auto text-center relative z-10">
           <div className="animate-fade-in">
-            <div className="inline-flex items-center gap-2 bg-blue-500/20 text-blue-300 px-4 py-2 rounded-full text-sm font-medium mb-6 border border-blue-500/30">
-              <Tag className="w-4 h-4" />
+            <div className="inline-flex items-center gap-2 bg-blue-500/20 text-blue-300 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-6 border border-blue-500/30">
+              <Tag className="w-3 h-3 sm:w-4 sm:h-4" />
               Conteúdo Jurídico Especializado
             </div>
             
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
               <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent">
                 Blog Jurídico
               </span>
               <br />
-              <span className="text-slate-200">Atualizado Diariamente</span>
+              <span className="text-slate-200 text-2xl sm:text-3xl md:text-5xl">Atualizado Diariamente</span>
             </h1>
             
-            <p className="text-xl text-slate-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-lg sm:text-xl text-slate-300 mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed px-4">
               Mantenha-se atualizado com as últimas notícias jurídicas, análises de legislação e dicas práticas para advogados
             </p>
             
@@ -146,69 +146,76 @@ const BlogJuridico = () => {
             <AdSenseAd 
               format="banner" 
               slot="2222222222"
-              className="mb-8"
+              className="mb-6 sm:mb-8"
             />
             
             {/* Search Bar */}
-            <div className="max-w-md mx-auto relative mb-8">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-              <Input type="text" placeholder="Buscar artigos..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10 py-3 bg-slate-800/50 border-slate-600 text-slate-200 placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500/20" />
+            <div className="max-w-sm sm:max-w-md mx-auto relative mb-6 sm:mb-8 px-4">
+              <Search className="absolute left-6 sm:left-7 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 sm:w-5 sm:h-5" />
+              <Input 
+                type="text" 
+                placeholder="Buscar artigos..." 
+                value={searchTerm} 
+                onChange={e => setSearchTerm(e.target.value)} 
+                className="pl-10 sm:pl-12 py-3 bg-slate-800/50 border-slate-600 text-slate-200 placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500/20 text-sm sm:text-base" 
+              />
             </div>
           </div>
         </div>
       </section>
 
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div className="container mx-auto px-3 sm:px-4 py-8 sm:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 sm:gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-3 space-y-12">
+          <div className="lg:col-span-3 space-y-8 sm:space-y-12">
             {/* Featured Posts */}
             {featuredPosts.length > 0 && <section>
-                <h2 className="text-3xl font-bold text-center mb-12 text-slate-200">
+                <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12 text-slate-200 px-4">
                   Artigos em <span className="text-blue-400">Destaque</span>
                 </h2>
                 
-                <div className="grid md:grid-cols-3 gap-8 mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8">
                   {featuredPosts.map((post, index) => <Link key={post.id} to={`/blog/${post.slug}`} className="block">
-                      <Card className={`group hover-scale bg-slate-800/50 border-slate-700 hover:border-blue-500/50 transition-all duration-300 animate-fade-in cursor-pointer ${index === 0 ? 'md:col-span-2' : ''}`} style={{
+                      <Card className={`group hover-scale bg-slate-800/50 border-slate-700 hover:border-blue-500/50 transition-all duration-300 animate-fade-in cursor-pointer ${index === 0 && featuredPosts.length > 1 ? 'sm:col-span-2 lg:col-span-2' : ''}`} style={{
                   animationDelay: `${index * 0.1}s`
                 }}>
                         <div className="relative overflow-hidden rounded-t-lg">
-                          {post.cover_image_url && <img src={post.cover_image_url} alt={post.title} className={`w-full object-cover group-hover:scale-105 transition-transform duration-300 ${index === 0 ? 'h-48 md:h-64' : 'h-40 md:h-44'}`} />}
-                          <div className="absolute top-3 left-3">
-                            <Badge className="bg-blue-600/90 text-white border-0">
+                          {post.cover_image_url && <img src={post.cover_image_url} alt={post.title} className={`w-full object-cover group-hover:scale-105 transition-transform duration-300 ${index === 0 && featuredPosts.length > 1 ? 'h-48 sm:h-56 md:h-64' : 'h-40 sm:h-44'}`} />}
+                          <div className="absolute top-2 sm:top-3 left-2 sm:left-3">
+                            <Badge className="bg-blue-600/90 text-white border-0 text-xs sm:text-sm">
                               <Star className="w-3 h-3 mr-1" />
                               Destaque
                             </Badge>
                           </div>
                         </div>
                         
-                        <CardContent className="p-6">
-                          <div className="flex items-center gap-4 text-sm text-slate-400 mb-3">
+                        <CardContent className="p-4 sm:p-6">
+                          <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-slate-400 mb-3 flex-wrap">
                             <div className="flex items-center gap-1">
-                              <User className="w-4 h-4" />
-                              {post.author_name}
+                              <User className="w-3 h-3 sm:w-4 sm:h-4" />
+                              <span className="truncate max-w-20 sm:max-w-none">{post.author_name}</span>
                             </div>
                             <div className="flex items-center gap-1">
-                              <Calendar className="w-4 h-4" />
-                              {formatDate(post.published_at)}
+                              <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
+                              <span className="hidden sm:inline">{formatDate(post.published_at)}</span>
+                              <span className="sm:hidden">{new Date(post.published_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</span>
                             </div>
                             <div className="flex items-center gap-1">
-                              <Clock className="w-4 h-4" />
+                              <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
                               {post.reading_time_minutes} min
                             </div>
                           </div>
                           
-                          <h3 className="text-xl font-bold mb-3 text-slate-200 group-hover:text-blue-400 transition-colors line-clamp-2">
+                          <h3 className="text-lg sm:text-xl font-bold mb-3 text-slate-200 group-hover:text-blue-400 transition-colors line-clamp-2">
                             {post.title}
                           </h3>
                           
-                          <p className="text-slate-300 mb-4 line-clamp-3">
+                          <p className="text-slate-300 mb-4 line-clamp-2 sm:line-clamp-3 text-sm sm:text-base">
                             {post.summary}
                           </p>
                           
-                          <div className="flex flex-wrap gap-2 mb-4">
-                            {post.tags.slice(0, 3).map((tag, tagIndex) => <Badge key={tagIndex} variant="outline" className="text-xs border-slate-600 text-slate-300">
+                          <div className="flex flex-wrap gap-1 sm:gap-2 mb-4">
+                            {post.tags.slice(0, 2).map((tag, tagIndex) => <Badge key={tagIndex} variant="outline" className="text-xs border-slate-600 text-slate-300">
                                 {tag}
                               </Badge>)}
                           </div>
@@ -219,10 +226,11 @@ const BlogJuridico = () => {
                               <ArrowRight className="w-4 h-4" />
                             </div>
                             
-                            <div className="flex items-center gap-4 text-sm text-slate-400">
+                            <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-slate-400">
                               <div className="flex items-center gap-1">
-                                <Eye className="w-4 h-4" />
-                                {post.views_count}
+                                <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
+                                <span className="hidden sm:inline">{post.views_count}</span>
+                                <span className="sm:hidden">{post.views_count > 999 ? `${Math.floor(post.views_count/1000)}k` : post.views_count}</span>
                               </div>
                               <BlogPostVotes postId={post.id} initialLikes={post.likes_count || 0} initialDislikes={post.dislikes_count || 0} />
                             </div>
@@ -245,61 +253,63 @@ const BlogJuridico = () => {
 
             {/* All Posts */}
             <section>
-              <h2 className="text-2xl font-bold mb-6 text-slate-200 flex items-center gap-2">
-                <TrendingUp className="w-6 h-6 text-blue-400" />
+              <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-slate-200 flex items-center gap-2 px-3 sm:px-0">
+                <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" />
                 Todos os Artigos
               </h2>
               
-              <div className="grid gap-6">
+              <div className="grid gap-4 sm:gap-6">
                 {filteredPosts.map((post, index) => <Link key={post.id} to={`/blog/${post.slug}`} className="block">
                     <Card className="group hover-scale bg-slate-800/50 border-slate-700 hover:border-blue-500/50 transition-all duration-300 animate-fade-in overflow-hidden cursor-pointer" style={{
                   animationDelay: `${index * 0.05}s`
                 }}>
-                      <div className="md:flex h-full">
-                        <div className="md:w-1/3 relative overflow-hidden">
-                          <img src={post.cover_image_url || '/placeholder.svg'} alt={post.title} className="w-full h-32 md:h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                          <div className="absolute top-3 left-3">
+                      <div className="flex flex-col sm:flex-row h-full">
+                        <div className="sm:w-1/3 relative overflow-hidden">
+                          <img src={post.cover_image_url || '/placeholder.svg'} alt={post.title} className="w-full h-40 sm:h-32 md:h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                          <div className="absolute top-2 sm:top-3 left-2 sm:left-3">
                             <Badge className="bg-blue-600/90 text-white border-0 text-xs">
                               {post.category}
                             </Badge>
                           </div>
                         </div>
                         
-                        <div className="md:w-2/3 p-6">
-                          <div className="flex flex-wrap gap-2 mb-3">
-                            {post.tags.slice(0, 3).map(tag => <Badge key={tag} variant="outline" className="text-xs border-slate-600 text-slate-300">
+                        <div className="sm:w-2/3 p-4 sm:p-6">
+                          <div className="flex flex-wrap gap-1 sm:gap-2 mb-3">
+                            {post.tags.slice(0, 2).map(tag => <Badge key={tag} variant="outline" className="text-xs border-slate-600 text-slate-300">
                                 <Tag className="w-3 h-3 mr-1" />
                                 {tag}
                               </Badge>)}
                           </div>
                           
-                          <h3 className="text-xl font-bold mb-3 text-slate-200 group-hover:text-blue-400 transition-colors line-clamp-2">
+                          <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-slate-200 group-hover:text-blue-400 transition-colors line-clamp-2">
                             {post.title}
                           </h3>
                           
-                          <p className="text-slate-300 mb-4 line-clamp-3">
+                          <p className="text-slate-300 mb-3 sm:mb-4 line-clamp-2 sm:line-clamp-3 text-sm sm:text-base">
                             {post.summary}
                           </p>
                           
-                          <div className="flex items-center justify-between text-sm text-slate-400 mb-4">
-                            <div className="flex items-center space-x-4">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs sm:text-sm text-slate-400 mb-3 sm:mb-4 gap-2 sm:gap-0">
+                            <div className="flex items-center space-x-3 sm:space-x-4">
                               <span className="flex items-center">
                                 <User className="w-3 h-3 mr-1" />
-                                {post.author_name}
+                                <span className="truncate max-w-24 sm:max-w-none">{post.author_name}</span>
                               </span>
                               <span className="flex items-center">
                                 <Calendar className="w-3 h-3 mr-1" />
-                                {formatDate(post.published_at)}
+                                <span className="hidden sm:inline">{formatDate(post.published_at)}</span>
+                                <span className="sm:hidden">{new Date(post.published_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</span>
                               </span>
                               <span className="flex items-center">
                                 <Clock className="w-3 h-3 mr-1" />
                                 {post.reading_time_minutes} min
                               </span>
                             </div>
-                            <div className="flex items-center space-x-4">
+                            <div className="flex items-center space-x-3 sm:space-x-4">
                               <span className="flex items-center">
                                 <Eye className="w-3 h-3 mr-1" />
-                                {post.views_count}
+                                <span className="hidden sm:inline">{post.views_count}</span>
+                                <span className="sm:hidden">{post.views_count > 999 ? `${Math.floor(post.views_count/1000)}k` : post.views_count}</span>
                               </span>
                               <BlogPostVotes postId={post.id} initialLikes={post.likes_count || 0} initialDislikes={post.dislikes_count || 0} />
                             </div>
@@ -318,22 +328,22 @@ const BlogJuridico = () => {
           </div>
 
           {/* Sidebar */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-1 space-y-4 sm:space-y-6">
             {/* AdSense - Sidebar Topo */}
             <AdSenseAd 
               format="rectangle" 
               slot="6666666666"
-              className="mb-6"
+              className="mb-4 sm:mb-6"
             />
 
             {/* Categories */}
             <Card className="bg-slate-800/50 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-slate-200">Categorias Populares</CardTitle>
+              <CardHeader className="pb-3 sm:pb-4">
+                <CardTitle className="text-slate-200 text-lg sm:text-xl">Categorias Populares</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                  {['Direito Digital', 'LGPD', 'Trabalhista', 'Civil', 'Tributário'].map(category => <Button key={category} variant="ghost" size="sm" className="justify-start w-full text-slate-300 hover:text-blue-400 hover:bg-slate-700/50">
+                <div className="space-y-1 sm:space-y-2">
+                  {['Direito Digital', 'LGPD', 'Trabalhista', 'Civil', 'Tributário'].map(category => <Button key={category} variant="ghost" size="sm" className="justify-start w-full text-slate-300 hover:text-blue-400 hover:bg-slate-700/50 h-8 sm:h-9 text-sm">
                       {category}
                     </Button>)}
                 </div>
@@ -344,20 +354,23 @@ const BlogJuridico = () => {
             <AdSenseAd 
               format="mobile" 
               slot="7777777777"
-              className="mb-6"
+              className="mb-4 sm:mb-6"
             />
 
             {/* Newsletter */}
             <Card className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border-blue-500/30">
-              <CardHeader>
-                <CardTitle className="text-slate-200">Newsletter Jurídica</CardTitle>
+              <CardHeader className="pb-3 sm:pb-4">
+                <CardTitle className="text-slate-200 text-lg sm:text-xl">Newsletter Jurídica</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-300 text-sm mb-4">
+                <p className="text-slate-300 text-sm mb-3 sm:mb-4">
                   Receba as principais notícias jurídicas direto no seu e-mail
                 </p>
-                <Input placeholder="Seu e-mail" className="mb-3 bg-slate-800/50 border-slate-600 text-slate-200" />
-                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                <Input 
+                  placeholder="Seu e-mail" 
+                  className="mb-3 bg-slate-800/50 border-slate-600 text-slate-200 text-sm h-10" 
+                />
+                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 h-10 text-sm">
                   Assinar
                 </Button>
               </CardContent>
