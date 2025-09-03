@@ -410,13 +410,6 @@ const openTemplateEditor = async (documentId: string) => {
       <div className="flex-1 overflow-y-auto">
         <div className="container max-w-7xl mx-auto px-4 py-6 space-y-6">
           
-            {/* AdSense - Topo do Dashboard */}
-            <AdSenseAd 
-              format="banner" 
-              slot="1111111111"
-              className="mb-6"
-            />
-
             {/* Cards de estatísticas principais */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card className="bg-gradient-to-br from-primary/20 to-primary/10 border-primary/30">
@@ -503,6 +496,13 @@ const openTemplateEditor = async (documentId: string) => {
             {/* Coluna esquerda - Ações principais */}
             <div className="xl:col-span-2 space-y-6">
               
+              {/* AdSense - Antes do Chat Jurídico IA */}
+              <AdSenseAd 
+                format="banner" 
+                slot="1111111111"
+                className="mb-6"
+              />
+
               {/* Chat Jurídico - Destaque principal */}
               <Card className={`bg-gradient-to-r ${isBlocked ? 'from-red-500/20 to-red-600/20 border-red-500/30' : 'from-primary/20 to-secondary/20 border-primary/30'} overflow-hidden`}>
                 <CardContent className="p-6">
