@@ -237,8 +237,18 @@ const CalendarAgendaWidget = () => {
       <Card className="relative overflow-hidden bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border-blue-500/30">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between w-full">
             <CardTitle className="text-lg text-blue-200">Seus Próximos Compromissos</CardTitle>
+            <Button onClick={() => navigate('/agenda-juridica')} size="sm" className="text-white bg-black hover:bg-stone-800 px-2 mx-2 text-xs sm:text-sm whitespace-nowrap">
+              <span className="hidden sm:inline">Ver Agenda Completa</span>
+              <span className="sm:hidden">Ver Agenda</span>
+            </Button>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 mb-2">
+          <CalendarIcon className="w-4 h-4 text-blue-400" />
+          <span className="text-sm text-blue-300 font-medium">Próximos 30 Dias</span>
+          <div className="flex items-center gap-2 ml-auto">
             {notificationSettings.email_enabled ? (
               <div title="Notificações ativas">
                 <Bell className="h-4 w-4 text-blue-300 fill-current" />
@@ -248,13 +258,6 @@ const CalendarAgendaWidget = () => {
                 <BellOff className="h-4 w-4 text-blue-400" />
               </div>
             )}
-          </div>
-          <Button onClick={() => navigate('/agenda-juridica')} size="sm" className="text-white bg-black hover:bg-stone-800 px-2 mx-2 text-xs sm:text-sm whitespace-nowrap">
-            <span className="hidden sm:inline">Ver Agenda Completa</span>
-            <span className="sm:hidden">Ver Agenda</span>
-          </Button>
-        </div>
-      </CardHeader>
       <CardContent className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_1.5fr] gap-6">
           

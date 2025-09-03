@@ -44,17 +44,25 @@ const AgendaWidget = () => {
       const now = new Date();
       const nextWeek = addDays(now, 30); // Próximos 30 dias para garantir que apareça
 
+      console.log('Carregando compromissos do período:', {
+        inicio: now.toISOString(),
+        fim: nextWeek.toISOString(),
+        usuario: user.id
+      });
+
       const { data, error } = await supabase
         .from('legal_commitments' as any)
         .select('*')
         .eq('user_id', user.id)
-        .eq('status', 'pendente')
+        .in('status', ['pendente'])
         .gte('commitment_date', now.toISOString())
         .lte('commitment_date', nextWeek.toISOString())
         .order('commitment_date', { ascending: true })
         .limit(10);
 
       if (error) throw error;
+      
+      console.log('Compromissos carregados:', data?.length || 0, data);
       
       // Aplicar ordenação local adicional para tratar 00:00 como final do dia
       const sortedData = (data as unknown as LegalCommitment[])?.sort((a, b) => {
