@@ -11,6 +11,7 @@ import { ptBR } from "date-fns/locale";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAccessControl } from "@/hooks/useAccessControl";
 import { formatInTimeZone } from "date-fns-tz";
+
 interface LegalCommitment {
   id: string;
   title: string;
@@ -23,6 +24,7 @@ interface LegalCommitment {
   status: 'pendente' | 'concluido' | 'cancelado';
   priority: 'baixa' | 'normal' | 'alta' | 'urgente';
 }
+
 const CalendarAgendaWidget = () => {
   const {
     user, profile
@@ -31,6 +33,7 @@ const CalendarAgendaWidget = () => {
   const navigate = useNavigate();
   const { isTrialExpired } = useAccessControl();
   const userTimezone = (profile as any)?.timezone || 'America/Sao_Paulo';
+
   const [commitments, setCommitments] = useState<LegalCommitment[]>([]);
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -41,7 +44,9 @@ const CalendarAgendaWidget = () => {
     email_enabled: false,
     email_time: '09:00'
   });
+
   const MAX_ITEMS = 5;
+
   useEffect(() => {
     if (user?.id) {
     loadCommitments();
@@ -69,6 +74,7 @@ const CalendarAgendaWidget = () => {
       console.error('Erro ao carregar configurações de notificação:', error);
     }
   };
+
   const loadCommitments = async () => {
     if (!user) return;
     const isRefresh = refreshing;
@@ -91,10 +97,12 @@ const CalendarAgendaWidget = () => {
       setRefreshing(false);
     }
   };
+
   const handleRefresh = async () => {
     setRefreshing(true);
     await loadCommitments();
   };
+
   const getCommitmentColor = (type: string, priority: string) => {
     if (priority === 'urgente') return 'bg-red-500';
     if (priority === 'alta') return 'bg-orange-500';
@@ -132,12 +140,14 @@ const CalendarAgendaWidget = () => {
     'reuniao': 'Reunião',
     'personalizado': 'Personalizado'
   };
+
   const priorityLabels = {
     'baixa': 'Baixa',
     'normal': 'Normal',
     'alta': 'Alta',
     'urgente': 'Urgente'
   };
+
   const getCommitmentsForDate = (date: Date) => {
     const dayCommitments = commitments.filter(c => isSameDay(parseISO(c.commitment_date), date));
     
@@ -163,9 +173,12 @@ const CalendarAgendaWidget = () => {
       return dateA.getMinutes() - dateB.getMinutes();
     });
   };
+
   const selectedDateCommitments = getCommitmentsForDate(selectedDate);
   const displayedCommitments = showAll ? selectedDateCommitments : selectedDateCommitments.slice(0, MAX_ITEMS);
+
   useEffect(() => { setShowAll(false); }, [selectedDate, commitments]);
+
   const renderCalendarDays = () => {
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(currentMonth);
@@ -175,8 +188,10 @@ const CalendarAgendaWidget = () => {
     const calendarEnd = endOfWeek(monthEnd, {
       weekStartsOn: 0
     });
+
     const days = [];
     let currentDate = calendarStart;
+
     while (currentDate <= calendarEnd) {
       const day = currentDate;
       const dayCommitments = getCommitmentsForDate(day);
@@ -184,6 +199,7 @@ const CalendarAgendaWidget = () => {
       const isToday = isSameDay(day, new Date());
       const isSelected = isSameDay(day, selectedDate);
       const hasCommitments = dayCommitments.length > 0;
+
       days.push(<button key={day.toISOString()} onClick={() => setSelectedDate(day)} className={`
             relative p-2 text-sm h-12 w-full border border-slate-600/30 transition-colors
             ${isCurrentMonth ? 'text-white' : 'text-slate-500'}
@@ -201,6 +217,7 @@ const CalendarAgendaWidget = () => {
     }
     return days;
   };
+
   const CalendarHeader = () => <div className="flex items-center justify-between mb-4">
       <div className="flex items-center gap-2">
         <CalendarIcon className="w-5 h-5 text-blue-400" />
@@ -222,6 +239,7 @@ const CalendarAgendaWidget = () => {
         </Button>
       </div>
     </div>;
+
   if (loading) {
     return <Card className="bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border-blue-500/30">
         <CardContent className="p-6">
@@ -232,6 +250,7 @@ const CalendarAgendaWidget = () => {
         </CardContent>
       </Card>;
   }
+
   return (
     <div className="relative">
       <Card className="relative overflow-hidden bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border-blue-500/30">
@@ -258,6 +277,9 @@ const CalendarAgendaWidget = () => {
                 <BellOff className="h-4 w-4 text-blue-400" />
               </div>
             )}
+          </div>
+        </div>
+      </CardHeader>
       <CardContent className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_1.5fr] gap-6">
           
@@ -389,4 +411,5 @@ const CalendarAgendaWidget = () => {
     </div>
   );
 };
+
 export default CalendarAgendaWidget;
