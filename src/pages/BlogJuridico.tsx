@@ -322,6 +322,13 @@ const BlogJuridico = () => {
                     </Card>
                   </Link>)}
               </div>
+              
+              {/* AdSense - Após último artigo */}
+              <AdSenseAd 
+                format="banner" 
+                slot="3333333333"
+                className="mt-8"
+              />
             </section>
           </div>
 
