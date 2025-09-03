@@ -110,7 +110,7 @@ export default function AdSenseAd({ format, slot, className = '', style = {}, sh
   const adStyle = format === 'auto' ? { display: 'block', ...style } : { ...adFormat, ...style };
 
   return (
-    <div className={`adsense-container flex justify-center ${className}`}>
+    <div className={`adsense-container ${className}`}>
       <ins
         className="adsbygoogle"
         style={adStyle}
