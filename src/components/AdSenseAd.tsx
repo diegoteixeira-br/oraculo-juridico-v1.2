@@ -9,9 +9,10 @@ interface AdSenseAdProps {
   slot?: string;
   className?: string;
   style?: React.CSSProperties;
+  showForAllUsers?: boolean; // Nova prop para controlar se deve mostrar para todos os usuários
 }
 
-export default function AdSenseAd({ format, slot, className = '', style = {} }: AdSenseAdProps) {
+export default function AdSenseAd({ format, slot, className = '', style = {}, showForAllUsers = false }: AdSenseAdProps) {
   const [adSenseClientId, setAdSenseClientId] = useState<string | null>(null);
   const [isAdSenseEnabled, setIsAdSenseEnabled] = useState(false);
   const { user } = useAuth();
@@ -45,8 +46,11 @@ export default function AdSenseAd({ format, slot, className = '', style = {} }: 
   }, []);
 
   useEffect(() => {
+    // Verificar se deve mostrar anúncios baseado na configuração
+    const shouldShowAd = showForAllUsers || isFreeUser;
+    
     // Carregar anúncios quando o componente for montado e as configurações estiverem prontas
-    if (isAdSenseEnabled && adSenseClientId && isFreeUser && isAllowedPage) {
+    if (isAdSenseEnabled && adSenseClientId && shouldShowAd && isAllowedPage) {
       try {
         // @ts-ignore
         if (window.adsbygoogle && window.adsbygoogle.loaded) {
@@ -57,7 +61,7 @@ export default function AdSenseAd({ format, slot, className = '', style = {} }: 
         console.error('Erro ao carregar anúncio:', error);
       }
     }
-  }, [isAdSenseEnabled, adSenseClientId, isFreeUser, isAllowedPage]);
+  }, [isAdSenseEnabled, adSenseClientId, isFreeUser, isAllowedPage, showForAllUsers]);
 
   const getAdFormat = () => {
     switch (format) {
@@ -77,11 +81,14 @@ export default function AdSenseAd({ format, slot, className = '', style = {} }: 
     }
   };
 
+  // Verificar se deve mostrar anúncios baseado na configuração
+  const shouldShowAd = showForAllUsers || isFreeUser;
+  
   // Não mostrar anúncios se:
   // - AdSense não estiver configurado
-  // - Usuário não for gratuito
+  // - Usuário não atender aos critérios
   // - Não estiver em uma página permitida
-  if (!isAdSenseEnabled || !adSenseClientId || !isFreeUser || !isAllowedPage) {
+  if (!isAdSenseEnabled || !adSenseClientId || !shouldShowAd || !isAllowedPage) {
     // Mostrar placeholder durante desenvolvimento ou quando anúncios não são exibidos
     if (process.env.NODE_ENV === 'development' || window.location.hostname.includes('lovable')) {
       const adFormat = getAdFormat();

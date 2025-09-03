@@ -145,6 +145,7 @@ const BlogJuridico = () => {
               format="banner" 
               slot="2222222222"
               className="mb-6 sm:mb-8"
+              showForAllUsers={true}
             />
             
             {/* Search Bar */}
@@ -328,6 +329,7 @@ const BlogJuridico = () => {
                 format="banner" 
                 slot="3333333333"
                 className="mt-8"
+                showForAllUsers={true}
               />
             </section>
           </div>
@@ -339,6 +341,7 @@ const BlogJuridico = () => {
               format="rectangle" 
               slot="6666666666"
               className="mb-4 sm:mb-6"
+              showForAllUsers={true}
             />
 
             {/* Categories */}
@@ -360,6 +363,7 @@ const BlogJuridico = () => {
               format="mobile" 
               slot="7777777777"
               className="mb-4 sm:mb-6"
+              showForAllUsers={true}
             />
 
             {/* Newsletter */}
