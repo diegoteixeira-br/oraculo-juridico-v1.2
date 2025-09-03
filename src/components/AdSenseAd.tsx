@@ -59,14 +59,6 @@ export default function AdSenseAd({ format, slot, className = '', style = {} }: 
     }
   }, [isAdSenseEnabled, adSenseClientId, isFreeUser, isAllowedPage]);
 
-  // Não mostrar anúncios se:
-  // - AdSense não estiver configurado
-  // - Usuário não for gratuito
-  // - Não estiver em uma página permitida
-  if (!isAdSenseEnabled || !adSenseClientId || !isFreeUser || !isAllowedPage) {
-    return null;
-  }
-
   const getAdFormat = () => {
     switch (format) {
       case 'rectangle':
@@ -84,6 +76,28 @@ export default function AdSenseAd({ format, slot, className = '', style = {} }: 
         return { width: 'auto', height: 'auto' };
     }
   };
+
+  // Não mostrar anúncios se:
+  // - AdSense não estiver configurado
+  // - Usuário não for gratuito
+  // - Não estiver em uma página permitida
+  if (!isAdSenseEnabled || !adSenseClientId || !isFreeUser || !isAllowedPage) {
+    // Mostrar placeholder durante desenvolvimento ou quando anúncios não são exibidos
+    if (process.env.NODE_ENV === 'development' || window.location.hostname.includes('lovable')) {
+      const adFormat = getAdFormat();
+      const placeholderStyle = format === 'auto' ? { minHeight: '90px' } : adFormat;
+      
+      return (
+        <div className={`adsense-placeholder bg-slate-800/30 border border-slate-600 rounded-lg flex items-center justify-center text-slate-400 text-sm ${className}`} style={placeholderStyle}>
+          <div className="text-center">
+            <div className="font-medium">Espaço do Anúncio Google AdSense</div>
+            <div className="text-xs opacity-75 mt-1">Formato: {format} {slot && `| Slot: ${slot}`}</div>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  }
 
   const adFormat = getAdFormat();
   const adStyle = format === 'auto' ? { display: 'block', ...style } : { ...adFormat, ...style };
