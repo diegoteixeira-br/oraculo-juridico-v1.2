@@ -143,6 +143,7 @@ export function useAudioRecorder(lang: string = "pt-BR") {
   const resetRecording = useCallback(() => {
     stopSpeech();
     resetSpeech();
+    setLastProcessedTranscript('');
     
     setAudioState({
       isRecording: false,
@@ -152,13 +153,17 @@ export function useAudioRecorder(lang: string = "pt-BR") {
     });
   }, [stopSpeech, resetSpeech]);
 
+  // Track if transcript has been processed to avoid duplication
+  const [lastProcessedTranscript, setLastProcessedTranscript] = useState('');
+  
   // Processar mudanças no texto atual
   const processTextChange = useCallback((newText: string) => {
-    if (audioState.isRecording && listening && (transcript || interimTranscript)) {
+    if (audioState.isRecording && listening && transcript && transcript !== lastProcessedTranscript) {
+      setLastProcessedTranscript(transcript);
       return insertTextAtCursor(newText, transcript, interimTranscript);
     }
     return newText;
-  }, [audioState.isRecording, listening, transcript, interimTranscript, insertTextAtCursor]);
+  }, [audioState.isRecording, listening, transcript, interimTranscript, insertTextAtCursor, lastProcessedTranscript]);
 
   return {
     // Estados

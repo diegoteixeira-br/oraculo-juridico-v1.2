@@ -121,7 +121,8 @@ export function useSpeechRecognition(lang: string = "pt-BR") {
       // Processar comandos de pontuação no texto final
       if (finalTranscript) {
         const processedText = processPunctuationCommands(finalTranscript);
-        setTranscript(prev => prev + processedText);
+        // For mobile audio editor, replace the entire transcript instead of accumulating
+        setTranscript(processedText);
         setInterimTranscript("");
       } else {
         // Processar comandos também no texto provisório

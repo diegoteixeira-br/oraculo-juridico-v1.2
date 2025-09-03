@@ -276,15 +276,15 @@ const messagesEndRef = useRef<HTMLDivElement>(null);
     }
   }, [messages.length, currentSessionId, pendingMessageId]);
 
-  // Sync transcript with message input
+  // Sync transcript with message input - only update when new transcript is available
   useEffect(() => {
-    if (audioRecorder.isRecording) {
+    if (audioRecorder.isRecording && audioRecorder.transcript) {
       const processedText = audioRecorder.processTextChange(message);
       if (processedText !== message) {
         setMessage(processedText);
       }
     }
-  }, [audioRecorder.transcript, audioRecorder.interimTranscript, audioRecorder.isRecording]);
+  }, [audioRecorder.transcript]); // Only depend on transcript, not the other states
 
   // Handle audio recorder errors
   useEffect(() => {
