@@ -8,6 +8,12 @@ import heroBrain from "../assets/hero-brain-legal.jpg";
 import legalOffice from "../assets/legal-office.jpg";
 const LandingPage = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [landingSettings, setLandingSettings] = useState({
+    launch_offer_enabled: false,
+    launch_offer_text: "OFERTA DE LANÇAMENTO: Use o cupom ORACULO10 e ganhe 10% de desconto no seu primeiro mês. Válido por tempo limitado!",
+    launch_offer_code: "ORACULO10",
+    launch_offer_discount_percentage: 10
+  });
   const [videoSettings, setVideoSettings] = useState({
     youtube_video_id: 'VIDEO_ID',
     video_title: 'Veja Como Funciona na Prática',
@@ -22,13 +28,19 @@ const LandingPage = () => {
       try {
         const {
           data
-        } = await supabase.from('landing_page_settings').select('youtube_video_id, video_title, video_description, video_enabled').maybeSingle();
+        } = await supabase.from('landing_page_settings').select('*').maybeSingle();
         if (data) {
           setVideoSettings({
             youtube_video_id: data.youtube_video_id || 'VIDEO_ID',
             video_title: data.video_title || 'Veja Como Funciona na Prática',
             video_description: data.video_description || 'Assista ao vídeo demonstrativo e descubra como o Oráculo Jurídico pode revolucionar sua prática advocatícia',
             video_enabled: data.video_enabled || false
+          });
+          setLandingSettings({
+            launch_offer_enabled: data.launch_offer_enabled || false,
+            launch_offer_text: data.launch_offer_text || "OFERTA DE LANÇAMENTO: Use o cupom ORACULO10 e ganhe 10% de desconto no seu primeiro mês. Válido por tempo limitado!",
+            launch_offer_code: data.launch_offer_code || "ORACULO10",
+            launch_offer_discount_percentage: data.launch_offer_discount_percentage || 10
           });
         }
       } catch (error) {
@@ -67,14 +79,16 @@ const LandingPage = () => {
   }];
     return <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-foreground">
       {/* Banner de Oferta no Topo */}
-      <div className="bg-gradient-to-r from-primary via-purple-600 to-primary text-primary-foreground py-3 px-4 text-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse"></div>
-        <div className="relative">
-          <p className="text-sm md:text-base font-semibold">
-            🎉 OFERTA DE LANÇAMENTO: Use o cupom <span className="bg-white/20 px-2 py-1 rounded font-bold">ORACULO10</span> e ganhe 10% de desconto no seu primeiro mês! ⏰ Válido por tempo limitado!
-          </p>
+      {landingSettings.launch_offer_enabled && (
+        <div className="bg-gradient-to-r from-primary via-purple-600 to-primary text-primary-foreground py-3 px-4 text-center relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse"></div>
+          <div className="relative">
+            <p className="text-sm md:text-base font-semibold">
+              {landingSettings.launch_offer_text}
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Header */}
       <header className="py-6 px-4 border-b border-border bg-slate-800/50 backdrop-blur-sm">

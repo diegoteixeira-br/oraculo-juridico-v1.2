@@ -765,6 +765,10 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          launch_offer_code: string | null
+          launch_offer_discount_percentage: number | null
+          launch_offer_enabled: boolean | null
+          launch_offer_text: string | null
           updated_at: string
           video_description: string | null
           video_enabled: boolean
@@ -774,6 +778,10 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          launch_offer_code?: string | null
+          launch_offer_discount_percentage?: number | null
+          launch_offer_enabled?: boolean | null
+          launch_offer_text?: string | null
           updated_at?: string
           video_description?: string | null
           video_enabled?: boolean
@@ -783,6 +791,10 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          launch_offer_code?: string | null
+          launch_offer_discount_percentage?: number | null
+          launch_offer_enabled?: boolean | null
+          launch_offer_text?: string | null
           updated_at?: string
           video_description?: string | null
           video_enabled?: boolean
