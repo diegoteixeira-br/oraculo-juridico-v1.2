@@ -327,7 +327,7 @@ const LandingPage = () => {
                 
                 <li>Acesso completo à assistente jurídica</li>
                 <li>Histórico ilimitado de conversas</li>
-                <li>Agenda jurídica: Suporte técnico especializado</li>
+                <li>Suporte técnico especializado</li>
                 
               </ul>
             </div>
