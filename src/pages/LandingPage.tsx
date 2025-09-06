@@ -46,12 +46,12 @@ const LandingPage = () => {
     }
   };
   useSEO({
-    title: "Oráculo Jurídico — IA Jurídica para Advogados",
-    description: "Crie sua conta gratuita e teste 7 dias com 15.000 tokens. Chat jurídico com IA, calculadoras, documentos e agenda."
+    title: "Oráculo Jurídico — IA Jurídica Especializada para Advogados",
+    description: "A mais poderosa ferramenta de IA jurídica do Brasil. Respostas fundamentadas em segundos. Teste grátis 7 dias com 15.000 tokens."
   });
   const faqData = [{
     question: "Como funcionam os tokens?",
-    answer: "Tokens são usados apenas no chat com a IA. No Plano Gratuito de teste você recebe 15.000 tokens válidos por 7 dias; no Plano Básico, 30.000 tokens por mês; no Plano Profissional, tokens ilimitados. Calculadoras e documentos seguem os limites do seu plano. A agenda está disponível nos Planos Básico e Profissional."
+    answer: "Tokens são usados exclusivamente no chat com a IA jurídica. No Teste Gratuito você recebe 15.000 tokens válidos por 7 dias; no Plano Básico, 30.000 tokens por mês; no Plano Profissional, tokens ilimitados para consultas sem limite."
   }, {
     question: "Meus tokens gratuitos se acumulam se eu não usar?",
     answer: "Não. O saldo de 15.000 tokens do teste é único para o período de 7 dias e não é cumulativo após o término do teste."
@@ -63,12 +63,19 @@ const LandingPage = () => {
     answer: "Nossa IA integra-se com a LexML, base oficial de jurisprudência do governo brasileiro. IMPORTANTE: As informações sempre precisam ser revisadas e adaptadas às necessidades específicas de cada caso pelo advogado responsável, pois a base LexML pode não estar 100% atualizada e cada situação jurídica é única."
   }, {
     question: "Como posso adquirir mais tokens?",
-    answer: "Você pode assinar o Plano Básico (R$ 59,90/mês) para liberar uso ilimitado de calculadoras, documentos e agenda (além de 30.000 tokens/mês para o chat), ou o Plano Profissional (R$ 97,00/mês) com tokens ilimitados. Pacotes avulsos: Recarga Rápida (25k tokens - R$ 39,90) e Recarga Inteligente (50k tokens - R$ 69,90), disponíveis apenas para assinantes do Plano Básico."
-  }, {
-    question: "O que é a Agenda Jurídica?",
-    answer: "É uma ferramenta disponível nos Planos Básico e Profissional para registrar manualmente prazos, audiências e compromissos. Quando houver itens agendados, você recebe um e-mail de lembrete diariamente no horário configurado na sua conta (respeitando seu fuso horário). Possui também extração automática de prazos via IA que consome mínimo 500 tokens, variando conforme o tamanho do texto."
+    answer: "Você pode assinar o Plano Básico (30.000 tokens/mês por R$ 59,90) ou o Plano Profissional (tokens ilimitados por R$ 97,00). Pacotes avulsos: Recarga Rápida (25k tokens - R$ 39,90) e Recarga Inteligente (50k tokens - R$ 69,90), disponíveis para assinantes do Plano Básico."
   }];
-  return <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-foreground">
+    return <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-foreground">
+      {/* Banner de Oferta no Topo */}
+      <div className="bg-gradient-to-r from-primary via-purple-600 to-primary text-primary-foreground py-3 px-4 text-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse"></div>
+        <div className="relative">
+          <p className="text-sm md:text-base font-semibold">
+            🎉 OFERTA DE LANÇAMENTO: Use o cupom <span className="bg-white/20 px-2 py-1 rounded font-bold">ORACULO10</span> e ganhe 10% de desconto no seu primeiro mês! ⏰ Válido por tempo limitado!
+          </p>
+        </div>
+      </div>
+
       {/* Header */}
       <header className="py-6 px-4 border-b border-border bg-slate-800/50 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
@@ -231,23 +238,23 @@ const LandingPage = () => {
               <Brain className="w-12 h-12 text-primary mb-4" />
               <h3 className="text-xl font-semibold mb-4 text-foreground">IA Especializada em Direito</h3>
               <p className="text-muted-foreground">
-                Treinada com foco na legislação e jurisprudência brasileira.
+                Treinada com foco na legislação e jurisprudência brasileira para respostas precisas.
               </p>
             </div>
             
             <div className="p-6 card-signup">
-              <Calendar className="w-12 h-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-4 text-foreground">Agenda Jurídica</h3>
+              <Shield className="w-12 h-12 text-primary mb-4" />
+              <h3 className="text-xl font-semibold mb-4 text-foreground">Respostas com Fundamentação</h3>
               <p className="text-muted-foreground">
-                Registre e organize manualmente prazos e compromissos; receba lembretes por e-mail no horário configurado na sua conta.
+                Nossa IA fornece respostas claras e objetivas, sempre com as devidas fontes legais para sua segurança.
               </p>
             </div>
             
             <div className="p-6 card-signup">
-              <Calculator className="w-12 h-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-4 text-foreground">Calculadoras Especializadas</h3>
+              <TrendingUp className="w-12 h-12 text-primary mb-4" />
+              <h3 className="text-xl font-semibold mb-4 text-foreground">Aumente sua Produtividade</h3>
               <p className="text-muted-foreground">
-                Contratos bancários e pensão alimentícia com precisão jurídica.
+                Gaste menos tempo pesquisando e mais tempo atuando em seus casos. Seu assistente sênior virtual.
               </p>
             </div>
             
@@ -255,7 +262,7 @@ const LandingPage = () => {
               <Globe className="w-12 h-12 text-primary mb-4" />
               <h3 className="text-xl font-semibold mb-4 text-foreground">Acesso 24/7</h3>
               <p className="text-muted-foreground">
-                Sua fonte de consulta jurídica sempre disponível.
+                Sua fonte de consulta jurídica sempre disponível, quando você precisar.
               </p>
             </div>
             
@@ -271,116 +278,13 @@ const LandingPage = () => {
               <History className="w-12 h-12 text-primary mb-4" />
               <h3 className="text-xl font-semibold mb-4 text-foreground">Histórico Completo</h3>
               <p className="text-muted-foreground">
-                Mantenha registro de todas suas consultas e documentos.
+                Mantenha registro de todas suas consultas com a IA para referência futura.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Nova Seção - Agenda Jurídica */}
-      <section className="py-20 px-4 bg-muted/20">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-6 text-foreground">
-              Agenda Jurídica Inteligente
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              Nunca mais perca um prazo: cadastre compromissos manualmente e receba lembretes por e-mail no horário configurado na sua conta
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-blue-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Target className="w-6 h-6 text-blue-400" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-2 text-foreground">Cadastro Manual de Compromissos</h3>
-                  <p className="text-muted-foreground">
-                    Registre prazos, audiências e compromissos manualmente de forma rápida e organizada.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-green-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Calendar className="w-6 h-6 text-green-400" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-2 text-foreground">Calendário Integrado</h3>
-                  <p className="text-muted-foreground">
-                    Visualize todos seus compromissos em um calendário organizado, com filtros por tipo, status e prioridade.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-purple-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <MessageCircle className="w-6 h-6 text-purple-400" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-2 text-foreground">Organização Completa</h3>
-                  <p className="text-muted-foreground">
-                    Gerencie prazos processuais, audiências, reuniões com clientes e compromissos personalizados em um só lugar.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-yellow-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Brain className="w-6 h-6 text-yellow-400" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-2 text-foreground">Extração Automática de Prazos</h3>
-                  <p className="text-muted-foreground">
-                    IA analisa documentos (texto, PDF ou imagem) e identifica prazos automaticamente. <strong className="text-yellow-400">Mínimo 500 tokens, custo varia com o tamanho do texto.</strong>
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="relative">
-              <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
-                <div className="flex items-center gap-3 mb-4">
-                  <Calendar className="w-8 h-8 text-primary" />
-                  <div>
-                    <h4 className="font-semibold text-foreground">Agenda Jurídica</h4>
-                    <p className="text-sm text-muted-foreground">Seus próximos compromissos</p>
-                  </div>
-                </div>
-                
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 p-3 bg-blue-600/10 rounded-lg border border-blue-500/20">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-blue-200">Prazo para Contestação</p>
-                      <p className="text-xs text-blue-300/80">15/01 - 14:00 • Processo 123456</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-3 p-3 bg-red-600/10 rounded-lg border border-red-500/20">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-red-200">Audiência de Instrução</p>
-                      <p className="text-xs text-red-300/80">18/01 - 09:30 • Fórum Central</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-3 p-3 bg-green-600/10 rounded-lg border border-green-500/20">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-green-200">Reunião com Cliente</p>
-                      <p className="text-xs text-green-300/80">20/01 - 16:00 • Escritório</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Planos e Limites */}
       <section className="py-20 px-4">
@@ -437,94 +341,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Calculadoras Jurídicas Melhoradas */}
-      <section className="py-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-6 text-foreground">
-              Calculadoras Jurídicas Especializadas
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              Ferramentas avançadas para cálculos jurídicos precisos, desenvolvidas especificamente para advogados
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div className="p-8 card-signup border-2 border-primary/20 hover:border-primary/40 transition-colors">
-              <div className="flex items-center mb-6">
-                <Building className="w-12 h-12 text-primary mr-4" />
-                <div>
-                  <h3 className="text-xl font-semibold text-foreground">Cálculo de Contrato Bancário</h3>
-                  <p className="text-muted-foreground text-sm">Análise completa de contratos financeiros</p>
-                </div>
-              </div>
-              <ul className="space-y-2 text-muted-foreground mb-6">
-                <li className="flex items-center">
-                  <Check className="w-4 h-4 text-primary mr-2" />
-                  Juros simples e compostos
-                </li>
-                <li className="flex items-center">
-                  <Check className="w-4 h-4 text-primary mr-2" />
-                  Correção monetária (IPCA, IGP-M, SELIC)
-                </li>
-                <li className="flex items-center">
-                  <Check className="w-4 h-4 text-primary mr-2" />
-                  Multa e juros de mora personalizáveis
-                </li>
-                <li className="flex items-center">
-                  <Check className="w-4 h-4 text-primary mr-2" />
-                  Pagamentos parciais com datas
-                </li>
-                <li className="flex items-center">
-                  <Check className="w-4 h-4 text-primary mr-2" />
-                  Relatório detalhado com fundamentação
-                </li>
-              </ul>
-            </div>
-
-            <div className="p-8 card-signup border-2 border-primary/20 hover:border-primary/40 transition-colors">
-              <div className="flex items-center mb-6">
-                <Heart className="w-12 h-12 text-primary mr-4" />
-                <div>
-                  <h3 className="text-xl font-semibold text-foreground">Cálculo de Pensão Alimentícia</h3>
-                  <p className="text-muted-foreground text-sm">Cálculos precisos de pensão alimentícia</p>
-                </div>
-              </div>
-              <ul className="space-y-2 text-muted-foreground mb-6">
-                <li className="flex items-center">
-                  <Check className="w-4 h-4 text-primary mr-2" />
-                  Cálculo por percentual ou valor fixo
-                </li>
-                <li className="flex items-center">
-                  <Check className="w-4 h-4 text-primary mr-2" />
-                  Múltiplos filhos com idades diferentes
-                </li>
-                <li className="flex items-center">
-                  <Check className="w-4 h-4 text-primary mr-2" />
-                  Valores em atraso com juros e multa
-                </li>
-                <li className="flex items-center">
-                  <Check className="w-4 h-4 text-primary mr-2" />
-                  Correção monetária automática
-                </li>
-                <li className="flex items-center">
-                  <Check className="w-4 h-4 text-primary mr-2" />
-                  Relatório completo para petições
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="text-center mt-12">
-            <div className="bg-card p-6 rounded-lg border border-border max-w-3xl mx-auto">
-              <h3 className="text-xl font-bold mb-3 text-foreground">
-                Acesso às Calculadoras
-              </h3>
-              <p className="text-muted-foreground">As calculadoras jurídicas estão disponíveis em sua conta após o login. No Plano Básico o uso é ilimitado; no Plano Gratuito você pode realizar teste por 7 dias.</p>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Conta Gratuita */}
       <section id="free-account-section" className="py-10 sm:py-16 px-4 bg-muted/20">
@@ -562,7 +378,7 @@ const LandingPage = () => {
                 </div>
                 <div className="flex items-center space-x-3 text-left">
                   <Check className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-muted-foreground">Calculadoras especializadas</span>
+                  <span className="text-muted-foreground">Respostas fundamentadas com fontes legais</span>
                 </div>
                 <div className="flex items-center space-x-3 text-left">
                   <Check className="w-5 h-5 text-primary flex-shrink-0" />
@@ -649,51 +465,41 @@ const LandingPage = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-6 text-foreground">
-              Plataforma Jurídica Completa
+              Sua Assistente Jurídica com IA
             </h2>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              Tudo que você precisa para modernizar sua prática jurídica em uma única plataforma
+              Uma ferramenta poderosa e intuitiva para acelerar suas pesquisas e otimizar seu trabalho jurídico
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-3 gap-8">
             <div className="p-6 card-signup text-center">
               <div className="w-16 h-16 bg-blue-600/20 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <MessageSquare className="w-8 h-8 text-blue-400" />
               </div>
-              <h3 className="text-lg font-semibold mb-2 text-foreground">Chat IA Jurídica</h3>
+              <h3 className="text-lg font-semibold mb-2 text-foreground">Pesquisa de Jurisprudência</h3>
               <p className="text-sm text-muted-foreground">
-                Consultas ilimitadas com IA especializada em direito brasileiro
+                Encontre decisões relevantes em segundos com uma simples pergunta
               </p>
             </div>
             
             <div className="p-6 card-signup text-center">
               <div className="w-16 h-16 bg-green-600/20 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <Calendar className="w-8 h-8 text-green-400" />
+                <Gavel className="w-8 h-8 text-green-400" />
               </div>
-              <h3 className="text-lg font-semibold mb-2 text-foreground">Agenda Inteligente</h3>
+              <h3 className="text-lg font-semibold mb-2 text-foreground">Elaboração de Teses</h3>
               <p className="text-sm text-muted-foreground">
-                Cadastro manual e extração automática de prazos via IA. Organização de compromissos com lembretes por e-mail no horário que você configurar
+                Utilize a IA para explorar diferentes argumentos e fortalecer suas petições
               </p>
             </div>
             
             <div className="p-6 card-signup text-center">
               <div className="w-16 h-16 bg-purple-600/20 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <Calculator className="w-8 h-8 text-purple-400" />
+                <Brain className="w-8 h-8 text-purple-400" />
               </div>
-              <h3 className="text-lg font-semibold mb-2 text-foreground">Calculadoras</h3>
+              <h3 className="text-lg font-semibold mb-2 text-foreground">Tira-dúvidas Jurídico</h3>
               <p className="text-sm text-muted-foreground">
-                Contratos bancários e pensão alimentícia com precisão jurídica
-              </p>
-            </div>
-            
-            <div className="p-6 card-signup text-center">
-              <div className="w-16 h-16 bg-orange-600/20 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <FileText className="w-8 h-8 text-orange-400" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2 text-foreground">Documentos</h3>
-              <p className="text-sm text-muted-foreground">
-                Modelos jurídicos personalizáveis para download
+                Esclareça conceitos e encontre artigos de lei de forma rápida e conversacional
               </p>
             </div>
           </div>
