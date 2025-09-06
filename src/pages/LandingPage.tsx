@@ -77,18 +77,16 @@ const LandingPage = () => {
     question: "Como posso adquirir mais tokens?",
     answer: "Você pode assinar o Plano Básico (30.000 tokens/mês por R$ 59,90) ou o Plano Profissional (tokens ilimitados por R$ 97,00). Pacotes avulsos: Recarga Rápida (25k tokens - R$ 39,90) e Recarga Inteligente (50k tokens - R$ 69,90), disponíveis para assinantes do Plano Básico."
   }];
-    return <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-foreground">
+  return <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-foreground">
       {/* Banner de Oferta no Topo */}
-      {landingSettings.launch_offer_enabled && (
-        <div className="bg-gradient-to-r from-primary via-purple-600 to-primary text-primary-foreground py-3 px-4 text-center relative overflow-hidden">
+      {landingSettings.launch_offer_enabled && <div className="bg-gradient-to-r from-primary via-purple-600 to-primary text-primary-foreground py-3 px-4 text-center relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse"></div>
           <div className="relative">
             <p className="text-sm md:text-base font-semibold">
               {landingSettings.launch_offer_text}
             </p>
           </div>
-        </div>
-      )}
+        </div>}
 
       {/* Header */}
       <header className="py-6 px-4 border-b border-border bg-slate-800/50 backdrop-blur-sm">
@@ -312,7 +310,7 @@ const LandingPage = () => {
               <h3 className="text-xl font-semibold text-foreground mb-2">Plano Gratuito </h3>
               <ul className="list-disc ml-6 space-y-2 text-muted-foreground">
                 <li>Chat com IA: 15.000 tokens de teste (válidos por 7 dias)</li>
-                <li>Acesso completo à assistente jurídica inteligente</li>
+                <li>Acesso completo à assistente jurídica inteligente (válidos por 7 dias)</li>
                 <li>Histórico de conversas salvo automaticamente (válidos por 7 dias)</li>
                 
               </ul>
