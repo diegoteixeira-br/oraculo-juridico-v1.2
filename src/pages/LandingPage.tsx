@@ -313,7 +313,7 @@ const LandingPage = () => {
               <ul className="list-disc ml-6 space-y-2 text-muted-foreground">
                 <li>Chat com IA: 15.000 tokens de teste (válidos por 7 dias)</li>
                 <li>Acesso completo à assistente jurídica inteligente</li>
-                <li>Histórico de conversas salvo automaticamente</li>
+                <li>Histórico de conversas salvo automaticamente (válidos por 7 dias)</li>
                 
               </ul>
             </div>
