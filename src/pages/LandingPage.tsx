@@ -312,8 +312,8 @@ const LandingPage = () => {
               <h3 className="text-xl font-semibold text-foreground mb-2">Plano Gratuito </h3>
               <ul className="list-disc ml-6 space-y-2 text-muted-foreground">
                 <li>Chat com IA: 15.000 tokens de teste (válidos por 7 dias)</li>
-                <li>Calculadoras jurídicas: acesso completo por 7 dias</li>
-                <li>Documentos prontos: copiar e gerar modelos por 7 dias</li>
+                <li>Acesso completo à assistente jurídica inteligente</li>
+                <li>Histórico de conversas salvo automaticamente</li>
                 
               </ul>
             </div>
@@ -327,8 +327,8 @@ const LandingPage = () => {
               <ul className="list-disc ml-6 space-y-2 text-muted-foreground">
                 <li>Chat com IA: 30.000 tokens por mês</li>
                 
-                <li>Calculadoras: uso ilimitado</li>
-                <li>Documentos: ilimitados</li>
+                <li>Acesso completo à assistente jurídica</li>
+                <li>Histórico ilimitado de conversas</li>
                 <li>Agenda jurídica: compromissos ilimitados</li>
                 
               </ul>
@@ -345,9 +345,9 @@ const LandingPage = () => {
               </div>
               <ul className="list-disc ml-6 space-y-2 text-muted-foreground">
                 <li>Chat com IA: <strong className="text-amber-400">Tokens ilimitados</strong> (política de uso justo)</li>
-                <li>Calculadoras: uso ilimitado</li>
-                <li>Documentos: ilimitados</li>
-                <li>Agenda jurídica: compromissos ilimitados</li>
+                <li>Acesso premium à assistente jurídica</li>
+                <li>Análise de casos complexos sem limite</li>
+                <li>Redação jurídica avançada</li>
                 <li><strong className="text-amber-400">Suporte prioritário</strong></li>
               </ul>
             </div>
