@@ -58,8 +58,9 @@ export default function Login() {
           description: "Bem-vindo de volta ao Oráculo Jurídico.",
         });
         
-        // Sempre redirecionar para dashboard após login bem sucedido
-        navigate('/dashboard');
+        // Redirecionar para a página de onde veio ou dashboard como fallback
+        const from = location.state?.from || '/dashboard';
+        navigate(from, { replace: true });
       }
     } catch (error: any) {
       toast({
