@@ -216,32 +216,6 @@ const FAQ = () => {
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section className="py-16 px-4 bg-muted/10">
-        <div className="max-w-4xl mx-auto text-center">
-          <MessageCircle className="w-12 h-12 text-primary mx-auto mb-6" />
-          <h3 className="text-3xl font-bold mb-6 text-foreground">
-            Não encontrou sua resposta?
-          </h3>
-          <p className="text-xl text-muted-foreground mb-8">
-            Nossa equipe de suporte está pronta para ajudar você com qualquer dúvida específica.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a 
-              href="/contato" 
-              className="btn-primary px-6 py-3"
-            >
-              Entrar em Contato
-            </a>
-            <a 
-              href="/login" 
-              className="btn-outline px-6 py-3"
-            >
-              Fazer Login
-            </a>
-          </div>
-        </div>
-      </section>
     </div>
   );
 };
