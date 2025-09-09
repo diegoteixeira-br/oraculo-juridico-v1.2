@@ -103,12 +103,6 @@ const LandingPage = () => {
           
           <div className="flex items-center gap-3">
             <nav className="hidden md:flex items-center gap-6 mr-6">
-              <Link to="/sobre" className="text-muted-foreground hover:text-foreground transition-colors">
-                Sobre
-              </Link>
-              <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors">
-                FAQ
-              </Link>
               <Link to="/contato" className="text-muted-foreground hover:text-foreground transition-colors">
                 Contato
               </Link>
@@ -576,8 +570,8 @@ const LandingPage = () => {
             <div>
               <h3 className="font-semibold mb-4 text-slate-200">Links Úteis</h3>
               <ul className="space-y-2 text-slate-400">
-                
-                
+                <li><Link to="/sobre" className="hover:text-blue-400 transition-colors">Sobre Nós</Link></li>
+                <li><Link to="/faq" className="hover:text-blue-400 transition-colors">Perguntas Frequentes</Link></li>
                 <li><Link to="/contato" className="hover:text-blue-400 transition-colors">Contato</Link></li>
                 <li><Link to="/termos" className="hover:text-blue-400 transition-colors">Termos de Uso</Link></li>
                 <li><Link to="/privacidade" className="hover:text-blue-400 transition-colors">Política de Privacidade</Link></li>

@@ -1,7 +1,19 @@
 import { useSEO } from "@/hooks/useSEO";
-import { Brain, Users, Award, Target, Heart, TrendingUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Brain, Users, Award, Target, Heart, TrendingUp, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Sobre = () => {
+  const navigate = useNavigate();
+
+  const handleGoBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/');
+    }
+  };
+
   useSEO({
     title: "Sobre o Oráculo Jurídico - Inteligência Artificial para Advogados",
     description: "Conheça a história, missão e visão do Oráculo Jurídico. Descubra como nossa plataforma de IA está revolucionando a advocacia brasileira com tecnologia de ponta."
@@ -11,8 +23,16 @@ const Sobre = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-foreground">
       {/* Header */}
       <header className="py-6 px-4 border-b border-border bg-slate-800/50 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent">
+        <div className="max-w-6xl mx-auto flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-white hover:bg-slate-700"
+            onClick={handleGoBack}
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent">
             Sobre o Oráculo Jurídico
           </h1>
         </div>

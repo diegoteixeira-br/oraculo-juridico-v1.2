@@ -1,9 +1,20 @@
 import { useState } from "react";
 import { useSEO } from "@/hooks/useSEO";
-import { ChevronDown, ChevronRight, HelpCircle, MessageCircle, Clock, CreditCard, Shield, Users, Zap, Settings } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ChevronDown, ChevronRight, HelpCircle, MessageCircle, Clock, CreditCard, Shield, Users, Zap, Settings, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const FAQ = () => {
+  const navigate = useNavigate();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  const handleGoBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/');
+    }
+  };
 
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
@@ -127,11 +138,21 @@ const FAQ = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-foreground">
       {/* Header */}
       <header className="py-6 px-4 border-b border-border bg-slate-800/50 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent">
-            Perguntas Frequentes
-          </h1>
-          <p className="text-muted-foreground mt-2">Encontre respostas para suas principais dúvidas</p>
+        <div className="max-w-6xl mx-auto flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-white hover:bg-slate-700"
+            onClick={handleGoBack}
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent">
+              Perguntas Frequentes
+            </h1>
+            <p className="text-muted-foreground mt-2">Encontre respostas para suas principais dúvidas</p>
+          </div>
         </div>
       </header>
 
