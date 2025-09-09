@@ -21,11 +21,15 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Verificar de onde veio através do estado ou referrer
-  const cameFromBlog = location.state?.from === 'blog' || 
-    document.referrer.includes('/blog') || 
-    document.referrer.includes('blog');
-  const cameFromLanding = location.state?.from === '/';
+  // Determinar de onde veio para navegação correta
+  const from = location.state?.from || document.referrer;
+  const handleGoBack = () => {
+    if (location.state?.from) {
+      navigate(location.state.from);
+    } else {
+      navigate(-1); // Volta para a página anterior no histórico
+    }
+  };
 
   useSEO({
     title: 'Entrar | Oráculo Jurídico – Teste 7 dias com 15.000 tokens',
@@ -54,11 +58,7 @@ export default function Login() {
         });
         
         // Sempre redirecionar para dashboard após login bem sucedido
-        if (cameFromBlog) {
-          navigate('/');
-        } else {
-          navigate('/dashboard');
-        }
+        navigate('/dashboard');
       }
     } catch (error: any) {
       toast({
@@ -78,15 +78,14 @@ export default function Login() {
         <div className="container max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Link to={cameFromLanding ? '/' : '/blog'}>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-white hover:bg-slate-700"
-                >
-                  <ArrowLeft className="h-5 w-5" />
-                </Button>
-              </Link>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-white hover:bg-slate-700"
+                onClick={handleGoBack}
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
               <img 
                 src="/lovable-uploads/640a3b5c-aae7-485a-a595-a0d750c13d9b.png" 
                 alt="Oráculo Jurídico"
