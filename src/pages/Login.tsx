@@ -21,13 +21,14 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Determinar de onde veio para navegação correta
-  const from = location.state?.from || document.referrer;
+  // Função para voltar à página anterior
   const handleGoBack = () => {
     if (location.state?.from) {
+      // Se veio com um estado específico, navega para lá
       navigate(location.state.from);
     } else {
-      navigate(-1); // Volta para a página anterior no histórico
+      // Senão, volta para a página anterior no histórico
+      navigate(-1);
     }
   };
 
