@@ -102,6 +102,17 @@ const LandingPage = () => {
           </div>
           
           <div className="flex items-center gap-3">
+            <nav className="hidden md:flex items-center gap-6 mr-6">
+              <Link to="/sobre" className="text-muted-foreground hover:text-foreground transition-colors">
+                Sobre
+              </Link>
+              <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors">
+                FAQ
+              </Link>
+              <Link to="/contato" className="text-muted-foreground hover:text-foreground transition-colors">
+                Contato
+              </Link>
+            </nav>
             <Link to="/login" state={{
             from: '/'
           }} className="text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-1 sm:space-x-2 border border-border rounded-lg px-2 py-1.5 sm:px-4 sm:py-2 hover:bg-muted/10">

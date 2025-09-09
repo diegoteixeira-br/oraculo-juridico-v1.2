@@ -24,6 +24,8 @@ import Termos from "./pages/Termos";
 import Privacidade from "./pages/Privacidade";
 import Dashboard from "./pages/Dashboard";
 import Chat from "./pages/Chat";
+import Sobre from "./pages/Sobre";
+import FAQ from "./pages/FAQ";
 import MinhaContaPage from "./pages/MinhaContaPage";
 import HistoricoTransacoesPage from "./pages/HistoricoTransacoesPage";
 import ContatoPage from "./pages/ContatoPage";
@@ -75,6 +77,8 @@ function AppContent() {
       <Route path="/suporte" element={<PageWrapper><ProtectedRoute gate="dashboard"><SuportePage /></ProtectedRoute></PageWrapper>} />
       <Route path="/meus-documentos" element={<PageWrapper><ProtectedRoute gate="premium"><MeusDocumentos /></ProtectedRoute></PageWrapper>} />
       <Route path="/blog/:slug" element={<PageWrapper><ArtigoBlog /></PageWrapper>} />
+      <Route path="/sobre" element={<PageWrapper><Sobre /></PageWrapper>} />
+      <Route path="/faq" element={<PageWrapper><FAQ /></PageWrapper>} />
       
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
