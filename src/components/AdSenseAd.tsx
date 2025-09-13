@@ -31,7 +31,7 @@ export default function AdSenseAd({ format, slot, className = '', style = {}, sh
         const { data } = await supabase
           .from('blog_settings')
           .select('google_adsense_client_id, google_adsense_enabled')
-          .single();
+          .maybeSingle();
 
         if (data) {
           setAdSenseClientId(data.google_adsense_client_id);
